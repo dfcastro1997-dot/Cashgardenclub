@@ -12,6 +12,10 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 DB_URI = os.getenv("DATABASE_URL")
 # Llave secreta de BitLabs extraída de tu panel
 BITLABS_SECRET = os.getenv("BITLABS_SECRET_KEY", "glrhMlnWAzlo5eOYb2hUcNnEniiG4fnG")
+# Llave secreta de TapResearch (Secret Key del Postback)
+TAPRESEARCH_SECRET = os.getenv("TAPRESEARCH_SECRET_KEY", "tu_llave_secreta_tapresearch_aqui")
+# Llave secreta de CPX Research (Secure Hash)
+CPX_SECRET = os.getenv("CPX_SECRET_KEY", "tu_hash_secret_cpx_aqui")
 
 def get_db_connection():
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
@@ -116,27 +120,20 @@ def save_state():
     
     return jsonify({"message": "Progreso guardado en la nube"})
 
-# --- WEBHOOK CORREGIDO PARA BITLABS (S2S POSTBACK) ---
+# --- WEBHOOK PARA BITLABS (S2S POSTBACK) ---
 @app.route('/api/webhook/bitlabs', methods=['GET', 'POST'])
 def bitlabs_webhook():
     try:
-        # Obtener datos tanto de peticiones GET como POST
         data = request.args if request.method == 'GET' else (request.json or request.form or request.args)
         
-        # Soportar múltiples nombres de parámetros comunes
         uid = data.get('uid') or data.get('user_id') or data.get('user')
         val = data.get('val') or data.get('amount') or data.get('reward')
         
-        # CORREGIDO: Si es un ping de comprobación sin parámetros, responde 200 OK para pasar la prueba
         if not uid or not val:
-            return jsonify({
-                "status": "OK",
-                "message": "Webhook activo y funcional."
-            }), 200
+            return jsonify({"status": "OK", "message": "Webhook activo y funcional."}), 200
             
         reward_amount = int(float(val))
 
-        # Opcional: Validación de Firma HMAC-SHA256
         signature = request.headers.get('X-Bitlabs-Signature')
         if signature:
             computed_sig = hmac.new(
@@ -147,13 +144,10 @@ def bitlabs_webhook():
             if not hmac.compare_digest(computed_sig, signature):
                 return jsonify({"error": "Firma inválida"}), 403
 
-        # Acreditar saldo en la base de datos
         conn = get_db_connection()
         cur = conn.cursor()
-        
         cur.execute("UPDATE users SET balance = balance + %s WHERE username = %s", (reward_amount, uid))
         conn.commit()
-        
         cur.close()
         conn.close()
 
@@ -161,6 +155,73 @@ def bitlabs_webhook():
 
     except Exception as e:
         print(f"Error procesando webhook de BitLabs: {e}")
+        return jsonify({"error": "Error interno"}), 500
+
+# --- WEBHOOK PARA TAPRESEARCH (POSTBACK) ---
+@app.route('/api/webhook/tapresearch', methods=['GET'])
+def tapresearch_webhook():
+    try:
+        uid = request.args.get('user_identifier')
+        reward = request.args.get('reward')
+        tx_id = request.args.get('transaction_identifier')
+        hash_signature = request.args.get('hash')
+
+        if not uid or not reward:
+             return jsonify({"status": "OK", "message": "Webhook de TapResearch activo"}), 200
+
+        if hash_signature:
+            message = f"{tx_id}:{reward}:{TAPRESEARCH_SECRET}"
+            computed_hash = hashlib.md5(message.encode('utf-8')).hexdigest()
+            if computed_hash != hash_signature:
+                return jsonify({"error": "Firma inválida. Hash no coincide."}), 403
+
+        reward_amount = int(float(reward))
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE users SET balance = balance + %s WHERE username = %s", (reward_amount, uid))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({"status": "SUCCESS", "message": f"TapResearch: Acreditados {reward_amount} a {uid}"}), 200
+
+    except Exception as e:
+        print(f"Error procesando webhook de TapResearch: {e}")
+        return jsonify({"error": "Error interno"}), 500
+
+# --- NUEVO: WEBHOOK PARA CPX RESEARCH (POSTBACK) ---
+@app.route('/api/webhook/cpx', methods=['GET'])
+def cpx_webhook():
+    try:
+        status = request.args.get('status')
+        trans_id = request.args.get('trans_id')
+        user_id = request.args.get('ext_user_id')
+        amount = request.args.get('amount_local')
+        hash_signature = request.args.get('hash')
+
+        if not user_id or not amount:
+            return jsonify({"status": "OK", "message": "Webhook de CPX activo"}), 200
+
+        if hash_signature:
+            message = f"{trans_id}-{CPX_SECRET}"
+            computed_hash = hashlib.md5(message.encode('utf-8')).hexdigest()
+            if computed_hash != hash_signature:
+                return jsonify({"error": "Firma inválida CPX"}), 403
+
+        if status == '1':
+            reward_amount = int(float(amount))
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("UPDATE users SET balance = balance + %s WHERE username = %s", (reward_amount, user_id))
+            conn.commit()
+            cur.close()
+            conn.close()
+
+        return jsonify({"status": "success", "message": f"CPX: Acreditados {amount} a {user_id}"}), 200
+
+    except Exception as e:
+        print(f"Error procesando webhook de CPX: {e}")
         return jsonify({"error": "Error interno"}), 500
 
 if __name__ == '__main__':

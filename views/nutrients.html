@@ -41,7 +41,7 @@
             </button>
         </div>
 
-        <!-- TapResearch -->
+        <!-- TapResearch (ACTUALIZADO) -->
         <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-cg_cyan hover:shadow-lg transition-all">
             <div class="flex justify-between items-start mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-500 font-black text-2xl group-hover:scale-110 transition-transform">TR</div>
@@ -52,12 +52,12 @@
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Recompensa Máx.</span>
                 <span class="text-base font-black text-cg_gold">~3,500 🍀</span>
             </div>
-            <button onclick="alert('TapResearch estará disponible próximamente.')" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-cg_cyan hover:text-white hover:border-cg_cyan font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="openTapResearchWall()" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-cg_cyan hover:text-white hover:border-cg_cyan font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Abrir Muro
             </button>
         </div>
 
-        <!-- CPX Research -->
+        <!-- CPX Research (ACTUALIZADO) -->
         <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-purple-400 hover:shadow-lg transition-all">
             <div class="flex justify-between items-start mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-500 font-black text-2xl group-hover:scale-110 transition-transform">CPX</div>
@@ -68,7 +68,7 @@
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Recompensa Máx.</span>
                 <span class="text-base font-black text-cg_gold">~8,000 🍀</span>
             </div>
-            <button onclick="alert('CPX Research estará disponible próximamente.')" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-purple-500 hover:text-white hover:border-purple-500 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="openCpxWall()" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-purple-500 hover:text-white hover:border-purple-500 font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Abrir Muro
             </button>
         </div>
@@ -87,9 +87,39 @@
         const user = JSON.parse(savedUser);
         const appToken = "41148b7f-5efa-41f2-8c35-99fcd8baf4ac";
         
-        // CORREGIDO: Se cambia 'app=' por 'token='
         const bitlabsUrl = `https://web.bitlabs.ai/?token=${appToken}&uid=${encodeURIComponent(user.username)}`;
         
         window.open(bitlabsUrl, '_blank', 'width=1000,height=700');
+    }
+
+    function openTapResearchWall() {
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            alert("Debes iniciar sesión para acceder al muro de encuestas.");
+            return;
+        }
+
+        const user = JSON.parse(savedUser);
+        const apiToken = "TU_API_TOKEN_DE_TAPRESEARCH_AQUI"; 
+        
+        const tapUrl = `https://www.tapresearch.com/supply_api/surveys/offerwall?api_token=${apiToken}&user_identifier=${encodeURIComponent(user.username)}`;
+        
+        window.open(tapUrl, '_blank', 'width=1000,height=700');
+    }
+
+    function openCpxWall() {
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            alert("Debes iniciar sesión para acceder al muro de encuestas.");
+            return;
+        }
+
+        const user = JSON.parse(savedUser);
+        // APP ID actualizado con el valor de tu panel
+        const appId = "36756"; 
+        
+        const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=${appId}&ext_user_id=${encodeURIComponent(user.username)}`;
+        
+        window.open(cpxUrl, '_blank', 'width=1000,height=700');
     }
 </script>
