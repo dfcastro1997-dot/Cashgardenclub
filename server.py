@@ -24,6 +24,18 @@ def init_db():
             balance INTEGER DEFAULT 150
         );
     ''')
+    # Añadimos la columna game_state de forma segura por si ya tenías usuarios creados
+    cur.execute('''
+        DO $$ 
+        BEGIN 
+            BEGIN
+                ALTER TABLE users ADD COLUMN game_state TEXT;
+            EXCEPTION
+                WHEN duplicate_column THEN RAISE NOTICE 'column game_state already exists';
+            END;
+        END;
+        $$
+    ''')
     conn.commit()
     cur.close()
     conn.close()
@@ -54,7 +66,7 @@ def register():
         return jsonify({"error": "El usuario ya existe"}), 400
 
     hashed_pw = generate_password_hash(password)
-    cur.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s) RETURNING id, username, balance", (username, hashed_pw))
+    cur.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s) RETURNING id, username, balance, game_state", (username, hashed_pw))
     new_user = cur.fetchone()
     
     conn.commit()
@@ -77,11 +89,30 @@ def login():
     conn.close()
 
     if user and check_password_hash(user['password_hash'], password):
-        # Eliminar el hash antes de enviar al frontend
         del user['password_hash']
         return jsonify({"message": "Login exitoso", "user": user})
     
     return jsonify({"error": "Usuario o contraseña incorrectos"}), 401
+
+# --- NUEVO ENDPOINT PARA GUARDAR EL PROGRESO ---
+@app.route('/api/save_state', methods=['POST'])
+def save_state():
+    data = request.json
+    username = data.get('username')
+    game_state = data.get('game_state')
+    balance = data.get('balance', 150)
+
+    if not username:
+        return jsonify({"error": "Usuario requerido"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET game_state = %s, balance = %s WHERE username = %s", (game_state, balance, username))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    return jsonify({"message": "Progreso guardado en la nube"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))

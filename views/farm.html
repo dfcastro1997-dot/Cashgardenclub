@@ -7,9 +7,7 @@
             <p class="text-sm text-gray-500 font-medium mt-1">Gestiona tus parcelas y herramientas agrícolas de forma estratégica.</p>
         </div>
         
-        <!-- INDICADOR DE TEMPORADA CLIMÁTICA E INSTRUCCIONES -->
         <div class="flex flex-wrap items-center gap-3">
-            <!-- NUEVO BOTÓN INSTRUCCIONES -->
             <button onclick="window.farmApp.openInstructionsModal()" class="bg-orange-500 hover:bg-orange-600 border border-orange-600 px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group text-white">
                 <div class="flex flex-col text-left">
                     <span class="text-[10px] font-extrabold text-orange-200 uppercase tracking-widest">Guía Rápida</span>
@@ -20,14 +18,13 @@
                 </div>
             </button>
 
-            <!-- BOTÓN CLIMA -->
             <button onclick="window.farmApp.openSeasonModal()" class="bg-white border border-gray-200 hover:border-cg_blue px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group">
                 <div class="flex flex-col text-left">
                     <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Clima Actual</span>
                     <span id="current-season-display" class="text-sm font-black text-cg_navy group-hover:text-cg_blue transition-colors">Cargando...</span>
                 </div>
                 <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 text-gray-400 group-hover:bg-cg_blue/10 group-hover:text-cg_blue transition-all">
-                    ℹ️️
+                    ℹ
                 </div>
             </button>
         </div>
@@ -38,12 +35,10 @@
         
         <!-- COLUMNA PRINCIPAL (PARCELAS + COMPRAS) -->
         <div class="flex-1 flex flex-col gap-8 overflow-y-auto pr-2 pb-10">
-            <!-- ZONA DE PARCELAS (GRID Responsivo) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" id="farm-grid">
-                <!-- Las parcelas se generan dinámicamente -->
+                <!-- Generado dinámicamente -->
             </div>
 
-            <!-- SECCIÓN DE COMPRAS -->
             <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto shrink-0">
                 <div>
                     <h3 class="text-xl font-black text-cg_navy">Mercado de Insumos</h3>
@@ -138,7 +133,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MODAL: INSTRUCCIONES                       -->
+<!-- MODALES -->
 <!-- ========================================== -->
 <div id="instructions-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
@@ -148,8 +143,6 @@
             <button onclick="window.farmApp.closeModals()" class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">✕</button>
         </div>
         <div class="p-5 sm:p-6 overflow-y-auto space-y-5 bg-gray-50 flex-1">
-            
-            <!-- Compra de Terrenos -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
                 <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/rf66qT74/Frame-751.png" class="w-12 h-12 object-contain" alt="Terreno">
@@ -159,8 +152,6 @@
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Haz clic en un terreno bloqueado para comprarlo usando tus tréboles (🍀). Cada nueva expansión tiene un costo mayor, pero te permite multiplicar tu producción en paralelo.</p>
                 </div>
             </div>
-
-            <!-- Preparación y Siembra -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
                 <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/BHJVfJhr/Frame-739.png" class="w-12 h-12 object-contain" alt="Maceta">
@@ -170,8 +161,6 @@
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Selecciona un terreno vacío y colócale una <strong>Maceta</strong> de tu inventario. Luego, haz clic sobre él para elegir una <strong>Semilla</strong> de la tienda compatible con el tamaño de la maceta y empezar el cultivo.</p>
                 </div>
             </div>
-
-            <!-- Cuidados y Riesgos -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
                 <div class="w-16 h-16 bg-red-50 rounded-xl border border-red-100 flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-12 h-12 object-contain drop-shadow-md" alt="Plaga">
@@ -184,8 +173,6 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Cosecha -->
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
                 <div class="w-16 h-16 bg-green-50 rounded-xl border border-green-100 flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/BKGHxVkf/Frame-744.png" class="w-12 h-12 object-contain drop-shadow-md" alt="Cosecha">
@@ -195,41 +182,28 @@
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Cuando la barra verde se llene por completo, la flor estará lista. Presiona el botón <strong>Cosechar</strong> para cobrar tu recompensa en 🍀. Recuerda que las macetas tienen un número limitado de usos antes de romperse.</p>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: DETALLES DE TEMPORADA CLIMÁTICA     -->
-<!-- ========================================== -->
 <div id="season-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-8 text-center border border-gray-100 overflow-hidden">
         <button onclick="window.farmApp.closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors z-20">✕</button>
-        
         <div class="absolute -top-10 -right-10 w-32 h-32 bg-cg_cyan/10 rounded-full blur-2xl"></div>
         <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-cg_gold/10 rounded-full blur-2xl"></div>
-        
         <div class="relative z-10">
             <div id="season-modal-icon" class="text-6xl mb-4 p-4 bg-gray-50 rounded-full inline-flex border border-gray-200 shadow-sm">🌸</div>
             <h3 class="text-2xl font-black text-cg_navy mb-1" id="season-modal-title">Primavera</h3>
             <span class="bg-cg_blue/10 text-cg_blue border border-cg_blue/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Clima Automático</span>
-            
             <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 mb-6 text-left">
-                <p class="text-sm text-gray-600 leading-relaxed font-medium" id="season-modal-desc">
-                    Descripción del clima.
-                </p>
+                <p class="text-sm text-gray-600 leading-relaxed font-medium" id="season-modal-desc">Descripción del clima.</p>
             </div>
-            
             <button onclick="window.farmApp.closeModals()" class="w-full bg-cg_blue text-white font-bold py-3.5 rounded-xl hover:bg-cg_navy shadow-soft transition-colors text-sm">Entendido</button>
         </div>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: TIENDA                              -->
-<!-- ========================================== -->
 <div id="shop-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeShop()"></div>
     <div class="bg-bone rounded-3xl shadow-2xl w-full max-w-5xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
@@ -256,9 +230,6 @@
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: COMPRA DE TERRENO INDIVIDUAL        -->
-<!-- ========================================== -->
 <div id="plot-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-8 text-center border border-gray-100">
@@ -278,9 +249,6 @@
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: SELECCIONAR SEMILLA PARA PLANTAR    -->
-<!-- ========================================== -->
 <div id="plant-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl relative z-10 flex flex-col max-h-[80vh] border border-gray-100">
@@ -297,7 +265,6 @@
 window.farmApp = {
     PLOT_COSTS: [0, 100, 300, 700, 1500, 3000],
     
-    // Configuración completa de climas
     seasons: {
         'Primavera': { name: 'Primavera', icon: '🌸', desc: 'Las plantas crecen un 10% más rápido. Un clima noble ideal para iniciar tus cultivos de ciclo largo.', water: 8, crow: 0.08, growMod: 0.9, scarecrowMod: 1 },
         'Verano': { name: 'Verano', icon: '☀️', desc: 'Evaporación acelerada. El consumo de agua aumenta significativamente; requerirás revisar tus plantas con mayor frecuencia.', water: 15, crow: 0.03, growMod: 1, scarecrowMod: 1 },
@@ -306,7 +273,7 @@ window.farmApp = {
     },
 
     state: {
-        balance: 150, // Ajuste drástico del saldo inicial
+        balance: 150,
         currentSeason: 'Primavera',
         plots: [
             { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -327,10 +294,10 @@ window.farmApp = {
             'skin_crow_neon': { name: 'Cuervo de Neón', type: 'cosmetic', qty: 0, image: 'https://i.ibb.co/DfG3hswj/Frame-750.png' }
         },
         images: {
-            terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png', // Terreno default/con agua
-            terrain_dry: 'https://i.ibb.co/rf66qT74/Frame-751.png',   // Nuevo terreno sin agua
-            plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',    // Planta PNG transparente
-            plant_big: 'https://i.ibb.co/BKGHxVkf/Frame-744.png',      // Planta PNG transparente
+            terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png',
+            terrain_dry: 'https://i.ibb.co/rf66qT74/Frame-751.png',
+            plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',
+            plant_big: 'https://i.ibb.co/BKGHxVkf/Frame-744.png',
             crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png'
         },
         selectedPlotId: null,
@@ -342,41 +309,75 @@ window.farmApp = {
 
     catalog: {
         tools: [
-            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas antes de romperse.', price: 50 },
+            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas.', price: 50 },
             { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 150 },
-            // Regadera ahora requiere Ad:
-            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas. Requiere ver un anuncio de video.', price: 0, isAd: true },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12-24 Hrs', usage: '20', desc: 'Protección real de largo plazo contra plagas.', price: 200 }
+            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas. (Ver Video)', price: 0, isAd: true },
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12-24 Hrs', usage: '20', desc: 'Protección real contra plagas.', price: 200 }
         ],
         flowers: [
             { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '12 Horas', usage: '1', desc: 'Recompensa total de 150 🍀 al cosecharse.', price: 100 },
             { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: '24 Horas', usage: '1', desc: 'Recompensa total de 500 🍀 al cosecharse.', price: 350 }
         ],
         cosmetics: [
-            // Implementación de Sumideros de economía (Sinks)
-            { id: 'skin_scarecrow_gold', name: 'Protector Dorado', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: 'Permanente', usage: 'Estético', desc: 'Skin exclusiva de oro macizo. No otorga ventajas, solo estatus en la tabla global.', price: 5000 },
-            { id: 'skin_crow_neon', name: 'Cuervo de Neón', image: 'https://i.ibb.co/DfG3hswj/Frame-750.png', duration: 'Permanente', usage: 'Estético', desc: 'Reemplaza el diseño visual de las plagas por un estilo cyber. Sin impacto en ROI.', price: 8000 }
+            { id: 'skin_scarecrow_gold', name: 'Protector Dorado', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: 'Permanente', usage: 'Estético', desc: 'Skin exclusiva de oro macizo.', price: 5000 },
+            { id: 'skin_crow_neon', name: 'Cuervo de Neón', image: 'https://i.ibb.co/DfG3hswj/Frame-750.png', duration: 'Permanente', usage: 'Estético', desc: 'Estilo cyber. Sin impacto en ROI.', price: 8000 }
         ]
     },
 
+    // --- NUEVO: FUNCIÓN PARA GUARDAR ESTADO EN LA NUBE ---
+    saveState() {
+        const stateToSave = JSON.stringify({
+            balance: this.state.balance,
+            currentSeason: this.state.currentSeason,
+            plots: this.state.plots,
+            inventory: this.state.inventory,
+            lastTick: this.state.lastTick
+        });
+        localStorage.setItem('cg_farm_state', stateToSave);
+
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            fetch('/api/save_state', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: user.username,
+                    balance: this.state.balance,
+                    game_state: stateToSave
+                })
+            }).catch(e => console.error("Error guardando progreso:", e));
+        }
+    },
+
     init() {
+        // --- RECUPERAR EL PROGRESO DEL JUGADOR AL ENTRAR ---
+        const savedStateStr = localStorage.getItem('cg_farm_state');
+        if (savedStateStr) {
+            try {
+                const savedState = JSON.parse(savedStateStr);
+                this.state.balance = savedState.balance ?? 150;
+                this.state.plots = savedState.plots ?? this.state.plots;
+                this.state.inventory = savedState.inventory ?? this.state.inventory;
+                this.state.lastTick = savedState.lastTick ?? Date.now();
+            } catch(e) { console.error("Error cargando estado", e); }
+        }
+
         const domBalance = document.getElementById('global-balance');
         if(domBalance) {
-            // Forzamos la actualización visual del saldo a 150 en la cabecera si existe
-            domBalance.innerText = '150';
-            this.state.balance = 150;
+            domBalance.innerText = this.state.balance.toLocaleString();
         }
+        
         this.autoSetSeason();
         this.renderPlots();
         this.updateInventoryUI();
         this.startEnvironmentSimulation();
     },
 
-    // Determina la temporada automáticamente basándose en el día del año (Rotación transparente)
     autoSetSeason() {
         const seasonKeys = Object.keys(this.seasons);
         const dayOfYear = Math.floor(Date.now() / 86400000); 
-        const currentIdx = dayOfYear % 4; // Cambia cada 24 horas reales
+        const currentIdx = dayOfYear % 4; 
         this.state.currentSeason = seasonKeys[currentIdx];
         
         const s = this.seasons[this.state.currentSeason];
@@ -388,7 +389,6 @@ window.farmApp = {
         document.getElementById('season-modal-icon').innerText = s.icon;
         document.getElementById('season-modal-title').innerText = s.name;
         document.getElementById('season-modal-desc').innerText = s.desc;
-        
         document.getElementById('season-modal').classList.remove('hidden');
         document.getElementById('season-modal').classList.add('flex');
     },
@@ -398,7 +398,6 @@ window.farmApp = {
         document.getElementById('instructions-modal').classList.add('flex');
     },
 
-    // ================== RENDERIZADO GRANJA ================== //
     renderPlots() {
         const grid = document.getElementById('farm-grid');
         grid.innerHTML = '';
@@ -550,7 +549,6 @@ window.farmApp = {
         document.getElementById('inv-scarecrow').innerText = inv.tool_scarecrow.qty;
     },
 
-    // ================== COMPRA DE TERRENOS INDIVIDUAL ================== //
     buyPlotPrompt(id) {
         this.state.pendingPlotId = id;
         document.getElementById('plot-modal-title').innerText = `Desbloquear Terreno ${id + 1}`;
@@ -567,6 +565,7 @@ window.farmApp = {
             this.state.plots[id].status = 'empty';
             this.closeModals();
             this.renderPlots();
+            this.saveState(); // GUARDAR
         }
     },
 
@@ -583,7 +582,6 @@ window.farmApp = {
         }, 2500);
     },
 
-    // ================== SIDEBAR (ACTIVAR BOTONES "USAR") ================== //
     selectPlot(id) {
         this.state.selectedPlotId = id;
         this.renderPlots(); 
@@ -624,7 +622,6 @@ window.farmApp = {
         } else if (plot.status === 'planted') {
             infoPanel.className = 'bg-white border border-gray-100 rounded-xl p-4 text-left shadow-sm';
             
-            // Lógica idéntica al render principal para el sidebar
             const currentTerrain = plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
             const currentPlantImg = plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big;
 
@@ -692,6 +689,7 @@ window.farmApp = {
 
         this.updateInventoryUI();
         this.selectPlot(plotId); 
+        this.saveState(); // GUARDAR
     },
 
     removePlant(plotId) {
@@ -712,6 +710,7 @@ window.farmApp = {
         } else {
             this.renderPlots();
         }
+        this.saveState(); // GUARDAR
     },
 
     harvestPlant(plotId) {
@@ -745,77 +744,86 @@ window.farmApp = {
         } else {
             this.renderPlots();
         }
+        this.saveState(); // GUARDAR
     },
 
-    // ================== SIMULACIÓN REAL "IDLE" (HORAS) ================== //
     startEnvironmentSimulation() {
         if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
-        this.state.lastTick = Date.now();
         
+        // --- PROCESAR TIEMPO INACTIVO INMEDIATAMENTE AL ENTRAR ---
+        this.processTick();
+
         this.state.simulationInterval = setInterval(() => {
-            const now = Date.now();
-            const deltaMS = now - this.state.lastTick;
-            this.state.lastTick = now;
-            const deltaHours = deltaMS / 3600000;
-            
-            const season = this.seasons[this.state.currentSeason];
-            let changesMade = false;
-            
-            this.state.plots.forEach(plot => {
-                if (plot.status === 'planted' && !plot.isReady) {
-                    
-                    if (plot.water > 0) {
-                        plot.water = Math.max(0, plot.water - (season.water * deltaHours)); 
-                        changesMade = true;
-                    }
-                    
-                    if (plot.scarecrowEndTime > now) {
-                        plot.hasCrow = false;
-                    } else {
-                        if (!plot.hasCrow && Math.random() < (season.crow * deltaHours)) {
-                            plot.hasCrow = true;
-                            this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
-                            changesMade = true;
-                        }
-                    }
-
-                    // Penalización de Crecimiento
-                    if (plot.water <= 0 || plot.hasCrow) {
-                        plot.harvestAt += deltaMS; 
-                        changesMade = true;
-                    }
-
-                    if (now >= plot.harvestAt) {
-                        plot.isReady = true;
-                        changesMade = true;
-                        this.showPlotToast(plot.id, '✨', '¡Lista para Cosecha!');
-                    }
-                }
-            });
-            
-            if(changesMade) {
-                this.renderPlots();
-                if(this.state.selectedPlotId !== null) {
-                    this.selectPlot(this.state.selectedPlotId);
-                }
-            }
+            this.processTick();
         }, 10000);
     },
 
-    // ================== LÓGICA DE TIENDA ================== //
+    // NUEVO METODO PARA CALCULAR EL CRECIMIENTO Y EL TIEMPO PASADO
+    processTick() {
+        const now = Date.now();
+        const deltaMS = now - this.state.lastTick;
+        this.state.lastTick = now;
+        const deltaHours = deltaMS / 3600000;
+        
+        const season = this.seasons[this.state.currentSeason];
+        let changesMade = false;
+        
+        this.state.plots.forEach(plot => {
+            if (plot.status === 'planted' && !plot.isReady) {
+                
+                if (plot.water > 0) {
+                    plot.water = Math.max(0, plot.water - (season.water * deltaHours)); 
+                    changesMade = true;
+                }
+                
+                if (plot.scarecrowEndTime > now) {
+                    plot.hasCrow = false;
+                } else {
+                    if (!plot.hasCrow && Math.random() < (season.crow * deltaHours)) {
+                        plot.hasCrow = true;
+                        if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
+                        changesMade = true;
+                    }
+                }
+
+                if (plot.water <= 0 || plot.hasCrow) {
+                    plot.harvestAt += deltaMS; 
+                    changesMade = true;
+                }
+
+                if (now >= plot.harvestAt) {
+                    plot.isReady = true;
+                    changesMade = true;
+                    if(deltaMS < 60000) this.showPlotToast(plot.id, '✨', '¡Lista para Cosecha!');
+                }
+            }
+        });
+        
+        if(changesMade) {
+            this.renderPlots();
+            if(this.state.selectedPlotId !== null) {
+                this.selectPlot(this.state.selectedPlotId);
+            }
+            this.saveState(); // Guardar avance
+        } else if (deltaMS > 0) {
+            this.saveState(); // Guardar nuevo timestamp
+        }
+    },
+
     openShop() {
         document.getElementById('shop-modal-balance').innerText = this.state.balance.toLocaleString();
         this.switchShopTab('tools');
         document.getElementById('shop-modal').classList.remove('hidden');
         document.getElementById('shop-modal').classList.add('flex');
     },
+
     closeShop() {
         document.getElementById('shop-modal').classList.add('hidden');
         document.getElementById('shop-modal').classList.remove('flex');
         this.state.shopQuantities = {}; 
     },
+
     switchShopTab(tab) {
-        // Lógica de Pestañas
         ['tools', 'flowers', 'cosmetics'].forEach(t => {
             const tabBtn = document.getElementById(`tab-${t}`);
             const contentDiv = document.getElementById(`shop-content-${t}`);
@@ -830,6 +838,7 @@ window.farmApp = {
         
         this.renderShopItems(tab);
     },
+
     renderShopItems(tab) {
         const container = document.getElementById(`shop-content-${tab}`);
         container.innerHTML = '';
@@ -844,7 +853,6 @@ window.farmApp = {
             
             let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Decoración');
             
-            // Botón de compra normal o botón de visualización de anuncios
             let actionButton = '';
             if (item.isAd) {
                 actionButton = `<button onclick="window.farmApp.watchAdToBuy('${item.id}', '${tab}')" class="bg-purple-500 hover:bg-purple-700 text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">📺 Ver Anuncio</button>`;
@@ -877,6 +885,7 @@ window.farmApp = {
             container.appendChild(card);
         });
     },
+
     changeShopQty(itemId, delta, tab) {
         let current = this.state.shopQuantities[itemId];
         let next = current + delta;
@@ -886,7 +895,6 @@ window.farmApp = {
         }
     },
     
-    // Simulación de reproducción de un video de anuncios para herramientas vinculadas a monetización
     watchAdToBuy(itemId, tab) {
         const qty = this.state.shopQuantities[itemId] || 1;
         alert("Simulando: Visualizando anuncio de video recompensado...");
@@ -897,6 +905,7 @@ window.farmApp = {
             }
             this.updateInventoryUI();
             alert(`¡Gracias por apoyar! Has recibido ${(100 * qty)} usos de Regadera.`);
+            this.saveState(); // GUARDAR
         }, 1500);
     },
 
@@ -907,15 +916,16 @@ window.farmApp = {
         if (this.state.balance >= total) {
             this.deductBalance(total);
             if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (20 * qty);
-            else if (tab === 'cosmetics') this.state.inventory[itemId].qty += qty; // Solo lo añade al inventario
+            else if (tab === 'cosmetics') this.state.inventory[itemId].qty += qty; 
             else this.state.inventory[itemId].qty += qty;
             
             this.updateInventoryUI();
             document.getElementById('shop-modal-balance').innerText = this.state.balance.toLocaleString();
+            
+            this.saveState(); // GUARDAR
         }
     },
 
-    // ================== LÓGICA DE SIEMBRA ================== //
     openPlantSelector(plotId) {
         this.state.selectedPlotId = plotId;
         const list = document.getElementById('seed-inventory-list');
@@ -979,12 +989,12 @@ window.farmApp = {
             this.closeModals();
             this.selectPlot(this.state.selectedPlotId);
             this.showPlotToast(this.state.selectedPlotId, '🌱', '¡Sembrado!');
+            
+            this.saveState(); // GUARDAR
         }
     },
 
-    // ================== UTILIDADES ================== //
     closeModals() {
-        // Se ha añadido instructions-modal al arreglo para cerrarlo correctamente
         ['plot-modal', 'plant-modal', 'season-modal', 'instructions-modal'].forEach(id => {
             document.getElementById(id).classList.add('hidden');
             document.getElementById(id).classList.remove('flex');

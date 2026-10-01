@@ -86,7 +86,6 @@
                     <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Granja</span>
                     </button>
-                    <!-- NUEVO: Botón de Encuestas (Estación de Nutrientes) -->
                     <button onclick="loadView('nutrients', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Encuestas</span>
                     </button>
@@ -158,7 +157,6 @@
             if (!user || !pass) return;
 
             try {
-                // Petición al backend en Render/Localhost
                 const response = await fetch(`/api/${action}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -168,8 +166,15 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Guardar sesión e interconectar perfil
+                    // Guardar sesión y progreso en LocalStorage
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    if (data.user.game_state) {
+                        localStorage.setItem('cg_farm_state', data.user.game_state);
+                    } else {
+                        localStorage.removeItem('cg_farm_state');
+                    }
+
                     updateProfileUI(data.user);
                     
                     document.getElementById('login-screen').classList.add('opacity-0');
@@ -192,7 +197,6 @@
             document.getElementById('dropdown-username').innerText = userData.username;
             document.getElementById('profile-avatar').innerText = userData.username.substring(0, 2).toUpperCase();
             
-            // Sincronizar balance con la base de datos y UI
             const balance = userData.balance || 150;
             document.getElementById('global-balance').innerText = balance.toLocaleString();
             
@@ -206,11 +210,17 @@
             document.getElementById('auth-error').classList.remove('hidden');
         }
 
-        // Al cargar la página, verificar si ya hay sesión activa
+        // Recuperar progreso automáticamente
         window.onload = () => {
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
-                updateProfileUI(JSON.parse(savedUser));
+                const parsedUser = JSON.parse(savedUser);
+                
+                if (parsedUser.game_state) {
+                    localStorage.setItem('cg_farm_state', parsedUser.game_state);
+                }
+
+                updateProfileUI(parsedUser);
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
                 document.getElementById('dashboard-screen').classList.add('flex');
@@ -220,6 +230,7 @@
 
         function logout() { 
             localStorage.removeItem('user');
+            localStorage.removeItem('cg_farm_state');
             location.reload(); 
         }
         
@@ -250,14 +261,12 @@
             } catch (error) { console.error(error); }
         }
 
-        // Lógica para abrir/cerrar el menú desplegable del usuario
         function toggleUserMenu(event) {
             if(event) event.stopPropagation();
             const dropdown = document.getElementById('user-dropdown');
             dropdown.classList.toggle('hidden');
         }
 
-        // Cierra el menú si se hace clic fuera de él
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('user-dropdown');
             if (dropdown && !dropdown.classList.contains('hidden')) {
