@@ -87,10 +87,9 @@
         const user = JSON.parse(savedUser);
         const appToken = "41148b7f-5efa-41f2-8c35-99fcd8baf4ac";
         
-        // Construimos la URL agregando el ID/username del usuario
-        const bitlabsUrl = `https://web.bitlabs.ai/?app=${appToken}&uid=${encodeURIComponent(user.username)}`;
+        // CORREGIDO: Se cambia 'app=' por 'token='
+        const bitlabsUrl = `https://web.bitlabs.ai/?token=${appToken}&uid=${encodeURIComponent(user.username)}`;
         
-        // Abrimos el muro en una ventana flotante o nueva pestaña
         window.open(bitlabsUrl, '_blank', 'width=1000,height=700');
     }
 </script>
