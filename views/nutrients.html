@@ -10,7 +10,7 @@
             <p class="text-sm text-gray-500 font-medium mt-1">Completa encuestas de nuestros socios para ganar liquidez en 🍀.</p>
         </div>
         
-        <!-- Banner Happy Hour (Basado en el GDD) -->
+        <!-- Banner Happy Hour -->
         <div class="bg-gradient-to-r from-cg_yellow/20 to-cg_gold/20 border border-cg_gold/30 rounded-2xl p-4 flex items-center gap-4 shadow-sm relative overflow-hidden">
             <div class="absolute -right-4 -top-4 w-16 h-16 bg-white/40 rounded-full blur-xl"></div>
             <span class="text-3xl animate-bounce relative z-10">⚡</span>
@@ -36,7 +36,7 @@
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Recompensa Máx.</span>
                 <span class="text-base font-black text-cg_gold">~5,000 🍀</span>
             </div>
-            <button class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+            <button onclick="openBitLabsWall()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
                 Abrir Muro <span class="text-lg">→</span>
             </button>
         </div>
@@ -52,7 +52,7 @@
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Recompensa Máx.</span>
                 <span class="text-base font-black text-cg_gold">~3,500 🍀</span>
             </div>
-            <button class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-cg_cyan hover:text-white hover:border-cg_cyan font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="alert('TapResearch estará disponible próximamente.')" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-cg_cyan hover:text-white hover:border-cg_cyan font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Abrir Muro
             </button>
         </div>
@@ -68,10 +68,29 @@
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Recompensa Máx.</span>
                 <span class="text-base font-black text-cg_gold">~8,000 🍀</span>
             </div>
-            <button class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-purple-500 hover:text-white hover:border-purple-500 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="alert('CPX Research estará disponible próximamente.')" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-purple-500 hover:text-white hover:border-purple-500 font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Abrir Muro
             </button>
         </div>
 
     </div>
 </div>
+
+<script>
+    function openBitLabsWall() {
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            alert("Debes iniciar sesión para acceder al muro de encuestas.");
+            return;
+        }
+
+        const user = JSON.parse(savedUser);
+        const appToken = "41148b7f-5efa-41f2-8c35-99fcd8baf4ac";
+        
+        // Construimos la URL agregando el ID/username del usuario
+        const bitlabsUrl = `https://web.bitlabs.ai/?app=${appToken}&uid=${encodeURIComponent(user.username)}`;
+        
+        // Abrimos el muro en una ventana flotante o nueva pestaña
+        window.open(bitlabsUrl, '_blank', 'width=1000,height=700');
+    }
+</script>
