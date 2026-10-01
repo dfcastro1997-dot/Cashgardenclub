@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASHGARDEN CLUB - Professional Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cg_yellow: '#FDE062',     
+                        cg_gold: '#ED9925',       
+                        cg_cyan: '#64D7FF',       
+                        cg_blue: '#2996DA',       
+                        cg_navy: '#1C2634',       
+                        cg_silver: '#CDD2D6',     
+                        cg_bronze: '#B46B43',     
+                        bone: '#FAFAFA'           
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CDD2D6; border-radius: 10px; }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-bone text-cg_navy h-screen overflow-hidden relative">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-bone transition-opacity duration-500">
+        <div class="bg-white rounded-2xl shadow-soft w-full max-w-md p-10 relative z-10 border border-gray-100">
+            <div class="flex flex-col items-center justify-center mb-8 mt-2">
+                <img src="https://i.postimg.cc/0ybHSyxH/l-OGO.png" alt="CashGarden Club Logo" class="h-32 w-auto object-contain drop-shadow-md mb-4 hover:scale-105 transition-transform duration-300">
+                <p class="text-sm text-gray-400 mt-3 font-medium text-center">Ingresa a tu invernadero financiero</p>
+            </div>
+            
+            <form id="auth-form" class="space-y-6">
+                <h3 id="form-title" class="text-center font-bold text-cg_navy text-lg hidden">Crear Nueva Cuenta</h3>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Usuario</label>
+                    <input type="text" id="username" placeholder="Tu usuario" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-medium text-cg_navy" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Contraseña</label>
+                    <input type="password" id="password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-medium text-cg_navy" required>
+                </div>
+                <div id="auth-error" class="hidden bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-medium flex items-start gap-3">
+                    <span id="auth-error-msg">Error en la autenticación.</span>
+                </div>
+                
+                <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Ingreso Seguro</button>
+                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-cg_gold hover:bg-orange-500 text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Registrarme</button>
+                
+                <div class="text-center mt-4">
+                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-xs font-bold text-gray-500 hover:text-cg_blue transition-colors">
+                        ¿No tienes cuenta? Crea una aquí
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="dashboard-screen" class="hidden h-screen w-full flex-col bg-bone">
+        <!-- TOP NAVBAR -->
+        <header class="bg-white border-b border-gray-100 shadow-sm z-20 relative">
+            <div class="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="https://i.postimg.cc/0ybHSyxH/l-OGO.png" alt="Logo" class="h-12 w-auto object-contain drop-shadow-sm">
+                </div>
+                
+                <!-- MENU DE NAVEGACIÓN -->
+                <nav class="hidden lg:flex items-center gap-2 h-full">
+                    <button onclick="loadView('dashboard', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
+                        <span>Tablero</span>
+                    </button>
+                    <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                        <span>Granja</span>
+                    </button>
+                    <!-- NUEVO: Botón de Encuestas (Estación de Nutrientes) -->
+                    <button onclick="loadView('nutrients', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                        <span>Encuestas</span>
+                    </button>
+                    <button onclick="loadView('news', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all relative">
+                        <span>Noticias</span>
+                        <span class="absolute top-5 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    </button>
+                </nav>
+
+                <!-- RECURSOS Y USUARIO -->
+                <div class="flex items-center gap-5">
+                    <div class="hidden sm:flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-cg_yellow shadow-sm relative">
+                            <span class="text-sm">🍀</span>
+                            <span id="global-balance" class="text-sm font-extrabold text-cg_gold transition-all duration-300">0</span>
+                        </div>
+                    </div>
+                    <div class="w-px h-8 bg-gray-200 hidden md:block"></div>
+                    
+                    <!-- Perfil Desplegable -->
+                    <div class="relative">
+                        <button onclick="toggleUserMenu(event)" class="flex items-center gap-3 focus:outline-none hover:opacity-80 transition-opacity">
+                            <div id="profile-avatar" class="w-10 h-10 rounded-full bg-cg_navy border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-sm">US</div>
+                            <div class="hidden md:block text-left">
+                                <p class="text-sm font-bold text-cg_navy leading-tight flex items-center gap-1"><span id="profile-name">Usuario</span> <span class="text-[10px] text-gray-400">▼</span></p>
+                            </div>
+                        </button>
+                        
+                        <!-- Menú Desplegable -->
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transition-all">
+                            <div class="p-4 border-b border-gray-50 bg-gray-50/50">
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tu Cuenta</p>
+                                <p class="text-sm font-black text-cg_navy truncate" id="dropdown-username">usuario@cashgarden.com</p>
+                            </div>
+                            <div class="py-2">
+                                <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
+                                    <span class="text-lg">💳</span> Billetera / Retiros
+                                </button>
+                            </div>
+                            <div class="py-2 border-t border-gray-100">
+                                <button onclick="logout()" class="w-full text-left px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-3">
+                                    <span class="text-lg">🚪</span> Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main id="app-content" class="flex-1 overflow-y-auto p-6 md:p-10 relative"></main>
+    </div>
+
+    <script>
+        let isLoginMode = true;
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('btn-login').classList.toggle('hidden', !isLoginMode);
+            document.getElementById('btn-register').classList.toggle('hidden', isLoginMode);
+            document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
+            document.getElementById('btn-toggle-mode').innerText = isLoginMode ? "¿No tienes cuenta? Crea una aquí" : "¿Ya tienes cuenta? Ingresa aquí";
+            document.getElementById('auth-error').classList.add('hidden');
+        }
+
+        async function handleAuth(action) {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            
+            if (!user || !pass) return;
+
+            try {
+                // Petición al backend en Render/Localhost
+                const response = await fetch(`/api/${action}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Guardar sesión e interconectar perfil
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    updateProfileUI(data.user);
+                    
+                    document.getElementById('login-screen').classList.add('opacity-0');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
+                        document.getElementById('dashboard-screen').classList.add('flex');
+                        loadView('farm', document.querySelectorAll('.nav-btn')[1]);
+                    }, 300);
+                } else {
+                    showError(data.error || 'Ocurrió un error');
+                }
+            } catch (err) {
+                showError('Error de conexión con el servidor.');
+            }
+        }
+
+        function updateProfileUI(userData) {
+            document.getElementById('profile-name').innerText = userData.username;
+            document.getElementById('dropdown-username').innerText = userData.username;
+            document.getElementById('profile-avatar').innerText = userData.username.substring(0, 2).toUpperCase();
+            
+            // Sincronizar balance con la base de datos y UI
+            const balance = userData.balance || 150;
+            document.getElementById('global-balance').innerText = balance.toLocaleString();
+            
+            if(window.farmApp) {
+                window.farmApp.state.balance = balance;
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('auth-error-msg').innerText = msg;
+            document.getElementById('auth-error').classList.remove('hidden');
+        }
+
+        // Al cargar la página, verificar si ya hay sesión activa
+        window.onload = () => {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                updateProfileUI(JSON.parse(savedUser));
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                document.getElementById('dashboard-screen').classList.add('flex');
+                loadView('farm', document.querySelectorAll('.nav-btn')[1]);
+            }
+        };
+
+        function logout() { 
+            localStorage.removeItem('user');
+            location.reload(); 
+        }
+        
+        async function loadView(viewName, clickedBtn = null) {
+            const contentDiv = document.getElementById('app-content');
+            contentDiv.innerHTML = '<div class="flex justify-center mt-32"><div class="w-12 h-12 border-4 border-gray-200 border-t-cg_gold rounded-full animate-spin"></div></div>';
+            try {
+                const response = await fetch(`views/${viewName}.html`);
+                const html = await response.text();
+                contentDiv.innerHTML = html;
+                
+                const scripts = contentDiv.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+
+                if (clickedBtn) {
+                    document.querySelectorAll('.nav-btn').forEach(btn => {
+                        btn.classList.remove('text-cg_gold', 'border-cg_gold');
+                        btn.classList.add('text-gray-500', 'border-transparent');
+                    });
+                    clickedBtn.classList.remove('text-gray-500', 'border-transparent');
+                    clickedBtn.classList.add('text-cg_gold', 'border-cg_gold');
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        // Lógica para abrir/cerrar el menú desplegable del usuario
+        function toggleUserMenu(event) {
+            if(event) event.stopPropagation();
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Cierra el menú si se hace clic fuera de él
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('user-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
