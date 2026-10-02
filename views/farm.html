@@ -23,16 +23,6 @@
                     📖
                 </div>
             </button>
-
-            <button onclick="window.farmApp.openSeasonModal()" class="bg-white border border-gray-200 hover:border-cg_blue px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group">
-                <div class="flex flex-col text-left">
-                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Clima Actual</span>
-                    <span id="current-season-display" class="text-sm font-black text-cg_navy group-hover:text-cg_blue transition-colors">Cargando...</span>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 text-gray-400 group-hover:bg-cg_blue/10 group-hover:text-cg_blue transition-all">
-                    ℹ
-                </div>
-            </button>
         </div>
     </div>
 
@@ -193,7 +183,7 @@
                     <h4 class="text-base sm:text-lg font-black text-cg_navy">3. Evaporación Agresiva</h4>
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
                         💧 <strong>Agua:</strong> El agua se evapora rápidamente (40% por hora).<br>
-                        🦅 <strong>Plagas:</strong> Aparecen garantizadas si el agua baja del 20%. Usa un Aspersor Automático desde la Tienda IAP para regar todo automáticamente y evitar estar pendiente.
+                        🦅 <strong>Plagas:</strong> Aparecen garantizadas si el agua baja del 20%. Usa un Aspersor Automático desde la Tienda de Servicios de Pago para regar todo automáticamente y evitar estar pendiente.
                     </p>
                 </div>
             </div>
@@ -210,25 +200,7 @@
     </div>
 </div>
 
-<div id="season-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-8 text-center border border-gray-100 overflow-hidden">
-        <button onclick="window.farmApp.closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors z-20">✕</button>
-        <div class="absolute -top-10 -right-10 w-32 h-32 bg-cg_cyan/10 rounded-full blur-2xl"></div>
-        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-cg_gold/10 rounded-full blur-2xl"></div>
-        <div class="relative z-10">
-            <div id="season-modal-icon" class="text-6xl mb-4 p-4 bg-gray-50 rounded-full inline-flex border border-gray-200 shadow-sm">🌸</div>
-            <h3 class="text-2xl font-black text-cg_navy mb-1" id="season-modal-title">Primavera</h3>
-            <span class="bg-cg_blue/10 text-cg_blue border border-cg_blue/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Clima Automático</span>
-            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 mb-6 text-left">
-                <p class="text-sm text-gray-600 leading-relaxed font-medium" id="season-modal-desc">Descripción del clima.</p>
-            </div>
-            <button onclick="window.farmApp.closeModals()" class="w-full bg-cg_blue text-white font-bold py-3.5 rounded-xl hover:bg-cg_navy shadow-soft transition-colors text-sm">Entendido</button>
-        </div>
-    </div>
-</div>
-
-<!-- Shop Modal (Incluyendo In-App Purchases) -->
+<!-- Shop Modal -->
 <div id="shop-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeShop()"></div>
     <div class="bg-bone rounded-3xl shadow-2xl w-full max-w-5xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
@@ -245,13 +217,11 @@
         <div class="flex px-5 sm:px-8 pt-4 gap-4 border-b border-gray-200 bg-white shrink-0 overflow-x-auto">
             <button onclick="window.farmApp.switchShopTab('tools')" id="tab-tools" class="pb-3 px-4 font-bold text-cg_blue border-b-4 border-cg_blue whitespace-nowrap">Herramientas</button>
             <button onclick="window.farmApp.switchShopTab('flowers')" id="tab-flowers" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy transition-colors whitespace-nowrap">Semillas y Flores</button>
-            <button onclick="window.farmApp.switchShopTab('cosmetics')" id="tab-cosmetics" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy transition-colors whitespace-nowrap">Decoración</button>
-            <button onclick="window.farmApp.switchShopTab('iap')" id="tab-iap" class="pb-3 px-4 font-black text-green-500 border-b-4 border-transparent hover:text-green-600 transition-colors whitespace-nowrap">Servicios VIP (COP)</button>
+            <button onclick="window.farmApp.switchShopTab('iap')" id="tab-iap" class="pb-3 px-4 font-black text-green-500 border-b-4 border-transparent hover:text-green-600 transition-colors whitespace-nowrap">Servicios de Pago</button>
         </div>
         <div class="p-5 sm:p-8 overflow-y-auto flex-1 bg-white">
             <div id="shop-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
             <div id="shop-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden"></div>
-            <div id="shop-content-cosmetics" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden"></div>
             <div id="shop-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
         </div>
     </div>
@@ -291,17 +261,10 @@
 <script>
 window.farmApp = {
     PLOT_COSTS: [0, 1000, 3000, 7000, 15000, 30000],
-    seasons: {
-        'Primavera': { name: 'Primavera', icon: '🌸', desc: 'Las plantas crecen un 10% más rápido. Un clima noble ideal para iniciar tus cultivos.', water: 8, growMod: 0.9, scarecrowMod: 1 },
-        'Verano': { name: 'Verano', icon: '☀️', desc: 'Evaporación acelerada. Requerirás revisar tus plantas con mayor frecuencia.', water: 15, growMod: 1, scarecrowMod: 1 },
-        'Otoño': { name: 'Otoño', icon: '🍂', desc: 'El entorno es más hostil. Los espantapájaros se deterioran rápido.', water: 8, growMod: 1, scarecrowMod: 0.7 },
-        'Invierno': { name: 'Invierno', icon: '❄️', desc: 'Frío extremo y heladas. El crecimiento de todas las plantas se ralentiza un 20%.', water: 4, growMod: 1.2, scarecrowMod: 1 }
-    },
 
     state: {
         seedsBalance: 1500,
-        autoWaterEndTime: 0, // Nuevo parámetro para el Aspersor VIP
-        currentSeason: 'Primavera',
+        autoWaterEndTime: 0, 
         plots: [
             { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
             { id: 1, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -316,9 +279,7 @@ window.farmApp = {
             'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
             'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
             'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
-            'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png' },
-            'skin_scarecrow_gold': { name: 'Espantapájaros Dorado', type: 'cosmetic', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
-            'skin_crow_neon': { name: 'Cuervo de Neón', type: 'cosmetic', qty: 0, image: 'https://i.ibb.co/DfG3hswj/Frame-750.png' }
+            'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png' }
         },
         images: {
             terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png',
@@ -337,33 +298,78 @@ window.farmApp = {
     catalog: {
         tools: [
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas.', price: 50 },
-            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo.', price: 150 },
-            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas.', price: 50 },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12-24 Hrs', usage: '20', desc: 'Protección preventiva contra plagas.', price: 200 }
+            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 150 },
+            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas de forma manual.', price: 50 },
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12 Horas', usage: '20', desc: 'Protección preventiva contra plagas.', price: 200 }
         ],
-        // Nuevos Tiempos y Recompensas Ajustados
         flowers: [
             { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 30 🌱 al cosecharse.', price: 100 },
             { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 180 🌱 al cosecharse.', price: 350 }
         ],
-        cosmetics: [
-            { id: 'skin_scarecrow_gold', name: 'Protector Dorado', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: 'Permanente', usage: 'Estético', desc: 'Skin exclusiva de oro macizo.', price: 5000 },
-            { id: 'skin_crow_neon', name: 'Cuervo de Neón', image: 'https://i.ibb.co/DfG3hswj/Frame-750.png', duration: 'Permanente', usage: 'Estético', desc: 'Estilo cyber. Exclusivo de granja.', price: 8000 }
-        ],
-        // Aspersores Automáticos (Monetización)
         iap: [
             { id: 'iap_sp_12h', name: 'Aspersor 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Auto-Riego', desc: 'Mantiene TODAS tus plantas al 100% de agua por 12 horas.', price_cop: 3000 },
             { id: 'iap_sp_24h', name: 'Aspersor 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Auto-Riego', desc: 'Riego automático ininterrumpido por un día completo.', price_cop: 5000 },
-            { id: 'iap_sp_7d', name: 'Aspersor 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Auto-Riego', desc: 'Suscripción Semanal. Despreocúpate totalmente del riego.', price_cop: 25000 },
-            { id: 'iap_15k', name: 'Pack: 15.000 🌱', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: 'Instantáneo', usage: 'Recarga', desc: 'Inyección rápida para comprar terrenos o entrar a Freerolls.', price_cop: 5000 }
+            { id: 'iap_sp_7d', name: 'Aspersor 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Auto-Riego', desc: 'Suscripción Semanal. Despreocúpate totalmente del riego.', price_cop: 25000 }
         ]
+    },
+
+    // ==========================================
+    // MÓDULO DEV (Herramientas de Desarrollador)
+    // ==========================================
+    dev: {
+        reset: () => {
+            window.farmApp.state.plots = [
+                { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 1, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 2, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+            ];
+            window.farmApp.state.inventory = {
+                'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
+                'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
+                'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
+                'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
+                'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
+                'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png' }
+            };
+            window.farmApp.state.seedsBalance = 1500;
+            window.farmApp.state.autoWaterEndTime = 0;
+            window.farmApp.saveState();
+            window.farmApp.updateUI();
+            console.log("✅ [DEV] Terreno e inventario reseteados al estado inicial de nuevo jugador.");
+        },
+        addSeeds: (amount) => {
+            window.farmApp.addBalance(amount);
+            window.farmApp.saveState();
+            console.log(`✅ [DEV] Se han inyectado ${amount} Semillas (🌱).`);
+        },
+        addTime: (hours) => {
+            const ticks = hours * 6; 
+            for(let i=0; i<ticks; i++) {
+                window.farmApp.state.lastTick -= 600000; 
+                window.farmApp.processTick();
+            }
+            console.log(`✅ [DEV] Se ha adelantado el tiempo en el simulador por ${hours} horas.`);
+        },
+        addCOP: (amount) => {
+            const userStr = localStorage.getItem('user');
+            if(userStr) {
+                const user = JSON.parse(userStr);
+                user.balance += amount;
+                localStorage.setItem('user', JSON.stringify(user));
+                const balEl = document.getElementById('global-balance');
+                if(balEl) balEl.innerText = "$" + user.balance.toLocaleString();
+                console.log(`✅ [DEV] $${amount} COP añadidos localmente. NOTA: Este es un cambio visual/frontend. Al refrescar, el servidor autoritativo restaurará tu saldo real a menos que se haya gastado in-game.`);
+            }
+        }
     },
 
     saveState() {
         const stateToSave = JSON.stringify({
             seedsBalance: this.state.seedsBalance,
             autoWaterEndTime: this.state.autoWaterEndTime,
-            currentSeason: this.state.currentSeason,
             plots: this.state.plots,
             inventory: this.state.inventory,
             lastTick: this.state.lastTick
@@ -427,7 +433,6 @@ window.farmApp = {
         const localBalance = document.getElementById('farm-seeds-display');
         if(localBalance) localBalance.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         
-        this.autoSetSeason();
         this.updateSprinklerUI();
         this.renderPlots();
         this.updateInventoryUI();
@@ -449,26 +454,6 @@ window.farmApp = {
         } else {
             banner.classList.add('hidden');
         }
-    },
-
-    autoSetSeason() {
-        const seasonKeys = Object.keys(this.seasons);
-        const dayOfYear = Math.floor(Date.now() / 86400000); 
-        const currentIdx = dayOfYear % 4; 
-        this.state.currentSeason = seasonKeys[currentIdx];
-        
-        const s = this.seasons[this.state.currentSeason];
-        const display = document.getElementById('current-season-display');
-        if(display) display.innerText = `${s.icon} ${s.name}`;
-    },
-
-    openSeasonModal() {
-        const s = this.seasons[this.state.currentSeason];
-        document.getElementById('season-modal-icon').innerText = s.icon;
-        document.getElementById('season-modal-title').innerText = s.name;
-        document.getElementById('season-modal-desc').innerText = s.desc;
-        document.getElementById('season-modal').classList.remove('hidden');
-        document.getElementById('season-modal').classList.add('flex');
     },
 
     openInstructionsModal() {
@@ -550,7 +535,6 @@ window.farmApp = {
                 el.onclick = () => this.selectPlot(plot.id);
 
             } else if (plot.status === 'planted') {
-                // Si el aspersor está activo, forzar visualmente el 100% de agua
                 const displayWater = isAutoWatering ? 100 : Math.floor(plot.water);
                 const isAlert = (!isAutoWatering && plot.water <= 0) || plot.hasCrow;
                 const borderStyle = isAlert 
@@ -761,7 +745,6 @@ window.farmApp = {
     useTool(type) {
         const plotId = this.state.selectedPlotId;
         const plot = this.state.plots[plotId];
-        const season = this.seasons[this.state.currentSeason];
         
         if(type === 'pot_small') {
             this.state.inventory.tool_pot_small.qty -= 1;
@@ -782,7 +765,7 @@ window.farmApp = {
         } else if (type === 'scarecrow') {
             this.state.inventory.tool_scarecrow.qty -= 1;
             plot.hasCrow = false;
-            plot.scarecrowEndTime = Date.now() + (12 * 3600000 * season.scarecrowMod);
+            plot.scarecrowEndTime = Date.now() + (12 * 3600000);
             this.showPlotToast(plotId, '🦉', '¡Protegido!');
         }
 
@@ -816,7 +799,6 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        // Nuevas Recompensas Acordes a 1H y 5H
         const reward = plot.plant.id === 'flower_small' ? 30 : 180;
         this.addBalance(reward);
         
@@ -857,7 +839,6 @@ window.farmApp = {
         }, 10000);
     },
 
-    // Mecánica Determinista de Alta Fricción (40% evaporación)
     processTick() {
         const now = Date.now();
         const deltaMS = now - this.state.lastTick;
@@ -872,9 +853,8 @@ window.farmApp = {
                 
                 if (isAutoWatering) {
                     plot.water = 100;
-                    plot.hasCrow = false; // Aspersor previene caídas < 20%
+                    plot.hasCrow = false; 
                 } else {
-                    // Evaporación Rápida (40% por hora)
                     if (plot.water > 0) {
                         plot.water = Math.max(0, plot.water - (40 * deltaHours)); 
                         changesMade = true;
@@ -883,7 +863,6 @@ window.farmApp = {
                     if (plot.scarecrowEndTime > now) {
                         plot.hasCrow = false;
                     } else {
-                        // Aparecen garantizadas si el agua baja del 20%
                         if (!plot.hasCrow && plot.water < 20) {
                             plot.hasCrow = true;
                             if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
@@ -893,7 +872,7 @@ window.farmApp = {
                 }
 
                 if (plot.water <= 0 || plot.hasCrow) {
-                    plot.harvestAt += deltaMS; // Pausa
+                    plot.harvestAt += deltaMS; 
                     changesMade = true;
                 }
 
@@ -934,7 +913,7 @@ window.farmApp = {
     },
 
     switchShopTab(tab) {
-        ['tools', 'flowers', 'cosmetics', 'iap'].forEach(t => {
+        ['tools', 'flowers', 'iap'].forEach(t => {
             const tabBtn = document.getElementById(`tab-${t}`);
             const contentDiv = document.getElementById(`shop-content-${t}`);
             if (t === tab) {
@@ -961,7 +940,7 @@ window.farmApp = {
             const card = document.createElement('div');
             card.className = 'bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col';
             
-            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : (tab === 'iap' ? 'Servicio VIP' : 'Decoración'));
+            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Servicio de Pago');
             
             let actionButton = '';
             let qtySelector = '';
@@ -1018,7 +997,6 @@ window.farmApp = {
             this.deductBalance(total);
             if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (20 * qty);
             else if (itemId === 'tool_water') this.state.inventory[itemId].qty += (100 * qty);
-            else if (tab === 'cosmetics') this.state.inventory[itemId].qty += qty; 
             else this.state.inventory[itemId].qty += qty;
             
             this.updateInventoryUI();
@@ -1030,7 +1008,6 @@ window.farmApp = {
         }
     },
 
-    // In-App Purchases Endpoint Connection (Aspersores & Semillas)
     async buyIAP(packageId) {
         const userStr = localStorage.getItem('user');
         if (!userStr) return alert("Debes iniciar sesión para realizar compras.");
@@ -1050,18 +1027,11 @@ window.farmApp = {
                 if(window.syncUserData) window.syncUserData();
 
                 if (packageId.startsWith('iap_sp_')) {
-                    // Procesar Aspersor Automático
                     const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
                     const now = Date.now();
                     this.state.autoWaterEndTime = Math.max(now, this.state.autoWaterEndTime || 0) + (hours * 3600000);
                     this.updateSprinklerUI();
                     alert(`¡Aspersor Automático activado por ${hours} horas! Tus plantas se regarán solas.`);
-                } else {
-                    // Procesar Semillas
-                    const acquiredSeeds = data.new_seeds - this.state.seedsBalance;
-                    this.state.seedsBalance = data.new_seeds;
-                    this.animateBalance(`+${acquiredSeeds.toLocaleString()} 🌱`, 'text-green-500');
-                    alert("¡Compra exitosa! Semillas añadidas a tu Invernadero.");
                 }
                 
                 this.closeShop();
@@ -1130,7 +1100,6 @@ window.farmApp = {
             
             plot.plantedAt = Date.now();
             
-            // Nuevos tiempos exactos: 1 Hora (pequeña) o 5 Horas (grande)
             const baseHours = seedId === 'flower_small' ? 1 : 5;
             plot.harvestAt = plot.plantedAt + (baseHours * 3600000);
 
@@ -1144,9 +1113,12 @@ window.farmApp = {
     },
 
     closeModals() {
-        ['plot-modal', 'plant-modal', 'season-modal', 'instructions-modal'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
-            document.getElementById(id).classList.remove('flex');
+        ['plot-modal', 'plant-modal', 'instructions-modal'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
         });
     },
 
