@@ -4,10 +4,16 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 shrink-0 gap-4">
         <div>
             <h2 class="text-3xl font-black text-cg_navy tracking-tight">Mi Invernadero</h2>
-            <p class="text-sm text-gray-500 font-medium mt-1">Gestiona tus parcelas y herramientas agrícolas de forma estratégica.</p>
+            <p class="text-sm text-gray-500 font-medium mt-1">Produce Semillas (🌱) para acceder a los torneos Freeroll de la Arena.</p>
         </div>
         
         <div class="flex flex-wrap items-center gap-3">
+            <!-- DISPLAY LOCAL DE SEMILLAS -->
+            <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
+                <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Semillas</span>
+                <span id="farm-seeds-display" class="text-lg font-black text-green-600 transition-all duration-300">0 🌱</span>
+            </div>
+
             <button onclick="window.farmApp.openInstructionsModal()" class="bg-orange-500 hover:bg-orange-600 border border-orange-600 px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group text-white">
                 <div class="flex flex-col text-left">
                     <span class="text-[10px] font-extrabold text-orange-200 uppercase tracking-widest">Guía Rápida</span>
@@ -42,7 +48,7 @@
             <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto shrink-0">
                 <div>
                     <h3 class="text-xl font-black text-cg_navy">Mercado de Insumos</h3>
-                    <p class="text-sm text-gray-500">Adquiere semillas, macetas, agua y protección para maximizar tu ROI.</p>
+                    <p class="text-sm text-gray-500">Adquiere semillas, macetas, o compra Aspersores Automáticos con COP.</p>
                 </div>
                 <button onclick="window.farmApp.openShop()" class="bg-cg_blue text-white px-8 py-3 rounded-xl font-bold shadow-sm hover:shadow-md hover:bg-cg_navy transition-colors flex items-center gap-3 w-full sm:w-auto justify-center">
                     <img src="https://i.ibb.co/qYHq54kh/Frame-741.png" class="w-6 h-6 object-contain filter brightness-0 invert" alt="Shop">
@@ -60,6 +66,24 @@
                 </div>
                 
                 <div class="p-5 flex-1 overflow-y-auto space-y-6 bg-white">
+                    
+                    <!-- BANNER DE ASPERSOR AUTOMATICO -->
+                    <div id="active-sprinkler-banner" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-center justify-between shadow-inner">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                <img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-6 h-6 object-contain">
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-cg_blue uppercase tracking-widest">Auto-Riego</p>
+                                <p class="text-xs text-blue-800 font-bold" id="sprinkler-time-left">Activo</p>
+                            </div>
+                        </div>
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                        </span>
+                    </div>
+
                     <!-- Estado de Parcela Seleccionada -->
                     <div>
                         <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Terreno Seleccionado</p>
@@ -148,8 +172,8 @@
                     <img src="https://i.ibb.co/rf66qT74/Frame-751.png" class="w-12 h-12 object-contain" alt="Terreno">
                 </div>
                 <div>
-                    <h4 class="text-base sm:text-lg font-black text-cg_navy">1. Compra de Terrenos</h4>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Haz clic en un terreno bloqueado para comprarlo usando tu saldo (COP). Cada nueva expansión tiene un costo mayor, pero te permite multiplicar tu producción en paralelo.</p>
+                    <h4 class="text-base sm:text-lg font-black text-cg_navy">1. Expansión (Token: Semillas 🌱)</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Haz clic en un terreno bloqueado para comprarlo usando tus Semillas (🌱). Esta moneda es exclusiva de la granja y te permite entrar a torneos Freeroll en la Arena.</p>
                 </div>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
@@ -158,7 +182,7 @@
                 </div>
                 <div>
                     <h4 class="text-base sm:text-lg font-black text-cg_navy">2. Preparación y Siembra</h4>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Selecciona un terreno vacío y colócale una <strong>Maceta</strong> de tu inventario. Luego, haz clic sobre él para elegir una <strong>Semilla</strong> de la tienda compatible con el tamaño de la maceta y empezar el cultivo.</p>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Selecciona un terreno vacío y colócale una <strong>Maceta</strong>. Luego, haz clic sobre él para elegir una <strong>Semilla</strong> de la tienda compatible y empezar el cultivo.</p>
                 </div>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
@@ -166,10 +190,10 @@
                     <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-12 h-12 object-contain drop-shadow-md" alt="Plaga">
                 </div>
                 <div>
-                    <h4 class="text-base sm:text-lg font-black text-cg_navy">3. Cuidados y Riesgos</h4>
+                    <h4 class="text-base sm:text-lg font-black text-cg_navy">3. Evaporación Agresiva</h4>
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
-                        💧 <strong>Agua:</strong> Las plantas consumen agua con el tiempo. Si el porcentaje llega al 0%, el tiempo de crecimiento se pausa. Usa la <em>Regadera</em>.<br>
-                        🦅 <strong>Plagas:</strong> Aparecen de forma garantizada si el agua baja del 20%, pausando el progreso. Usa un <em>Espantapájaros</em> preventivo para ahuyentarlas temporalmente.
+                        💧 <strong>Agua:</strong> El agua se evapora rápidamente (40% por hora).<br>
+                        🦅 <strong>Plagas:</strong> Aparecen garantizadas si el agua baja del 20%. Usa un Aspersor Automático desde la Tienda IAP para regar todo automáticamente y evitar estar pendiente.
                     </p>
                 </div>
             </div>
@@ -178,8 +202,8 @@
                     <img src="https://i.ibb.co/BKGHxVkf/Frame-744.png" class="w-12 h-12 object-contain drop-shadow-md" alt="Cosecha">
                 </div>
                 <div>
-                    <h4 class="text-base sm:text-lg font-black text-cg_navy">4. Cosecha y Ganancias</h4>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Cuando la barra verde se llene por completo, la flor estará lista. Presiona el botón <strong>Cosechar</strong> para cobrar tu recompensa en COP. Recuerda que las macetas tienen un número limitado de usos antes de romperse.</p>
+                    <h4 class="text-base sm:text-lg font-black text-cg_navy">4. Cosecha y Utilidad</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Al llenarse la barra verde (1H o 5H), presiona <strong>Cosechar</strong> para obtener tus Semillas (🌱). Úsalas para expandir tu granja o inscribirte a torneos gratuitos de la plataforma.</p>
                 </div>
             </div>
         </div>
@@ -204,6 +228,7 @@
     </div>
 </div>
 
+<!-- Shop Modal (Incluyendo In-App Purchases) -->
 <div id="shop-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeShop()"></div>
     <div class="bg-bone rounded-3xl shadow-2xl w-full max-w-5xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
@@ -212,7 +237,7 @@
             <div class="flex items-center gap-2 sm:gap-4">
                 <div class="bg-white border border-gray-200 px-3 sm:px-4 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
                     <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase hidden sm:inline">Saldo:</span>
-                    <span class="font-black text-cg_gold text-base sm:text-lg"><span id="shop-modal-balance">0</span> COP</span>
+                    <span class="font-black text-green-600 text-base sm:text-lg"><span id="shop-modal-balance">0</span> 🌱</span>
                 </div>
                 <button onclick="window.farmApp.closeShop()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold transition-colors">✕</button>
             </div>
@@ -221,11 +246,13 @@
             <button onclick="window.farmApp.switchShopTab('tools')" id="tab-tools" class="pb-3 px-4 font-bold text-cg_blue border-b-4 border-cg_blue whitespace-nowrap">Herramientas</button>
             <button onclick="window.farmApp.switchShopTab('flowers')" id="tab-flowers" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy transition-colors whitespace-nowrap">Semillas y Flores</button>
             <button onclick="window.farmApp.switchShopTab('cosmetics')" id="tab-cosmetics" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy transition-colors whitespace-nowrap">Decoración</button>
+            <button onclick="window.farmApp.switchShopTab('iap')" id="tab-iap" class="pb-3 px-4 font-black text-green-500 border-b-4 border-transparent hover:text-green-600 transition-colors whitespace-nowrap">Servicios VIP (COP)</button>
         </div>
         <div class="p-5 sm:p-8 overflow-y-auto flex-1 bg-white">
             <div id="shop-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
             <div id="shop-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden"></div>
             <div id="shop-content-cosmetics" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden"></div>
+            <div id="shop-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
         </div>
     </div>
 </div>
@@ -237,10 +264,10 @@
             🗺️
         </div>
         <h3 class="text-2xl font-black text-cg_navy mb-2" id="plot-modal-title">Desbloquear Terreno</h3>
-        <p class="text-sm text-gray-500 mb-2">Expande tu capacidad operativa para multiplicar tus ganancias pasivas diarias.</p>
+        <p class="text-sm text-gray-500 mb-2">Expande tu capacidad operativa invirtiendo tus Semillas acumuladas.</p>
         <div class="bg-white rounded-xl p-4 mb-6 border border-gray-100 mt-4 shadow-sm">
             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Costo de Inversión</p>
-            <p class="text-3xl font-black text-cg_gold" id="plot-modal-cost">0 COP</p>
+            <p class="text-3xl font-black text-green-600" id="plot-modal-cost">0 🌱</p>
         </div>
         <div class="flex gap-3">
             <button onclick="window.farmApp.closeModals()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">Cancelar</button>
@@ -264,16 +291,16 @@
 <script>
 window.farmApp = {
     PLOT_COSTS: [0, 1000, 3000, 7000, 15000, 30000],
-    
     seasons: {
-        'Primavera': { name: 'Primavera', icon: '🌸', desc: 'Las plantas crecen un 10% más rápido. Un clima noble ideal para iniciar tus cultivos de ciclo largo.', water: 8, growMod: 0.9, scarecrowMod: 1 },
-        'Verano': { name: 'Verano', icon: '☀️', desc: 'Evaporación acelerada. El consumo de agua aumenta significativamente; requerirás revisar tus plantas con mayor frecuencia.', water: 15, growMod: 1, scarecrowMod: 1 },
-        'Otoño': { name: 'Otoño', icon: '🍂', desc: 'El entorno es más hostil. Los espantapájaros se deterioran rápido y duran un 30% menos de tiempo en proteger tu cultivo.', water: 8, growMod: 1, scarecrowMod: 0.7 },
+        'Primavera': { name: 'Primavera', icon: '🌸', desc: 'Las plantas crecen un 10% más rápido. Un clima noble ideal para iniciar tus cultivos.', water: 8, growMod: 0.9, scarecrowMod: 1 },
+        'Verano': { name: 'Verano', icon: '☀️', desc: 'Evaporación acelerada. Requerirás revisar tus plantas con mayor frecuencia.', water: 15, growMod: 1, scarecrowMod: 1 },
+        'Otoño': { name: 'Otoño', icon: '🍂', desc: 'El entorno es más hostil. Los espantapájaros se deterioran rápido.', water: 8, growMod: 1, scarecrowMod: 0.7 },
         'Invierno': { name: 'Invierno', icon: '❄️', desc: 'Frío extremo y heladas. El crecimiento de todas las plantas se ralentiza un 20%.', water: 4, growMod: 1.2, scarecrowMod: 1 }
     },
 
     state: {
-        balance: 1500, // Ajustado para ser COP (ej. inician con $1500)
+        seedsBalance: 1500,
+        autoWaterEndTime: 0, // Nuevo parámetro para el Aspersor VIP
         currentSeason: 'Primavera',
         plots: [
             { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -310,23 +337,32 @@ window.farmApp = {
     catalog: {
         tools: [
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas.', price: 50 },
-            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 150 },
+            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo.', price: 150 },
             { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas.', price: 50 },
             { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12-24 Hrs', usage: '20', desc: 'Protección preventiva contra plagas.', price: 200 }
         ],
+        // Nuevos Tiempos y Recompensas Ajustados
         flowers: [
-            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '12 Horas', usage: '1', desc: 'Recompensa total de 150 COP al cosecharse.', price: 100 },
-            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: '24 Horas', usage: '1', desc: 'Recompensa total de 500 COP al cosecharse.', price: 350 }
+            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 30 🌱 al cosecharse.', price: 100 },
+            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 180 🌱 al cosecharse.', price: 350 }
         ],
         cosmetics: [
             { id: 'skin_scarecrow_gold', name: 'Protector Dorado', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: 'Permanente', usage: 'Estético', desc: 'Skin exclusiva de oro macizo.', price: 5000 },
-            { id: 'skin_crow_neon', name: 'Cuervo de Neón', image: 'https://i.ibb.co/DfG3hswj/Frame-750.png', duration: 'Permanente', usage: 'Estético', desc: 'Estilo cyber. Sin impacto en ROI.', price: 8000 }
+            { id: 'skin_crow_neon', name: 'Cuervo de Neón', image: 'https://i.ibb.co/DfG3hswj/Frame-750.png', duration: 'Permanente', usage: 'Estético', desc: 'Estilo cyber. Exclusivo de granja.', price: 8000 }
+        ],
+        // Aspersores Automáticos (Monetización)
+        iap: [
+            { id: 'iap_sp_12h', name: 'Aspersor 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Auto-Riego', desc: 'Mantiene TODAS tus plantas al 100% de agua por 12 horas.', price_cop: 3000 },
+            { id: 'iap_sp_24h', name: 'Aspersor 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Auto-Riego', desc: 'Riego automático ininterrumpido por un día completo.', price_cop: 5000 },
+            { id: 'iap_sp_7d', name: 'Aspersor 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Auto-Riego', desc: 'Suscripción Semanal. Despreocúpate totalmente del riego.', price_cop: 25000 },
+            { id: 'iap_15k', name: 'Pack: 15.000 🌱', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: 'Instantáneo', usage: 'Recarga', desc: 'Inyección rápida para comprar terrenos o entrar a Freerolls.', price_cop: 5000 }
         ]
     },
 
     saveState() {
         const stateToSave = JSON.stringify({
-            balance: this.state.balance,
+            seedsBalance: this.state.seedsBalance,
+            autoWaterEndTime: this.state.autoWaterEndTime,
             currentSeason: this.state.currentSeason,
             plots: this.state.plots,
             inventory: this.state.inventory,
@@ -340,36 +376,79 @@ window.farmApp = {
             fetch('/api/save_state', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: user.username,
-                    balance: this.state.balance,
-                    game_state: stateToSave
-                })
+                body: JSON.stringify({ username: user.username, game_state: stateToSave })
             }).catch(e => console.error("Error guardando progreso:", e));
         }
     },
 
     init() {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            fetch(`/api/sync/${user.username}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.user.game_state) {
+                        try {
+                            const s = JSON.parse(data.user.game_state);
+                            this.state.seedsBalance = s.seedsBalance ?? 1500;
+                            this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
+                            this.state.plots = s.plots ?? this.state.plots;
+                            this.state.inventory = s.inventory ?? this.state.inventory;
+                            this.state.lastTick = s.lastTick ?? Date.now();
+                        } catch(e) { console.error("Error parseando game_state", e); }
+                    } else {
+                        this.loadLocalAndStart();
+                    }
+                    this.updateUI();
+                })
+                .catch(e => { this.loadLocalAndStart(); this.updateUI(); });
+        } else {
+            this.loadLocalAndStart();
+            this.updateUI();
+        }
+    },
+
+    loadLocalAndStart() {
         const savedStateStr = localStorage.getItem('cg_farm_state');
         if (savedStateStr) {
             try {
-                const savedState = JSON.parse(savedStateStr);
-                this.state.balance = savedState.balance ?? 1500;
-                this.state.plots = savedState.plots ?? this.state.plots;
-                this.state.inventory = savedState.inventory ?? this.state.inventory;
-                this.state.lastTick = savedState.lastTick ?? Date.now();
-            } catch(e) { console.error("Error cargando estado", e); }
+                const s = JSON.parse(savedStateStr);
+                this.state.seedsBalance = s.seedsBalance ?? 1500;
+                this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
+                this.state.plots = s.plots ?? this.state.plots;
+                this.state.inventory = s.inventory ?? this.state.inventory;
+                this.state.lastTick = s.lastTick ?? Date.now();
+            } catch(e) { console.error("Error cargando estado local", e); }
         }
+    },
 
-        const domBalance = document.getElementById('global-balance');
-        if(domBalance) {
-            domBalance.innerText = "$" + this.state.balance.toLocaleString();
-        }
+    updateUI() {
+        const localBalance = document.getElementById('farm-seeds-display');
+        if(localBalance) localBalance.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         
         this.autoSetSeason();
+        this.updateSprinklerUI();
         this.renderPlots();
         this.updateInventoryUI();
         this.startEnvironmentSimulation();
+    },
+
+    updateSprinklerUI() {
+        const banner = document.getElementById('active-sprinkler-banner');
+        const timeLeftEl = document.getElementById('sprinkler-time-left');
+        if (!banner) return;
+        
+        const now = Date.now();
+        if (this.state.autoWaterEndTime > now) {
+            banner.classList.remove('hidden');
+            const diff = this.state.autoWaterEndTime - now;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            timeLeftEl.innerText = `${h}h ${m}m restantes`;
+        } else {
+            banner.classList.add('hidden');
+        }
     },
 
     autoSetSeason() {
@@ -403,6 +482,7 @@ window.farmApp = {
 
         grid.innerHTML = '';
         const now = Date.now();
+        const isAutoWatering = this.state.autoWaterEndTime > now;
         
         this.state.plots.forEach(plot => {
             const el = document.createElement('div');
@@ -425,7 +505,7 @@ window.farmApp = {
                     </div>
                     <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4">
                         <span class="font-black text-cg_navy uppercase tracking-widest text-[12px] mb-1 bg-white/80 px-2 py-0.5 rounded shadow-sm backdrop-blur">Terreno ${plot.id + 1}</span>
-                        <span class="font-bold text-gray-600 text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">${cost} COP</span>
+                        <span class="font-bold text-gray-600 text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">${cost} 🌱</span>
                     </div>
                 `;
                 el.onclick = () => this.buyPlotPrompt(plot.id);
@@ -470,7 +550,9 @@ window.farmApp = {
                 el.onclick = () => this.selectPlot(plot.id);
 
             } else if (plot.status === 'planted') {
-                const isAlert = plot.water <= 0 || plot.hasCrow;
+                // Si el aspersor está activo, forzar visualmente el 100% de agua
+                const displayWater = isAutoWatering ? 100 : Math.floor(plot.water);
+                const isAlert = (!isAutoWatering && plot.water <= 0) || plot.hasCrow;
                 const borderStyle = isAlert 
                     ? 'border-red-400 bg-red-50/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse' 
                     : (plot.isReady ? 'border-green-400 bg-green-50 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : (isSelected ? 'border-cg_blue shadow-md bg-white' : 'border-gray-200 bg-white hover:border-cg_blue shadow-sm hover:shadow-md'));
@@ -480,7 +562,7 @@ window.farmApp = {
                 const potImg = plot.pot === 'small' ? this.state.inventory.tool_pot_small.image : this.state.inventory.tool_pot_big.image;
                 const potName = plot.pot === 'small' ? 'MACETA PEQ' : 'MACETA GDE';
                 
-                const currentTerrain = plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
+                const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                 const currentPlantImg = plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big;
 
                 let timeLeftText = '';
@@ -502,8 +584,7 @@ window.farmApp = {
                     </div>
 
                     ${plot.hasCrow ? `<img src="${this.state.images.crow}" class="absolute top-2 right-2 w-14 h-14 z-40 drop-shadow-xl animate-bounce">` : ''}
-
-                    ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="absolute top-2 right-2 w-12 h-12 z-40 drop-shadow-md">` : ''}
+                    ${isAutoWatering && !plot.hasCrow ? `<img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="absolute top-2 right-2 w-10 h-10 z-40 drop-shadow-md animate-pulse">` : (plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="absolute top-2 right-2 w-12 h-12 z-40 drop-shadow-md">` : '')}
 
                     <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
                         <div class="relative w-full h-40 flex items-center justify-center">
@@ -518,8 +599,8 @@ window.farmApp = {
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-black ${plot.water <= 0 ? 'text-red-600' : 'text-cg_blue'}">💧 ${Math.floor(plot.water)}%</span>
-                                ${plot.scarecrowEndTime > now ? `<span class="text-[9px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-1.5 py-0.5 rounded shadow-sm uppercase">🦉 ${( (plot.scarecrowEndTime - now) / 3600000 ).toFixed(1)}h</span>` : ''}
+                                <span class="text-sm font-black ${displayWater <= 0 ? 'text-red-600' : 'text-cg_blue'}">💧 ${displayWater}%</span>
+                                ${isAutoWatering ? `<span class="text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded shadow-sm uppercase">AUTO</span>` : (plot.scarecrowEndTime > now ? `<span class="text-[9px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-1.5 py-0.5 rounded shadow-sm uppercase">🦉 ${( (plot.scarecrowEndTime - now) / 3600000 ).toFixed(1)}h</span>` : '')}
                             </div>
                             ${plot.isReady ? `
                                 <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[10px] bg-[#2E7D32] hover:bg-green-700 text-white font-bold transition-colors uppercase tracking-widest px-3 py-1 rounded shadow-sm animate-pulse">
@@ -558,7 +639,7 @@ window.farmApp = {
     buyPlotPrompt(id) {
         this.state.pendingPlotId = id;
         document.getElementById('plot-modal-title').innerText = `Desbloquear Terreno ${id + 1}`;
-        document.getElementById('plot-modal-cost').innerText = `${this.PLOT_COSTS[id]} COP`;
+        document.getElementById('plot-modal-cost').innerText = `${this.PLOT_COSTS[id]} 🌱`;
         document.getElementById('plot-modal').classList.remove('hidden');
         document.getElementById('plot-modal').classList.add('flex');
     },
@@ -566,7 +647,7 @@ window.farmApp = {
     buyPlotConfirm() {
         const id = this.state.pendingPlotId;
         const price = this.PLOT_COSTS[id];
-        if (this.state.balance >= price) {
+        if (this.state.seedsBalance >= price) {
             this.deductBalance(price);
             this.state.plots[id].status = 'empty';
             this.closeModals();
@@ -597,6 +678,7 @@ window.farmApp = {
         if(!infoPanel) return;
 
         const inv = this.state.inventory;
+        const isAutoWatering = this.state.autoWaterEndTime > Date.now();
 
         ['pot_small', 'pot_big', 'water', 'scarecrow'].forEach(toolType => {
             const el = document.getElementById(`inv-item-${toolType}`);
@@ -634,7 +716,8 @@ window.farmApp = {
         } else if (plot.status === 'planted') {
             infoPanel.className = 'bg-white border border-gray-100 rounded-xl p-4 text-left shadow-sm';
             
-            const currentTerrain = plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
+            const displayWater = isAutoWatering ? 100 : plot.water;
+            const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
             const currentPlantImg = plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big;
 
             infoPanel.innerHTML = `
@@ -646,20 +729,20 @@ window.farmApp = {
                     <div>
                         <p class="text-sm font-black text-carbon leading-tight mb-1">${plot.plant.name}</p>
                         <div class="flex flex-col gap-1 items-start">
-                            ${plot.water <= 0 
+                            ${displayWater <= 0 
                                 ? `<span class="text-[9px] font-bold text-red-600 uppercase bg-red-50 border border-red-200 px-2 py-0.5 rounded flex items-center gap-1"><span class="text-[10px]">🚫</span> Poca Agua</span>`
                                 : `<span class="text-[9px] font-bold text-cg_blue uppercase bg-white border border-gray-200 px-2 py-0.5 rounded">Hidratada</span>`}
                             
-                            ${plot.scarecrowEndTime > Date.now() 
-                                ? `<span class="text-[9px] font-bold text-gray-600 uppercase bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex items-center gap-1">Protegida</span>`
-                                : ``}
+                            ${isAutoWatering 
+                                ? `<span class="text-[9px] font-bold text-blue-600 uppercase bg-blue-50 border border-blue-200 px-2 py-0.5 rounded flex items-center gap-1">AUTO-RIEGO ACTIVO</span>`
+                                : (plot.scarecrowEndTime > Date.now() ? `<span class="text-[9px] font-bold text-gray-600 uppercase bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex items-center gap-1">Protegida</span>` : ``)}
                         </div>
                     </div>
                 </div>
             `;
             
-            if(plot.water < 100 && inv.tool_water.qty > 0 && !plot.isReady) this.enableToolBtn('water');
-            if(plot.scarecrowEndTime <= Date.now() && inv.tool_scarecrow.qty > 0 && !plot.isReady) this.enableToolBtn('scarecrow');
+            if(!isAutoWatering && plot.water < 100 && inv.tool_water.qty > 0 && !plot.isReady) this.enableToolBtn('water');
+            if(!isAutoWatering && plot.scarecrowEndTime <= Date.now() && inv.tool_scarecrow.qty > 0 && !plot.isReady) this.enableToolBtn('scarecrow');
         }
     },
 
@@ -733,11 +816,12 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        const reward = plot.plant.id === 'flower_small' ? 150 : 500;
+        // Nuevas Recompensas Acordes a 1H y 5H
+        const reward = plot.plant.id === 'flower_small' ? 30 : 180;
         this.addBalance(reward);
         
         plot.potUses += 1;
-        this.showPlotToast(plotId, '✨', `+$${reward} COP`);
+        this.showPlotToast(plotId, '✨', `+${reward} 🌱`);
         
         if (plot.potUses >= 5) {
             plot.status = 'empty';
@@ -773,36 +857,43 @@ window.farmApp = {
         }, 10000);
     },
 
+    // Mecánica Determinista de Alta Fricción (40% evaporación)
     processTick() {
         const now = Date.now();
         const deltaMS = now - this.state.lastTick;
         this.state.lastTick = now;
         const deltaHours = deltaMS / 3600000;
         
-        const season = this.seasons[this.state.currentSeason];
+        const isAutoWatering = this.state.autoWaterEndTime > now;
         let changesMade = false;
         
         this.state.plots.forEach(plot => {
             if (plot.status === 'planted' && !plot.isReady) {
                 
-                if (plot.water > 0) {
-                    plot.water = Math.max(0, plot.water - (season.water * deltaHours)); 
-                    changesMade = true;
-                }
-                
-                if (plot.scarecrowEndTime > now) {
-                    plot.hasCrow = false;
+                if (isAutoWatering) {
+                    plot.water = 100;
+                    plot.hasCrow = false; // Aspersor previene caídas < 20%
                 } else {
-                    // MECÁNICA 100% DETERMINISTA BASADA EN NIVEL DE AGUA
-                    if (!plot.hasCrow && plot.water < 20) {
-                        plot.hasCrow = true;
-                        if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
+                    // Evaporación Rápida (40% por hora)
+                    if (plot.water > 0) {
+                        plot.water = Math.max(0, plot.water - (40 * deltaHours)); 
                         changesMade = true;
+                    }
+                    
+                    if (plot.scarecrowEndTime > now) {
+                        plot.hasCrow = false;
+                    } else {
+                        // Aparecen garantizadas si el agua baja del 20%
+                        if (!plot.hasCrow && plot.water < 20) {
+                            plot.hasCrow = true;
+                            if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
+                            changesMade = true;
+                        }
                     }
                 }
 
                 if (plot.water <= 0 || plot.hasCrow) {
-                    plot.harvestAt += deltaMS; 
+                    plot.harvestAt += deltaMS; // Pausa
                     changesMade = true;
                 }
 
@@ -814,6 +905,8 @@ window.farmApp = {
             }
         });
         
+        this.updateSprinklerUI();
+
         if(changesMade) {
             if(document.getElementById('farm-grid')) {
                 this.renderPlots();
@@ -828,7 +921,7 @@ window.farmApp = {
     },
 
     openShop() {
-        document.getElementById('shop-modal-balance').innerText = this.state.balance.toLocaleString();
+        document.getElementById('shop-modal-balance').innerText = this.state.seedsBalance.toLocaleString();
         this.switchShopTab('tools');
         document.getElementById('shop-modal').classList.remove('hidden');
         document.getElementById('shop-modal').classList.add('flex');
@@ -841,14 +934,14 @@ window.farmApp = {
     },
 
     switchShopTab(tab) {
-        ['tools', 'flowers', 'cosmetics'].forEach(t => {
+        ['tools', 'flowers', 'cosmetics', 'iap'].forEach(t => {
             const tabBtn = document.getElementById(`tab-${t}`);
             const contentDiv = document.getElementById(`shop-content-${t}`);
             if (t === tab) {
-                tabBtn.className = 'pb-3 px-4 font-bold text-cg_blue border-b-4 border-cg_blue whitespace-nowrap';
+                tabBtn.className = `pb-3 px-4 font-black ${t === 'iap' ? 'text-green-500 border-green-500' : 'text-cg_blue border-cg_blue'} border-b-4 whitespace-nowrap`;
                 contentDiv.classList.remove('hidden');
             } else {
-                tabBtn.className = 'pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy transition-colors whitespace-nowrap';
+                tabBtn.className = `pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:${t === 'iap' ? 'text-green-600' : 'text-cg_navy'} transition-colors whitespace-nowrap`;
                 contentDiv.classList.add('hidden');
             }
         });
@@ -868,9 +961,23 @@ window.farmApp = {
             const card = document.createElement('div');
             card.className = 'bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col';
             
-            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Decoración');
+            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : (tab === 'iap' ? 'Servicio VIP' : 'Decoración'));
             
-            let actionButton = `<button onclick="window.farmApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">${(item.price * qty).toLocaleString()} COP</button>`;
+            let actionButton = '';
+            let qtySelector = '';
+
+            if (tab === 'iap') {
+                actionButton = `<button onclick="window.farmApp.buyIAP('${item.id}')" class="bg-green-500 hover:bg-green-600 text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">$${item.price_cop.toLocaleString()} COP</button>`;
+            } else {
+                qtySelector = `
+                    <div class="flex items-center bg-gray-50 rounded-xl flex-1 border border-gray-200 shadow-inner h-10 overflow-hidden">
+                        <button onclick="window.farmApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-8 sm:w-10 h-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 transition-colors">-</button>
+                        <div class="flex-1 text-center text-xs sm:text-sm font-black text-carbon">${qty}</div>
+                        <button onclick="window.farmApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-8 sm:w-10 h-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 transition-colors">+</button>
+                    </div>
+                `;
+                actionButton = `<button onclick="window.farmApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">${(item.price * qty).toLocaleString()} 🌱</button>`;
+            }
 
             card.innerHTML = `
                 <div class="bg-white h-32 flex items-center justify-center p-4 relative shrink-0 border-b border-gray-100">
@@ -885,11 +992,7 @@ window.farmApp = {
                     </div>
                     <p class="text-xs text-gray-500 mb-5 leading-relaxed flex-1">${item.desc}</p>
                     <div class="flex items-center gap-2 mt-auto">
-                        <div class="flex items-center bg-gray-50 rounded-xl flex-1 border border-gray-200 shadow-inner h-10 overflow-hidden">
-                            <button onclick="window.farmApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-8 sm:w-10 h-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 transition-colors">-</button>
-                            <div class="flex-1 text-center text-xs sm:text-sm font-black text-carbon">${qty}</div>
-                            <button onclick="window.farmApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-8 sm:w-10 h-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 transition-colors">+</button>
-                        </div>
+                        ${qtySelector}
                         ${actionButton}
                     </div>
                 </div>
@@ -911,7 +1014,7 @@ window.farmApp = {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
 
-        if (this.state.balance >= total) {
+        if (this.state.seedsBalance >= total) {
             this.deductBalance(total);
             if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (20 * qty);
             else if (itemId === 'tool_water') this.state.inventory[itemId].qty += (100 * qty);
@@ -919,9 +1022,55 @@ window.farmApp = {
             else this.state.inventory[itemId].qty += qty;
             
             this.updateInventoryUI();
-            document.getElementById('shop-modal-balance').innerText = this.state.balance.toLocaleString();
+            document.getElementById('shop-modal-balance').innerText = this.state.seedsBalance.toLocaleString();
             
             this.saveState();
+        } else {
+            alert("Semillas insuficientes para realizar esta compra.");
+        }
+    },
+
+    // In-App Purchases Endpoint Connection (Aspersores & Semillas)
+    async buyIAP(packageId) {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return alert("Debes iniciar sesión para realizar compras.");
+        
+        const user = JSON.parse(userStr);
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                user.balance = data.new_balance_cop;
+                localStorage.setItem('user', JSON.stringify(user));
+                if(window.syncUserData) window.syncUserData();
+
+                if (packageId.startsWith('iap_sp_')) {
+                    // Procesar Aspersor Automático
+                    const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
+                    const now = Date.now();
+                    this.state.autoWaterEndTime = Math.max(now, this.state.autoWaterEndTime || 0) + (hours * 3600000);
+                    this.updateSprinklerUI();
+                    alert(`¡Aspersor Automático activado por ${hours} horas! Tus plantas se regarán solas.`);
+                } else {
+                    // Procesar Semillas
+                    const acquiredSeeds = data.new_seeds - this.state.seedsBalance;
+                    this.state.seedsBalance = data.new_seeds;
+                    this.animateBalance(`+${acquiredSeeds.toLocaleString()} 🌱`, 'text-green-500');
+                    alert("¡Compra exitosa! Semillas añadidas a tu Invernadero.");
+                }
+                
+                this.closeShop();
+                this.saveState();
+            } else {
+                alert("Error al procesar la compra: " + data.error);
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar la compra.");
         }
     },
 
@@ -973,7 +1122,6 @@ window.farmApp = {
         if (this.state.inventory[seedId].qty > 0) {
             this.state.inventory[seedId].qty -= 1;
             const plot = this.state.plots[this.state.selectedPlotId];
-            const season = this.seasons[this.state.currentSeason];
             
             plot.status = 'planted';
             plot.water = 100; 
@@ -981,8 +1129,10 @@ window.farmApp = {
             plot.isReady = false;
             
             plot.plantedAt = Date.now();
-            const baseHours = seedId === 'flower_small' ? 12 : 24;
-            plot.harvestAt = plot.plantedAt + (baseHours * 3600000 * season.growMod);
+            
+            // Nuevos tiempos exactos: 1 Hora (pequeña) o 5 Horas (grande)
+            const baseHours = seedId === 'flower_small' ? 1 : 5;
+            plot.harvestAt = plot.plantedAt + (baseHours * 3600000);
 
             this.updateInventoryUI();
             this.closeModals();
@@ -1001,19 +1151,19 @@ window.farmApp = {
     },
 
     deductBalance(amount) {
-        this.state.balance -= amount;
-        this.animateBalance(`-$${amount.toLocaleString()}`, 'text-red-500');
+        this.state.seedsBalance -= amount;
+        this.animateBalance(`-${amount.toLocaleString()} 🌱`, 'text-red-500');
     },
 
     addBalance(amount) {
-        this.state.balance += amount;
-        this.animateBalance(`+$${amount.toLocaleString()}`, 'text-green-500');
+        this.state.seedsBalance += amount;
+        this.animateBalance(`+${amount.toLocaleString()} 🌱`, 'text-green-500');
     },
 
     animateBalance(text, colorClass) {
-        const balEl = document.getElementById('global-balance');
+        const balEl = document.getElementById('farm-seeds-display');
         if (balEl) {
-            balEl.innerText = "$" + this.state.balance.toLocaleString();
+            balEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             const rect = balEl.getBoundingClientRect();
             const floater = document.createElement('div');
             floater.innerText = text;

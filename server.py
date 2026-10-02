@@ -1,18 +1,24 @@
 import os
+import time
+import json
 import hashlib
 from datetime import datetime, timezone
-import requests
-from flask import Flask, request, jsonify, send_from_directory
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
 DB_URI = os.getenv("DATABASE_URL")
-WOMPI_PUB_KEY = os.getenv("WOMPI_PUBLIC_KEY", "pub_test_...")
-WOMPI_PRV_KEY = os.getenv("WOMPI_PRIVATE_KEY", "prv_test_...")
-WOMPI_INTEGRITY_SECRET = os.getenv("WOMPI_INTEGRITY_SECRET", "secret_...")
+
+# Constantes del Servidor para cálculo determinista
+SEASONS = {
+    'Primavera': {'water': 8, 'growMod': 0.9, 'scarecrowMod': 1},
+    'Verano': {'water': 15, 'growMod': 1, 'scarecrowMod': 1},
+    'Otoño': {'water': 8, 'growMod': 1, 'scarecrowMod': 0.7},
+    'Invierno': {'water': 4, 'growMod': 1.2, 'scarecrowMod': 1}
+}
 
 def get_db_connection():
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
@@ -68,67 +74,81 @@ def init_db():
 
 init_db()
 
-@app.route('/')
-def serve_index():
-    return send_from_directory('.', 'index.html')
+# ==========================================================
+# MOTOR AUTORITATIVO DEL SERVIDOR (SERVER-SIDE VALIDATION)
+# ==========================================================
+def process_server_tick(game_state_str):
+    if not game_state_str: return game_state_str
+    try:
+        state = json.loads(game_state_str)
+        now = int(time.time() * 1000)
+        last_tick = state.get('lastTick', now)
+        delta_ms = now - last_tick
+        
+        if delta_ms > 0:
+            delta_hours = delta_ms / 3600000.0
+            season_name = state.get('currentSeason', 'Primavera')
+            season = SEASONS.get(season_name, SEASONS['Primavera'])
 
+            for plot in state.get('plots', []):
+                if plot.get('status') == 'planted' and not plot.get('isReady'):
+                    # Deducción determinista de agua
+                    if plot.get('water', 0) > 0:
+                        plot['water'] = max(0, plot['water'] - (season['water'] * delta_hours))
+                    
+                    # Vulnerabilidad determinista a plagas
+                    if plot.get('scarecrowEndTime', 0) > now:
+                        plot['hasCrow'] = False
+                    elif not plot.get('hasCrow') and plot.get('water', 0) < 20:
+                        plot['hasCrow'] = True
+
+                    # Pausa de crecimiento si falta agua o hay plagas
+                    if plot.get('water', 0) <= 0 or plot.get('hasCrow'):
+                        plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
+
+                    # Verificar si la cosecha finalizó
+                    if now >= plot.get('harvestAt', now):
+                        plot['isReady'] = True
+
+            state['lastTick'] = now
+            return json.dumps(state)
+    except Exception as e:
+        print("Server tick error:", e)
+    return game_state_str
+
+@app.route('/')
+def serve_index(): return send_from_directory('.', 'index.html')
 @app.route('/views/<path:path>')
-def serve_views(path):
-    return send_from_directory('views', path)
+def serve_views(path): return send_from_directory('views', path)
 
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
     password = data.get('password')
-
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    if cur.fetchone():
-        return jsonify({"error": "El usuario ya existe"}), 400
-
+    if cur.fetchone(): return jsonify({"error": "El usuario ya existe"}), 400
     hashed_pw = generate_password_hash(password)
     cur.execute("INSERT INTO users (username, password_hash, real_balance_cop) VALUES (%s, %s, 0) RETURNING id, username, real_balance_cop as balance", (username, hashed_pw))
     new_user = cur.fetchone()
-    conn.commit()
-    cur.close()
-    conn.close()
+    conn.commit(); cur.close(); conn.close()
     return jsonify({"message": "Registro exitoso", "user": new_user})
 
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+    cur.execute("SELECT * FROM users WHERE username = %s", (data.get('username'),))
     user = cur.fetchone()
-    cur.close()
-    conn.close()
-
-    if user and check_password_hash(user['password_hash'], password):
+    cur.close(); conn.close()
+    if user and check_password_hash(user['password_hash'], data.get('password')):
         del user['password_hash']
         user['balance'] = float(user['real_balance_cop'] or 0)
         return jsonify({"message": "Login exitoso", "user": user})
     return jsonify({"error": "Usuario o contraseña incorrectos"}), 401
-
-@app.route('/api/save_state', methods=['POST'])
-def save_state():
-    data = request.json
-    username = data.get('username')
-    game_state = data.get('game_state')
-    balance = data.get('balance', 0)
-
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("UPDATE users SET game_state = %s, real_balance_cop = %s WHERE username = %s", (game_state, balance, username))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"message": "Progreso guardado"})
 
 @app.route('/api/sync/<username>', methods=['GET'])
 def sync_user(username):
@@ -136,53 +156,178 @@ def sync_user(username):
     cur = conn.cursor()
     cur.execute("SELECT real_balance_cop as balance, game_state FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
-    cur.close()
-    conn.close()
-
     if user_data:
+        # 1. Aplicar la simulación autoritativa en el servidor al conectarse
+        validated_state = process_server_tick(user_data['game_state'])
+        if validated_state != user_data['game_state']:
+            cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state, username))
+            conn.commit()
+            user_data['game_state'] = validated_state
+
         user_data['balance'] = float(user_data['balance'] or 0)
+        cur.close(); conn.close()
         return jsonify({"status": "success", "user": user_data}), 200
+    
+    cur.close(); conn.close()
     return jsonify({"error": "Usuario no encontrado"}), 404
 
-# --- NUEVOS ENDPOINTS DE MONETIZACIÓN (WOMPI & TORNEOS) ---
+@app.route('/api/save_state', methods=['POST'])
+def save_state():
+    data = request.json
+    username = data.get('username')
+    incoming_state_str = data.get('game_state')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT game_state FROM users WHERE username = %s FOR UPDATE", (username,))
+    user = cur.fetchone()
+    
+    if user:
+        # ANTI-CHEAT: Blindaje contra inyección de Semillas (🌱)
+        try:
+            incoming_state = json.loads(incoming_state_str)
+            db_state = json.loads(user['game_state'] or '{}')
+            inc_seeds = incoming_state.get('seedsBalance', 0)
+            db_seeds = db_state.get('seedsBalance', 0)
+            # Evita saltos irreales de saldo originados desde la consola del navegador
+            if inc_seeds > db_seeds + 1500:
+                incoming_state['seedsBalance'] = db_seeds 
+                incoming_state_str = json.dumps(incoming_state)
+        except Exception: pass
+
+        cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (incoming_state_str, username))
+        conn.commit()
+    
+    cur.close(); conn.close()
+    return jsonify({"message": "Progreso guardado y validado"})
+
+# ==========================================================
+# MONETIZACIÓN DIRECTA (IN-APP PURCHASES DE SEMILLAS)
+# ==========================================================
+# ==========================================================
+# MONETIZACIÓN DIRECTA (IN-APP PURCHASES DE SEMILLAS Y ASPERSORES)
+# ==========================================================
+@app.route('/api/store/buy_seeds', methods=['POST'])
+def buy_seeds():
+    data = request.json
+    username = data.get('username')
+    package = data.get('package_id')
+    
+    # Nuevos Precios: Semillas y Aspersores VIP
+    costs = {
+        "iap_5k": {"seeds": 5000, "cop": 2000},
+        "iap_15k": {"seeds": 15000, "cop": 5000},
+        "iap_35k": {"seeds": 35000, "cop": 10000},
+        "iap_sp_12h": {"seeds": 0, "cop": 3000},
+        "iap_sp_24h": {"seeds": 0, "cop": 5000},
+        "iap_sp_7d": {"seeds": 0, "cop": 25000}
+    }
+    
+    if package not in costs: 
+        return jsonify({"error": "Paquete inválido"}), 400
+        
+    cost_cop = costs[package]['cop']
+    seeds_amount = costs[package]['seeds']
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id, real_balance_cop, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
+        user = cur.fetchone()
+        
+        if not user or float(user['real_balance_cop']) < cost_cop:
+            return jsonify({"error": "Saldo COP insuficiente"}), 400
+            
+        # Inyectar las semillas directamente en el state validado (si aplica)
+        state = json.loads(user['game_state'] or '{}')
+        if seeds_amount > 0:
+            state['seedsBalance'] = state.get('seedsBalance', 0) + seeds_amount
+        
+        cur.execute("UPDATE users SET real_balance_cop = real_balance_cop - %s, game_state = %s WHERE id = %s", (cost_cop, json.dumps(state), user['id']))
+        cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'iap_purchase', %s, %s, 'completed')", (user['id'], cost_cop, f"IAP-{user['id']}-{int(time.time())}"))
+        conn.commit()
+        
+        return jsonify({
+            "message": "Compra exitosa", 
+            "new_balance_cop": float(user['real_balance_cop']) - cost_cop, 
+            "new_seeds": state.get('seedsBalance', 0)
+        })
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+# ==========================================================
+# ENDPOINT TRANSACCIONAL DE TORNEOS (ARENA P2P)
+# ==========================================================
+@app.route('/api/tournaments/join', methods=['POST'])
+def join_tournament():
+    data = request.json
+    username = data.get('username')
+    fee = float(data.get('fee', 0))
+    t_id = int(data.get('tournament_id', 1))
+
+    if fee not in [0, 5000, 10000, 30000, 50000]:
+        return jsonify({"error": "Tarifa de inscripción inválida"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id, real_balance_cop, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
+        user = cur.fetchone()
+        if not user: return jsonify({"error": "Usuario no encontrado"}), 404
+
+        cur.execute("SELECT id FROM tournaments WHERE id = %s", (t_id,))
+        if not cur.fetchone():
+            cur.execute("INSERT INTO tournaments (id, title, entry_fee_cop) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING", (t_id, f"Arena {fee}", fee))
+        
+        # Flujo 1: Freeroll (Cobra Semillas 🌱)
+        if fee == 0:
+            state = json.loads(user['game_state'] or '{}')
+            freeroll_cost = 500
+            if state.get('seedsBalance', 0) < freeroll_cost:
+                return jsonify({"error": f"Requiere {freeroll_cost} 🌱 para el Freeroll"}), 400
+            state['seedsBalance'] -= freeroll_cost
+            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
+        # Flujo 2: Torneos de Pago (Cobra COP, Casa retiene 15%)
+        else:
+            if float(user['real_balance_cop']) < fee:
+                return jsonify({"error": "Saldo COP insuficiente en tu Billetera"}), 400
+            
+            prize_addition = fee * 0.85 # La casa se queda con el 15%
+            cur.execute("UPDATE users SET real_balance_cop = real_balance_cop - %s WHERE id = %s", (fee, user['id']))
+            cur.execute("UPDATE tournaments SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, t_id))
+            
+        cur.execute("INSERT INTO tournament_entries (tournament_id, user_id) VALUES (%s, %s)", (t_id, user['id']))
+        conn.commit()
+        return jsonify({"message": "Inscripción exitosa a la Arena"})
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        return jsonify({"error": "Ya te encuentras registrado en esta Arena"}), 400
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close(); conn.close()
 
 @app.route('/api/wallet/payout', methods=['POST'])
 def dispatch_nequi_payout():
     payload = request.get_json() or {}
-    username = payload.get('username')
     amount_cop = float(payload.get('amount_cop', 0))
-    phone_nequi = payload.get('phone_nequi')
-
-    if amount_cop < 10000:
-        return jsonify({"error": "El retiro mínimo a Nequi es de $10.000 COP"}), 400
-
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, real_balance_cop FROM users WHERE username = %s FOR UPDATE", (username,))
+    cur.execute("SELECT id, real_balance_cop FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
     user = cur.fetchone()
-
-    if not user or float(user['real_balance_cop']) < amount_cop:
+    if not user or float(user['real_balance_cop']) < amount_cop or amount_cop < 10000:
         cur.close(); conn.close()
-        return jsonify({"error": "Fondos insuficientes"}), 400
-
-    # Actualizar cuenta Nequi
-    cur.execute("UPDATE users SET phone_nequi = %s, real_balance_cop = real_balance_cop - %s WHERE id = %s", (phone_nequi, amount_cop, user['id']))
-
-    payout_ref = f"PO-{user['id']}-{int(datetime.now(timezone.utc).timestamp())}"
-    cur.execute("""
-        INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status)
-        VALUES (%s, 'payout', %s, %s, 'pending')
-    """, (user['id'], amount_cop, payout_ref))
-
-    conn.commit()
-    cur.close(); conn.close()
-
-    # Integración con API de Pagos a Terceros Wompi (Descomentar en Producción)
-    # headers = {"Authorization": f"Bearer {WOMPI_PRV_KEY}"}
-    # wompi_data = {"target_type": "NEQUI", "target_number": phone_nequi, "amount_in_cents": int(amount_cop * 100)}
-    # requests.post("https://production.wompi.co/v1/payouts", json=wompi_data, headers=headers)
-
-    return jsonify({"message": "Retiro tramitado correctamente hacia Nequi", "reference": payout_ref, "new_balance": float(user['real_balance_cop']) - amount_cop}), 200
+        return jsonify({"error": "Fondos insuficientes o menores a $10.000"}), 400
+    cur.execute("UPDATE users SET phone_nequi = %s, real_balance_cop = real_balance_cop - %s WHERE id = %s", (payload.get('phone_nequi'), amount_cop, user['id']))
+    payout_ref = f"PO-{user['id']}-{int(time.time())}"
+    cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_cop, payout_ref))
+    conn.commit(); cur.close(); conn.close()
+    return jsonify({"message": "Retiro tramitado hacia Nequi", "reference": payout_ref, "new_balance": float(user['real_balance_cop']) - amount_cop}), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
