@@ -13,7 +13,7 @@ DB_URI = os.getenv("DATABASE_URL")
 BITLABS_SECRET = os.getenv("BITLABS_SECRET_KEY", "glrhMlnWAzlo5eOYb2hUcNnEniiG4fnG")
 TAPRESEARCH_SECRET = os.getenv("TAPRESEARCH_SECRET_KEY", "tu_llave_secreta_tapresearch_aqui")
 CPX_SECRET = os.getenv("CPX_SECRET_KEY", "9217413a1d093d001d21dd0f5f99dae5")
-TIMEWALL_SECRET = os.getenv("TIMEWALL_SECRET_KEY", "58b5f984a71e47fc9ccfa71f84156f6f")
+TIMEWALL_SECRET = os.getenv("TIMEWALL_SECRET_KEY", "tu_secreto_timewall_aqui")
 
 def get_db_connection():
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
@@ -49,6 +49,11 @@ init_db()
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
+
+# --- RUTA PARA SERVIR EL SERVICE WORKER DE MONETAG ---
+@app.route('/sw.js')
+def serve_sw():
+    return send_from_directory('.', 'sw.js')
 
 @app.route('/views/<path:path>')
 def serve_views(path):
