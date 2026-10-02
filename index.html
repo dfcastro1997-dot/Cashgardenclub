@@ -78,13 +78,17 @@
                     <span class="text-2xl font-black text-cg_navy">CashGarden<span class="text-cg_blue">.Arena</span></span>
                 </div>
                 
-                <!-- MENU DE NAVEGACIÓN -->
+                <!-- MENU DE NAVEGACIÓN ACTUALIZADO CON "MERCADO" -->
                 <nav class="hidden lg:flex items-center gap-2 h-full">
                     <button onclick="loadView('dashboard', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
                         <span>Tablero</span>
                     </button>
                     <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Granja</span>
+                    </button>
+                    <!-- NUEVO BOTÓN MERCADO -->
+                    <button onclick="loadView('shop', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                        <span>Mercado</span>
                     </button>
                     <button onclick="loadView('nutrients', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Torneos</span>
@@ -211,12 +215,6 @@
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
                 const parsedUser = JSON.parse(savedUser);
-                
-                /* ELIMINAMOS LA SOBRESCRITURA DESTRUCTIVA QUE BORRABA EL PROGRESO
-                if (parsedUser.game_state) {
-                    localStorage.setItem('cg_farm_state', parsedUser.game_state);
-                } 
-                */
 
                 updateProfileUI(parsedUser);
                 document.getElementById('login-screen').classList.add('hidden');

@@ -29,20 +29,21 @@
     <!-- MAIN LAYOUT -->
     <div class="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
         
-        <!-- COLUMNA PRINCIPAL (PARCELAS + COMPRAS) -->
+        <!-- COLUMNA PRINCIPAL (PARCELAS + IR A TIENDA) -->
         <div class="flex-1 flex flex-col gap-8 overflow-y-auto pr-2 pb-10">
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" id="farm-grid">
                 <!-- Generado dinámicamente -->
             </div>
 
+            <!-- BOTÓN HACIA EL NUEVO MÓDULO DE TIENDA -->
             <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto shrink-0">
                 <div>
                     <h3 class="text-xl font-black text-cg_navy">Mercado de Insumos</h3>
-                    <p class="text-sm text-gray-500">Adquiere semillas, macetas, o compra Aspersores Automáticos con COP.</p>
+                    <p class="text-sm text-gray-500">¿Te quedaste sin macetas o semillas? Visita el catálogo global.</p>
                 </div>
-                <button onclick="window.farmApp.openShop()" class="bg-cg_blue text-white px-8 py-3 rounded-xl font-bold shadow-sm hover:shadow-md hover:bg-cg_navy transition-colors flex items-center gap-3 w-full sm:w-auto justify-center">
+                <button onclick="loadView('shop', document.querySelectorAll('.nav-btn')[2])" class="bg-cg_blue text-white px-8 py-3 rounded-xl font-bold shadow-sm hover:shadow-md hover:bg-cg_navy transition-colors flex items-center gap-3 w-full sm:w-auto justify-center">
                     <img src="https://i.ibb.co/qYHq54kh/Frame-741.png" class="w-6 h-6 object-contain filter brightness-0 invert" alt="Shop">
-                    Tienda de Cultivo
+                    Ir al Mercado
                 </button>
             </div>
         </div>
@@ -147,9 +148,8 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MODALES DE CONTROL Y TIENDA (SE MANTIENEN IGUAL) -->
+<!-- MODALES DE JUEGO Y HERRAMIENTAS DEV -->
 <!-- ========================================== -->
-<!-- VENTANA MODAL CONTROL ADMIN (DEV) -->
 <div id="dev-modal" class="fixed inset-0 z-[150] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('dev-modal').classList.replace('flex','hidden')"></div>
     <div class="bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 border border-gray-700 text-white">
@@ -185,7 +185,7 @@
 </div>
 
 <button onclick="document.getElementById('dev-modal').classList.replace('hidden','flex')" class="fixed bottom-6 right-6 bg-gray-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-[90] flex items-center gap-2 group border border-gray-700">
-    <span class="text-xl">⚙️</span>
+    <span class="text-xl">⚙</span>
     <span class="text-xs font-black uppercase tracking-widest hidden group-hover:inline-block px-2">Control Admin</span>
 </button>
 
@@ -213,38 +213,11 @@
                 <div>
                     <h4 class="text-base sm:text-lg font-black text-cg_navy">2. Plagas y Cuervos</h4>
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
-                        🦅 <strong>Cuervos:</strong> Aparecen si el agua baja del 20%. Si haces clic en ellos, deberás superar un <strong>Minijuego Aleatorio</strong> (Resolver matemáticas rápido, hacer Tap agresivo o aceptar un castigo de 15 minutos de retraso) para espantarlos.<br>
-                        Para evitar esta molestia, compra <strong>Espantapájaros</strong> o un <strong>Aspersor Automático</strong> VIP en la tienda.
+                        🦅 <strong>Cuervos:</strong> Aparecen si el agua baja del 20%. Te penalizarán con un retraso en el crecimiento de tu planta al intentar espantarlos.<br>
+                        Para evitar esta pérdida de tiempo, compra <strong>Espantapájaros</strong> o un <strong>Aspersor Automático</strong> VIP en el Mercado.
                     </p>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Shop Modal -->
-<div id="shop-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeShop()"></div>
-    <div class="bg-bone rounded-3xl shadow-2xl w-full max-w-5xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
-        <div class="bg-white px-5 sm:px-8 py-5 flex items-center justify-between border-b border-gray-200 shrink-0">
-            <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-3">🛒 Mercado Agrícola</h3>
-            <div class="flex items-center gap-2 sm:gap-4">
-                <div class="bg-white border border-gray-200 px-3 sm:px-4 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
-                    <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase hidden sm:inline">Saldo:</span>
-                    <span class="font-black text-green-600 text-base sm:text-lg"><span id="shop-modal-balance">0</span> 🌱</span>
-                </div>
-                <button onclick="window.farmApp.closeShop()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold transition-colors">✕</button>
-            </div>
-        </div>
-        <div class="flex px-5 sm:px-8 pt-4 gap-4 border-b border-gray-200 bg-white shrink-0 overflow-x-auto">
-            <button onclick="window.farmApp.switchShopTab('tools')" id="tab-tools" class="pb-3 px-4 font-bold text-cg_blue border-b-4 border-cg_blue whitespace-nowrap">Herramientas</button>
-            <button onclick="window.farmApp.switchShopTab('flowers')" id="tab-flowers" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy transition-colors whitespace-nowrap">Semillas y Flores</button>
-            <button onclick="window.farmApp.switchShopTab('iap')" id="tab-iap" class="pb-3 px-4 font-black text-green-500 border-b-4 border-transparent hover:text-green-600 transition-colors whitespace-nowrap">Servicios de Pago</button>
-        </div>
-        <div class="p-5 sm:p-8 overflow-y-auto flex-1 bg-white">
-            <div id="shop-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-            <div id="shop-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden"></div>
-            <div id="shop-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
         </div>
     </div>
 </div>
@@ -280,9 +253,7 @@
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- NUEVA VENTANA MODAL: MINIJUEGOS DEL CUERVO -->
-<!-- ========================================== -->
+<!-- VENTANA MODAL: CASTIGO DEL CUERVO -->
 <div id="crow-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="window.farmApp.closeCrowModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden">
@@ -290,9 +261,7 @@
             <h3 class="text-lg font-black text-cg_navy flex items-center gap-2">🦅 Control de Plagas</h3>
             <button onclick="window.farmApp.closeCrowModal()" class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center transition-colors">✕</button>
         </div>
-        <div class="p-6 bg-white flex-1" id="crow-modal-content">
-            <!-- Contenido dinámico del minijuego -->
-        </div>
+        <div class="p-6 bg-white flex-1" id="crow-modal-content"></div>
     </div>
 </div>
 
@@ -328,33 +297,9 @@ window.farmApp = {
         },
         selectedPlotId: null,
         pendingPlotId: null,
-        shopQuantities: {},
         simulationInterval: null,
         lastTick: Date.now(),
-        // Crow Mini-Game Variables
-        activeCrowPlotId: null,
-        crowTimerInterval: null,
-        crowTimeLeft: 0,
-        crowMathAnswer: null,
-        crowClickCount: 0
-    },
-
-    catalog: {
-        tools: [
-            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas.', price: 50 },
-            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 150 },
-            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas de forma manual.', price: 50 },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12 Horas', usage: '20', desc: 'Protección preventiva contra plagas. Remueve plagas al instante.', price: 200 }
-        ],
-        flowers: [
-            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 30 🌱 al cosecharse.', price: 100 },
-            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 180 🌱 al cosecharse.', price: 350 }
-        ],
-        iap: [
-            { id: 'iap_sp_12h', name: 'Aspersor 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Auto-Riego', desc: 'Mantiene TODAS tus plantas al 100% de agua por 12 horas. Anti-plagas.', price_cop: 3000 },
-            { id: 'iap_sp_24h', name: 'Aspersor 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Auto-Riego', desc: 'Riego automático ininterrumpido por un día completo.', price_cop: 5000 },
-            { id: 'iap_sp_7d', name: 'Aspersor 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Auto-Riego', desc: 'Suscripción Semanal. Despreocúpate totalmente del riego.', price_cop: 25000 }
-        ]
+        activeCrowPlotId: null
     },
 
     dev: {
@@ -387,24 +332,17 @@ window.farmApp = {
             alert(`Añadidas ${amount} Semillas (🌱).`);
         },
         addTime: (hours) => {
-            const shift = hours * 3600000; // Convertir horas a milisegundos
-            
-            // Adelantar el finalizador de los aspersores
+            const shift = hours * 3600000; 
             window.farmApp.state.autoWaterEndTime = Math.max(0, (window.farmApp.state.autoWaterEndTime || 0) - shift);
-            
-            // Modificar físicamente las variables absolutas de tiempo hacia el pasado
             window.farmApp.state.plots.forEach(plot => {
                 if (plot.plantedAt) plot.plantedAt -= shift;
                 if (plot.harvestAt) plot.harvestAt -= shift;
                 if (plot.scarecrowEndTime) plot.scarecrowEndTime = Math.max(0, plot.scarecrowEndTime - shift);
                 if (plot.crowLeavingAt) plot.crowLeavingAt = Math.max(0, plot.crowLeavingAt - shift);
             });
-            
-            // Forzar renderizado y guardado
             window.farmApp.processTick();
             window.farmApp.renderPlots();
             window.farmApp.saveState();
-            
             alert(`Simulador avanzado artificialmente en ${hours} horas.`);
         },
         addCOP: (amount) => {
@@ -455,7 +393,6 @@ window.farmApp = {
                             this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
                             this.state.plots = s.plots ?? this.state.plots;
                             
-                            // NUEVO: Fusión profunda segura para no perder propiedades de los objetos
                             if (s.inventory) {
                                 Object.keys(s.inventory).forEach(k => {
                                     if (this.state.inventory[k]) {
@@ -487,7 +424,6 @@ window.farmApp = {
                 this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
                 this.state.plots = s.plots ?? this.state.plots;
                 
-                // NUEVO: Igual que arriba, protegemos la estructura del inventario
                 if (s.inventory) {
                     Object.keys(s.inventory).forEach(k => {
                         if (this.state.inventory[k]) {
@@ -633,11 +569,10 @@ window.farmApp = {
                     }
                 }
 
-                // Renderizado condicional del cuervo y sus minijuegos
+                // Renderizado condicional del cuervo (Castigo de Tiempo)
                 let crowHtml = '';
                 if (plot.hasCrow) {
                     if (plot.crowLeavingAt > now) {
-                        // Está en castigo de tiempo (Option C)
                         crowHtml = `
                             <div class="absolute top-2 right-2 bg-red-100 border border-red-300 px-2 py-1 rounded-lg text-[10px] font-black text-red-600 z-40 shadow-sm flex items-center gap-1 cursor-not-allowed">
                                 <span class="animate-spin">⏳</span>
@@ -645,7 +580,6 @@ window.farmApp = {
                             </div>
                         `;
                     } else {
-                        // Cuervo interactivo
                         crowHtml = `
                             <img src="${this.state.images.crow}" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="absolute top-2 right-2 w-14 h-14 z-40 drop-shadow-xl animate-bounce cursor-pointer hover:scale-125 hover:drop-shadow-2xl transition-all" alt="Cuervo" title="Haz clic para espantar">
                         `;
@@ -705,10 +639,10 @@ window.farmApp = {
         const ePotBig = document.getElementById('inv-pot-big');
         const eScarecrow = document.getElementById('inv-scarecrow');
         
-        if (eWater) eWater.innerText = inv.tool_water.qty;
-        if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small.qty;
-        if (ePotBig) ePotBig.innerText = inv.tool_pot_big.qty;
-        if (eScarecrow) eScarecrow.innerText = inv.tool_scarecrow.qty;
+        if (eWater) eWater.innerText = inv.tool_water.qty || 0;
+        if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small.qty || 0;
+        if (ePotBig) ePotBig.innerText = inv.tool_pot_big.qty || 0;
+        if (eScarecrow) eScarecrow.innerText = inv.tool_scarecrow.qty || 0;
     },
 
     buyPlotPrompt(id) {
@@ -776,8 +710,8 @@ window.farmApp = {
                 <p class="text-sm font-black text-carbon">Terreno Vacío</p>
                 <p class="text-xs text-gray-500 mt-1">Coloca una maceta desde tu inventario.</p>`;
             
-            if(inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
-            if(inv.tool_pot_big.qty > 0) this.enableToolBtn('pot_big');
+            if(inv.tool_pot_small && inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
+            if(inv.tool_pot_big && inv.tool_pot_big.qty > 0) this.enableToolBtn('pot_big');
 
         } else if (plot.status === 'pot') {
             const potImg = plot.pot === 'small' ? inv.tool_pot_small.image : inv.tool_pot_big.image;
@@ -816,12 +750,11 @@ window.farmApp = {
                 </div>
             `;
             
-            // Lógica ajustada: No se puede echar agua si hay cuervo
-            if(!isAutoWatering && plot.water < 100 && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow) {
+            if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow) {
                 this.enableToolBtn('water');
             }
-            // El espantapájaros siempre se puede usar para espantarlo de golpe si es plantada
-            if(!isAutoWatering && inv.tool_scarecrow.qty > 0 && !plot.isReady) {
+            
+            if(!isAutoWatering && inv.tool_scarecrow && inv.tool_scarecrow.qty > 0 && !plot.isReady && plot.crowLeavingAt <= Date.now()) {
                 this.enableToolBtn('scarecrow');
             }
         }
@@ -862,7 +795,7 @@ window.farmApp = {
         } else if (type === 'scarecrow') {
             this.state.inventory.tool_scarecrow.qty -= 1;
             plot.hasCrow = false;
-            plot.crowLeavingAt = 0; // Resetea cualquier cooldown activo del cuervo
+            plot.crowLeavingAt = 0; 
             plot.scarecrowEndTime = Date.now() + (12 * 3600000);
             this.showPlotToast(plotId, '🦉', '¡Protegido!');
         }
@@ -930,30 +863,20 @@ window.farmApp = {
     },
 
     // ==========================================
-    // SISTEMA DE MINIJUEGOS DEL CUERVO (ALEATORIO)
+    // SISTEMA DEL CUERVO: CASTIGO DE TIEMPO
     // ==========================================
     openCrowModal(plotId) {
         this.state.activeCrowPlotId = plotId;
-        const rand = Math.floor(Math.random() * 3);
         const modal = document.getElementById('crow-modal');
         const content = document.getElementById('crow-modal-content');
         
-        clearInterval(this.state.crowTimerInterval);
-
-        if (rand === 0) {
-            this.renderCrowMath(content);
-        } else if (rand === 1) {
-            this.renderCrowClick(content);
-        } else {
-            this.renderCrowWait(content);
-        }
+        this.renderCrowWait(content);
         
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     },
     
     closeCrowModal() {
-        clearInterval(this.state.crowTimerInterval);
         const modal = document.getElementById('crow-modal');
         if(modal) {
             modal.classList.add('hidden');
@@ -961,136 +884,32 @@ window.farmApp = {
         }
     },
 
-    // Opción A: Minijuego de Matemáticas
-    renderCrowMath(container) {
-        let n1 = Math.floor(Math.random() * 40) + 10;
-        let n2 = Math.floor(Math.random() * 40) + 10;
-        this.state.crowMathAnswer = n1 + n2;
-        this.state.crowTimeLeft = 10; // 10 Segundos exactos y molestos
-        
-        container.innerHTML = `
-            <div class="text-center animate-fade-in">
-                <div class="w-16 h-16 mx-auto bg-cg_blue/10 rounded-full flex items-center justify-center text-3xl mb-4 border border-cg_blue/20">🧠</div>
-                <h3 class="text-xl font-black text-cg_navy mb-2">Destreza Matemática</h3>
-                <p class="text-sm text-gray-500 mb-6">Resuelve la operación en menos de 10 segundos para espantar al cuervo.</p>
-                
-                <div class="text-4xl font-black text-cg_navy mb-6 tracking-widest">${n1} + ${n2} = ?</div>
-                
-                <input type="number" id="crow-math-input" class="w-full text-center text-2xl font-black px-4 py-3 border-2 border-gray-200 rounded-xl mb-4 focus:border-cg_blue outline-none transition-colors" placeholder="Tu respuesta">
-                
-                <div class="w-full bg-gray-100 h-2 rounded-full mb-2">
-                    <div id="crow-timer-bar" class="bg-cg_gold h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
-                </div>
-                <p class="text-xs font-bold text-gray-400 mb-6" id="crow-timer-text">10s restantes</p>
-                
-                <button onclick="window.farmApp.checkCrowMath()" class="w-full bg-cg_blue hover:bg-cg_navy text-white text-lg font-black py-4 rounded-xl shadow-soft transition-all">Verificar</button>
-            </div>
-        `;
-        
-        setTimeout(() => document.getElementById('crow-math-input').focus(), 100);
-        
-        this.state.crowTimerInterval = setInterval(() => {
-            this.state.crowTimeLeft--;
-            const pct = (this.state.crowTimeLeft / 10) * 100;
-            const bar = document.getElementById('crow-timer-bar');
-            if(bar) bar.style.width = pct + '%';
-            const txt = document.getElementById('crow-timer-text');
-            if(txt) txt.innerText = this.state.crowTimeLeft + 's restantes';
-            
-            if(this.state.crowTimeLeft <= 0) {
-                clearInterval(this.state.crowTimerInterval);
-                this.failCrowMinigame("¡Tiempo agotado! Tu distracción permitió que el cuervo se quedara.");
-            }
-        }, 1000);
-    },
-    
-    checkCrowMath() {
-        const inputEl = document.getElementById('crow-math-input');
-        if(!inputEl || !inputEl.value) return;
-        const val = parseInt(inputEl.value);
-        if(val === this.state.crowMathAnswer) {
-            this.successCrowMinigame();
-        } else {
-            this.failCrowMinigame("Respuesta incorrecta. El cuervo ignoró tus intentos de espantarlo.");
-        }
-    },
-
-    // Opción B: Fricción Física (Click-Spam)
-    renderCrowClick(container) {
-        this.state.crowClickCount = 0;
-        this.state.crowTimeLeft = 10;
-        
-        container.innerHTML = `
-            <div class="text-center animate-fade-in">
-                <div class="w-16 h-16 mx-auto bg-red-50 rounded-full flex items-center justify-center text-3xl mb-4 border border-red-100">🦅</div>
-                <h3 class="text-xl font-black text-cg_navy mb-2">¡Espántalo a la Fuerza!</h3>
-                <p class="text-sm text-gray-500 mb-6">Toca el botón <strong>50 veces</strong> antes de 10 segundos.</p>
-                
-                <button onclick="window.farmApp.doCrowClick()" id="crow-click-btn" class="w-32 h-32 mx-auto bg-gray-50 border-4 border-gray-200 rounded-full text-5xl flex items-center justify-center hover:bg-gray-100 active:scale-90 active:bg-gray-200 transition-transform select-none shadow-inner mb-6">
-                    🦅
-                </button>
-                
-                <div class="w-full bg-gray-100 h-6 rounded-full mb-3 overflow-hidden border border-gray-200 relative shadow-inner">
-                    <div id="crow-click-bar" class="bg-red-500 h-full transition-all duration-75" style="width: 0%"></div>
-                    <div class="absolute inset-0 flex items-center justify-center text-xs font-black text-gray-800" id="crow-click-text">0 / 50</div>
-                </div>
-                
-                <div class="w-full bg-gray-100 h-1.5 rounded-full mb-1">
-                    <div id="crow-timer-bar" class="bg-cg_gold h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
-                </div>
-                <p class="text-[10px] font-bold text-gray-400" id="crow-timer-text">10s restantes</p>
-            </div>
-        `;
-        
-        this.state.crowTimerInterval = setInterval(() => {
-            this.state.crowTimeLeft--;
-            const pct = (this.state.crowTimeLeft / 10) * 100;
-            const bar = document.getElementById('crow-timer-bar');
-            if (bar) bar.style.width = pct + '%';
-            const txt = document.getElementById('crow-timer-text');
-            if(txt) txt.innerText = this.state.crowTimeLeft + 's restantes';
-            
-            if(this.state.crowTimeLeft <= 0) {
-                clearInterval(this.state.crowTimerInterval);
-                this.failCrowMinigame("¡No fuiste lo suficientemente rápido! Agotamiento superado.");
-            }
-        }, 1000);
-    },
-    
-    doCrowClick() {
-        this.state.crowClickCount++;
-        const pct = Math.min(100, (this.state.crowClickCount / 50) * 100);
-        const clickBar = document.getElementById('crow-click-bar');
-        if(clickBar) clickBar.style.width = pct + '%';
-        const clickTxt = document.getElementById('crow-click-text');
-        if(clickTxt) clickTxt.innerText = this.state.crowClickCount + ' / 50';
-        
-        const btn = document.getElementById('crow-click-btn');
-        if(btn) {
-            const rot = (Math.random() - 0.5) * 30;
-            btn.style.transform = `scale(0.9) rotate(${rot}deg)`;
-            setTimeout(() => btn.style.transform = 'scale(1) rotate(0deg)', 50);
-        }
-        
-        if(this.state.crowClickCount >= 50) {
-            this.successCrowMinigame();
-        }
-    },
-
-    // Opción C: Castigo de Tiempo
     renderCrowWait(container) {
         container.innerHTML = `
             <div class="text-center animate-fade-in">
-                <div class="w-16 h-16 mx-auto bg-orange-50 rounded-full flex items-center justify-center text-3xl mb-4 border border-orange-100">⏳</div>
-                <h3 class="text-xl font-black text-cg_navy mb-2">Retraso Inevitable</h3>
-                <p class="text-sm text-gray-500 mb-6">El cuervo es terco. Toca iniciar el proceso de espantado que tardará <strong class="text-cg_gold">15 Minutos</strong>. Durante este tiempo tu planta no crecerá ni podrá ser regada.</p>
+                <div class="relative w-24 h-24 mx-auto mb-4 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
+                    <img src="${this.state.images.crow}" class="absolute w-12 h-12 z-10 drop-shadow-md animate-bounce">
+                    <img src="${this.state.inventory.tool_scarecrow.image}" class="absolute top-2 left-2 w-8 h-8 z-0 opacity-40 grayscale">
+                </div>
+                <h3 class="text-xl font-black text-cg_navy mb-2">Plaga Detectada</h3>
+                <p class="text-sm text-gray-500 mb-4">El cuervo ha invadido tu parcela. Espantarlo manualmente tomará <strong class="text-cg_gold">15 Minutos</strong>, pausando el crecimiento de tu planta actual.</p>
                 
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6">
-                    <p class="text-xs text-gray-500 mb-3">Si detestas perder eficiencia, usa un <strong>Espantapájaros</strong> de la tienda para removerlo instantáneamente y blindar tu cultivo.</p>
-                    <button onclick="window.farmApp.closeCrowModal(); window.farmApp.openShop();" class="text-cg_blue font-black text-sm hover:underline">Ir a la Tienda VIP</button>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-6 text-left shadow-sm">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                            <img src="${this.state.inventory.tool_scarecrow.image}" class="w-6 h-6 object-contain">
+                        </div>
+                        <p class="text-sm font-black text-cg_navy">Solución Preventiva</p>
+                    </div>
+                    <p class="text-xs text-blue-800 mb-4">El Espantapájaros evita que aparezcan y mantiene tu eficiencia intacta. (Nota: Una vez inicies el retraso actual, deberás esperar los 15m para poder usarlo).</p>
+                    <button onclick="window.farmApp.closeCrowModal(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="w-full bg-white border border-blue-200 hover:bg-blue-100 text-cg_blue font-black py-2.5 rounded-lg text-xs transition-colors shadow-sm uppercase tracking-wider">
+                        Comprar en la Tienda VIP
+                    </button>
                 </div>
                 
-                <button onclick="window.farmApp.applyCrowWait()" class="w-full bg-cg_gold hover:bg-orange-500 text-white text-lg font-black py-4 rounded-xl shadow-soft transition-all">Iniciar Espantado Lento</button>
+                <button onclick="window.farmApp.applyCrowWait()" class="w-full bg-cg_gold hover:bg-orange-500 text-white text-base font-black py-4 rounded-xl shadow-soft transition-all uppercase tracking-wider">
+                    Aceptar Retraso de 15m
+                </button>
             </div>
         `;
     },
@@ -1098,32 +917,11 @@ window.farmApp = {
     applyCrowWait() {
         const plot = this.state.plots[this.state.activeCrowPlotId];
         plot.crowLeavingAt = Date.now() + (15 * 60 * 1000);
-        this.showPlotToast(plot.id, '⏳', 'Proceso Lento...');
+        this.showPlotToast(plot.id, '⏳', 'Espantando...');
         this.closeCrowModal();
         this.renderPlots();
         this.selectPlot(plot.id);
         this.saveState();
-    },
-
-    successCrowMinigame() {
-        clearInterval(this.state.crowTimerInterval);
-        const plot = this.state.plots[this.state.activeCrowPlotId];
-        plot.hasCrow = false;
-        plot.crowLeavingAt = 0;
-        // Pequeño margen de gracia para regar después de ganar el minijuego
-        plot.scarecrowEndTime = Math.max(plot.scarecrowEndTime, Date.now() + 30000);
-        
-        this.showPlotToast(plot.id, '🕊️', '¡Cuervo espantado!');
-        this.closeCrowModal();
-        this.renderPlots();
-        this.selectPlot(plot.id);
-        this.saveState();
-    },
-    
-    failCrowMinigame(msg) {
-        clearInterval(this.state.crowTimerInterval);
-        alert(msg);
-        this.closeCrowModal();
     },
 
     startEnvironmentSimulation() {
@@ -1147,12 +945,12 @@ window.farmApp = {
         
         this.state.plots.forEach(plot => {
             
-            // Resolución del cuervo en castigo de tiempo (Opción C)
+            // Resolución del cuervo en castigo de tiempo
             if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
                 plot.hasCrow = false;
                 plot.crowLeavingAt = 0;
                 changesMade = true;
-                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'El cuervo por fin se fue');
+                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'El cuervo se fue');
             }
 
             if (plot.status === 'planted' && !plot.isReady) {
@@ -1209,151 +1007,6 @@ window.farmApp = {
         }
     },
 
-    openShop() {
-        document.getElementById('shop-modal-balance').innerText = this.state.seedsBalance.toLocaleString();
-        this.switchShopTab('tools');
-        document.getElementById('shop-modal').classList.remove('hidden');
-        document.getElementById('shop-modal').classList.add('flex');
-    },
-
-    closeShop() {
-        document.getElementById('shop-modal').classList.add('hidden');
-        document.getElementById('shop-modal').classList.remove('flex');
-        this.state.shopQuantities = {}; 
-    },
-
-    switchShopTab(tab) {
-        ['tools', 'flowers', 'iap'].forEach(t => {
-            const tabBtn = document.getElementById(`tab-${t}`);
-            const contentDiv = document.getElementById(`shop-content-${t}`);
-            if (t === tab) {
-                tabBtn.className = `pb-3 px-4 font-black ${t === 'iap' ? 'text-green-500 border-green-500' : 'text-cg_blue border-cg_blue'} border-b-4 whitespace-nowrap`;
-                contentDiv.classList.remove('hidden');
-            } else {
-                tabBtn.className = `pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:${t === 'iap' ? 'text-green-600' : 'text-cg_navy'} transition-colors whitespace-nowrap`;
-                contentDiv.classList.add('hidden');
-            }
-        });
-        
-        this.renderShopItems(tab);
-    },
-
-    renderShopItems(tab) {
-        const container = document.getElementById(`shop-content-${tab}`);
-        container.innerHTML = '';
-        const items = this.catalog[tab];
-
-        items.forEach(item => {
-            if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
-            const qty = this.state.shopQuantities[item.id];
-            
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col';
-            
-            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Servicio de Pago');
-            
-            let actionButton = '';
-            let qtySelector = '';
-
-            if (tab === 'iap') {
-                actionButton = `<button onclick="window.farmApp.buyIAP('${item.id}')" class="bg-green-500 hover:bg-green-600 text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">$${item.price_cop.toLocaleString()} COP</button>`;
-            } else {
-                qtySelector = `
-                    <div class="flex items-center bg-gray-50 rounded-xl flex-1 border border-gray-200 shadow-inner h-10 overflow-hidden">
-                        <button onclick="window.farmApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-8 sm:w-10 h-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 transition-colors">-</button>
-                        <div class="flex-1 text-center text-xs sm:text-sm font-black text-carbon">${qty}</div>
-                        <button onclick="window.farmApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-8 sm:w-10 h-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 transition-colors">+</button>
-                    </div>
-                `;
-                actionButton = `<button onclick="window.farmApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">${(item.price * qty).toLocaleString()} 🌱</button>`;
-            }
-
-            card.innerHTML = `
-                <div class="bg-white h-32 flex items-center justify-center p-4 relative shrink-0 border-b border-gray-100">
-                    <span class="absolute top-3 left-3 bg-gray-50 text-gray-500 text-[9px] font-black px-2 py-1 rounded shadow-sm border border-gray-200 uppercase">${tag}</span>
-                    <img src="${item.image}" class="h-full w-auto object-contain drop-shadow-md transform hover:scale-105 transition-transform">
-                </div>
-                <div class="p-4 sm:p-5 flex flex-col flex-1">
-                    <h4 class="font-black text-carbon text-sm sm:text-base leading-tight mb-2">${item.name}</h4>
-                    <div class="flex justify-between text-[10px] font-bold text-gray-500 mb-3 bg-white p-2 rounded border border-gray-100">
-                        <span class="uppercase">Duración: ${item.duration}</span>
-                        <span class="uppercase">Usos: ${item.usage}</span>
-                    </div>
-                    <p class="text-xs text-gray-500 mb-5 leading-relaxed flex-1">${item.desc}</p>
-                    <div class="flex items-center gap-2 mt-auto">
-                        ${qtySelector}
-                        ${actionButton}
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    },
-
-    changeShopQty(itemId, delta, tab) {
-        let current = this.state.shopQuantities[itemId];
-        let next = current + delta;
-        if (next >= 1 && next <= 99) {
-            this.state.shopQuantities[itemId] = next;
-            this.renderShopItems(tab);
-        }
-    },
-
-    buyItem(itemId, unitPrice, tab) {
-        const qty = this.state.shopQuantities[itemId];
-        const total = unitPrice * qty;
-
-        if (this.state.seedsBalance >= total) {
-            this.deductBalance(total);
-            if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (20 * qty);
-            else if (itemId === 'tool_water') this.state.inventory[itemId].qty += (100 * qty);
-            else this.state.inventory[itemId].qty += qty;
-            
-            this.updateInventoryUI();
-            document.getElementById('shop-modal-balance').innerText = this.state.seedsBalance.toLocaleString();
-            
-            this.saveState();
-        } else {
-            alert("Semillas insuficientes para realizar esta compra.");
-        }
-    },
-
-    async buyIAP(packageId) {
-        const userStr = localStorage.getItem('user');
-        if (!userStr) return alert("Debes iniciar sesión para realizar compras.");
-        
-        const user = JSON.parse(userStr);
-        try {
-            const res = await fetch('/api/store/buy_seeds', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user.username, package_id: packageId })
-            });
-            const data = await res.json();
-            
-            if (res.ok) {
-                user.balance = data.new_balance_cop;
-                localStorage.setItem('user', JSON.stringify(user));
-                if(window.syncUserData) window.syncUserData();
-
-                if (packageId.startsWith('iap_sp_')) {
-                    const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
-                    const now = Date.now();
-                    this.state.autoWaterEndTime = Math.max(now, this.state.autoWaterEndTime || 0) + (hours * 3600000);
-                    this.updateSprinklerUI();
-                    alert(`¡Aspersor Automático activado por ${hours} horas! Tus plantas se regarán solas.`);
-                }
-                
-                this.closeShop();
-                this.saveState();
-            } else {
-                alert("Error al procesar la compra: " + data.error);
-            }
-        } catch(e) {
-            alert("Error de conexión al procesar la compra.");
-        }
-    },
-
     openPlantSelector(plotId) {
         this.state.selectedPlotId = plotId;
         const list = document.getElementById('seed-inventory-list');
@@ -1371,7 +1024,8 @@ window.farmApp = {
                 <div class="text-center py-10 bg-white rounded-2xl border border-gray-100 flex flex-col items-center mx-2 sm:mx-0">
                     <span class="text-4xl sm:text-5xl mb-4 block opacity-50 text-gray-300">🌸</span>
                     <h4 class="font-black text-carbon text-base sm:text-lg mb-1">Sin Flores Compatibles</h4>
-                    <p class="text-gray-500 text-xs sm:text-sm">Ve a la tienda y compra semillas adecuadas para esta maceta.</p>
+                    <p class="text-gray-500 text-xs sm:text-sm">Ve al Mercado y compra semillas adecuadas para esta maceta.</p>
+                    <button onclick="window.farmApp.closeModals(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="mt-4 bg-cg_blue hover:bg-cg_navy text-white text-xs font-bold py-2 px-4 rounded-lg shadow-sm transition-colors">Ir al Mercado</button>
                 </div>`;
         } else {
             seeds.forEach(seed => {

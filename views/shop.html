@@ -1,0 +1,262 @@
+<div class="max-w-[1200px] mx-auto space-y-8 animate-fade-in pb-20">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-cg_blue"></span>
+                <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Suministros Agrícolas</span>
+            </div>
+            <h2 class="text-3xl font-black text-cg_navy tracking-tight">Mercado de Insumos</h2>
+            <p class="text-sm text-gray-500 font-medium mt-1">Equípate con las mejores herramientas para optimizar tu producción de semillas.</p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="bg-white border border-gray-200 px-5 py-2.5 rounded-xl shadow-sm flex items-center gap-3">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Saldo Disponible</span>
+                <span id="shop-page-balance" class="text-xl font-black text-green-600 transition-all duration-300">0 🌱</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS DE NAVEGACIÓN -->
+    <div class="flex gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0">
+        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-4 font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
+        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
+        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-4 font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP (Pago)</button>
+    </div>
+
+    <!-- CONTENEDORES DE CATÁLOGO -->
+    <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+    <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+</div>
+
+<script>
+window.shopApp = {
+    state: {
+        seedsBalance: 1500,
+        inventory: {},
+        shopQuantities: {}
+    },
+    
+    catalog: {
+        tools: [
+            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas.', price: 50 },
+            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 150 },
+            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas de forma manual.', price: 50 },
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12 Horas', usage: '20', desc: 'Protección preventiva contra plagas. Remueve plagas al instante.', price: 200 }
+        ],
+        flowers: [
+            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 30 🌱 al cosecharse.', price: 100 },
+            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 180 🌱 al cosecharse.', price: 350 }
+        ],
+        iap: [
+            { id: 'iap_sp_12h', name: 'Aspersor 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Auto-Riego', desc: 'Mantiene TODAS tus plantas al 100% de agua por 12 horas. Anti-plagas.', price_cop: 3000 },
+            { id: 'iap_sp_24h', name: 'Aspersor 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Auto-Riego', desc: 'Riego automático ininterrumpido por un día completo.', price_cop: 5000 },
+            { id: 'iap_sp_7d', name: 'Aspersor 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Auto-Riego', desc: 'Suscripción Semanal. Despreocúpate totalmente del riego.', price_cop: 25000 }
+        ]
+    },
+
+    init() {
+        // Carga el estado actual de la granja (para conocer saldo y stock)
+        const savedStateStr = localStorage.getItem('cg_farm_state');
+        if (savedStateStr) {
+            try {
+                const s = JSON.parse(savedStateStr);
+                this.state.seedsBalance = s.seedsBalance ?? 1500;
+                this.state.inventory = s.inventory ?? {};
+            } catch(e) { console.error("Error cargando inventario en la tienda"); }
+        }
+        
+        document.getElementById('shop-page-balance').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+        this.switchTab('tools');
+    },
+
+    switchTab(tab) {
+        ['tools', 'flowers', 'iap'].forEach(t => {
+            const tabBtn = document.getElementById(`page-tab-${t}`);
+            const contentDiv = document.getElementById(`page-content-${t}`);
+            if (t === tab) {
+                tabBtn.className = `pb-3 px-4 font-black ${t === 'iap' ? 'text-green-500 border-green-500' : 'text-cg_blue border-cg_blue'} border-b-4 whitespace-nowrap transition-colors`;
+                contentDiv.classList.remove('hidden');
+            } else {
+                tabBtn.className = `pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:${t === 'iap' ? 'text-green-600' : 'text-cg_navy'} whitespace-nowrap transition-colors`;
+                contentDiv.classList.add('hidden');
+            }
+        });
+        
+        this.renderShopItems(tab);
+    },
+
+    renderShopItems(tab) {
+        const container = document.getElementById(`page-content-${tab}`);
+        container.innerHTML = '';
+        const items = this.catalog[tab];
+
+        items.forEach(item => {
+            if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
+            const qty = this.state.shopQuantities[item.id];
+            
+            // Obtener stock actual si existe en el inventario
+            let currentStock = 0;
+            if(this.state.inventory[item.id]) {
+                currentStock = this.state.inventory[item.id].qty || 0;
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col group';
+            
+            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Servicio Premium');
+            
+            let actionArea = '';
+            let stockBadge = '';
+
+            if (tab === 'iap') {
+                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} COP</button>`;
+            } else {
+                stockBadge = `
+                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
+                        <span class="text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
+                    </div>
+                `;
+                actionArea = `
+                    <div class="flex items-center gap-3 w-full">
+                        <div class="flex items-center bg-gray-50 rounded-xl flex-1 border border-gray-200 shadow-inner h-12 overflow-hidden">
+                            <button onclick="window.shopApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">-</button>
+                            <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
+                            <button onclick="window.shopApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">+</button>
+                        </div>
+                        <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-sm h-12 px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
+                            ${(item.price * qty).toLocaleString()} 🌱
+                        </button>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="bg-gradient-to-b from-gray-50 to-white h-48 flex items-center justify-center p-6 relative shrink-0 border-b border-gray-100">
+                    <span class="absolute top-3 left-3 bg-white text-gray-600 text-[10px] font-black px-2.5 py-1 rounded-md shadow-sm border border-gray-200 uppercase tracking-wider z-20">${tag}</span>
+                    ${stockBadge}
+                    <img src="${item.image}" class="h-32 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                </div>
+                <div class="p-6 flex flex-col flex-1">
+                    <h4 class="font-black text-cg_navy text-lg leading-tight mb-3">${item.name}</h4>
+                    <div class="flex justify-between items-center text-[10px] font-bold text-gray-500 mb-4 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                        <span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>
+                        <span class="uppercase flex items-center gap-1">⚙️ ${item.usage}</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-6 leading-relaxed flex-1">${item.desc}</p>
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        ${actionArea}
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    },
+
+    changeShopQty(itemId, delta, tab) {
+        let current = this.state.shopQuantities[itemId];
+        let next = current + delta;
+        if (next >= 1 && next <= 99) {
+            this.state.shopQuantities[itemId] = next;
+            this.renderShopItems(tab);
+        }
+    },
+
+    buyItem(itemId, unitPrice, tab) {
+        const qty = this.state.shopQuantities[itemId];
+        const total = unitPrice * qty;
+
+        if (this.state.seedsBalance >= total) {
+            
+            // Actualiza saldo
+            this.state.seedsBalance -= total;
+            document.getElementById('shop-page-balance').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+            
+            // Efecto visual
+            const balEl = document.getElementById('shop-page-balance');
+            balEl.classList.add('text-red-500', 'scale-110');
+            setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
+
+            // Inyecta en inventario
+            if (!this.state.inventory[itemId]) {
+                this.state.inventory[itemId] = { qty: 0 }; // Previene error si no existe en perfil viejo
+            }
+
+            if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (20 * qty);
+            else if (itemId === 'tool_water') this.state.inventory[itemId].qty += (100 * qty);
+            else this.state.inventory[itemId].qty += qty;
+            
+            // Guarda en DB y vuelve a renderizar para actualizar stock visible
+            this.saveState();
+            this.renderShopItems(tab);
+            
+        } else {
+            alert("No tienes Semillas suficientes para realizar esta compra.");
+        }
+    },
+
+    async buyIAP(packageId) {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return alert("Debes iniciar sesión para realizar compras.");
+        
+        const user = JSON.parse(userStr);
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                user.balance = data.new_balance_cop;
+                localStorage.setItem('user', JSON.stringify(user));
+                if(window.syncUserData) window.syncUserData(); // Actualiza saldo topbar
+
+                // Actualiza estado local
+                const savedStateStr = localStorage.getItem('cg_farm_state');
+                if (savedStateStr) {
+                    const farmState = JSON.parse(savedStateStr);
+                    if (packageId.startsWith('iap_sp_')) {
+                        const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
+                        const now = Date.now();
+                        farmState.autoWaterEndTime = Math.max(now, farmState.autoWaterEndTime || 0) + (hours * 3600000);
+                        localStorage.setItem('cg_farm_state', JSON.stringify(farmState));
+                        alert(`¡Compra Exitosa! Aspersor Automático activado por ${hours} horas.`);
+                    }
+                }
+            } else {
+                alert("Error al procesar la compra: " + data.error);
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar la compra.");
+        }
+    },
+
+    saveState() {
+        const savedStateStr = localStorage.getItem('cg_farm_state');
+        if (savedStateStr) {
+            const farmState = JSON.parse(savedStateStr);
+            farmState.seedsBalance = this.state.seedsBalance;
+            farmState.inventory = this.state.inventory;
+            
+            const stateToSave = JSON.stringify(farmState);
+            localStorage.setItem('cg_farm_state', stateToSave);
+
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                fetch('/api/save_state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user.username, game_state: stateToSave })
+                }).catch(e => console.error("Error guardando compra:", e));
+            }
+        }
+    }
+};
+
+window.shopApp.init();
+</script>
