@@ -13,6 +13,7 @@ DB_URI = os.getenv("DATABASE_URL")
 BITLABS_SECRET = os.getenv("BITLABS_SECRET_KEY", "glrhMlnWAzlo5eOYb2hUcNnEniiG4fnG")
 TAPRESEARCH_SECRET = os.getenv("TAPRESEARCH_SECRET_KEY", "tu_llave_secreta_tapresearch_aqui")
 CPX_SECRET = os.getenv("CPX_SECRET_KEY", "9217413a1d093d001d21dd0f5f99dae5")
+TIMEWALL_SECRET = os.getenv("TIMEWALL_SECRET_KEY", "58b5f984a71e47fc9ccfa71f84156f6f")
 
 def get_db_connection():
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
@@ -114,7 +115,7 @@ def save_state():
     
     return jsonify({"message": "Progreso guardado en la nube"})
 
-# --- NUEVO: ENDPOINT PARA SINCRONIZAR SALDO DESDE EL FRONTEND ---
+# --- ENDPOINT PARA SINCRONIZAR SALDO DESDE EL FRONTEND ---
 @app.route('/api/sync/<username>', methods=['GET'])
 def sync_user(username):
     conn = get_db_connection()
@@ -211,7 +212,6 @@ def cpx_webhook():
                 return jsonify({"error": "Firma inválida CPX"}), 403
 
         if status == '1' or status == '2': 
-            # Status 1 es completada, 2 es salida calificada (bono)
             reward_amount = int(float(amount))
             if reward_amount > 0:
                 conn = get_db_connection()
@@ -223,6 +223,40 @@ def cpx_webhook():
 
         return jsonify({"status": "success", "message": f"CPX: Webhook procesado"}), 200
     except Exception as e:
+        return jsonify({"error": "Error interno"}), 500
+
+# --- WEBHOOK PARA TIMEWALL ---
+@app.route('/api/webhook/timewall', methods=['GET'])
+def timewall_webhook():
+    try:
+        # Extraer los datos de TimeWall
+        uid = request.args.get('userid')
+        reward = request.args.get('revenue')
+        hash_signature = request.args.get('hash')
+        
+        # Ping de verificación
+        if not uid or not reward:
+             return jsonify({"status": "OK", "message": "Webhook de TimeWall activo"}), 200
+
+        # Validación de firma exacta de TimeWall: sha256(userID + revenue + SecretKey)
+        if hash_signature:
+            message = f"{uid}{reward}{TIMEWALL_SECRET}"
+            computed_hash = hashlib.sha256(message.encode('utf-8')).hexdigest()
+            if computed_hash != hash_signature:
+                return jsonify({"error": "Firma inválida TimeWall"}), 403
+        
+        reward_amount = int(float(reward))
+        if reward_amount > 0:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("UPDATE users SET balance = balance + %s WHERE username = %s", (reward_amount, uid))
+            conn.commit()
+            cur.close()
+            conn.close()
+
+        return jsonify({"status": "SUCCESS", "message": f"TimeWall: Acreditados {reward_amount} a {uid}"}), 200
+    except Exception as e:
+        print(f"Error procesando webhook de TimeWall: {e}")
         return jsonify({"error": "Error interno"}), 500
 
 if __name__ == '__main__':

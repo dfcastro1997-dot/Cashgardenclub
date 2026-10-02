@@ -7,7 +7,7 @@
                 <span class="text-xs font-extrabold text-green-600 uppercase tracking-widest">Trabajo Activo (GPT)</span>
             </div>
             <h2 class="text-3xl font-black text-cg_navy tracking-tight">Estación de Nutrientes</h2>
-            <p class="text-sm text-gray-500 font-medium mt-1">Completa encuestas de nuestros socios para ganar liquidez en 🍀.</p>
+            <p class="text-sm text-gray-500 font-medium mt-1">Completa encuestas y tareas para ganar liquidez en 🍀.</p>
         </div>
         
         <!-- Banner Happy Hour -->
@@ -41,7 +41,7 @@
             </button>
         </div>
 
-        <!-- TapResearch (ACTUALIZADO) -->
+        <!-- TapResearch -->
         <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-cg_cyan hover:shadow-lg transition-all">
             <div class="flex justify-between items-start mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-500 font-black text-2xl group-hover:scale-110 transition-transform">TR</div>
@@ -57,7 +57,7 @@
             </button>
         </div>
 
-        <!-- CPX Research (ACTUALIZADO) -->
+        <!-- CPX Research -->
         <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-purple-400 hover:shadow-lg transition-all">
             <div class="flex justify-between items-start mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-500 font-black text-2xl group-hover:scale-110 transition-transform">CPX</div>
@@ -69,6 +69,23 @@
                 <span class="text-base font-black text-cg_gold">~8,000 🍀</span>
             </div>
             <button onclick="openCpxWall()" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-purple-500 hover:text-white hover:border-purple-500 font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                Abrir Muro
+            </button>
+        </div>
+
+        <!-- TimeWall (NUEVO) -->
+        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-blue-500 hover:shadow-lg transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 font-black text-2xl group-hover:scale-110 transition-transform">TW</div>
+                <span class="bg-gray-100 text-gray-600 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Micro Tareas</span>
+            </div>
+            <h3 class="text-xl font-black text-cg_navy mb-2 group-hover:text-blue-500 transition-colors">TimeWall</h3>
+            <p class="text-sm text-gray-500 leading-relaxed mb-6 flex-1">Gana Tréboles haciendo micro-tareas, viendo anuncios (PTC) o interactuando con sitios web. ¡Ideal para empezar!</p>
+            <div class="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 flex justify-between items-center">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Recompensa Máx.</span>
+                <span class="text-base font-black text-cg_gold">~1,500 🍀</span>
+            </div>
+            <button onclick="openTimeWall()" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Abrir Muro
             </button>
         </div>
@@ -115,11 +132,29 @@
         }
 
         const user = JSON.parse(savedUser);
-        // APP ID actualizado con el valor de tu panel
         const appId = "36756"; 
         
         const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=${appId}&ext_user_id=${encodeURIComponent(user.username)}`;
         
         window.open(cpxUrl, '_blank', 'width=1000,height=700');
+    }
+
+    // NUEVA FUNCIÓN: Abrir el muro de TimeWall
+    function openTimeWall() {
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            alert("Debes iniciar sesión para acceder al muro de encuestas.");
+            return;
+        }
+
+        const user = JSON.parse(savedUser);
+        
+        // IMPORTANTE: Reemplaza esto con el enlace base de tu Placement de TimeWall
+        const baseUrl = "TU_ENLACE_BASE_DE_TIMEWALL_AQUI"; 
+        
+        // TimeWall requiere que envíes el identificador de usuario en el parámetro de la URL
+        const timeWallUrl = `${baseUrl}&userid=${encodeURIComponent(user.username)}`;
+        
+        window.open(timeWallUrl, '_blank', 'width=1000,height=700');
     }
 </script>
