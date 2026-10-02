@@ -324,7 +324,6 @@ window.farmApp = {
         ]
     },
 
-    // --- NUEVO: FUNCIÓN PARA GUARDAR ESTADO EN LA NUBE ---
     saveState() {
         const stateToSave = JSON.stringify({
             balance: this.state.balance,
@@ -351,7 +350,6 @@ window.farmApp = {
     },
 
     init() {
-        // --- RECUPERAR EL PROGRESO DEL JUGADOR AL ENTRAR ---
         const savedStateStr = localStorage.getItem('cg_farm_state');
         if (savedStateStr) {
             try {
@@ -381,7 +379,8 @@ window.farmApp = {
         this.state.currentSeason = seasonKeys[currentIdx];
         
         const s = this.seasons[this.state.currentSeason];
-        document.getElementById('current-season-display').innerText = `${s.icon} ${s.name}`;
+        const display = document.getElementById('current-season-display');
+        if(display) display.innerText = `${s.icon} ${s.name}`;
     },
 
     openSeasonModal() {
@@ -400,6 +399,9 @@ window.farmApp = {
 
     renderPlots() {
         const grid = document.getElementById('farm-grid');
+        // EVITAR ERROR: Si el contenedor de la granja no existe (usuario está en otra vista), no hacer render
+        if (!grid) return;
+
         grid.innerHTML = '';
         const now = Date.now();
         
@@ -543,10 +545,15 @@ window.farmApp = {
 
     updateInventoryUI() {
         const inv = this.state.inventory;
-        document.getElementById('inv-water').innerText = inv.tool_water.qty;
-        document.getElementById('inv-pot-small').innerText = inv.tool_pot_small.qty;
-        document.getElementById('inv-pot-big').innerText = inv.tool_pot_big.qty;
-        document.getElementById('inv-scarecrow').innerText = inv.tool_scarecrow.qty;
+        const eWater = document.getElementById('inv-water');
+        const ePotSmall = document.getElementById('inv-pot-small');
+        const ePotBig = document.getElementById('inv-pot-big');
+        const eScarecrow = document.getElementById('inv-scarecrow');
+        
+        if (eWater) eWater.innerText = inv.tool_water.qty;
+        if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small.qty;
+        if (ePotBig) ePotBig.innerText = inv.tool_pot_big.qty;
+        if (eScarecrow) eScarecrow.innerText = inv.tool_scarecrow.qty;
     },
 
     buyPlotPrompt(id) {
@@ -588,14 +595,20 @@ window.farmApp = {
 
         const plot = this.state.plots[id];
         const infoPanel = document.getElementById('selected-plot-info');
+        if(!infoPanel) return;
+
         const inv = this.state.inventory;
 
         ['pot_small', 'pot_big', 'water', 'scarecrow'].forEach(toolType => {
             const el = document.getElementById(`inv-item-${toolType}`);
-            el.classList.add('opacity-50');
-            const btn = el.querySelector('.tool-use-btn');
-            btn.disabled = true;
-            btn.className = 'tool-use-btn bg-gray-100 text-gray-400 px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors';
+            if (el) {
+                el.classList.add('opacity-50');
+                const btn = el.querySelector('.tool-use-btn');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.className = 'tool-use-btn bg-gray-100 text-gray-400 px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors';
+                }
+            }
         });
 
         if (plot.status === 'empty') {
@@ -653,10 +666,14 @@ window.farmApp = {
 
     enableToolBtn(toolType) {
         const el = document.getElementById(`inv-item-${toolType}`);
-        el.classList.remove('opacity-50');
-        const btn = el.querySelector('.tool-use-btn');
-        btn.disabled = false;
-        btn.className = 'tool-use-btn bg-cg_blue hover:bg-cg_navy text-white shadow-sm px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors';
+        if(el) {
+            el.classList.remove('opacity-50');
+            const btn = el.querySelector('.tool-use-btn');
+            if(btn) {
+                btn.disabled = false;
+                btn.className = 'tool-use-btn bg-cg_blue hover:bg-cg_navy text-white shadow-sm px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors';
+            }
+        }
     },
 
     useTool(type) {
@@ -800,9 +817,12 @@ window.farmApp = {
         });
         
         if(changesMade) {
-            this.renderPlots();
-            if(this.state.selectedPlotId !== null) {
-                this.selectPlot(this.state.selectedPlotId);
+            // Solo renderizar si el grid existe
+            if(document.getElementById('farm-grid')) {
+                this.renderPlots();
+                if(this.state.selectedPlotId !== null) {
+                    this.selectPlot(this.state.selectedPlotId);
+                }
             }
             this.saveState(); // Guardar avance
         } else if (deltaMS > 0) {

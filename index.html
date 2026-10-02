@@ -309,7 +309,8 @@
                         if (walletDisplay) {
                             walletDisplay.innerText = dbBalance.toLocaleString();
                             document.getElementById('wallet-usd-display').innerText = `$${(dbBalance / 1000).toFixed(2)} USD`;
-                            document.getElementById('cashout-amount').max = dbBalance;
+                            const cashoutAmount = document.getElementById('cashout-amount');
+                            if(cashoutAmount) cashoutAmount.max = dbBalance;
                         }
                         
                         // Actualizar LocalStorage
@@ -323,7 +324,7 @@
         }
 
         // 1. Consultar saldo cada 30 segundos silenciosamente
-        setInterval(syncUserData, 30000);
+        setInterval(syncUserData, 10000);
 
         // 2. Consultar saldo Inmediatamente cuando el usuario regresa a esta pestaña
         window.addEventListener('focus', syncUserData);
