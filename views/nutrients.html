@@ -73,7 +73,7 @@
             </button>
         </div>
 
-        <!-- TimeWall (NUEVO) -->
+        <!-- TimeWall -->
         <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-blue-500 hover:shadow-lg transition-all">
             <div class="flex justify-between items-start mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 font-black text-2xl group-hover:scale-110 transition-transform">TW</div>
@@ -87,6 +87,23 @@
             </div>
             <button onclick="openTimeWall()" class="w-full bg-white border border-gray-200 text-cg_navy hover:bg-blue-600 hover:text-white hover:border-blue-600 font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Abrir Muro
+            </button>
+        </div>
+
+        <!-- NUEVO: Monetag Direct Link -->
+        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-orange-500 hover:shadow-lg transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-500 font-black text-2xl group-hover:scale-110 transition-transform">▶️</div>
+                <span class="bg-green-100 text-green-600 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Instantáneo</span>
+            </div>
+            <h3 class="text-xl font-black text-cg_navy mb-2 group-hover:text-orange-500 transition-colors">Vistas Rápidas</h3>
+            <p class="text-sm text-gray-500 leading-relaxed mb-6 flex-1">Gana tréboles instantáneos simplemente visitando los enlaces patrocinados de nuestros socios de Monetag.</p>
+            <div class="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 flex justify-between items-center">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pago Inmediato</span>
+                <span class="text-base font-black text-cg_gold">+ 5 🍀 / Click</span>
+            </div>
+            <button id="btn-direct-link" onclick="openDirectLinkReward()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                Ver Anuncio (5 🍀)
             </button>
         </div>
 
@@ -139,7 +156,6 @@
         window.open(cpxUrl, '_blank', 'width=1000,height=700');
     }
 
-    // NUEVA FUNCIÓN: Abrir el muro de TimeWall
     function openTimeWall() {
         const savedUser = localStorage.getItem('user');
         if (!savedUser) {
@@ -148,13 +164,57 @@
         }
 
         const user = JSON.parse(savedUser);
-        
-        // IMPORTANTE: Reemplaza esto con el enlace base de tu Placement de TimeWall
         const baseUrl = "TU_ENLACE_BASE_DE_TIMEWALL_AQUI"; 
-        
-        // TimeWall requiere que envíes el identificador de usuario en el parámetro de la URL
         const timeWallUrl = `${baseUrl}&userid=${encodeURIComponent(user.username)}`;
         
         window.open(timeWallUrl, '_blank', 'width=1000,height=700');
+    }
+
+    // NUEVA FUNCIÓN: Lógica para Recompensa Direct Link
+    async function openDirectLinkReward() {
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            alert("Debes iniciar sesión para ver anuncios.");
+            return;
+        }
+
+        const user = JSON.parse(savedUser);
+        const btn = document.getElementById('btn-direct-link');
+
+        // Deshabilitar temporalmente para evitar spam de clics
+        btn.disabled = true;
+        btn.innerHTML = 'Procesando...';
+        btn.classList.replace('bg-orange-500', 'bg-gray-400');
+
+        try {
+            // 1. Avisar al backend que sume 5 treboles
+            const response = await fetch('/api/reward/directlink', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username })
+            });
+
+            if (response.ok) {
+                // 2. Abrir el enlace de Monetag (REEMPLAZA ESTA URL CON TU DIRECT LINK DE MONETAG)
+                const monetagDirectLinkUrl = "https://omg10.com/4/11941426"; 
+                window.open(monetagDirectLinkUrl, '_blank');
+                
+                // Forzar la sincronización del saldo en pantalla inmediatamente
+                if(typeof syncUserData === 'function') {
+                    syncUserData();
+                }
+            } else {
+                alert("Error al procesar la recompensa.");
+            }
+        } catch(e) {
+            console.error("Error en direct link:", e);
+        }
+
+        // Rehabilitar botón después de 10 segundos
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Ver Anuncio (5 🍀)';
+            btn.classList.replace('bg-gray-400', 'bg-orange-500');
+        }, 10000);
     }
 </script>

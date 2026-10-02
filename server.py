@@ -13,7 +13,7 @@ DB_URI = os.getenv("DATABASE_URL")
 BITLABS_SECRET = os.getenv("BITLABS_SECRET_KEY", "glrhMlnWAzlo5eOYb2hUcNnEniiG4fnG")
 TAPRESEARCH_SECRET = os.getenv("TAPRESEARCH_SECRET_KEY", "tu_llave_secreta_tapresearch_aqui")
 CPX_SECRET = os.getenv("CPX_SECRET_KEY", "9217413a1d093d001d21dd0f5f99dae5")
-TIMEWALL_SECRET = os.getenv("TIMEWALL_SECRET_KEY", "tu_secreto_timewall_aqui")
+TIMEWALL_SECRET = os.getenv("TIMEWALL_SECRET_KEY", "58b5f984a71e47fc9ccfa71f84156f6f ")
 
 def get_db_connection():
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
@@ -50,7 +50,6 @@ init_db()
 def serve_index():
     return send_from_directory('.', 'index.html')
 
-# --- RUTA PARA SERVIR EL SERVICE WORKER DE MONETAG ---
 @app.route('/sw.js')
 def serve_sw():
     return send_from_directory('.', 'sw.js')
@@ -120,7 +119,6 @@ def save_state():
     
     return jsonify({"message": "Progreso guardado en la nube"})
 
-# --- ENDPOINT PARA SINCRONIZAR SALDO DESDE EL FRONTEND ---
 @app.route('/api/sync/<username>', methods=['GET'])
 def sync_user(username):
     conn = get_db_connection()
@@ -134,7 +132,29 @@ def sync_user(username):
         return jsonify({"status": "success", "user": user_data}), 200
     return jsonify({"error": "Usuario no encontrado"}), 404
 
-# --- WEBHOOK PARA BITLABS ---
+# --- NUEVO: ENDPOINT PARA RECOMPENSA INMEDIATA DIRECT LINK ---
+@app.route('/api/reward/directlink', methods=['POST'])
+def directlink_reward():
+    data = request.json
+    username = data.get('username')
+    
+    if not username:
+        return jsonify({"error": "Usuario requerido"}), 400
+
+    # Damos 5 Tréboles por cada clic en el enlace.
+    reward_amount = 5
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET balance = balance + %s WHERE username = %s RETURNING balance", (reward_amount, username))
+    new_balance = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Recompensa acreditada", "new_balance": new_balance['balance']})
+
+
 @app.route('/api/webhook/bitlabs', methods=['GET', 'POST'])
 def bitlabs_webhook():
     try:
@@ -167,7 +187,6 @@ def bitlabs_webhook():
     except Exception as e:
         return jsonify({"error": "Error interno"}), 500
 
-# --- WEBHOOK PARA TAPRESEARCH ---
 @app.route('/api/webhook/tapresearch', methods=['GET'])
 def tapresearch_webhook():
     try:
@@ -197,7 +216,6 @@ def tapresearch_webhook():
     except Exception as e:
         return jsonify({"error": "Error interno"}), 500
 
-# --- WEBHOOK PARA CPX RESEARCH ---
 @app.route('/api/webhook/cpx', methods=['GET'])
 def cpx_webhook():
     try:
@@ -230,20 +248,16 @@ def cpx_webhook():
     except Exception as e:
         return jsonify({"error": "Error interno"}), 500
 
-# --- WEBHOOK PARA TIMEWALL ---
 @app.route('/api/webhook/timewall', methods=['GET'])
 def timewall_webhook():
     try:
-        # Extraer los datos de TimeWall
         uid = request.args.get('userid')
         reward = request.args.get('revenue')
         hash_signature = request.args.get('hash')
         
-        # Ping de verificación
         if not uid or not reward:
              return jsonify({"status": "OK", "message": "Webhook de TimeWall activo"}), 200
 
-        # Validación de firma exacta de TimeWall: sha256(userID + revenue + SecretKey)
         if hash_signature:
             message = f"{uid}{reward}{TIMEWALL_SECRET}"
             computed_hash = hashlib.sha256(message.encode('utf-8')).hexdigest()
@@ -261,7 +275,6 @@ def timewall_webhook():
 
         return jsonify({"status": "SUCCESS", "message": f"TimeWall: Acreditados {reward_amount} a {uid}"}), 200
     except Exception as e:
-        print(f"Error procesando webhook de TimeWall: {e}")
         return jsonify({"error": "Error interno"}), 500
 
 if __name__ == '__main__':
