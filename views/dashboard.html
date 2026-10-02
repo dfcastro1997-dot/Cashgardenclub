@@ -1,235 +1,110 @@
 <div class="max-w-[1400px] mx-auto">
-    <!-- Header del Dashboard -->
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h2 class="text-2xl font-extrabold text-cg_navy tracking-tight">Financial Overview</h2>
-            <p class="text-xs text-gray-400 font-medium mt-0.5">Monitoreo en tiempo real del ecosistema global</p>
+            <h2 class="text-2xl font-extrabold text-cg_navy tracking-tight">Arena Overview</h2>
+            <p class="text-xs text-gray-400 font-medium mt-0.5">Monitoreo en tiempo real del circuito competitivo</p>
         </div>
         <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-cg_blue animate-ping"></span>
-            <span class="bg-cg_cyan/20 text-cg_blue text-xs font-extrabold px-3 py-1.5 rounded-full border border-cg_cyan/50">Simulación Idle Ambiental Activa</span>
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+            <span class="bg-green-50 text-green-600 text-xs font-extrabold px-3 py-1.5 rounded-full border border-green-200">Torneos Activos: 3</span>
         </div>
     </div>
     
-    <!-- CONTENEDOR PRINCIPAL (GRID) -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <!-- COLUMNA IZQUIERDA -->
         <div class="xl:col-span-2 space-y-6">
-            
-            <!-- Últimas Noticias (Top 5) -->
             <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-6">
                 <div class="flex justify-between items-center mb-5">
                     <div class="flex items-center gap-2">
                         <span class="w-1.5 h-5 bg-cg_blue rounded-full"></span>
-                        <h3 class="font-extrabold text-lg text-cg_navy">Últimas Noticias</h3>
+                        <h3 class="font-extrabold text-lg text-cg_navy">Noticias del Ecosistema</h3>
                     </div>
-                    <button onclick="loadView('news')" class="text-xs font-bold text-cg_blue hover:text-cg_navy transition-colors flex items-center gap-1">
-                        Ver todas <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
                 </div>
-                
                 <div class="space-y-3">
                     <div class="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50/80 border border-transparent hover:border-gray-100 transition-all cursor-pointer group" onclick="loadView('news')">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cg_yellow/40 to-cg_gold/30 text-cg_gold flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">⚡</div>
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-green-100 to-green-200 text-green-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">💸</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2 mb-1">
-                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Happy Hour Multiplier Active!</h4>
-                                <span class="text-[10px] font-bold text-gray-400 flex-shrink-0">Hace 2h</span>
+                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Pagos Inmediatos por Nequi Disponibles</h4>
+                                <span class="text-[10px] font-bold text-gray-400 flex-shrink-0">Hoy</span>
                             </div>
-                            <p class="text-xs text-gray-500 truncate">Complete any survey in the next 2 hours and receive a +25% boost in Golden Clovers.</p>
+                            <p class="text-xs text-gray-500 truncate">La API de pagos a terceros de Wompi está operativa. Solicita retiros desde $10.000 COP sin retención en la fuente.</p>
                         </div>
                     </div>
                     <div class="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50/80 border border-transparent hover:border-gray-100 transition-all cursor-pointer group" onclick="loadView('news')">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cg_cyan/30 to-cg_blue/20 text-cg_blue flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">🌸</div>
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cg_cyan/30 to-cg_blue/20 text-cg_blue flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">⚖️</div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2 mb-1">
-                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Nueva Planta: Orquídea Libra (£)</h4>
+                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Actualización Legal: Torneos de Habilidad</h4>
                                 <span class="text-[10px] font-bold text-gray-400 flex-shrink-0">Ayer</span>
                             </div>
-                            <p class="text-xs text-gray-500 truncate">Ya disponible en el mercado con un 10% de probabilidad de cosecha crítica.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50/80 border border-transparent hover:border-gray-100 transition-all cursor-pointer group" onclick="loadView('news')">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-100 to-cg_cyan/40 text-cg_blue flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">💧</div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2 mb-1">
-                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Mantenimiento de Servidores</h4>
-                                <span class="text-[10px] font-bold text-gray-400 flex-shrink-0">01 Oct</span>
-                            </div>
-                            <p class="text-xs text-gray-500 truncate">Se han optimizado los tiempos de riego automáticos para todos los terrenos.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50/80 border border-transparent hover:border-gray-100 transition-all cursor-pointer group" onclick="loadView('news')">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-gray-200 to-cg_silver/50 text-cg_navy flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">🛡️</div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2 mb-1">
-                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Actualización Antifraude</h4>
-                                <span class="text-[10px] font-bold text-gray-400 flex-shrink-0">28 Sep</span>
-                            </div>
-                            <p class="text-xs text-gray-500 truncate">Hemos mejorado nuestro sistema de detección de VPNs para proteger la economía.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50/80 border border-transparent hover:border-gray-100 transition-all cursor-pointer group" onclick="loadView('news')">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-100 to-cg_gold/20 text-cg_gold flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">🦅</div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2 mb-1">
-                                <h4 class="text-sm font-bold text-cg_navy group-hover:text-cg_blue transition-colors truncate">Migración a Clima Estacional</h4>
-                                <span class="text-[10px] font-bold text-gray-400 flex-shrink-0">25 Sep</span>
-                            </div>
-                            <p class="text-xs text-gray-500 truncate">Las tasas de agua ahora varían según las 4 estaciones de la granja.</p>
+                            <p class="text-xs text-gray-500 truncate">Hemos eliminado el RNG (Azar). CashGarden es oficialmente un deporte electrónico agrícola libre de Coljuegos.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Jugadores Nuevos -->
             <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-2">
                         <span class="w-1.5 h-5 bg-cg_gold rounded-full"></span>
-                        <h3 class="font-extrabold text-lg text-cg_navy">Nuevos Invernaderos Registrados</h3>
+                        <h3 class="font-extrabold text-lg text-cg_navy">Últimos Ganadores</h3>
                     </div>
-                    <span class="text-xs text-gray-400 font-semibold">En tiempo real</span>
                 </div>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" class="w-10 h-10 bg-white rounded-full border border-gray-200">
+                    <div class="flex items-center gap-3 p-3 rounded-xl border border-green-100 bg-green-50 hover:bg-white transition-all">
+                        <div class="w-10 h-10 bg-white rounded-full border border-gray-200 flex items-center justify-center font-bold">FE</div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-bold text-cg_navy flex items-center justify-between">
                                 <span class="truncate">FelixTree</span>
-                                <span class="text-xs">🇩🇪</span>
+                                <span class="text-xs font-black text-green-600">+$15.000</span>
                             </p>
-                            <p class="text-[11px] text-gray-400">Hace 5 minutos</p>
+                            <p class="text-[11px] text-gray-400">Torneo Freeroll</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria" alt="Avatar" class="w-10 h-10 bg-white rounded-full border border-gray-200">
+                    <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white transition-all">
+                        <div class="w-10 h-10 bg-white rounded-full border border-gray-200 flex items-center justify-center font-bold">MA</div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-bold text-cg_navy flex items-center justify-between">
                                 <span class="truncate">MariaGreen</span>
-                                <span class="text-xs">🇲🇽</span>
+                                <span class="text-xs font-black text-green-600">+$8.000</span>
                             </p>
-                            <p class="text-[11px] text-gray-400">Hace 12 minutos</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="Avatar" class="w-10 h-10 bg-white rounded-full border border-gray-200">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-cg_navy flex items-center justify-between">
-                                <span class="truncate">JohnFarm</span>
-                                <span class="text-xs">🇺🇸</span>
-                            </p>
-                            <p class="text-[11px] text-gray-400">Hace 28 minutos</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ana" alt="Avatar" class="w-10 h-10 bg-white rounded-full border border-gray-200">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-cg_navy flex items-center justify-between">
-                                <span class="truncate">AnaBotanic</span>
-                                <span class="text-xs">🇪🇸</span>
-                            </p>
-                            <p class="text-[11px] text-gray-400">Hace 45 minutos</p>
+                            <p class="text-[11px] text-gray-400">Torneo Rápido</p>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- COLUMNA DERECHA -->
         <div class="xl:col-span-1 space-y-6">
             <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden flex flex-col">
-                
                 <div class="bg-white border-b border-gray-100 p-6 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-cg_yellow/20 rounded-full blur-2xl"></div>
                     <div class="flex items-center justify-between mb-3 relative z-10">
                         <div class="flex items-center gap-2">
                             <span class="text-2xl">🏆</span>
-                            <h3 class="font-extrabold text-lg text-cg_navy tracking-tight">Top Mundial</h3>
+                            <h3 class="font-extrabold text-lg text-cg_navy tracking-tight">Top Ganancias</h3>
                         </div>
-                        <span class="bg-yellow-50 text-cg_gold text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-yellow-200 uppercase tracking-widest">Global</span>
                     </div>
-                    <div class="flex items-center justify-between text-xs text-gray-500 relative z-10 pt-1">
-                        <span>Compitiendo por cosecha total</span>
-                        <span class="font-extrabold text-cg_navy bg-gray-50 px-2 py-0.5 rounded border border-gray-200">450 Jugadores</span>
-                    </div>
+                    <div class="text-xs text-gray-500 relative z-10 pt-1">Jugadores con mayor rentabilidad histórica.</div>
                 </div>
 
                 <div class="p-3 space-y-2">
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-cg_yellow/30 to-transparent border border-cg_yellow/60 shadow-sm">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cg_yellow to-cg_gold flex items-center justify-center text-white font-black text-xs shadow-sm flex-shrink-0">#1</div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-extrabold text-cg_navy flex items-center gap-1.5 truncate">
-                                    CryptoKing <span class="text-xs" title="Corea del Sur">🇰🇷</span>
-                                </p>
-                            </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-cg_yellow/30 to-transparent border border-cg_yellow/60">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cg_yellow to-cg_gold flex items-center justify-center text-white font-black text-xs">#1</div>
+                            <p class="text-sm font-extrabold text-cg_navy">CryptoKing</p>
                         </div>
-                        <div class="text-right flex-shrink-0 pl-2">
-                            <p class="text-xs font-black text-cg_blue">🌱 4,250</p>
-                            <p class="text-[10px] font-bold text-gray-400">🗺 12 Terrenos</p>
-                        </div>
+                        <p class="text-xs font-black text-green-600">$850.000 COP</p>
                     </div>
-
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-gray-50 to-transparent border border-gray-200/80">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cg_silver to-gray-400 flex items-center justify-center text-white font-black text-xs shadow-sm flex-shrink-0">#2</div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-cg_navy flex items-center gap-1.5 truncate">
-                                    MoneyTree <span class="text-xs" title="Estados Unidos">🇺🇸</span>
-                                </p>
-                            </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-gray-50 to-transparent border border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cg_silver to-gray-400 flex items-center justify-center text-white font-black text-xs">#2</div>
+                            <p class="text-sm font-bold text-cg_navy">MoneyTree</p>
                         </div>
-                        <div class="text-right flex-shrink-0 pl-2">
-                            <p class="text-xs font-black text-cg_blue">🌱 3,890</p>
-                            <p class="text-[10px] font-bold text-gray-400">🗺️ 10 Terrenos</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-orange-50 to-transparent border border-orange-200/60">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cg_bronze to-orange-700 flex items-center justify-center text-white font-black text-xs shadow-sm flex-shrink-0">#3</div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-cg_navy flex items-center gap-1.5 truncate">
-                                    SakuraYen <span class="text-xs" title="Japón">🇯🇵</span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="text-right flex-shrink-0 pl-2">
-                            <p class="text-xs font-black text-cg_blue">🌱 3,100</p>
-                            <p class="text-[10px] font-bold text-gray-400">🗺️ 8 Terrenos</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-gray-50/80 transition-colors">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-8 text-center text-xs font-extrabold text-gray-400 flex-shrink-0">#4</span>
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-cg_navy flex items-center gap-1.5 truncate">
-                                    EuroMaster <span class="text-xs" title="España">🇪🇸</span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="text-right flex-shrink-0 pl-2">
-                            <p class="text-xs font-bold text-gray-600">🌱 2,850 <span class="text-gray-300">|</span> 🗺️ 7</p>
-                        </div>
+                        <p class="text-xs font-black text-green-600">$420.000 COP</p>
                     </div>
                 </div>
-                
-                <div class="p-4 bg-gray-50 border-t border-gray-100 flex flex-col gap-3">
-                    <div class="flex items-center justify-between text-xs text-gray-400">
-                        <span>Mostrando <strong>1 - 4</strong> de <strong>450</strong></span>
-                        <div class="flex gap-1">
-                            <button class="w-6 h-6 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-400 cursor-not-allowed">&lt;</button>
-                            <button class="w-6 h-6 rounded bg-cg_blue text-white font-bold text-[10px]">1</button>
-                            <button class="w-6 h-6 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100">2</button>
-                            <button class="w-6 h-6 rounded bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100">&gt;</button>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

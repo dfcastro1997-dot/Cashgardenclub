@@ -1,228 +1,26 @@
 <div class="max-w-6xl mx-auto space-y-8" id="news-module">
-    
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-cg_blue"></span>
-                <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Portal de Actualizaciones</span>
-            </div>
-            <h2 class="text-3xl font-black text-cg_navy tracking-tight">Global Updates</h2>
-        </div>
-        
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-            <button class="px-3.5 py-1.5 rounded-xl bg-cg_blue text-white text-xs font-bold shadow-sm">Todas</button>
-            <button class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue text-xs font-bold transition-colors">Eventos</button>
-            <button class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue text-xs font-bold transition-colors">Parches</button>
-            <button class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue text-xs font-bold transition-colors">Seguridad</button>
+            <h2 class="text-3xl font-black text-cg_navy tracking-tight">Comunicados Oficiales</h2>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300" 
-         onclick="openNewsModal(
-             'Happy Hour Multiplier Active! (+25% Boost)', 
-             '¡Atención a todos los cultivadores! Durante las próximas 2 horas estará activo el evento de bonificación de Happy Hour. Todas las tareas de la Estación de Nutrientes (encuestas en BitLabs, TapResearch y videos recompensados) tendrán un multiplicador directo del +25% en Tréboles Dorados 🍀.\n\nEste beneficio se aplica de forma automática en el servidor y es completamente acumulable con el multiplicador natural de tus plantas.\n\nRecomendaciones:\n1. Asegúrate de tener espacio disponible en tu billetera.\n2. Completa encuestas perfiladas para maximizar tus ganancias.\n3. Revisa el contador de tiempo restante en la esquina superior.', 
-             'Octubre 01, 2026 • 10:00 AM', 
-             '⚡', 
-             'EVENTO ESPECIAL'
-         )">
+    <div class="bg-white rounded-3xl shadow-soft border border-green-200 overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300">
         <div class="grid grid-cols-1 lg:grid-cols-12">
-            <div class="lg:col-span-5 bg-gradient-to-br from-cg_yellow to-cg_gold p-8 flex flex-col justify-between relative overflow-hidden min-h-[220px]">
-                <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                <div class="flex items-center justify-between relative z-10">
-                    <span class="bg-black/20 text-white backdrop-blur-md text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">⚡ Evento Especial</span>
-                    <span class="text-xs font-bold text-white/90">Lectura 2 min</span>
-                </div>
+            <div class="lg:col-span-5 bg-gradient-to-br from-green-400 to-green-600 p-8 flex flex-col justify-between relative overflow-hidden min-h-[220px]">
                 <div class="relative z-10 text-white my-auto py-6">
-                    <span class="text-6xl drop-shadow-lg inline-block group-hover:scale-110 transition-transform duration-300 text-white">⚡</span>
-                </div>
-                <div class="relative z-10 text-white text-xs font-bold">
-                    Finaliza en: 01h 45m
+                    <span class="text-6xl drop-shadow-lg inline-block group-hover:scale-110 transition-transform duration-300">💸</span>
                 </div>
             </div>
-
             <div class="lg:col-span-7 p-8 flex flex-col justify-between">
                 <div>
-                    <div class="text-xs font-extrabold text-cg_gold uppercase tracking-widest mb-2">Octubre 01, 2026</div>
-                    <h3 class="text-2xl font-black text-cg_navy group-hover:text-cg_blue transition-colors mb-3 leading-snug">
-                        Happy Hour Multiplier Active! (+25% Boost)
-                    </h3>
+                    <div class="text-xs font-extrabold text-green-500 uppercase tracking-widest mb-2">Octubre 02, 2026</div>
+                    <h3 class="text-2xl font-black text-cg_navy mb-3">Integración Finalizada con Wompi / Nequi</h3>
                     <p class="text-gray-500 text-sm leading-relaxed mb-6">
-                        Aprovecha la ventana de tiempo limitado para multiplicar todas tus recompensas por encuestas y micro-acciones en un +25% adicional sin alterar las tasas de las APIs externas.
+                        Hemos migrado nuestra infraestructura financiera. Dile adiós a PayPal y sus altas comisiones. Ahora, todos los retiros superiores a $10.000 COP se procesan instantáneamente a tu cuenta Nequi o Daviplata.
                     </p>
                 </div>
-                <div class="flex items-center justify-between border-t border-gray-100 pt-4">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-cg_navy text-white font-bold text-xs flex items-center justify-center">CG</div>
-                        <span class="text-xs font-bold text-cg_navy">Equipo CashGarden</span>
-                    </div>
-                    <span class="text-cg_blue font-black text-xs inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        Leer Publicación Completa &rarr;
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden flex flex-col justify-between group cursor-pointer hover:shadow-lg hover:border-cg_cyan transition-all"
-             onclick="openNewsModal(
-                 'Nueva Planta: Orquídea de Libra (£)', 
-                 'Nos complace anunciar la incorporación de la Orquídea de Libra (£) al catálogo oficial del mercado.\n\nEsta especie introduce la mecánica de Cosecha Crítica (Jackpot): cada vez que completas una tarea o riegas la planta, existe un 10% de probabilidad fija de duplicar inmediatamente la recompensa en Tréboles Dorados 🍀.', 
-                 'Septiembre 30, 2026', 
-                 '🌸', 
-                 'NUEVA ESPECIE'
-             )">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="w-10 h-10 rounded-2xl bg-cg_cyan/20 text-cg_blue flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">🌸</span>
-                    <span class="bg-gray-100 text-gray-600 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase">Especie</span>
-                </div>
-                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Septiembre 30, 2026</div>
-                <h4 class="text-base font-bold text-cg_navy group-hover:text-cg_blue transition-colors mb-2 leading-snug">
-                    Nueva Planta: Orquídea de Libra (£)
-                </h4>
-                <p class="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">
-                    Introduce la mecánica de cosecha crítica con un 10% de probabilidad de duplicar Tréboles Dorados.
-                </p>
-            </div>
-            <div class="px-6 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-cg_blue">
-                <span>Ver Detalles</span>
-                <span>&rarr;</span>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden flex flex-col justify-between group cursor-pointer hover:shadow-lg hover:border-cg_cyan transition-all"
-             onclick="openNewsModal(
-                 'Mantenimiento e Infraestructura Server S2S', 
-                 'Durante la madrugada de hoy se ejecutó un mantenimiento programado en los servidores PostgreSQL y Redis en la infraestructura de Render.\n\nMejoras aplicadas:\n- Reducción de latencia en webhooks postback de BitLabs.\n- Validación anti-duplicados por firma HMAC-SHA256 repotenciada.\n- Actualización de los sockets en tiempo real para las animaciones de cosecha.\n\nNo se registró pérdida de datos ni interrupción en los saldos de usuarios.', 
-                 'Septiembre 28, 2026', 
-                 '💧', 
-                 'SISTEMA'
-             )">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="w-10 h-10 rounded-2xl bg-cg_blue/20 text-cg_blue flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">💧</span>
-                    <span class="bg-gray-100 text-gray-600 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase">Servidores</span>
-                </div>
-                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Septiembre 28, 2026</div>
-                <h4 class="text-base font-bold text-cg_navy group-hover:text-cg_blue transition-colors mb-2 leading-snug">
-                    Mantenimiento e Infraestructura S2S
-                </h4>
-                <p class="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">
-                    Optimizaciones de velocidad en los webhooks de encuestas y validación de firmas criptográficas.
-                </p>
-            </div>
-            <div class="px-6 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-cg_blue">
-                <span>Ver Detalles</span>
-                <span>&rarr;</span>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden flex flex-col justify-between group cursor-pointer hover:shadow-lg hover:border-cg_cyan transition-all"
-             onclick="openNewsModal(
-                 'Ajuste en Filtros Antifraude & VPN', 
-                 'En compromiso con nuestros socios publicitarios, hemos actualizado la integración con la API de IPQualityScore.\n\nLas cuentas que intenten ingresar mediante Proxies, TOR o datacenters con puntaje de fraude superior a 75 serán suspendidas automáticamente para las secciones remuneradas.\n\nRecordamos a la comunidad que el uso de conexiones residenciales reales es obligatorio para solicitar retiros a PayPal.', 
-                 'Septiembre 25, 2026', 
-                 '🛡', 
-                 'SEGURIDAD'
-             )">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="w-10 h-10 rounded-2xl bg-cg_silver/30 text-cg_navy flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">🛡️</span>
-                    <span class="bg-gray-100 text-gray-600 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase">Seguridad</span>
-                </div>
-                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Septiembre 25, 2026</div>
-                <h4 class="text-base font-bold text-cg_navy group-hover:text-cg_blue transition-colors mb-2 leading-snug">
-                    Ajuste en Filtros Antifraude & VPN
-                </h4>
-                <p class="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">
-                    Mejoras en la detección de proxies para garantizar pagos seguros y rápidos a todos los usuarios legítimos.
-                </p>
-            </div>
-            <div class="px-6 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-cg_blue">
-                <span>Ver Detalles</span>
-                <span>&rarr;</span>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- VENTANA MODAL PROFESIONAL -->
-    <div id="news-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-md transition-opacity duration-300" onclick="closeNewsModal()"></div>
-        
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]" id="news-modal-card">
-            
-            <div class="bg-gradient-to-r from-cg_blue to-cg_cyan p-6 text-white relative">
-                <button onclick="closeNewsModal()" class="absolute top-5 right-5 w-9 h-9 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors">
-                    ✕
-                </button>
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider" id="modal-category">
-                        CATEGORÍA
-                    </span>
-                    <span class="text-xs text-white/90 font-medium" id="modal-date">FECHA</span>
-                </div>
-                <h3 class="text-2xl font-black tracking-tight leading-snug pr-8" id="modal-title">
-                    Título de la Noticia
-                </h3>
-            </div>
-
-            <div class="p-8 overflow-y-auto space-y-4 text-carbon font-sans">
-                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100 mb-4">
-                    <span class="text-3xl" id="modal-icon">📰</span>
-                    <div>
-                        <p class="text-xs font-bold text-cg_navy">Comunicado Oficial de la Administración</p>
-                        <p class="text-[11px] text-gray-400">CashGarden Club Ecosystem</p>
-                    </div>
-                </div>
-
-                <div class="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-line" id="modal-body">
-                    Cuerpo del comunicado...
-                </div>
-            </div>
-
-            <div class="p-5 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                <span class="text-xs text-gray-400 font-medium">CashGarden Club v1.2</span>
-                <button onclick="closeNewsModal()" class="bg-cg_blue hover:bg-cg_navy text-white font-bold px-6 py-2.5 rounded-xl shadow-sm text-sm transition-all">
-                    Entendido
-                </button>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function openNewsModal(title, body, date, icon, category) {
-        const modal = document.getElementById('news-modal');
-        const modalCard = document.getElementById('news-modal-card');
-        
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-body').innerText = body;
-        document.getElementById('modal-date').innerText = date;
-        document.getElementById('modal-icon').innerText = icon || '📰';
-        document.getElementById('modal-category').innerText = category || 'ACTUALIZACIÓN';
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        setTimeout(() => {
-            modalCard.classList.remove('scale-95', 'opacity-0');
-            modalCard.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeNewsModal() {
-        const modal = document.getElementById('news-modal');
-        const modalCard = document.getElementById('news-modal-card');
-        
-        modalCard.classList.remove('scale-100', 'opacity-100');
-        modalCard.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }, 300);
-    }
-</script>

@@ -149,7 +149,7 @@
                 </div>
                 <div>
                     <h4 class="text-base sm:text-lg font-black text-cg_navy">1. Compra de Terrenos</h4>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Haz clic en un terreno bloqueado para comprarlo usando tus tréboles (🍀). Cada nueva expansión tiene un costo mayor, pero te permite multiplicar tu producción en paralelo.</p>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Haz clic en un terreno bloqueado para comprarlo usando tu saldo (COP). Cada nueva expansión tiene un costo mayor, pero te permite multiplicar tu producción en paralelo.</p>
                 </div>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
@@ -169,7 +169,7 @@
                     <h4 class="text-base sm:text-lg font-black text-cg_navy">3. Cuidados y Riesgos</h4>
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
                         💧 <strong>Agua:</strong> Las plantas consumen agua con el tiempo. Si el porcentaje llega al 0%, el tiempo de crecimiento se pausa. Usa la <em>Regadera</em>.<br>
-                        🦅 <strong>Plagas:</strong> Pueden aparecer de forma aleatoria (más en Otoño), pausando el progreso. Usa un <em>Espantapájaros</em> preventivo para ahuyentarlas temporalmente.
+                        🦅 <strong>Plagas:</strong> Aparecen de forma garantizada si el agua baja del 20%, pausando el progreso. Usa un <em>Espantapájaros</em> preventivo para ahuyentarlas temporalmente.
                     </p>
                 </div>
             </div>
@@ -179,7 +179,7 @@
                 </div>
                 <div>
                     <h4 class="text-base sm:text-lg font-black text-cg_navy">4. Cosecha y Ganancias</h4>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Cuando la barra verde se llene por completo, la flor estará lista. Presiona el botón <strong>Cosechar</strong> para cobrar tu recompensa en 🍀. Recuerda que las macetas tienen un número limitado de usos antes de romperse.</p>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Cuando la barra verde se llene por completo, la flor estará lista. Presiona el botón <strong>Cosechar</strong> para cobrar tu recompensa en COP. Recuerda que las macetas tienen un número limitado de usos antes de romperse.</p>
                 </div>
             </div>
         </div>
@@ -212,7 +212,7 @@
             <div class="flex items-center gap-2 sm:gap-4">
                 <div class="bg-white border border-gray-200 px-3 sm:px-4 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
                     <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase hidden sm:inline">Saldo:</span>
-                    <span class="font-black text-cg_gold text-base sm:text-lg"><span id="shop-modal-balance">0</span> 🍀</span>
+                    <span class="font-black text-cg_gold text-base sm:text-lg"><span id="shop-modal-balance">0</span> COP</span>
                 </div>
                 <button onclick="window.farmApp.closeShop()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold transition-colors">✕</button>
             </div>
@@ -240,7 +240,7 @@
         <p class="text-sm text-gray-500 mb-2">Expande tu capacidad operativa para multiplicar tus ganancias pasivas diarias.</p>
         <div class="bg-white rounded-xl p-4 mb-6 border border-gray-100 mt-4 shadow-sm">
             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Costo de Inversión</p>
-            <p class="text-3xl font-black text-cg_gold" id="plot-modal-cost">0 🍀</p>
+            <p class="text-3xl font-black text-cg_gold" id="plot-modal-cost">0 COP</p>
         </div>
         <div class="flex gap-3">
             <button onclick="window.farmApp.closeModals()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors">Cancelar</button>
@@ -263,17 +263,17 @@
 
 <script>
 window.farmApp = {
-    PLOT_COSTS: [0, 100, 300, 700, 1500, 3000],
+    PLOT_COSTS: [0, 1000, 3000, 7000, 15000, 30000],
     
     seasons: {
-        'Primavera': { name: 'Primavera', icon: '🌸', desc: 'Las plantas crecen un 10% más rápido. Un clima noble ideal para iniciar tus cultivos de ciclo largo.', water: 8, crow: 0.08, growMod: 0.9, scarecrowMod: 1 },
-        'Verano': { name: 'Verano', icon: '☀️', desc: 'Evaporación acelerada. El consumo de agua aumenta significativamente; requerirás revisar tus plantas con mayor frecuencia.', water: 15, crow: 0.03, growMod: 1, scarecrowMod: 1 },
-        'Otoño': { name: 'Otoño', icon: '🍂', desc: 'Alta incidencia de plagas. Los espantapájaros se deterioran rápido y duran un 30% menos de tiempo en proteger tu cultivo.', water: 8, crow: 0.15, growMod: 1, scarecrowMod: 0.7 },
-        'Invierno': { name: 'Invierno', icon: '❄️', desc: 'Frío extremo y heladas. El crecimiento de todas las plantas se ralentiza un 20%, aunque no corres riesgo de plagas.', water: 4, crow: 0, growMod: 1.2, scarecrowMod: 1 }
+        'Primavera': { name: 'Primavera', icon: '🌸', desc: 'Las plantas crecen un 10% más rápido. Un clima noble ideal para iniciar tus cultivos de ciclo largo.', water: 8, growMod: 0.9, scarecrowMod: 1 },
+        'Verano': { name: 'Verano', icon: '☀️', desc: 'Evaporación acelerada. El consumo de agua aumenta significativamente; requerirás revisar tus plantas con mayor frecuencia.', water: 15, growMod: 1, scarecrowMod: 1 },
+        'Otoño': { name: 'Otoño', icon: '🍂', desc: 'El entorno es más hostil. Los espantapájaros se deterioran rápido y duran un 30% menos de tiempo en proteger tu cultivo.', water: 8, growMod: 1, scarecrowMod: 0.7 },
+        'Invierno': { name: 'Invierno', icon: '❄️', desc: 'Frío extremo y heladas. El crecimiento de todas las plantas se ralentiza un 20%.', water: 4, growMod: 1.2, scarecrowMod: 1 }
     },
 
     state: {
-        balance: 150,
+        balance: 1500, // Ajustado para ser COP (ej. inician con $1500)
         currentSeason: 'Primavera',
         plots: [
             { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -311,12 +311,12 @@ window.farmApp = {
         tools: [
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores pequeñas.', price: 50 },
             { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '5 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 150 },
-            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas. (Ver Video)', price: 0, isAd: true },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12-24 Hrs', usage: '20', desc: 'Protección real contra plagas.', price: 200 }
+            { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '100', desc: 'Rellena el agua de tus plantas.', price: 50 },
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '12-24 Hrs', usage: '20', desc: 'Protección preventiva contra plagas.', price: 200 }
         ],
         flowers: [
-            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '12 Horas', usage: '1', desc: 'Recompensa total de 150 🍀 al cosecharse.', price: 100 },
-            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: '24 Horas', usage: '1', desc: 'Recompensa total de 500 🍀 al cosecharse.', price: 350 }
+            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '12 Horas', usage: '1', desc: 'Recompensa total de 150 COP al cosecharse.', price: 100 },
+            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/BKGHxVkf/Frame-744.png', duration: '24 Horas', usage: '1', desc: 'Recompensa total de 500 COP al cosecharse.', price: 350 }
         ],
         cosmetics: [
             { id: 'skin_scarecrow_gold', name: 'Protector Dorado', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: 'Permanente', usage: 'Estético', desc: 'Skin exclusiva de oro macizo.', price: 5000 },
@@ -354,7 +354,7 @@ window.farmApp = {
         if (savedStateStr) {
             try {
                 const savedState = JSON.parse(savedStateStr);
-                this.state.balance = savedState.balance ?? 150;
+                this.state.balance = savedState.balance ?? 1500;
                 this.state.plots = savedState.plots ?? this.state.plots;
                 this.state.inventory = savedState.inventory ?? this.state.inventory;
                 this.state.lastTick = savedState.lastTick ?? Date.now();
@@ -363,7 +363,7 @@ window.farmApp = {
 
         const domBalance = document.getElementById('global-balance');
         if(domBalance) {
-            domBalance.innerText = this.state.balance.toLocaleString();
+            domBalance.innerText = "$" + this.state.balance.toLocaleString();
         }
         
         this.autoSetSeason();
@@ -399,7 +399,6 @@ window.farmApp = {
 
     renderPlots() {
         const grid = document.getElementById('farm-grid');
-        // EVITAR ERROR: Si el contenedor de la granja no existe (usuario está en otra vista), no hacer render
         if (!grid) return;
 
         grid.innerHTML = '';
@@ -426,7 +425,7 @@ window.farmApp = {
                     </div>
                     <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4">
                         <span class="font-black text-cg_navy uppercase tracking-widest text-[12px] mb-1 bg-white/80 px-2 py-0.5 rounded shadow-sm backdrop-blur">Terreno ${plot.id + 1}</span>
-                        <span class="font-bold text-gray-600 text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">${cost} 🍀</span>
+                        <span class="font-bold text-gray-600 text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">${cost} COP</span>
                     </div>
                 `;
                 el.onclick = () => this.buyPlotPrompt(plot.id);
@@ -559,7 +558,7 @@ window.farmApp = {
     buyPlotPrompt(id) {
         this.state.pendingPlotId = id;
         document.getElementById('plot-modal-title').innerText = `Desbloquear Terreno ${id + 1}`;
-        document.getElementById('plot-modal-cost').innerText = `${this.PLOT_COSTS[id]} 🍀`;
+        document.getElementById('plot-modal-cost').innerText = `${this.PLOT_COSTS[id]} COP`;
         document.getElementById('plot-modal').classList.remove('hidden');
         document.getElementById('plot-modal').classList.add('flex');
     },
@@ -572,7 +571,7 @@ window.farmApp = {
             this.state.plots[id].status = 'empty';
             this.closeModals();
             this.renderPlots();
-            this.saveState(); // GUARDAR
+            this.saveState();
         }
     },
 
@@ -706,7 +705,7 @@ window.farmApp = {
 
         this.updateInventoryUI();
         this.selectPlot(plotId); 
-        this.saveState(); // GUARDAR
+        this.saveState();
     },
 
     removePlant(plotId) {
@@ -727,7 +726,7 @@ window.farmApp = {
         } else {
             this.renderPlots();
         }
-        this.saveState(); // GUARDAR
+        this.saveState();
     },
 
     harvestPlant(plotId) {
@@ -738,7 +737,7 @@ window.farmApp = {
         this.addBalance(reward);
         
         plot.potUses += 1;
-        this.showPlotToast(plotId, '✨', `+${reward} 🍀`);
+        this.showPlotToast(plotId, '✨', `+$${reward} COP`);
         
         if (plot.potUses >= 5) {
             plot.status = 'empty';
@@ -761,13 +760,12 @@ window.farmApp = {
         } else {
             this.renderPlots();
         }
-        this.saveState(); // GUARDAR
+        this.saveState();
     },
 
     startEnvironmentSimulation() {
         if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
         
-        // --- PROCESAR TIEMPO INACTIVO INMEDIATAMENTE AL ENTRAR ---
         this.processTick();
 
         this.state.simulationInterval = setInterval(() => {
@@ -775,7 +773,6 @@ window.farmApp = {
         }, 10000);
     },
 
-    // NUEVO METODO PARA CALCULAR EL CRECIMIENTO Y EL TIEMPO PASADO
     processTick() {
         const now = Date.now();
         const deltaMS = now - this.state.lastTick;
@@ -796,7 +793,8 @@ window.farmApp = {
                 if (plot.scarecrowEndTime > now) {
                     plot.hasCrow = false;
                 } else {
-                    if (!plot.hasCrow && Math.random() < (season.crow * deltaHours)) {
+                    // MECÁNICA 100% DETERMINISTA BASADA EN NIVEL DE AGUA
+                    if (!plot.hasCrow && plot.water < 20) {
                         plot.hasCrow = true;
                         if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
                         changesMade = true;
@@ -817,16 +815,15 @@ window.farmApp = {
         });
         
         if(changesMade) {
-            // Solo renderizar si el grid existe
             if(document.getElementById('farm-grid')) {
                 this.renderPlots();
                 if(this.state.selectedPlotId !== null) {
                     this.selectPlot(this.state.selectedPlotId);
                 }
             }
-            this.saveState(); // Guardar avance
+            this.saveState();
         } else if (deltaMS > 0) {
-            this.saveState(); // Guardar nuevo timestamp
+            this.saveState();
         }
     },
 
@@ -873,12 +870,7 @@ window.farmApp = {
             
             let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Decoración');
             
-            let actionButton = '';
-            if (item.isAd) {
-                actionButton = `<button onclick="window.farmApp.watchAdToBuy('${item.id}', '${tab}')" class="bg-purple-500 hover:bg-purple-700 text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">📺 Ver Anuncio</button>`;
-            } else {
-                actionButton = `<button onclick="window.farmApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors">${(item.price * qty).toLocaleString()} 🍀</button>`;
-            }
+            let actionButton = `<button onclick="window.farmApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-xs px-3 h-10 rounded-xl shadow-sm flex-1 transition-colors flex items-center justify-center gap-1">${(item.price * qty).toLocaleString()} COP</button>`;
 
             card.innerHTML = `
                 <div class="bg-white h-32 flex items-center justify-center p-4 relative shrink-0 border-b border-gray-100">
@@ -914,20 +906,6 @@ window.farmApp = {
             this.renderShopItems(tab);
         }
     },
-    
-    watchAdToBuy(itemId, tab) {
-        const qty = this.state.shopQuantities[itemId] || 1;
-        alert("Simulando: Visualizando anuncio de video recompensado...");
-        
-        setTimeout(() => {
-            if (itemId === 'tool_water') {
-                this.state.inventory[itemId].qty += (100 * qty);
-            }
-            this.updateInventoryUI();
-            alert(`¡Gracias por apoyar! Has recibido ${(100 * qty)} usos de Regadera.`);
-            this.saveState(); // GUARDAR
-        }, 1500);
-    },
 
     buyItem(itemId, unitPrice, tab) {
         const qty = this.state.shopQuantities[itemId];
@@ -936,13 +914,14 @@ window.farmApp = {
         if (this.state.balance >= total) {
             this.deductBalance(total);
             if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (20 * qty);
+            else if (itemId === 'tool_water') this.state.inventory[itemId].qty += (100 * qty);
             else if (tab === 'cosmetics') this.state.inventory[itemId].qty += qty; 
             else this.state.inventory[itemId].qty += qty;
             
             this.updateInventoryUI();
             document.getElementById('shop-modal-balance').innerText = this.state.balance.toLocaleString();
             
-            this.saveState(); // GUARDAR
+            this.saveState();
         }
     },
 
@@ -1010,7 +989,7 @@ window.farmApp = {
             this.selectPlot(this.state.selectedPlotId);
             this.showPlotToast(this.state.selectedPlotId, '🌱', '¡Sembrado!');
             
-            this.saveState(); // GUARDAR
+            this.saveState();
         }
     },
 
@@ -1023,18 +1002,18 @@ window.farmApp = {
 
     deductBalance(amount) {
         this.state.balance -= amount;
-        this.animateBalance(`-${amount.toLocaleString()}`, 'text-red-500');
+        this.animateBalance(`-$${amount.toLocaleString()}`, 'text-red-500');
     },
 
     addBalance(amount) {
         this.state.balance += amount;
-        this.animateBalance(`+${amount.toLocaleString()}`, 'text-green-500');
+        this.animateBalance(`+$${amount.toLocaleString()}`, 'text-green-500');
     },
 
     animateBalance(text, colorClass) {
         const balEl = document.getElementById('global-balance');
         if (balEl) {
-            balEl.innerText = this.state.balance.toLocaleString();
+            balEl.innerText = "$" + this.state.balance.toLocaleString();
             const rect = balEl.getBoundingClientRect();
             const floater = document.createElement('div');
             floater.innerText = text;

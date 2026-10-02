@@ -1,164 +1,70 @@
 <div class="max-w-[1400px] mx-auto space-y-8 animate-fade-in">
-    <!-- Header Estación de Nutrientes -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-                <span class="text-xs font-extrabold text-green-600 uppercase tracking-widest">Trabajo Activo (Ad Network)</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                <span class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Competición P2P</span>
             </div>
-            <h2 class="text-3xl font-black text-cg_navy tracking-tight">Estación de Vistas</h2>
-            <p class="text-sm text-gray-500 font-medium mt-1">Visita los enlaces de nuestros patrocinadores para ganar liquidez en 🍀 al instante.</p>
+            <h2 class="text-3xl font-black text-cg_navy tracking-tight">Arena de Torneos</h2>
+            <p class="text-sm text-gray-500 font-medium mt-1">Inscríbete, compite en igualdad de condiciones y gana dinero real transferible a tu Nequi.</p>
         </div>
     </div>
 
-    <!-- Muros de Ofertas (Monetag) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         
-        <!-- Direct Link Normal -->
-        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-orange-500 hover:shadow-lg transition-all">
+        <!-- Freeroll -->
+        <div class="bg-white rounded-3xl shadow-soft border border-green-200 p-6 flex flex-col group relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
             <div class="flex justify-between items-start mb-6">
-                <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-500 font-black text-2xl group-hover:scale-110 transition-transform">▶️</div>
-                <span class="bg-green-100 text-green-600 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Básico</span>
+                <div class="w-14 h-14 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🎁</div>
+                <span class="bg-green-100 text-green-600 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">Patrocinado</span>
             </div>
-            <h3 class="text-xl font-black text-cg_navy mb-2 group-hover:text-orange-500 transition-colors">Vista Rápida</h3>
-            <p class="text-sm text-gray-500 leading-relaxed mb-6 flex-1">Gana tréboles instantáneos simplemente visitando un enlace patrocinado. Disponible frecuentemente.</p>
+            <h3 class="text-xl font-black text-cg_navy mb-2">Freeroll Diario</h3>
+            <p class="text-sm text-gray-500 mb-6 flex-1">Participa sin costo. Maximiza tu cosecha en 30 minutos. Ideal para capitalizar tu cuenta.</p>
             <div class="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 flex justify-between items-center">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pago Inmediato</span>
-                <span class="text-base font-black text-cg_gold">+ 5 🍀</span>
+                <span class="text-xs font-bold text-gray-400">Pozo Garantizado</span>
+                <span class="text-base font-black text-green-600">$20.000 COP</span>
             </div>
-            <button id="btn-direct-link" onclick="openDirectLinkReward('basic')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                Ver Anuncio (5 🍀)
+            <button class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                Inscripción: ¡Gratis!
             </button>
         </div>
 
-        <!-- Popunder (Onclick) -->
-        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-purple-500 hover:shadow-lg transition-all">
+        <!-- Evento Garantizado -->
+        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-cg_gold transition-all relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-cg_gold"></div>
             <div class="flex justify-between items-start mb-6">
-                <div class="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 font-black text-2xl group-hover:scale-110 transition-transform">💥</div>
-                <span class="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Popular</span>
+                <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🔥</div>
+                <span class="bg-orange-100 text-cg_gold text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">Popular</span>
             </div>
-            <h3 class="text-xl font-black text-cg_navy mb-2 group-hover:text-purple-600 transition-colors">Impacto Visual</h3>
-            <p class="text-sm text-gray-500 leading-relaxed mb-6 flex-1">Abre una ventana promocional completa. Debes interactuar con ella al menos 5 segundos para recibir la recompensa.</p>
+            <h3 class="text-xl font-black text-cg_navy mb-2">Liga Dominical (Overlay)</h3>
+            <p class="text-sm text-gray-500 mb-6 flex-1">Pozo asegurado por la administración. Si hay pocos jugadores, ¡más ganancia para ti!</p>
             <div class="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 flex justify-between items-center">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pago Inmediato</span>
-                <span class="text-base font-black text-cg_gold">+ 15 🍀</span>
+                <span class="text-xs font-bold text-gray-400">Bolsa Mínima</span>
+                <span class="text-base font-black text-cg_gold">$150.000 COP</span>
             </div>
-            <button id="btn-popunder" onclick="openDirectLinkReward('popunder')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                Abrir Oferta (15 🍀)
+            <button class="w-full bg-cg_navy hover:bg-cg_blue text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                Entrar: $5.000 COP
             </button>
         </div>
 
-        <!-- Direct Link Premium -->
-        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-cg_blue hover:shadow-lg transition-all">
+        <!-- High Roller -->
+        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 flex flex-col group hover:border-purple-500 transition-all relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
             <div class="flex justify-between items-start mb-6">
-                <div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 font-black text-2xl group-hover:scale-110 transition-transform">💎</div>
-                <span class="bg-red-100 text-red-600 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Premium</span>
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">💎</div>
+                <span class="bg-purple-100 text-purple-600 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">Alto Riesgo</span>
             </div>
-            <h3 class="text-xl font-black text-cg_navy mb-2 group-hover:text-cg_blue transition-colors">Vista Premium</h3>
-            <p class="text-sm text-gray-500 leading-relaxed mb-6 flex-1">La mayor recompensa por vistas. Disponible cada 30 minutos. Explora a fondo el sitio del patrocinador.</p>
+            <h3 class="text-xl font-black text-cg_navy mb-2">Torneo High Roller</h3>
+            <p class="text-sm text-gray-500 mb-6 flex-1">Exclusivo para granjeros expertos. El ganador se lleva el 85% de las inscripciones recaudadas.</p>
             <div class="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 flex justify-between items-center">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pago Inmediato</span>
-                <span class="text-base font-black text-cg_gold">+ 50 🍀</span>
+                <span class="text-xs font-bold text-gray-400">Recaudo Actual</span>
+                <span class="text-base font-black text-purple-600">$450.000 COP</span>
             </div>
-            <button id="btn-premium" onclick="openDirectLinkReward('premium')" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                Ver Premium (50 🍀)
+            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+                Entrar: $20.000 COP
             </button>
         </div>
 
     </div>
 </div>
-
-<script>
-    // Configuración de recompensas y tiempos de espera (en milisegundos)
-    const AD_CONFIG = {
-        'basic': { reward: 5, cooldown: 10000, btnId: 'btn-direct-link', text: 'Ver Anuncio (5 🍀)', url: 'https://omg10.com/4/11941426' },
-        'popunder': { reward: 15, cooldown: 30000, btnId: 'btn-popunder', text: 'Abrir Oferta (15 🍀)', url: 'https://omg10.com/4/11941426' }, // Reemplaza la URL si tienes un Popunder específico
-        'premium': { reward: 50, cooldown: 1800000, btnId: 'btn-premium', text: 'Ver Premium (50 🍀)', url: 'https://omg10.com/4/11941426' } // Reemplaza la URL si deseas separar campañas
-    };
-
-    // Almacena el estado de los cooldowns localmente para mejorar la UX
-    let cooldowns = JSON.parse(localStorage.getItem('cg_ad_cooldowns')) || {};
-
-    function checkCooldowns() {
-        const now = Date.now();
-        for (const type in AD_CONFIG) {
-            const config = AD_CONFIG[type];
-            const btn = document.getElementById(config.btnId);
-            if (!btn) continue;
-
-            const lastUsed = cooldowns[type] || 0;
-            const timePassed = now - lastUsed;
-
-            if (timePassed < config.cooldown) {
-                const timeLeft = Math.ceil((config.cooldown - timePassed) / 1000);
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                
-                if (timeLeft > 60) {
-                    btn.innerHTML = `Espera ${Math.ceil(timeLeft / 60)}m`;
-                } else {
-                    btn.innerHTML = `Espera ${timeLeft}s`;
-                }
-            } else {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.innerHTML = config.text;
-            }
-        }
-    }
-
-    // Actualiza los botones cada segundo
-    setInterval(checkCooldowns, 1000);
-    checkCooldowns(); // Ejecución inicial
-
-    async function openDirectLinkReward(type) {
-        const savedUser = localStorage.getItem('user');
-        if (!savedUser) {
-            alert("Debes iniciar sesión para ver anuncios.");
-            return;
-        }
-
-        const user = JSON.parse(savedUser);
-        const config = AD_CONFIG[type];
-        const btn = document.getElementById(config.btnId);
-
-        // Prevenir clics dobles
-        if (btn.disabled) return;
-
-        btn.disabled = true;
-        btn.innerHTML = 'Procesando...';
-
-        try {
-            // Avisar al backend para que sume los tréboles correspondientes
-            const response = await fetch('/api/reward/directlink', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user.username, type: type })
-            });
-
-            if (response.ok) {
-                // Registrar el tiempo de uso para el cooldown
-                cooldowns[type] = Date.now();
-                localStorage.setItem('cg_ad_cooldowns', JSON.stringify(cooldowns));
-                
-                // Abrir el enlace de Monetag
-                window.open(config.url, '_blank');
-                
-                // Forzar la sincronización del saldo visual
-                if(typeof syncUserData === 'function') {
-                    syncUserData();
-                }
-                
-                checkCooldowns(); // Actualizar el botón al estado de espera
-            } else {
-                alert("Error al procesar la recompensa.");
-                btn.disabled = false;
-                btn.innerHTML = config.text;
-            }
-        } catch(e) {
-            console.error("Error en direct link:", e);
-            btn.disabled = false;
-            btn.innerHTML = config.text;
-        }
-    }
-</script>

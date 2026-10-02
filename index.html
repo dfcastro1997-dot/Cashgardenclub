@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CASHGARDEN CLUB - Professional Platform</title>
+    <title>CASHGARDEN CLUB - Arena Competitiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -32,13 +32,6 @@
         ::-webkit-scrollbar-thumb { background: #CDD2D6; border-radius: 10px; }
         body { font-family: 'Inter', sans-serif; }
     </style>
-
-    <!-- CÓDIGO DE MONETAG (MULTITAG ALL-IN-ONE) -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="289760" async data-cfasync="false"></script>
-
-    <!-- CÓDIGO DE MONETAG (ONCLICK / POPUNDER) -->
-    <script>(function(s){s.dataset.zone='11941465',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
 </head>
 <body class="bg-bone text-cg_navy h-screen overflow-hidden relative">
 
@@ -46,8 +39,8 @@
     <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-bone transition-opacity duration-500">
         <div class="bg-white rounded-2xl shadow-soft w-full max-w-md p-10 relative z-10 border border-gray-100">
             <div class="flex flex-col items-center justify-center mb-8 mt-2">
-                <img src="https://i.postimg.cc/0ybHSyxH/l-OGO.png" alt="CashGarden Club Logo" class="h-32 w-auto object-contain drop-shadow-md mb-4 hover:scale-105 transition-transform duration-300">
-                <p class="text-sm text-gray-400 mt-3 font-medium text-center">Ingresa a tu invernadero financiero</p>
+                <div class="h-32 w-32 bg-cg_blue rounded-full flex items-center justify-center text-white text-5xl mb-4 shadow-lg">🏆</div>
+                <p class="text-sm text-gray-400 mt-3 font-medium text-center">Arena de Destreza Agrícola</p>
             </div>
             
             <form id="auth-form" class="space-y-6">
@@ -64,7 +57,7 @@
                     <span id="auth-error-msg">Error en la autenticación.</span>
                 </div>
                 
-                <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Ingreso Seguro</button>
+                <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Ingresar</button>
                 <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-cg_gold hover:bg-orange-500 text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Registrarme</button>
                 
                 <div class="text-center mt-4">
@@ -82,7 +75,7 @@
         <header class="bg-white border-b border-gray-100 shadow-sm z-20 relative">
             <div class="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <img src="https://i.postimg.cc/0ybHSyxH/l-OGO.png" alt="Logo" class="h-12 w-auto object-contain drop-shadow-sm">
+                    <span class="text-2xl font-black text-cg_navy">CashGarden<span class="text-cg_blue">.Arena</span></span>
                 </div>
                 
                 <!-- MENU DE NAVEGACIÓN -->
@@ -94,7 +87,7 @@
                         <span>Granja</span>
                     </button>
                     <button onclick="loadView('nutrients', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
-                        <span>Encuestas</span>
+                        <span>Torneos</span>
                     </button>
                     <button onclick="loadView('news', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all relative">
                         <span>Noticias</span>
@@ -106,13 +99,12 @@
                 <div class="flex items-center gap-5">
                     <div class="hidden sm:flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
                         <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
-                            <span class="text-sm">🍀</span>
-                            <span id="global-balance" class="text-sm font-extrabold text-cg_gold transition-all duration-300">0</span>
+                            <span class="text-sm font-bold text-gray-400">COP</span>
+                            <span id="global-balance" class="text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
                         </div>
                     </div>
                     <div class="w-px h-8 bg-gray-200 hidden md:block"></div>
                     
-                    <!-- Perfil Desplegable -->
                     <div class="relative">
                         <button onclick="toggleUserMenu(event)" class="flex items-center gap-3 focus:outline-none hover:opacity-80 transition-opacity">
                             <div id="profile-avatar" class="w-10 h-10 rounded-full bg-cg_navy border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-sm">US</div>
@@ -121,7 +113,6 @@
                             </div>
                         </button>
                         
-                        <!-- Menú Desplegable -->
                         <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transition-all">
                             <div class="p-4 border-b border-gray-50 bg-gray-50/50">
                                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tu Cuenta</p>
@@ -129,7 +120,7 @@
                             </div>
                             <div class="py-2">
                                 <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
-                                    <span class="text-lg">💳</span> Billetera / Retiros
+                                    <span class="text-lg">🏦</span> Billetera Wompi
                                 </button>
                             </div>
                             <div class="py-2 border-t border-gray-100">
@@ -204,7 +195,7 @@
             document.getElementById('profile-avatar').innerText = userData.username.substring(0, 2).toUpperCase();
             
             const balance = userData.balance || 0;
-            document.getElementById('global-balance').innerText = balance.toLocaleString();
+            document.getElementById('global-balance').innerText = "$" + balance.toLocaleString();
             
             if(window.farmApp) {
                 window.farmApp.state.balance = balance;
@@ -220,18 +211,14 @@
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
                 const parsedUser = JSON.parse(savedUser);
-                
                 if (parsedUser.game_state) {
                     localStorage.setItem('cg_farm_state', parsedUser.game_state);
                 }
-
                 updateProfileUI(parsedUser);
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
                 document.getElementById('dashboard-screen').classList.add('flex');
                 loadView('farm', document.querySelectorAll('.nav-btn')[1]);
-                
-                // Forzar sincronización al iniciar sesión
                 syncUserData();
             }
         };
@@ -282,7 +269,6 @@
             }
         });
 
-        // --- SISTEMA DE SINCRONIZACIÓN AUTOMÁTICA DE SALDO ---
         async function syncUserData() {
             const userStr = localStorage.getItem('user');
             if (!userStr) return;
@@ -292,50 +278,32 @@
                 const response = await fetch(`/api/sync/${user.username}`);
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    // Si el balance en la base de datos es distinto al visual, actualizamos
-                    const dbBalance = data.user.balance;
+                    const dbBalance = data.user.real_balance_cop || data.user.balance;
                     
                     if (user.balance !== dbBalance || (window.farmApp && window.farmApp.state.balance !== dbBalance)) {
-                        
-                        // Actualizar UI Global
-                        document.getElementById('global-balance').innerText = dbBalance.toLocaleString();
-                        
-                        // Hacer un pequeño efecto visual para que el usuario note que le pagaron
+                        document.getElementById('global-balance').innerText = "$" + dbBalance.toLocaleString();
                         const balEl = document.getElementById('global-balance');
                         balEl.classList.add('text-green-500', 'scale-125');
                         setTimeout(() => balEl.classList.remove('text-green-500', 'scale-125'), 1000);
 
-                        // Actualizar App Interna (Granja)
-                        if (window.farmApp) {
-                            window.farmApp.state.balance = dbBalance;
-                        }
+                        if (window.farmApp) { window.farmApp.state.balance = dbBalance; }
                         
-                        // Actualizar Billetera si está abierta
                         const walletDisplay = document.getElementById('wallet-balance-display');
                         if (walletDisplay) {
-                            walletDisplay.innerText = dbBalance.toLocaleString();
-                            document.getElementById('wallet-usd-display').innerText = `$${(dbBalance / 1000).toFixed(2)} USD`;
+                            walletDisplay.innerText = "$" + dbBalance.toLocaleString() + " COP";
                             const cashoutAmount = document.getElementById('cashout-amount');
                             if(cashoutAmount) cashoutAmount.max = dbBalance;
                         }
                         
-                        // Actualizar LocalStorage
                         user.balance = dbBalance;
                         localStorage.setItem('user', JSON.stringify(user));
                     }
                 }
-            } catch (e) {
-                console.error("Error sincronizando saldo:", e);
-            }
+            } catch (e) { console.error("Error sincronizando saldo:", e); }
         }
 
-        // 1. Consultar saldo cada 30 segundos silenciosamente
         setInterval(syncUserData, 10000);
-
-        // 2. Consultar saldo Inmediatamente cuando el usuario regresa a esta pestaña
         window.addEventListener('focus', syncUserData);
-
     </script>
 </body>
 </html>
