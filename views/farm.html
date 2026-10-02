@@ -29,22 +29,10 @@
     <!-- MAIN LAYOUT -->
     <div class="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
         
-        <!-- COLUMNA PRINCIPAL (PARCELAS + IR A TIENDA) -->
+        <!-- COLUMNA PRINCIPAL (PARCELAS) -->
         <div class="flex-1 flex flex-col gap-8 overflow-y-auto pr-2 pb-10">
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" id="farm-grid">
                 <!-- Generado dinámicamente -->
-            </div>
-
-            <!-- BOTÓN HACIA EL NUEVO MÓDULO DE TIENDA -->
-            <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto shrink-0">
-                <div>
-                    <h3 class="text-xl font-black text-cg_navy">Mercado de Insumos</h3>
-                    <p class="text-sm text-gray-500">¿Te quedaste sin macetas o semillas? Visita el catálogo global.</p>
-                </div>
-                <button onclick="loadView('shop', document.querySelectorAll('.nav-btn')[2])" class="bg-cg_blue text-white px-8 py-3 rounded-xl font-bold shadow-sm hover:shadow-md hover:bg-cg_navy transition-colors flex items-center gap-3 w-full sm:w-auto justify-center">
-                    <img src="https://i.ibb.co/qYHq54kh/Frame-741.png" class="w-6 h-6 object-contain filter brightness-0 invert" alt="Shop">
-                    Ir al Mercado
-                </button>
             </div>
         </div>
 
@@ -639,10 +627,10 @@ window.farmApp = {
         const ePotBig = document.getElementById('inv-pot-big');
         const eScarecrow = document.getElementById('inv-scarecrow');
         
-        if (eWater) eWater.innerText = inv.tool_water.qty || 0;
-        if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small.qty || 0;
-        if (ePotBig) ePotBig.innerText = inv.tool_pot_big.qty || 0;
-        if (eScarecrow) eScarecrow.innerText = inv.tool_scarecrow.qty || 0;
+        if (eWater) eWater.innerText = inv.tool_water?.qty || 0;
+        if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small?.qty || 0;
+        if (ePotBig) ePotBig.innerText = inv.tool_pot_big?.qty || 0;
+        if (eScarecrow) eScarecrow.innerText = inv.tool_scarecrow?.qty || 0;
     },
 
     buyPlotPrompt(id) {
@@ -750,10 +738,12 @@ window.farmApp = {
                 </div>
             `;
             
+            // No echar agua si hay cuervo
             if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow) {
                 this.enableToolBtn('water');
             }
             
+            // BLOQUEO ESTRATÉGICO: El espantapájaros NO se puede usar si el usuario ya está siendo castigado
             if(!isAutoWatering && inv.tool_scarecrow && inv.tool_scarecrow.qty > 0 && !plot.isReady && plot.crowLeavingAt <= Date.now()) {
                 this.enableToolBtn('scarecrow');
             }
@@ -903,7 +893,7 @@ window.farmApp = {
                     </div>
                     <p class="text-xs text-blue-800 mb-4">El Espantapájaros evita que aparezcan y mantiene tu eficiencia intacta. (Nota: Una vez inicies el retraso actual, deberás esperar los 15m para poder usarlo).</p>
                     <button onclick="window.farmApp.closeCrowModal(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="w-full bg-white border border-blue-200 hover:bg-blue-100 text-cg_blue font-black py-2.5 rounded-lg text-xs transition-colors shadow-sm uppercase tracking-wider">
-                        Comprar en la Tienda VIP
+                        Comprar en el Mercado VIP
                     </button>
                 </div>
                 
