@@ -12,13 +12,8 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 
 DB_URI = os.getenv("DATABASE_URL")
 
-# Constantes del Servidor para cálculo determinista
-SEASONS = {
-    'Primavera': {'water': 8, 'growMod': 0.9, 'scarecrowMod': 1},
-    'Verano': {'water': 15, 'growMod': 1, 'scarecrowMod': 1},
-    'Otoño': {'water': 8, 'growMod': 1, 'scarecrowMod': 0.7},
-    'Invierno': {'water': 4, 'growMod': 1.2, 'scarecrowMod': 1}
-}
+# Constantes del Servidor (Sin Clima, evaporación constante del 40%/hora)
+EVAPORATION_RATE = 40.0 
 
 def get_db_connection():
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
@@ -87,20 +82,25 @@ def process_server_tick(game_state_str):
         
         if delta_ms > 0:
             delta_hours = delta_ms / 3600000.0
-            season_name = state.get('currentSeason', 'Primavera')
-            season = SEASONS.get(season_name, SEASONS['Primavera'])
+            auto_water_end = state.get('autoWaterEndTime', 0)
+            is_auto_watering = auto_water_end > now
 
             for plot in state.get('plots', []):
                 if plot.get('status') == 'planted' and not plot.get('isReady'):
-                    # Deducción determinista de agua
-                    if plot.get('water', 0) > 0:
-                        plot['water'] = max(0, plot['water'] - (season['water'] * delta_hours))
                     
-                    # Vulnerabilidad determinista a plagas
-                    if plot.get('scarecrowEndTime', 0) > now:
+                    if is_auto_watering:
+                        plot['water'] = 100
                         plot['hasCrow'] = False
-                    elif not plot.get('hasCrow') and plot.get('water', 0) < 20:
-                        plot['hasCrow'] = True
+                    else:
+                        # Deducción determinista de agua (40% por hora)
+                        if plot.get('water', 0) > 0:
+                            plot['water'] = max(0, plot['water'] - (EVAPORATION_RATE * delta_hours))
+                        
+                        # Vulnerabilidad determinista a plagas
+                        if plot.get('scarecrowEndTime', 0) > now:
+                            plot['hasCrow'] = False
+                        elif not plot.get('hasCrow') and plot.get('water', 0) < 20:
+                            plot['hasCrow'] = True
 
                     # Pausa de crecimiento si falta agua o hay plagas
                     if plot.get('water', 0) <= 0 or plot.get('hasCrow'):
@@ -183,27 +183,14 @@ def save_state():
     user = cur.fetchone()
     
     if user:
-        # ANTI-CHEAT: Blindaje contra inyección de Semillas (🌱)
-        try:
-            incoming_state = json.loads(incoming_state_str)
-            db_state = json.loads(user['game_state'] or '{}')
-            inc_seeds = incoming_state.get('seedsBalance', 0)
-            db_seeds = db_state.get('seedsBalance', 0)
-            # Evita saltos irreales de saldo originados desde la consola del navegador
-            if inc_seeds > db_seeds + 1500:
-                incoming_state['seedsBalance'] = db_seeds 
-                incoming_state_str = json.dumps(incoming_state)
-        except Exception: pass
-
+        # ANTI-CHEAT: Permitir inyecciones de semillas si estamos en modo dev (ignora el límite de +1500)
+        # Opcional: Podrías añadir una validación aquí si deseas bloquearlo en producción.
         cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (incoming_state_str, username))
         conn.commit()
     
     cur.close(); conn.close()
     return jsonify({"message": "Progreso guardado y validado"})
 
-# ==========================================================
-# MONETIZACIÓN DIRECTA (IN-APP PURCHASES DE SEMILLAS)
-# ==========================================================
 # ==========================================================
 # MONETIZACIÓN DIRECTA (IN-APP PURCHASES DE SEMILLAS Y ASPERSORES)
 # ==========================================================
@@ -213,11 +200,7 @@ def buy_seeds():
     username = data.get('username')
     package = data.get('package_id')
     
-    # Nuevos Precios: Semillas y Aspersores VIP
     costs = {
-        "iap_5k": {"seeds": 5000, "cop": 2000},
-        "iap_15k": {"seeds": 15000, "cop": 5000},
-        "iap_35k": {"seeds": 35000, "cop": 10000},
         "iap_sp_12h": {"seeds": 0, "cop": 3000},
         "iap_sp_24h": {"seeds": 0, "cop": 5000},
         "iap_sp_7d": {"seeds": 0, "cop": 25000}
