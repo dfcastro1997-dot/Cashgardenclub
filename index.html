@@ -98,7 +98,7 @@
                 <!-- RECURSOS Y USUARIO -->
                 <div class="flex items-center gap-5">
                     <div class="hidden sm:flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-cg_yellow shadow-sm relative">
+                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
                             <span class="text-sm">🍀</span>
                             <span id="global-balance" class="text-sm font-extrabold text-cg_gold transition-all duration-300">0</span>
                         </div>
@@ -166,7 +166,6 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Guardar sesión y progreso en LocalStorage
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
                     if (data.user.game_state) {
@@ -197,7 +196,7 @@
             document.getElementById('dropdown-username').innerText = userData.username;
             document.getElementById('profile-avatar').innerText = userData.username.substring(0, 2).toUpperCase();
             
-            const balance = userData.balance || 150;
+            const balance = userData.balance || 0;
             document.getElementById('global-balance').innerText = balance.toLocaleString();
             
             if(window.farmApp) {
@@ -210,7 +209,6 @@
             document.getElementById('auth-error').classList.remove('hidden');
         }
 
-        // Recuperar progreso automáticamente
         window.onload = () => {
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
@@ -225,6 +223,9 @@
                 document.getElementById('dashboard-screen').classList.remove('hidden');
                 document.getElementById('dashboard-screen').classList.add('flex');
                 loadView('farm', document.querySelectorAll('.nav-btn')[1]);
+                
+                // Forzar sincronización al iniciar sesión
+                syncUserData();
             }
         };
 
@@ -273,6 +274,60 @@
                 dropdown.classList.add('hidden');
             }
         });
+
+        // --- SISTEMA DE SINCRONIZACIÓN AUTOMÁTICA DE SALDO ---
+        async function syncUserData() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return;
+            const user = JSON.parse(userStr);
+            
+            try {
+                const response = await fetch(`/api/sync/${user.username}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Si el balance en la base de datos es distinto al visual, actualizamos
+                    const dbBalance = data.user.balance;
+                    
+                    if (user.balance !== dbBalance || (window.farmApp && window.farmApp.state.balance !== dbBalance)) {
+                        
+                        // Actualizar UI Global
+                        document.getElementById('global-balance').innerText = dbBalance.toLocaleString();
+                        
+                        // Hacer un pequeño efecto visual para que el usuario note que le pagaron
+                        const balEl = document.getElementById('global-balance');
+                        balEl.classList.add('text-green-500', 'scale-125');
+                        setTimeout(() => balEl.classList.remove('text-green-500', 'scale-125'), 1000);
+
+                        // Actualizar App Interna (Granja)
+                        if (window.farmApp) {
+                            window.farmApp.state.balance = dbBalance;
+                        }
+                        
+                        // Actualizar Billetera si está abierta
+                        const walletDisplay = document.getElementById('wallet-balance-display');
+                        if (walletDisplay) {
+                            walletDisplay.innerText = dbBalance.toLocaleString();
+                            document.getElementById('wallet-usd-display').innerText = `$${(dbBalance / 1000).toFixed(2)} USD`;
+                            document.getElementById('cashout-amount').max = dbBalance;
+                        }
+                        
+                        // Actualizar LocalStorage
+                        user.balance = dbBalance;
+                        localStorage.setItem('user', JSON.stringify(user));
+                    }
+                }
+            } catch (e) {
+                console.error("Error sincronizando saldo:", e);
+            }
+        }
+
+        // 1. Consultar saldo cada 30 segundos silenciosamente
+        setInterval(syncUserData, 30000);
+
+        // 2. Consultar saldo Inmediatamente cuando el usuario regresa a esta pestaña
+        window.addEventListener('focus', syncUserData);
+
     </script>
 </body>
 </html>
