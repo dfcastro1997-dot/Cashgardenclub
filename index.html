@@ -211,9 +211,13 @@
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
                 const parsedUser = JSON.parse(savedUser);
+                
+                /* ELIMINAMOS LA SOBRESCRITURA DESTRUCTIVA QUE BORRABA EL PROGRESO
                 if (parsedUser.game_state) {
                     localStorage.setItem('cg_farm_state', parsedUser.game_state);
-                }
+                } 
+                */
+
                 updateProfileUI(parsedUser);
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');

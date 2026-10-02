@@ -387,12 +387,25 @@ window.farmApp = {
             alert(`Añadidas ${amount} Semillas (🌱).`);
         },
         addTime: (hours) => {
-            const ticks = hours * 6; 
-            for(let i=0; i<ticks; i++) {
-                window.farmApp.state.lastTick -= 600000; 
-                window.farmApp.processTick();
-            }
-            alert(`Simulador avanzado en ${hours} horas.`);
+            const shift = hours * 3600000; // Convertir horas a milisegundos
+            
+            // Adelantar el finalizador de los aspersores
+            window.farmApp.state.autoWaterEndTime = Math.max(0, (window.farmApp.state.autoWaterEndTime || 0) - shift);
+            
+            // Modificar físicamente las variables absolutas de tiempo hacia el pasado
+            window.farmApp.state.plots.forEach(plot => {
+                if (plot.plantedAt) plot.plantedAt -= shift;
+                if (plot.harvestAt) plot.harvestAt -= shift;
+                if (plot.scarecrowEndTime) plot.scarecrowEndTime = Math.max(0, plot.scarecrowEndTime - shift);
+                if (plot.crowLeavingAt) plot.crowLeavingAt = Math.max(0, plot.crowLeavingAt - shift);
+            });
+            
+            // Forzar renderizado y guardado
+            window.farmApp.processTick();
+            window.farmApp.renderPlots();
+            window.farmApp.saveState();
+            
+            alert(`Simulador avanzado artificialmente en ${hours} horas.`);
         },
         addCOP: (amount) => {
             const userStr = localStorage.getItem('user');
@@ -441,7 +454,16 @@ window.farmApp = {
                             this.state.seedsBalance = s.seedsBalance ?? 1500;
                             this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
                             this.state.plots = s.plots ?? this.state.plots;
-                            this.state.inventory = s.inventory ?? this.state.inventory;
+                            
+                            // NUEVO: Fusión profunda segura para no perder propiedades de los objetos
+                            if (s.inventory) {
+                                Object.keys(s.inventory).forEach(k => {
+                                    if (this.state.inventory[k]) {
+                                        this.state.inventory[k].qty = s.inventory[k].qty || 0;
+                                    }
+                                });
+                            }
+                            
                             this.state.lastTick = s.lastTick ?? Date.now();
                         } catch(e) { console.error("Error parseando game_state", e); }
                     } else {
@@ -464,7 +486,16 @@ window.farmApp = {
                 this.state.seedsBalance = s.seedsBalance ?? 1500;
                 this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
                 this.state.plots = s.plots ?? this.state.plots;
-                this.state.inventory = s.inventory ?? this.state.inventory;
+                
+                // NUEVO: Igual que arriba, protegemos la estructura del inventario
+                if (s.inventory) {
+                    Object.keys(s.inventory).forEach(k => {
+                        if (this.state.inventory[k]) {
+                            this.state.inventory[k].qty = s.inventory[k].qty || 0;
+                        }
+                    });
+                }
+                
                 this.state.lastTick = s.lastTick ?? Date.now();
             } catch(e) { console.error("Error cargando estado local", e); }
         }
