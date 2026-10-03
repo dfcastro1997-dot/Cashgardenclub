@@ -87,12 +87,12 @@ def process_server_tick(game_state_str):
             for plot in state.get('plots', []):
                 if plot.get('status') == 'planted' and not plot.get('isReady'):
                     
+                    plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
+                    
                     if is_auto_watering:
-                        plot['water'] = 100
+                        plot['water'] = 80 if plant_id == 'flower_cactus' else 100
                         plot['hasCrow'] = False
                     else:
-                        # Obtenemos la planta actual
-                        plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
                         evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
                         
                         # Deducción determinista de agua adaptada

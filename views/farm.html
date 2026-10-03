@@ -980,9 +980,16 @@ window.farmApp = {
         modal.classList.add('flex');
     },
 
-    openWaterCalibration() {
-        const plot = this.state.plots[5];
-        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+    openWaterCalibration(plotId = 5) {
+        this.calibration.currentPlotId = plotId;
+        let speed = 1.5; // Velocidad por defecto para el Cactus
+        
+        // Si el plotId es 5, usa la configuración del torneo
+        if (plotId === 5) {
+            const plot = this.state.plots[5];
+            const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+            speed = conf.speed;
+        }
 
         const modal = document.getElementById('water-calib-modal');
         modal.classList.remove('hidden');
@@ -991,7 +998,7 @@ window.farmApp = {
         this.calibration.active = true;
         this.calibration.x = 0;
         this.calibration.dir = 1;
-        this.calibration.speed = conf.speed; // Ajusta la velocidad según el torneo
+        this.calibration.speed = speed;
         const pointer = document.getElementById('calib-pointer');
         
         const tick = () => {
@@ -1010,18 +1017,25 @@ window.farmApp = {
         cancelAnimationFrame(this.calibration.reqId);
         
         const waterAdded = Math.round(this.calibration.x);
-        const plot = this.state.plots[5];
-        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+        const plotId = this.calibration.currentPlotId || 5;
+        const plot = this.state.plots[plotId];
         
         plot.water += waterAdded;
         
-        // Regla de penalización por desbordamiento según la planta
-        if (plot.water > conf.maxWater) {
-            plot.water = Math.min(100, plot.water);
-            plot.score = Math.max(0, plot.score - conf.overwaterPenalty); 
-            this.showPlotToast(5, '⚠️', `-${conf.overwaterPenalty} pts`);
+        if (plotId === 5) {
+            const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+            if (plot.water > conf.maxWater) {
+                plot.water = Math.min(100, plot.water);
+                plot.score = Math.max(0, plot.score - conf.overwaterPenalty); 
+                this.showPlotToast(5, '⚠️', `-${conf.overwaterPenalty} pts`);
+            } else {
+                this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
+            }
         } else {
-            this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
+            // Lógica para el Cactus de Cuarzo en una parcela estándar
+            if (plot.water > 100) plot.water = 100;
+            this.showPlotToast(plotId, '💧', `+${waterAdded}% Agua`);
+            this.selectPlot(plotId); // Refresca la barra lateral
         }
         
         document.getElementById('water-calib-modal').classList.replace('flex', 'hidden');
@@ -1198,6 +1212,12 @@ window.farmApp = {
             plot.potUses = 0;
             this.showPlotToast(plotId, '🏺', 'Maceta Lista');
         } else if(type === 'water') {
+            if (plot.plant && plot.plant.id === 'flower_cactus') {
+                this.state.inventory.tool_water.qty -= 1;
+                this.openWaterCalibration(plotId);
+                this.updateInventoryUI();
+                return; // Saltamos el guardado estándar hasta que termine el minijuego
+            }
             this.state.inventory.tool_water.qty -= 1;
             plot.water = 100;
             this.showPlotToast(plotId, '💧', '¡Regado!');
@@ -1415,14 +1435,14 @@ window.farmApp = {
             }
 
             if (plot.status === 'planted' && !plot.isReady) {
-                
                 if (isAutoWatering) {
-                    plot.water = 100;
+                    plot.water = (plot.plant && plot.plant.id === 'flower_cactus') ? 80 : 100;
                     plot.hasCrow = false; 
                     plot.crowLeavingAt = 0;
                 } else {
                     if (plot.water > 0) {
-                        plot.water = Math.max(0, plot.water - (40 * deltaHours)); 
+                        let evapRate = (plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40;
+                        plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                         changesMade = true;
                     }
                     
@@ -1519,7 +1539,8 @@ window.farmApp = {
             const plot = this.state.plots[this.state.selectedPlotId];
             
             plot.status = 'planted';
-            plot.water = 100; 
+            // El Cactus inicia al 50% para obligar a usar el minijuego. Las demás al 100%.
+            plot.water = seedId === 'flower_cactus' ? 50 : 100; 
             plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
             plot.isReady = false;
             
