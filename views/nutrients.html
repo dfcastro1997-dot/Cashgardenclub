@@ -1,8 +1,8 @@
-<div class="max-w-[1400px] mx-auto space-y-8 animate-fade-in">
+<div class="max-w-[1400px] mx-auto space-y-8 animate-fade-in pb-20">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Competición P2P (Skill-Based)</span>
             </div>
             <h2 class="text-3xl font-black text-cg_navy tracking-tight">Arena de Torneos</h2>
@@ -25,7 +25,7 @@
                 <span class="text-xs font-bold text-gray-400">Pozo Garantizado</span>
                 <span class="text-base font-black text-green-600">$10.000 COP</span>
             </div>
-            <button onclick="joinTournament(1, 0)" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="openPreTournamentModal(1, 0, '500 🌱')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Entrar: 500 🌱
             </button>
         </div>
@@ -40,7 +40,7 @@
             <h3 class="text-xl font-black text-cg_navy mb-2">Liga Principiante</h3>
             <p class="text-sm text-gray-500 mb-4 flex-1">Competencia de habilidad basada en rendimientos de cultivo.</p>
             
-            <!-- TRANSPARENCIA DE TARIFA (SIC) -->
+            <!-- TRANSPARENCIA DE TARIFA -->
             <div class="bg-gray-50 rounded-xl p-3 mb-5 border border-gray-200">
                 <div class="flex justify-between items-center mb-1">
                     <span class="text-[10px] font-bold text-gray-500 uppercase">Aporte al Pozo</span>
@@ -57,7 +57,7 @@
             </div>
 
             <!-- BOTÓN PAY-TO-ENTER -->
-            <button onclick="joinTournament(2, 5000)" class="w-full bg-[#0000FF] hover:bg-blue-900 text-white font-black py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+            <button onclick="openPreTournamentModal(2, 5000, '5,000 🌱')" class="w-full bg-[#0000FF] hover:bg-blue-900 text-white font-black py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
                 Pagar con Wompi
             </button>
             <p class="text-center text-[10px] font-bold text-gray-400 mt-2">Requiere adicionalmente 5,000 🌱 de tu granja.</p>
@@ -76,7 +76,7 @@
                 <span class="text-xs font-bold text-gray-400">Bolsa Variable</span>
                 <span class="text-base font-black text-cg_gold">Acumulativo</span>
             </div>
-            <button onclick="joinTournament(3, 10000)" class="w-full bg-cg_navy hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="openPreTournamentModal(3, 10000, '15,000 🌱')" class="w-full bg-cg_navy hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Entrar: $10.000 COP + 15.000 🌱
             </button>
         </div>
@@ -94,7 +94,7 @@
                 <span class="text-xs font-bold text-gray-400">Bolsa Variable</span>
                 <span class="text-base font-black text-purple-600">Acumulativo</span>
             </div>
-            <button onclick="joinTournament(4, 30000)" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="openPreTournamentModal(4, 30000, '30,000 🌱')" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Entrar: $30.000 COP + 30.000 🌱
             </button>
         </div>
@@ -112,7 +112,7 @@
                 <span class="text-xs font-bold text-gray-400">Bolsa Variable</span>
                 <span class="text-base font-black text-black">Acumulativo</span>
             </div>
-            <button onclick="joinTournament(5, 50000)" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
+            <button onclick="openPreTournamentModal(5, 50000, '50,000 🌱')" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
                 Entrar: $50.000 COP + 50.000 🌱
             </button>
         </div>
@@ -120,51 +120,167 @@
     </div>
 </div>
 
-<script>
-    async function joinTournament(t_id, fee_cop) {
-    const username = document.getElementById('profile-name').innerText;
-    if(!username || username === 'Usuario') return;
-    
-    try {
-        const res = await fetch('/api/tournaments/join', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, tournament_id: t_id, fee: fee_cop })
-        });
-        const data = await res.json();
+<!-- VENTANA MODAL PRE-COMPRA (EXPLICACIÓN PROFESIONAL) -->
+<div id="pre-tournament-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePreTournamentModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in">
         
-        if (res.ok) {
-            if(window.farmApp) {
-                // Sincronizar saldos
-                window.farmApp.state.balance = data.new_balance_cop;
-                window.farmApp.state.seedsBalance = data.new_game_state.seedsBalance;
+        <!-- ENCABEZADO -->
+        <div class="bg-gradient-to-r from-cg_navy to-gray-900 p-6 sm:p-8 text-center border-b border-gray-800 relative">
+            <button onclick="closePreTournamentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-xl w-8 h-8 rounded-full flex items-center justify-center transition-colors">✕</button>
+            <span class="text-cg_gold text-xs font-black uppercase tracking-widest bg-cg_gold/10 px-3 py-1 rounded-full border border-cg_gold/30">Habilidad Pura (Skill-Based)</span>
+            <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-4">Contrato de Gladiador</h3>
+            <p class="text-gray-400 text-sm font-medium mt-2">Atención: No hay elemento de azar. Tu destreza y cálculo definen el premio.</p>
+        </div>
+
+        <!-- CONTENIDO TÉCNICO -->
+        <div class="p-6 sm:p-8 bg-gray-50 flex-1 overflow-y-auto max-h-[60vh]">
+            
+            <!-- EL BONSÁI -->
+            <div class="flex flex-col sm:flex-row gap-6 items-center mb-6 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-cg_gold/10 rounded-full blur-2xl"></div>
+                <div class="w-24 h-24 bg-gradient-to-b from-white to-gray-100 rounded-xl border border-gray-200 flex items-center justify-center shrink-0 relative z-10">
+                    <img src="https://i.ibb.co/WvdGwdYK/Frame-754.png" class="w-20 h-20 object-contain drop-shadow-lg" alt="Bonsái del Maestro">
+                </div>
+                <div class="text-center sm:text-left relative z-10">
+                    <h4 class="font-black text-cg_navy text-xl">El Bonsái del Maestro</h4>
+                    <p class="text-xs text-gray-500 mt-2 leading-relaxed">Al inscribirte, se desbloqueará una parcela especial en tu granja destinada únicamente para esta especie exótica. Duración obligatoria: <strong class="text-cg_navy">12 Horas exactas</strong>.</p>
+                    <div class="mt-3 inline-block bg-yellow-50 border border-yellow-200 px-3 py-1.5 rounded-lg">
+                        <span class="text-xs font-bold text-yellow-800">Inicias con una Caja Dorada de <strong>10,000 Puntos 🏆</strong></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- EXPLICACIÓN DE MECÁNICAS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 
-                // ACTIVACIÓN DE LA PARCELA 6 PARA EL TORNEO
-                const arenaPlot = window.farmApp.state.plots[5];
-                arenaPlot.status = 'tournament';
-                arenaPlot.score = 10000;
-                arenaPlot.water = 50; // Inicia con 50% de agua para evitar muerte inmediata
-                arenaPlot.tournamentEndTime = Date.now() + (12 * 3600000); // 12 Horas de duración
-                arenaPlot.isReady = false;
+                <!-- RIEGO -->
+                <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl drop-shadow-sm">💧</span>
+                        <h5 class="font-black text-blue-900 text-sm">Riego Quirúrgico</h5>
+                    </div>
+                    <p class="text-xs text-blue-800 leading-relaxed">Se desactiva la regadera estándar. El agua se aplica deteniendo una <strong>flecha a alta velocidad</strong> en un minijuego de precisión (10% a 100%).</p>
+                </div>
+
+                <!-- SEQUÍA -->
+                <div class="bg-red-50 border border-red-100 p-5 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl drop-shadow-sm">⚠️</span>
+                        <h5 class="font-black text-red-900 text-sm">Riesgo de Sequía</h5>
+                    </div>
+                    <p class="text-xs text-red-800 leading-relaxed">Si dejas que el agua baje del 20%, la caja dorada parpadeará y empezarás a perder <strong>10 Puntos por minuto</strong> que pase deshidratada.</p>
+                </div>
                 
-                window.farmApp.state.lastTick = Date.now();
-                window.farmApp.saveState();
-                
-                // Redirigir y mostrar tutorial
-                loadView('farm', document.querySelectorAll('.nav-btn')[0]);
-                setTimeout(() => {
-                    if (window.farmApp.showTournamentWelcome) {
-                        window.farmApp.showTournamentWelcome();
-                    }
-                }, 500);
-                
-            }
-            if(window.syncUserData) window.syncUserData();
+                <!-- OVERWATERING (PELIGRO MAYOR) -->
+                <div class="bg-orange-50 border border-orange-200 p-5 rounded-xl shadow-sm sm:col-span-2 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                    <span class="text-4xl drop-shadow-sm shrink-0">💀</span>
+                    <div>
+                        <h5 class="font-black text-orange-900 text-sm mb-1">Peligro de Ahogamiento (> 100%)</h5>
+                        <p class="text-xs text-orange-800 leading-relaxed">No riegues por desesperación. Si al intentar calcular el agua la suma supera el 100%, la planta se ahogará y el sistema te restará instantáneamente <strong>-500 Puntos</strong> de golpe como penalidad.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="p-5 border-t border-gray-200 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
+            <button onclick="closePreTournamentModal()" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold py-4 rounded-xl transition-colors shadow-sm">
+                Cancelar
+            </button>
+            <button onclick="confirmJoinTournament()" id="btn-confirm-tournament" class="flex-[2] bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2">
+                Aceptar y Entrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingTournament = null;
+
+    // 1. Mostrar la Modal antes de comprar
+    function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
+        pendingTournament = { id: t_id, fee: fee_cop };
+        
+        const btn = document.getElementById('btn-confirm-tournament');
+        if(fee_cop === 0) {
+            btn.innerText = `Pagar Insumos: ${seedCostStr}`;
         } else {
-            alert("Error al inscribirse: " + data.error);
+            btn.innerText = `Pagar $${fee_cop.toLocaleString()} + ${seedCostStr}`;
         }
-    } catch(e) {
-        alert("Error conectando con el servidor de la Arena.");
+        
+        const modal = document.getElementById('pre-tournament-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
-}
+
+    function closePreTournamentModal() {
+        const modal = document.getElementById('pre-tournament-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        pendingTournament = null;
+    }
+
+    // 2. Ejecutar la lógica de compra si acepta el contrato
+    async function confirmJoinTournament() {
+        if (!pendingTournament) return;
+        const t_id = pendingTournament.id;
+        const fee_cop = pendingTournament.fee;
+        
+        const username = document.getElementById('profile-name').innerText;
+        if(!username || username === 'Usuario') return;
+        
+        // Efecto de carga en el botón
+        const btn = document.getElementById('btn-confirm-tournament');
+        const originalText = btn.innerText;
+        btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Procesando...`;
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch('/api/tournaments/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, tournament_id: t_id, fee: fee_cop })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                closePreTournamentModal();
+                alert(`¡Inscripción Exitosa! Se ha habilitado la Parcela #6 en tu Invernadero.`);
+                
+                // Actualizar cuenta global
+                document.getElementById('global-balance').innerText = "$" + data.new_balance_cop.toLocaleString();
+                
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    window.farmApp.state.seedsBalance = data.new_game_state.seedsBalance;
+                    
+                    // ACTIVACIÓN FORZADA DE LA PARCELA 6 DE TORNEO
+                    const arenaPlot = window.farmApp.state.plots[5];
+                    arenaPlot.status = 'tournament';
+                    arenaPlot.score = 10000;
+                    arenaPlot.water = 50; // Inicia con 50% para dar margen al usuario
+                    arenaPlot.tournamentEndTime = Date.now() + (12 * 3600000); // 12 Horas SPRINT
+                    arenaPlot.isReady = false;
+                    
+                    window.farmApp.state.lastTick = Date.now();
+                    window.farmApp.saveState();
+                    
+                    // Redirigir de inmediato a la granja
+                    loadView('farm', document.querySelectorAll('.nav-btn')[0]);
+                }
+                
+                if(window.syncUserData) window.syncUserData();
+            } else {
+                alert("Error al inscribirse: " + data.error);
+            }
+        } catch(e) {
+            alert("Error conectando con el servidor de la Arena.");
+        } finally {
+            // Restaurar botón en caso de error
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
 </script>
