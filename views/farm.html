@@ -167,6 +167,84 @@
     </div>
 </div>
 
+
+<!-- MODAL BIENVENIDA TORNEO (EXPLICACIÓN) -->
+<div id="tournament-welcome-modal" class="fixed inset-0 z-[160] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-cg_gold">
+        <div class="bg-gradient-to-r from-cg_navy to-gray-900 p-6 text-center border-b border-gray-800 relative">
+            <span class="absolute top-4 right-4 text-white text-2xl cursor-pointer font-bold" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')">✕</span>
+            <h3 class="text-2xl font-black text-white tracking-tight">Arena de Gladiadores</h3>
+            <p class="text-cg_gold text-xs font-bold uppercase tracking-widest mt-1">Reglas Oficiales - 12H Sprint</p>
+        </div>
+        <div class="p-6 space-y-4 bg-gray-50">
+            <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <img src="https://i.ibb.co/WvdGwdYK/Frame-754.png" class="w-16 h-16 object-contain drop-shadow-md" alt="Bonsái">
+                <div>
+                    <h4 class="font-black text-cg_navy text-lg leading-tight">El Bonsái del Maestro</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Mantén viva esta planta por 12 horas. Inicias con <strong class="text-cg_gold">10,000 Puntos Perfectos</strong>.</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex gap-3 shadow-sm">
+                    <span class="text-xl">⚠️</span>
+                    <p class="text-xs text-red-800"><strong class="font-black">Peligro de Sequía (< 20%):</strong> Si el agua baja del 20%, perderás <strong>10 Puntos por cada minuto</strong> deshidratada.</p>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex gap-3 shadow-sm">
+                    <span class="text-xl">💧</span>
+                    <p class="text-xs text-blue-800"><strong class="font-black">Riego de Precisión (Minijuego):</strong> No hay riego automático. El porcentaje (%) donde logres detener la flecha será el agua inyectada.</p>
+                </div>
+                <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex gap-3 shadow-sm">
+                    <span class="text-xl">💀</span>
+                    <p class="text-xs text-orange-800"><strong class="font-black">Riesgo de Ahogo (> 100%):</strong> Si tu inyección de agua supera el 100%, serás penalizado inmediatamente con <strong>-500 Puntos</strong>.</p>
+                </div>
+            </div>
+            <button onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')" class="w-full bg-cg_gold hover:bg-yellow-600 text-white font-black py-4 rounded-xl transition-all shadow-sm uppercase tracking-widest text-sm mt-3">
+                Comprendo las Reglas
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CALIBRADOR DE RIEGO (MINIJUEGO) -->
+<div id="water-calib-modal" class="fixed inset-0 z-[170] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-8 text-center border-4 border-cg_blue">
+        <h3 class="text-2xl font-black text-cg_navy mb-1">Riego Quirúrgico</h3>
+        <p class="text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la cantidad a inyectar</p>
+        
+        <div class="relative w-full h-12 bg-gray-100 rounded-full mb-10 shadow-inner border border-gray-200 overflow-hidden">
+            <!-- Zonas de Porcentaje -->
+            <div class="absolute top-0 left-0 h-full w-[20%] bg-red-100 border-r-2 border-white"></div>
+            <div class="absolute top-0 left-[20%] h-full w-[20%] bg-blue-100 border-r-2 border-white"></div>
+            <div class="absolute top-0 left-[40%] h-full w-[20%] bg-blue-200 border-r-2 border-white"></div>
+            <div class="absolute top-0 left-[60%] h-full w-[20%] bg-blue-300 border-r-2 border-white"></div>
+            <div class="absolute top-0 left-[80%] h-full w-[20%] bg-red-100"></div>
+            
+            <!-- Textos de Porcentaje -->
+            <div class="absolute top-0 left-[10%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-red-500">10%</div>
+            <div class="absolute top-0 left-[30%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-blue-600">30%</div>
+            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-blue-700">50%</div>
+            <div class="absolute top-0 left-[70%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-blue-800">70%</div>
+            <div class="absolute top-0 left-[90%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-red-500">100%</div>
+            
+            <!-- Puntero Móvil Animado -->
+            <div id="calib-pointer" class="absolute top-0 h-full w-2 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
+                <div class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[10px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
+            </div>
+        </div>
+        
+        <button onclick="window.farmApp.stopWaterCalibration()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-2xl py-5 rounded-2xl shadow-[0_5px_0_#1e3a8a] active:shadow-[0_0px_0_#1e3a8a] active:translate-y-[5px] transition-all uppercase tracking-widest">
+            FIJAR RIEGO
+        </button>
+    </div>
+</div>
+
+
+
+
 <button onclick="document.getElementById('dev-modal').classList.replace('hidden','flex')" class="fixed bottom-6 right-6 bg-gray-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-[90] flex items-center gap-2 group border border-gray-700">
     <span class="text-xl">⚙</span>
     <span class="text-xs font-black uppercase tracking-widest hidden group-hover:inline-block px-2">Control Admin</span>
@@ -252,6 +330,8 @@
 window.farmApp = {
     PLOT_COSTS: [0, 0, 0, 75000, 150000, 300000],
 
+    calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null }, // Control del minijuego
+    
     state: {
         seedsBalance: 35000,
         autoWaterEndTime: 0, 
@@ -261,7 +341,7 @@ window.farmApp = {
             { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
             { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
             { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-            { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+            { id: 5, status: 'arena_locked', score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } } // Parcela 6 de Torneo
         ],
         inventory: {
             'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
@@ -278,7 +358,8 @@ window.farmApp = {
             plant_wheat: 'https://i.ibb.co/szXSZjs/Frame-753.png',
             plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',
             plant_big: 'https://i.ibb.co/qF9G5qMw/Frame-744.png',
-            crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png'
+            crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png',
+            bonsai: 'https://i.ibb.co/WvdGwdYK/Frame-754.png'
         },
         selectedPlotId: null,
         pendingPlotId: null,
@@ -475,6 +556,74 @@ window.farmApp = {
                 </div>
             ` : '';
 
+            // RENDERIZADO EXCLUSIVO PARA LA PARCELA 6 (TORNEO)
+            if (plot.id === 5) {
+                if (plot.status === 'arena_locked' || plot.status === 'locked') {
+                    el.className = `rounded-2xl border-2 border-dashed border-cg_gold bg-gradient-to-b from-white to-orange-50 h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-sm`;
+                    el.innerHTML = `
+                        <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none opacity-40 grayscale">
+                            <img src="${this.state.images.terrain_dry}" class="h-40 w-auto object-contain drop-shadow-sm">
+                        </div>
+                        <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4">
+                            <span class="font-black text-cg_gold uppercase tracking-widest text-[12px] mb-1 bg-white/90 px-3 py-1 rounded shadow-sm backdrop-blur border border-orange-200">Arena de Torneo</span>
+                            <span class="font-bold text-gray-500 text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm mt-2 text-center">Inscríbete en la pestaña<br>Torneos para desbloquear</span>
+                        </div>
+                    `;
+                } else if (plot.status === 'tournament') {
+                    const totalMs = 12 * 3600000;
+                    const elapsed = now - (plot.tournamentEndTime - totalMs);
+                    const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
+                    const hoursLeft = Math.max(0, (plot.tournamentEndTime - now) / 3600000);
+                    const timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
+                    
+                    const isAlert = plot.water < 20;
+                    const borderStyle = isAlert ? 'border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' : 'border-cg_gold bg-gradient-to-b from-white to-yellow-50 shadow-md hover:shadow-lg transition-all';
+                    
+                    el.className = `rounded-2xl border-2 h-64 relative overflow-hidden flex flex-col ${borderStyle}`;
+                    el.innerHTML = `
+                        ${localToastHTML}
+                        <div class="absolute top-3 left-3 bg-cg_navy text-white px-2 py-1 rounded text-[9px] font-black border border-gray-700 shadow-sm z-20 uppercase tracking-widest">
+                            🔥 12H Sprint
+                        </div>
+                        
+                        <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
+                            <div class="relative w-full h-40 flex items-center justify-center">
+                                <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-40 w-auto object-contain drop-shadow-sm">
+                                <img src="${this.state.images.bonsai}" class="absolute h-36 w-auto object-contain z-10 drop-shadow-xl transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-15%);">
+                            </div>
+                        </div>
+
+                        <!-- LA CAJA DORADA -->
+                        <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-30 w-[85%]">
+                            <div class="bg-gradient-to-r from-yellow-600 to-cg_gold text-white rounded-lg p-1.5 shadow-lg border border-yellow-300 text-center flex flex-col ${isAlert ? 'animate-pulse' : ''}">
+                                <span class="text-[8px] uppercase tracking-widest font-black opacity-90">Puntaje Competencia</span>
+                                <span class="text-lg font-black tracking-tight leading-none font-mono">${Math.floor(plot.score).toLocaleString()} 🏆</span>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-0 left-0 w-full bg-white border-t border-yellow-200 px-4 py-2 flex flex-col gap-1 z-20 rounded-b-2xl">
+                            <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1 shadow-inner">
+                                <div class="bg-cg_gold h-full transition-all duration-1000" style="width: ${progress}%"></div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-black ${isAlert ? 'text-red-600' : 'text-cg_blue'}">💧 ${Math.floor(plot.water)}%</span>
+                                ${plot.isReady ? `
+                                    <button onclick="window.farmApp.harvestTournament()" class="text-[10px] bg-cg_gold hover:bg-orange-500 text-white font-black px-3 py-1.5 rounded shadow-sm animate-pulse uppercase tracking-widest">Cosechar Torneo</button>
+                                ` : `
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-bold text-gray-500">⏳ ${timeLeftText}</span>
+                                        <button onclick="window.farmApp.openWaterCalibration()" class="bg-cg_blue hover:bg-cg_navy text-white text-[9px] font-black transition-all uppercase tracking-widest px-3 py-1 rounded-md shadow-sm">Regar</button>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                }
+                grid.appendChild(el);
+                return; // Termina la iteración exclusiva para la parcela 6
+            }
+
+            // [Lógica Original para Parcelas 1 a 5]
             if (plot.status === 'locked') {
                 const cost = this.PLOT_COSTS[plot.id];
                 el.className = `rounded-2xl border-2 border-dashed border-gray-300 h-64 flex flex-col items-center justify-center relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : ''}`;
@@ -556,13 +705,9 @@ window.farmApp = {
                     }
                 }
 
-                // Renderizado condicional del cuervo (Castigo de Tiempo)
                 let crowHtml = '';
-                // NUEVO: Sistema de Trigo como cebo y descomposición
                 if (plot.hasCrow) {
                     if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
-                    
-                    // Si el cuervo lleva más de 15 minutos en el trigo, el trigo muere.
                     if (plot.plant && plot.plant.id === 'flower_wheat' && (now - plot.crowArrivedAt) > 900000) {
                         plot.status = 'empty';
                         plot.potUses = Math.max(0, plot.potUses - 1);
@@ -570,11 +715,10 @@ window.farmApp = {
                         plot.hasCrow = false;
                         plot.crowArrivedAt = 0;
                         plot.crowLeavingAt = 0;
-                        changesMade = true;
                         this.showPlotToast(plot.id, '💀', 'Trigo Destruido');
                     }
                 } else {
-                    plot.crowArrivedAt = 0; // Limpiar contador si no hay cuervo
+                    plot.crowArrivedAt = 0;
                 }
 
                 el.innerHTML = `
@@ -621,6 +765,153 @@ window.farmApp = {
             }
             grid.appendChild(el);
         });
+    },
+
+    processTick() {
+        const now = Date.now();
+        const deltaMS = now - this.state.lastTick;
+        this.state.lastTick = now;
+        const deltaHours = deltaMS / 3600000;
+        
+        const isAutoWatering = this.state.autoWaterEndTime > now;
+        let changesMade = false;
+        
+        this.state.plots.forEach(plot => {
+            
+            // Lógica Exclusiva Parcela 6 (Torneo)
+            if (plot.id === 5 && plot.status === 'tournament') {
+                if (plot.water > 0) {
+                    plot.water = Math.max(0, plot.water - (10 * deltaHours)); // Bonsai consume 10% por hora
+                    changesMade = true;
+                }
+                if (plot.water < 20) { // Sequía castiga el puntaje
+                    const mins = deltaMS / 60000;
+                    plot.score = Math.max(0, plot.score - (10 * mins)); // Pierde 10 puntos por minuto
+                    changesMade = true;
+                }
+                if (now >= plot.tournamentEndTime && !plot.isReady) {
+                    plot.isReady = true;
+                    changesMade = true;
+                    if(deltaMS < 60000) this.showPlotToast(plot.id, '🏆', '¡Torneo Finalizado!');
+                }
+                return; // Ignorar el resto de la lógica para esta parcela
+            }
+
+            // [Lógica Original Parcelas Normales]
+            if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
+                plot.hasCrow = false;
+                plot.crowLeavingAt = 0;
+                changesMade = true;
+                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'El cuervo se fue');
+            }
+
+            if (plot.status === 'planted' && !plot.isReady) {
+                if (isAutoWatering) {
+                    plot.water = 100;
+                    plot.hasCrow = false; 
+                    plot.crowLeavingAt = 0;
+                } else {
+                    if (plot.water > 0) {
+                        plot.water = Math.max(0, plot.water - (40 * deltaHours)); 
+                        changesMade = true;
+                    }
+                    if (plot.scarecrowEndTime > now) {
+                        plot.hasCrow = false;
+                        plot.crowLeavingAt = 0;
+                    } else {
+                        if (!plot.hasCrow && plot.water < 20) {
+                            plot.hasCrow = true;
+                            if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
+                            changesMade = true;
+                        }
+                    }
+                }
+                if (plot.water <= 0 || plot.hasCrow) {
+                    plot.harvestAt += deltaMS; 
+                    changesMade = true;
+                }
+                if (now >= plot.harvestAt) {
+                    plot.isReady = true;
+                    changesMade = true;
+                    if(deltaMS < 60000) this.showPlotToast(plot.id, '✨', '¡Lista para Cosecha!');
+                }
+            }
+        });
+        
+        this.updateSprinklerUI();
+
+        if(changesMade) {
+            if(document.getElementById('farm-grid')) {
+                this.renderPlots();
+                if(this.state.selectedPlotId !== null) {
+                    this.selectPlot(this.state.selectedPlotId);
+                }
+            }
+            this.saveState();
+        } else if (deltaMS > 0) {
+            this.saveState();
+        }
+    },
+
+    // -----------------------------------------------------
+    // NUEVAS FUNCIONES DE TORNEO Y MINIJUEGO
+    // -----------------------------------------------------
+    showTournamentWelcome() {
+        const modal = document.getElementById('tournament-welcome-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    },
+
+    openWaterCalibration() {
+        const modal = document.getElementById('water-calib-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        this.calibration.active = true;
+        this.calibration.x = 0;
+        this.calibration.dir = 1;
+        const pointer = document.getElementById('calib-pointer');
+        
+        const tick = () => {
+            if(!this.calibration.active) return;
+            this.calibration.x += this.calibration.dir * this.calibration.speed;
+            if(this.calibration.x >= 100) { this.calibration.x = 100; this.calibration.dir = -1; }
+            if(this.calibration.x <= 0) { this.calibration.x = 0; this.calibration.dir = 1; }
+            pointer.style.left = this.calibration.x + '%';
+            this.calibration.reqId = requestAnimationFrame(tick);
+        };
+        this.calibration.reqId = requestAnimationFrame(tick);
+    },
+    
+    stopWaterCalibration() {
+        this.calibration.active = false;
+        cancelAnimationFrame(this.calibration.reqId);
+        
+        const waterAdded = Math.round(this.calibration.x);
+        const plot = this.state.plots[5];
+        
+        plot.water += waterAdded;
+        
+        if (plot.water > 100) {
+            plot.water = 100;
+            plot.score = Math.max(0, plot.score - 500); // Castigo por ahogamiento
+            this.showPlotToast(5, '⚠️', '-500 pts (Ahogado)');
+        } else {
+            this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
+        }
+        
+        document.getElementById('water-calib-modal').classList.replace('flex', 'hidden');
+        this.saveState();
+        this.renderPlots();
+    },
+
+    harvestTournament() {
+        const plot = this.state.plots[5];
+        alert(`¡Torneo Finalizado!\nTu puntaje final es: ${Math.floor(plot.score)} 🏆\nLos resultados serán publicados en el Dashboard pronto.`);
+        plot.status = 'arena_locked';
+        plot.isReady = false;
+        this.saveState();
+        this.renderPlots();
     },
 
     updateInventoryUI() {

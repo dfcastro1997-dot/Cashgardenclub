@@ -122,7 +122,6 @@
 
 <script>
     async function joinTournament(t_id, fee_cop) {
-    // 1. Obtener usuario de la memoria/UI en lugar de localStorage
     const username = document.getElementById('profile-name').innerText;
     if(!username || username === 'Usuario') return;
     
@@ -135,21 +134,31 @@
         const data = await res.json();
         
         if (res.ok) {
-            alert(`¡Inscripción Exitosa! Te has unido a la Arena.`);
-            
-            // 2. Actualización de datos dictada directamente por la red (Base de Datos)
-            document.getElementById('global-balance').innerText = "$" + data.new_balance_cop.toLocaleString();
-            
             if(window.farmApp) {
-                // Sincronizar memoria de la app con la respuesta del servidor
+                // Sincronizar saldos
                 window.farmApp.state.balance = data.new_balance_cop;
                 window.farmApp.state.seedsBalance = data.new_game_state.seedsBalance;
                 
-                // Actualizar timestamp para que este estado sea el más reciente y no se sobrescriba
+                // ACTIVACIÓN DE LA PARCELA 6 PARA EL TORNEO
+                const arenaPlot = window.farmApp.state.plots[5];
+                arenaPlot.status = 'tournament';
+                arenaPlot.score = 10000;
+                arenaPlot.water = 50; // Inicia con 50% de agua para evitar muerte inmediata
+                arenaPlot.tournamentEndTime = Date.now() + (12 * 3600000); // 12 Horas de duración
+                arenaPlot.isReady = false;
+                
                 window.farmApp.state.lastTick = Date.now();
-                window.farmApp.updateUI(); // Refrescar UI para mostrar reducción de semillas
+                window.farmApp.saveState();
+                
+                // Redirigir y mostrar tutorial
+                loadView('farm', document.querySelectorAll('.nav-btn')[0]);
+                setTimeout(() => {
+                    if (window.farmApp.showTournamentWelcome) {
+                        window.farmApp.showTournamentWelcome();
+                    }
+                }, 500);
+                
             }
-            
             if(window.syncUserData) window.syncUserData();
         } else {
             alert("Error al inscribirse: " + data.error);
