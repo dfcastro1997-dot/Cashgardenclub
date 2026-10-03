@@ -224,22 +224,20 @@
     <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-8 text-center border-4 border-cg_blue">
         <h3 class="text-2xl font-black text-cg_navy mb-1">Riego Quirúrgico</h3>
-        <p class="text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la cantidad a inyectar</p>
+        <p class="text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la zona azul segura</p>
         
-        <div class="relative w-full h-12 bg-gray-100 rounded-full mb-10 shadow-inner border border-gray-200 overflow-hidden">
-            <!-- Zonas de Porcentaje -->
-            <div class="absolute top-0 left-0 h-full w-[20%] bg-red-100 border-r-2 border-white"></div>
-            <div class="absolute top-0 left-[20%] h-full w-[20%] bg-blue-100 border-r-2 border-white"></div>
-            <div class="absolute top-0 left-[40%] h-full w-[20%] bg-blue-200 border-r-2 border-white"></div>
-            <div class="absolute top-0 left-[60%] h-full w-[20%] bg-blue-300 border-r-2 border-white"></div>
-            <div class="absolute top-0 left-[80%] h-full w-[20%] bg-red-100"></div>
+        <!-- Barra de progreso dinámica -->
+        <div class="relative w-full h-12 bg-red-100 rounded-full mb-10 shadow-inner border border-red-200 overflow-hidden">
+            
+            <!-- Zona Segura Dinámica (Inyectada por JS) -->
+            <div id="calib-safe-zone" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500 transition-all"></div>
             
             <!-- Textos de Porcentaje -->
-            <div class="absolute top-0 left-[10%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-red-500">10%</div>
-            <div class="absolute top-0 left-[30%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-blue-600">30%</div>
-            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-blue-700">50%</div>
-            <div class="absolute top-0 left-[70%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-blue-800">70%</div>
-            <div class="absolute top-0 left-[90%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-red-500">100%</div>
+            <div class="absolute top-0 left-[10%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-black/40 pointer-events-none z-10">10%</div>
+            <div class="absolute top-0 left-[30%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-black/40 pointer-events-none z-10">30%</div>
+            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-black/40 pointer-events-none z-10">50%</div>
+            <div class="absolute top-0 left-[70%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-black/40 pointer-events-none z-10">70%</div>
+            <div class="absolute top-0 left-[90%] transform -translate-x-1/2 h-full flex items-center font-black text-xs text-black/40 pointer-events-none z-10">100%</div>
             
             <!-- Puntero Móvil Animado -->
             <div id="calib-pointer" class="absolute top-0 h-full w-2 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
@@ -1040,21 +1038,40 @@ window.farmApp = {
 
     openWaterCalibration(plotId = 5) {
         this.calibration.currentPlotId = plotId;
-        let speed = 1.0; // Velocidad estándar por defecto
+        let speed = 1.0; 
+        let minSafe = 0;
+        let maxSafe = 100;
+        const plot = this.state.plots[plotId];
+        const currentWater = plot.water || 0;
         
-        // Asignación de velocidad dinámica
+        // Obtener la velocidad y los límites según la planta/torneo
         if (plotId === 5) {
-            const plot = this.state.plots[5];
             const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
             speed = conf.speed;
+            minSafe = conf.minWater;
+            maxSafe = conf.maxWater;
         } else {
-            const plot = this.state.plots[plotId];
             if (plot.plant) {
-                if (plot.plant.id === 'flower_wheat') speed = 3.0; // Ultra rápido
-                else if (plot.plant.id === 'flower_small') speed = 1.0; // Moderado
-                else if (plot.plant.id === 'flower_cactus') speed = 1.5; // Desafiante
-                else if (plot.plant.id === 'flower_big') speed = 0.7; // Lento pero de micro-gestión
+                if (plot.plant.id === 'flower_wheat') { speed = 3.0; minSafe = 60; maxSafe = 100; }
+                else if (plot.plant.id === 'flower_small') { speed = 1.0; minSafe = 30; maxSafe = 90; }
+                else if (plot.plant.id === 'flower_cactus') { speed = 1.5; minSafe = 20; maxSafe = 80; }
+                else if (plot.plant.id === 'flower_big') { speed = 0.7; minSafe = 50; maxSafe = 70; }
             }
+        }
+
+        // LÓGICA DE ZONA SEGURA: Calcula cuánta agua se debe inyectar
+        let targetMin = Math.max(0, minSafe - currentWater);
+        let targetMax = Math.max(0, maxSafe - currentWater);
+        
+        // Topes visuales (no puede superar el 100% de la barra)
+        targetMin = Math.min(100, targetMin);
+        targetMax = Math.min(100, targetMax);
+
+        // Actualizar UI: Dibuja la franja azul en el rango permitido
+        const safeZone = document.getElementById('calib-safe-zone');
+        if (safeZone) {
+            safeZone.style.left = `${targetMin}%`;
+            safeZone.style.width = `${targetMax - targetMin}%`;
         }
 
         const modal = document.getElementById('water-calib-modal');
