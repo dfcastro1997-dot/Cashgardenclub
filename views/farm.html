@@ -363,10 +363,10 @@ window.farmApp = {
     PLOT_COSTS: [0, 0, 0, 75000, 150000, 300000],
 
     TOURNAMENT_CONFIGS: {
-        1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 10, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 2 },
-        3: { name: 'Orquídea Lunar', image: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durationHours: 6, startScore: 25000, evapPerHour: 20, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 2.5 },
-        4: { name: 'Rosa de Ceniza', image: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durationHours: 8, startScore: 50000, evapPerHour: 30, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 4 },
-        5: { name: 'Loto de Cristal', image: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durationHours: 12, startScore: 100000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 1 }
+        1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 10, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
+        3: { name: 'Orquídea Lunar', image: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durationHours: 6, startScore: 10000, evapPerHour: 20, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 1.2 },
+        4: { name: 'Rosa de Ceniza', image: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durationHours: 8, startScore: 10000, evapPerHour: 30, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 1.5 },
+        5: { name: 'Loto de Cristal', image: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durationHours: 12, startScore: 10000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 0.8 }
     },
 
     calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null },
@@ -1059,8 +1059,14 @@ window.farmApp = {
         plot.toast = { active: true, icon, msg };
         this.renderPlots();
         
-        setTimeout(() => {
-            if (plot.toast && plot.toast.msg === msg) {
+        // Limpiamos cualquier temporizador anterior para evitar superposiciones y bloqueos
+        if (plot.toastTimer) {
+            clearTimeout(plot.toastTimer);
+        }
+        
+        // Creamos un nuevo temporizador que forzará el cierre de la etiqueta actual
+        plot.toastTimer = setTimeout(() => {
+            if (plot.toast) {
                 plot.toast.active = false;
                 this.renderPlots();
             }
