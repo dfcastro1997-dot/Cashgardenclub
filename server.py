@@ -27,7 +27,6 @@ def init_db():
             username VARCHAR(50) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
             balance NUMERIC(12, 2) DEFAULT 0.00,
-            real_balance_cop NUMERIC(12, 2) DEFAULT 0.00,
             phone_nequi VARCHAR(15),
             game_state TEXT
         );
@@ -146,7 +145,7 @@ def register():
     cur.execute("SELECT * FROM users WHERE username = %s", (username,))
     if cur.fetchone(): return jsonify({"error": "El usuario ya existe"}), 400
     hashed_pw = generate_password_hash(password)
-    cur.execute("INSERT INTO users (username, password_hash, real_balance_cop) VALUES (%s, %s, 0) RETURNING id, username, real_balance_cop as balance", (username, hashed_pw))
+    cur.execute("INSERT INTO users (username, password_hash, balance) VALUES (%s, %s, 0) RETURNING id, username, balance", (username, hashed_pw))
     new_user = cur.fetchone()
     conn.commit(); cur.close(); conn.close()
     return jsonify({"message": "Registro exitoso", "user": new_user})
@@ -161,7 +160,7 @@ def login():
     cur.close(); conn.close()
     if user and check_password_hash(user['password_hash'], data.get('password')):
         del user['password_hash']
-        user['balance'] = float(user['real_balance_cop'] or 0)
+        user['balance'] = float(user['balance'] or 0)
         return jsonify({"message": "Login exitoso", "user": user})
     return jsonify({"error": "Usuario o contraseña incorrectos"}), 401
 
@@ -169,7 +168,7 @@ def login():
 def sync_user(username):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT real_balance_cop as balance, game_state FROM users WHERE username = %s", (username,))
+    cur.execute("SELECT balance, game_state FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
     if user_data:
         # 1. Aplicar la simulación autoritativa en el servidor al conectarse
@@ -228,10 +227,10 @@ def buy_seeds():
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        cur.execute("SELECT id, real_balance_cop, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
+        cur.execute("SELECT id, balance, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
         user = cur.fetchone()
         
-        if not user or float(user['real_balance_cop']) < cost_cop:
+        if not user or float(user['balance']) < cost_cop:
             return jsonify({"error": "Saldo COP insuficiente"}), 400
             
         # Inyectar las semillas directamente en el state validado (si aplica)
@@ -239,13 +238,13 @@ def buy_seeds():
         if seeds_amount > 0:
             state['seedsBalance'] = state.get('seedsBalance', 0) + seeds_amount
         
-        cur.execute("UPDATE users SET real_balance_cop = real_balance_cop - %s, game_state = %s WHERE id = %s", (cost_cop, json.dumps(state), user['id']))
+        cur.execute("UPDATE users SET balance = balance - %s, game_state = %s WHERE id = %s", (cost_cop, json.dumps(state), user['id']))
         cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'iap_purchase', %s, %s, 'completed')", (user['id'], cost_cop, f"IAP-{user['id']}-{int(time.time())}"))
         conn.commit()
         
         return jsonify({
             "message": "Compra exitosa", 
-            "new_balance_cop": float(user['real_balance_cop']) - cost_cop, 
+            "new_balance_cop": float(user['balance']) - cost_cop, 
             "new_seeds": state.get('seedsBalance', 0)
         })
     except Exception as e:
@@ -268,7 +267,7 @@ def join_tournament():
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        cur.execute("SELECT id, real_balance_cop, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
+        cur.execute("SELECT id, balance, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
         user = cur.fetchone()
         if not user: return jsonify({"error": "Usuario no encontrado"}), 404
 
@@ -309,8 +308,8 @@ def join_tournament():
         cur.execute("INSERT INTO tournament_entries (tournament_id, user_id) VALUES (%s, %s)", (t_id, user['id']))
         
         # OBTENER EL SALDO ACTUALIZADO PARA EVITAR LOCALSTORAGE
-        cur.execute("SELECT real_balance_cop FROM users WHERE id = %s", (user['id'],))
-        new_balance_cop = cur.fetchone()['real_balance_cop']
+        cur.execute("SELECT balance FROM users WHERE id = %s", (user['id'],))
+        new_balance_cop = cur.fetchone()['balance']
         
         conn.commit()
         
@@ -335,16 +334,16 @@ def dispatch_nequi_payout():
     amount_cop = float(payload.get('amount_cop', 0))
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, real_balance_cop FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
+    cur.execute("SELECT id, balance FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
     user = cur.fetchone()
-    if not user or float(user['real_balance_cop']) < amount_cop or amount_cop < 10000:
+    if not user or float(user['balance']) < amount_cop or amount_cop < 10000:
         cur.close(); conn.close()
         return jsonify({"error": "Fondos insuficientes o menores a $10.000"}), 400
-    cur.execute("UPDATE users SET phone_nequi = %s, real_balance_cop = real_balance_cop - %s WHERE id = %s", (payload.get('phone_nequi'), amount_cop, user['id']))
+    cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (payload.get('phone_nequi'), amount_cop, user['id']))
     payout_ref = f"PO-{user['id']}-{int(time.time())}"
     cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_cop, payout_ref))
     conn.commit(); cur.close(); conn.close()
-    return jsonify({"message": "Retiro tramitado hacia Nequi", "reference": payout_ref, "new_balance": float(user['real_balance_cop']) - amount_cop}), 200
+    return jsonify({"message": "Retiro tramitado hacia Nequi", "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
