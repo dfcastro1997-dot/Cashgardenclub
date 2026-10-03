@@ -99,6 +99,13 @@ def process_server_tick(game_state_str):
                         if plot.get('water', 0) > 0:
                             plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
                         
+                        # Resolución del castigo de 15 min en el servidor (Drena el Cactus)
+                        if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
+                            plot['hasCrow'] = False
+                            plot['crowLeavingAt'] = 0
+                            if plant_id == 'flower_cactus' and plot.get('water', 0) > 80:
+                                plot['water'] = 80
+
                         # Vulnerabilidad determinista a plagas o pudrición
                         if plot.get('scarecrowEndTime', 0) > now:
                             plot['hasCrow'] = False
@@ -113,7 +120,7 @@ def process_server_tick(game_state_str):
                         crow_arrived = plot.get('crowArrivedAt', now)
                         plot['crowArrivedAt'] = crow_arrived
                         # Si el cuervo lleva más de 15 minutos en el trigo, el trigo muere.
-                        if plot.get('plant', {}).get('id') == 'flower_wheat' and (now - crow_arrived) > 900000:
+                        if plant_id == 'flower_wheat' and (now - crow_arrived) > 900000:
                             plot['status'] = 'empty'
                             plot['potUses'] = max(0, plot.get('potUses', 1) - 1)
                             plot['plant'] = None
