@@ -1,4 +1,4 @@
-<div class="max-w-[1200px] mx-auto space-y-8 animate-fade-in pb-20">
+<div class="max-w-[1200px] mx-auto space-y-8 animate-fade-in pb-20 relative">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1">
@@ -21,6 +21,23 @@
     <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
     <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
     <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+
+    <!-- VENTANA MODAL TEMPORAL DE COMPRA -->
+    <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="purchase-modal-bg"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-8 flex flex-col items-center text-center transform scale-95 opacity-0 transition-all duration-300 border border-gray-100" id="purchase-modal-card">
+            <div class="w-24 h-24 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mb-5 shadow-inner relative">
+                <div class="absolute inset-0 rounded-full border border-green-200 animate-ping opacity-50"></div>
+                <img id="purchase-modal-img" src="" class="w-14 h-14 object-contain relative z-10 drop-shadow-md">
+            </div>
+            <h3 class="text-2xl font-black text-cg_navy mb-1" id="purchase-modal-title">¡Compra Exitosa!</h3>
+            <p class="text-sm font-bold text-gray-500 mb-6" id="purchase-modal-desc"></p>
+            <div class="bg-gray-50 border border-gray-200 px-5 py-2.5 rounded-xl flex items-center gap-3">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Inversión:</span>
+                <span class="text-base font-black text-red-500" id="purchase-modal-price"></span>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -51,7 +68,6 @@ window.shopApp = {
     },
 
     init() {
-        // Carga el estado actual de la granja (para conocer saldo y stock)
         const savedStateStr = localStorage.getItem('cg_farm_state');
         if (savedStateStr) {
             try {
@@ -90,7 +106,6 @@ window.shopApp = {
             if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
             const qty = this.state.shopQuantities[item.id];
             
-            // Obtener stock actual si existe en el inventario
             let currentStock = 0;
             if(this.state.inventory[item.id]) {
                 currentStock = this.state.inventory[item.id].qty || 0;
@@ -164,31 +179,73 @@ window.shopApp = {
 
         if (this.state.seedsBalance >= total) {
             
-            // Actualiza saldo
+            // Actualiza saldo UI
             this.state.seedsBalance -= total;
             document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             
-            // Efecto visual
+            // Efecto visual saldo
             const balEl = document.getElementById('global-seeds-display');
             balEl.classList.add('text-red-500', 'scale-110');
             setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
 
-            // Inyecta en inventario
+            // Inyecta en inventario. Reconstruye el objeto si fue borrado en versiones anteriores.
             if (!this.state.inventory[itemId]) {
-                this.state.inventory[itemId] = { qty: 0 }; // Previene error si no existe en perfil viejo
+                let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                this.state.inventory[itemId] = { 
+                    name: catItem.name, 
+                    type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                    reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') ? 'small' : null)),
+                    qty: 0, 
+                    image: catItem.image 
+                };
             }
 
-            if(itemId === 'tool_scarecrow') this.state.inventory[itemId].qty += (3 * qty);
-            else if (itemId === 'tool_water') this.state.inventory[itemId].qty += (10 * qty);
-            else this.state.inventory[itemId].qty += qty;
+            let addedQty = qty;
+            if(itemId === 'tool_scarecrow') addedQty = 3 * qty;
+            else if (itemId === 'tool_water') addedQty = 10 * qty;
+
+            this.state.inventory[itemId].qty += addedQty;
             
-            // Guarda en DB y vuelve a renderizar para actualizar stock visible
+            // Guarda en DB y sincroniza granja fantasma
             this.saveState();
             this.renderShopItems(tab);
+
+            // Desplegar Ventana Modal
+            let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+            this.showPurchaseModal(catItem.image, catItem.name, addedQty, total);
             
         } else {
             alert("No tienes Semillas suficientes para realizar esta compra.");
         }
+    },
+
+    showPurchaseModal(imgUrl, itemName, qty, pricePaid) {
+        const modal = document.getElementById('purchase-success-modal');
+        const bg = document.getElementById('purchase-modal-bg');
+        const card = document.getElementById('purchase-modal-card');
+        
+        document.getElementById('purchase-modal-img').src = imgUrl;
+        document.getElementById('purchase-modal-desc').innerText = `Has adquirido ${qty}x ${itemName} para tu inventario.`;
+        document.getElementById('purchase-modal-price').innerText = `-${pricePaid.toLocaleString()} 🌱`;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        setTimeout(() => {
+            bg.classList.remove('opacity-0');
+            card.classList.remove('scale-95', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+        }, 10);
+
+        setTimeout(() => {
+            bg.classList.add('opacity-0');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }, 2500); // Modal desaparece suavemente tras 2.5 segundos
     },
 
     async buyIAP(packageId) {
@@ -207,9 +264,8 @@ window.shopApp = {
             if (res.ok) {
                 user.balance = data.new_balance_cop;
                 localStorage.setItem('user', JSON.stringify(user));
-                if(window.syncUserData) window.syncUserData(); // Actualiza saldo topbar
+                if(window.syncUserData) window.syncUserData(); 
 
-                // Actualiza estado local
                 const savedStateStr = localStorage.getItem('cg_farm_state');
                 if (savedStateStr) {
                     const farmState = JSON.parse(savedStateStr);
@@ -218,7 +274,14 @@ window.shopApp = {
                         const now = Date.now();
                         farmState.autoWaterEndTime = Math.max(now, farmState.autoWaterEndTime || 0) + (hours * 3600000);
                         localStorage.setItem('cg_farm_state', JSON.stringify(farmState));
-                        alert(`¡Compra Exitosa! Aspersor Automático activado por ${hours} horas.`);
+                        
+                        // Sincronizar memoria viva
+                        if (window.farmApp) {
+                            window.farmApp.state.autoWaterEndTime = farmState.autoWaterEndTime;
+                            window.farmApp.updateSprinklerUI();
+                        }
+
+                        alert(`¡Compra Exitosa! Asistente activado por ${hours} horas.`);
                     }
                 }
             } else {
@@ -230,7 +293,6 @@ window.shopApp = {
     },
 
     saveState() {
-        // Reconstrucción del estado local a prueba de fallos si está corrupto o vacío
         let farmState = { seedsBalance: 35000, autoWaterEndTime: 0, plots: [], inventory: {}, lastTick: Date.now() };
         const savedStateStr = localStorage.getItem('cg_farm_state');
         if (savedStateStr) {
@@ -239,10 +301,17 @@ window.shopApp = {
         
         farmState.seedsBalance = this.state.seedsBalance;
         farmState.inventory = this.state.inventory;
-        farmState.lastTick = Date.now(); // Marca temporal para dominar sobre el servidor viejo
+        farmState.lastTick = Date.now(); 
         
         const stateToSave = JSON.stringify(farmState);
         localStorage.setItem('cg_farm_state', stateToSave);
+
+        // FIX DEL ERROR: Inyección de datos a la Granja Fantasma para evitar sobrescrituras
+        if (window.farmApp) {
+            window.farmApp.state.seedsBalance = this.state.seedsBalance;
+            window.farmApp.state.inventory = JSON.parse(JSON.stringify(this.state.inventory));
+            window.farmApp.state.lastTick = farmState.lastTick;
+        }
 
         const userStr = localStorage.getItem('user');
         if (userStr) {
