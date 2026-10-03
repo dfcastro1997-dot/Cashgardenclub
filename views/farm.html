@@ -852,10 +852,12 @@ window.farmApp = {
                             ` : `
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-bold ${isAlert ? 'text-red-500' : 'text-gray-500'} pointer-events-none">⏳ ${isAlert ? 'Pausado' : timeLeftText}</span>
-                                    <button onclick="window.farmApp.removePlant(${plot.id}); event.stopPropagation();" class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white border border-red-100 hover:border-red-500 text-[9px] font-black transition-all uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm">
+                                    <button onclick="window.farmApp.removePlant(${plot.id}); event.stopPropagation();" 
+                                            class="${plot.hasCrow ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-red-50 hover:bg-red-500 text-red-500 hover:text-white border-red-100 hover:border-red-500 cursor-pointer'} text-[9px] font-black transition-all uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm border" 
+                                            ${plot.hasCrow ? 'disabled' : ''}>
                                         Quitar
                                     </button>
-                                    ${plot.plant && plot.plant.id === 'flower_cactus' ? `
+                                    ${plot.plant && plot.plant.id === 'flower_cactus' && !plot.hasCrow ? `
                                         <button onclick="window.farmApp.openWaterCalibration(${plot.id}); event.stopPropagation();" class="bg-cg_blue hover:bg-cg_navy text-white text-[9px] font-black transition-all uppercase tracking-widest px-3 py-1 rounded-md shadow-sm">
                                             Regar
                                         </button>
@@ -864,7 +866,7 @@ window.farmApp = {
                             `}
                         </div>
                     </div>
-                `; // <--- ¡AQUÍ ESTABA EL ERROR! Faltaban las comillas invertidas de cierre y el punto y coma.
+                `;
                 el.onclick = () => this.selectPlot(plot.id);
             }
             grid.appendChild(el);
@@ -879,6 +881,12 @@ window.farmApp = {
         
         const isAutoWatering = this.state.autoWaterEndTime > now;
         let changesMade = false;
+        
+        // NUEVO: Verificamos si hay algún cactus pudriéndose para contagiar a los demás
+        const anyCactusRotting = this.state.plots.some(p => 
+            p.status === 'planted' && !p.isReady && 
+            p.plant && p.plant.id === 'flower_cactus' && p.water > 80
+        );
         
         this.state.plots.forEach(plot => {
             
@@ -905,13 +913,19 @@ window.farmApp = {
             if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
                 plot.hasCrow = false;
                 plot.crowLeavingAt = 0;
+                
+                // Al terminar de limpiar la pudrición, estabilizamos el agua para evitar un bucle infinito de plagas
+                if (plot.plant && plot.plant.id === 'flower_cactus' && plot.water > 80) {
+                    plot.water = 80;
+                }
+                
                 changesMade = true;
-                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'El cuervo se fue');
+                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Pudrición curada');
             }
 
             if (plot.status === 'planted' && !plot.isReady) {
                 if (isAutoWatering) {
-                    plot.water = 100;
+                    plot.water = (plot.plant && plot.plant.id === 'flower_cactus') ? 80 : 100;
                     plot.hasCrow = false; 
                     plot.crowLeavingAt = 0;
                 } else {
@@ -925,7 +939,7 @@ window.farmApp = {
                         plot.hasCrow = false;
                         plot.crowLeavingAt = 0;
                     } else {
-                        // Generación de Cuervo por sequía o por pudrición del cactus
+                        // Generación de Cuervo por sequía, pudrición del cactus O CONTAGIO
                         if (!plot.hasCrow) {
                             if (plot.water < 20) {
                                 plot.hasCrow = true;
@@ -935,14 +949,21 @@ window.farmApp = {
                                 plot.hasCrow = true;
                                 if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Se está pudriendo!');
                                 changesMade = true;
+                            } else if (anyCactusRotting) {
+                                plot.hasCrow = true;
+                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
+                                changesMade = true;
                             }
                         }
                     }
                 }
+
+                // Pausar el crecimiento si falta agua o hay cuervo en la parcela
                 if (plot.water <= 0 || plot.hasCrow) {
                     plot.harvestAt += deltaMS; 
                     changesMade = true;
                 }
+
                 if (now >= plot.harvestAt) {
                     plot.isReady = true;
                     changesMade = true;
@@ -1255,6 +1276,14 @@ window.farmApp = {
 
     removePlant(plotId) {
         const plot = this.state.plots[plotId];
+        
+        // REGLA: No se puede quitar una planta que tiene plaga/pudrición. 
+        // El jugador debe curarla primero (vía gratuita de 15m o vía premium con espantapájaros).
+        if (plot.hasCrow) {
+            this.showPlotToast(plotId, '⚠️', 'Debes curarla primero');
+            return;
+        }
+        
         plot.status = 'empty';
         plot.pot = null;
         plot.potUses = 0;

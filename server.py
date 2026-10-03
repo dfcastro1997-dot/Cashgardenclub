@@ -84,6 +84,14 @@ def process_server_tick(game_state_str):
             auto_water_end = state.get('autoWaterEndTime', 0)
             is_auto_watering = auto_water_end > now
 
+            # NUEVO: Verificar si algún cactus se está pudriendo en la granja
+            any_cactus_rotting = any(
+                p.get('status') == 'planted' and not p.get('isReady') and 
+                p.get('plant', {}).get('id') == 'flower_cactus' and 
+                p.get('water', 0) > 80 
+                for p in state.get('plots', [])
+            )
+
             for plot in state.get('plots', []):
                 if plot.get('status') == 'planted' and not plot.get('isReady'):
                     
@@ -106,13 +114,15 @@ def process_server_tick(game_state_str):
                             if plant_id == 'flower_cactus' and plot.get('water', 0) > 80:
                                 plot['water'] = 80
 
-                        # Vulnerabilidad determinista a plagas o pudrición
+                        # Vulnerabilidad determinista a plagas, pudrición o contagio global
                         if plot.get('scarecrowEndTime', 0) > now:
                             plot['hasCrow'] = False
                         elif not plot.get('hasCrow'):
                             if plot.get('water', 0) < 20:
                                 plot['hasCrow'] = True
                             elif plant_id == 'flower_cactus' and plot.get('water', 0) > 80:
+                                plot['hasCrow'] = True
+                            elif any_cactus_rotting:
                                 plot['hasCrow'] = True
 
                     # Trigo como cebo y descomposición (Server-side)
