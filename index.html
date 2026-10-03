@@ -44,6 +44,10 @@
             </div>
             
             <form id="auth-form" class="space-y-6">
+                <div class="text-center mb-4">
+                    <span class="bg-red-100 text-red-600 text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest">Gestor Agrícola Competitivo (Hardcore)</span>
+                    <p class="text-xs text-gray-500 mt-2 font-medium">Atención: Las plantas requieren gestión constante de tiempo real.</p>
+                </div>
                 <h3 id="form-title" class="text-center font-bold text-cg_navy text-lg hidden">Crear Nueva Cuenta</h3>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Usuario</label>
@@ -53,12 +57,21 @@
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Contraseña</label>
                     <input type="password" id="password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-medium text-cg_navy" required>
                 </div>
+                
+                <!-- NUEVO: AGE-GATE LEGAL -->
+                <div id="age-gate-container" class="hidden flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                    <input type="checkbox" id="age-gate" class="mt-1 w-4 h-4 text-cg_blue rounded border-gray-300 focus:ring-cg_blue">
+                    <label for="age-gate" class="text-[10px] text-gray-500 font-medium leading-tight">
+                        Declaro que soy <strong>mayor de 18 años</strong> y comprendo que esta es una plataforma de habilidad donde se pagan tarifas de entrada no reembolsables por servicios de torneos.
+                    </label>
+                </div>
+
                 <div id="auth-error" class="hidden bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-medium flex items-start gap-3">
                     <span id="auth-error-msg">Error en la autenticación.</span>
                 </div>
                 
                 <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Ingresar</button>
-                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-cg_gold hover:bg-orange-500 text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Registrarme</button>
+                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-cg_gold hover:bg-orange-500 text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Aceptar y Registrarme</button>
                 
                 <div class="text-center mt-4">
                     <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-xs font-bold text-gray-500 hover:text-cg_blue transition-colors">
@@ -78,12 +91,10 @@
                     <span class="text-2xl font-black text-cg_navy">CashGarden<span class="text-cg_blue">.Arena</span></span>
                 </div>
                 
-                <!-- MENU DE NAVEGACIÓN ACTUALIZADO CON "MERCADO" -->
                 <nav class="hidden lg:flex items-center gap-2 h-full">
                     <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
                         <span>Granja</span>
                     </button>
-                    <!-- NUEVO BOTÓN MERCADO -->
                     <button onclick="loadView('shop', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Mercado</span>
                     </button>
@@ -99,7 +110,6 @@
                 <!-- RECURSOS Y USUARIO -->
                 <div class="flex items-center gap-5">
                     <div class="hidden sm:flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                        <!-- NUEVO: DISPLAY GLOBAL DE SEMILLAS -->
                         <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-green-200 shadow-sm relative cursor-default">
                             <span class="text-sm font-bold text-gray-400">SEMILLAS</span>
                             <span id="global-seeds-display" class="text-sm font-extrabold text-green-600 transition-all duration-300">0 🌱</span>
@@ -150,11 +160,17 @@
             document.getElementById('btn-login').classList.toggle('hidden', !isLoginMode);
             document.getElementById('btn-register').classList.toggle('hidden', isLoginMode);
             document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
+            document.getElementById('age-gate-container').classList.toggle('hidden', isLoginMode);
             document.getElementById('btn-toggle-mode').innerText = isLoginMode ? "¿No tienes cuenta? Crea una aquí" : "¿Ya tienes cuenta? Ingresa aquí";
             document.getElementById('auth-error').classList.add('hidden');
         }
 
         async function handleAuth(action) {
+            if (action === 'register' && !document.getElementById('age-gate').checked) {
+                showError("Debes confirmar que eres mayor de edad y aceptar los términos.");
+                return;
+            }
+            
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             
@@ -284,7 +300,6 @@
                     const data = await response.json();
                     const dbBalance = data.user.real_balance_cop || data.user.balance;
                     
-                    // NUEVO: Sincronizar semillas en el topbar global
                     if (data.user.game_state) {
                         try {
                             const state = JSON.parse(data.user.game_state);

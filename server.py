@@ -102,6 +102,21 @@ def process_server_tick(game_state_str):
                         elif not plot.get('hasCrow') and plot.get('water', 0) < 20:
                             plot['hasCrow'] = True
 
+                    # Trigo como cebo y descomposición (Server-side)
+                    if plot.get('hasCrow'):
+                        crow_arrived = plot.get('crowArrivedAt', now)
+                        plot['crowArrivedAt'] = crow_arrived
+                        # Si el cuervo lleva más de 15 minutos en el trigo, el trigo muere.
+                        if plot.get('plant', {}).get('id') == 'flower_wheat' and (now - crow_arrived) > 900000:
+                            plot['status'] = 'empty'
+                            plot['potUses'] = max(0, plot.get('potUses', 1) - 1)
+                            plot['plant'] = None
+                            plot['hasCrow'] = False
+                            plot['crowArrivedAt'] = 0
+                            plot['crowLeavingAt'] = 0
+                    else:
+                        plot['crowArrivedAt'] = 0
+
                     # Pausa de crecimiento si falta agua o hay plagas
                     if plot.get('water', 0) <= 0 or plot.get('hasCrow'):
                         plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
@@ -183,8 +198,6 @@ def save_state():
     user = cur.fetchone()
     
     if user:
-        # ANTI-CHEAT: Permitir inyecciones de semillas si estamos en modo dev (ignora el límite de +1500)
-        # Opcional: Podrías añadir una validación aquí si deseas bloquearlo en producción.
         cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (incoming_state_str, username))
         conn.commit()
     
@@ -263,7 +276,6 @@ def join_tournament():
         if not cur.fetchone():
             cur.execute("INSERT INTO tournaments (id, title, entry_fee_cop) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING", (t_id, f"Arena {fee}", fee))
         
-        # CORRECCIÓN: Costo de Freeroll ajustado a 500 para coincidir con la interfaz
         seed_cost = 0
         if fee == 0:
             seed_cost = 500
@@ -284,13 +296,15 @@ def join_tournament():
             state['seedsBalance'] -= seed_cost
             cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
         else:
-            if float(user['real_balance_cop']) < fee:
-                return jsonify({"error": "Saldo COP insuficiente en tu Billetera"}), 400
-            
+            # PAY-TO-ENTER: Asumimos que la API de Wompi ya procesó y confirmó el cobro del fee exitosamente antes de llegar aquí.
+            # No debitamos saldo interno porque el usuario pagó desde afuera (Billetera Cero).
             state['seedsBalance'] -= seed_cost
             prize_addition = fee * 0.85 
-            cur.execute("UPDATE users SET real_balance_cop = real_balance_cop - %s, game_state = %s WHERE id = %s", (fee, json.dumps(state), user['id']))
+            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
             cur.execute("UPDATE tournaments SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, t_id))
+            
+            # Registrar el pago de Wompi en el ledger para contabilidad
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry_wompi', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
             
         cur.execute("INSERT INTO tournament_entries (tournament_id, user_id) VALUES (%s, %s)", (t_id, user['id']))
         

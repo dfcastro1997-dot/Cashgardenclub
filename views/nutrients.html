@@ -38,14 +38,29 @@
                 <span class="bg-blue-100 text-cg_blue text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">Novatos</span>
             </div>
             <h3 class="text-xl font-black text-cg_navy mb-2">Liga Principiante</h3>
-            <p class="text-sm text-gray-500 mb-6 flex-1">Para jugadores con poca experiencia. Rake del 15% aplicado al pool.</p>
-            <div class="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100 flex justify-between items-center">
-                <span class="text-xs font-bold text-gray-400">Bolsa Variable</span>
-                <span class="text-base font-black text-cg_blue">Acumulativo</span>
+            <p class="text-sm text-gray-500 mb-4 flex-1">Competencia de habilidad basada en rendimientos de cultivo.</p>
+            
+            <!-- TRANSPARENCIA DE TARIFA (SIC) -->
+            <div class="bg-gray-50 rounded-xl p-3 mb-5 border border-gray-200">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-bold text-gray-500 uppercase">Aporte al Pozo</span>
+                    <span class="text-xs font-black text-cg_blue">$4,250 COP</span>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-bold text-gray-500 uppercase">Tarifa Plataforma (15%)</span>
+                    <span class="text-xs font-black text-gray-600">$750 COP</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                    <span class="text-xs font-black text-cg_navy">Total a Pagar</span>
+                    <span class="text-sm font-black text-cg_navy">$5,000 COP</span>
+                </div>
             </div>
-            <button onclick="joinTournament(2, 5000)" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold py-3.5 rounded-xl transition-all shadow-sm">
-                Entrar: $5.000 COP + 5.000 🌱
+
+            <!-- BOTÓN PAY-TO-ENTER -->
+            <button onclick="joinTournament(2, 5000)" class="w-full bg-[#0000FF] hover:bg-blue-900 text-white font-black py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                Pagar con Wompi
             </button>
+            <p class="text-center text-[10px] font-bold text-gray-400 mt-2">Requiere adicionalmente 5,000 🌱 de tu granja.</p>
         </div>
 
         <!-- Liga Intermedia 10K -->

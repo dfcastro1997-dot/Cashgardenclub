@@ -268,12 +268,14 @@ window.farmApp = {
             'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
             'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
             'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
+            'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/szXSZjs/Frame-753.png' }, // NUEVO
             'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
             'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png' }
         },
         images: {
             terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png',
             terrain_dry: 'https://i.ibb.co/rf66qT74/Frame-751.png',
+            plant_wheat: 'https://i.ibb.co/szXSZjs/Frame-753.png', // NUEVO
             plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',
             plant_big: 'https://i.ibb.co/qF9G5qMw/Frame-744.png',
             crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png'
@@ -546,7 +548,7 @@ window.farmApp = {
                 const potName = plot.pot === 'small' ? 'MACETA PEQ' : 'MACETA GDE';
                 
                 const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
-                const currentPlantImg = plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big;
+                const currentPlantImg = plot.plant && plot.plant.id === 'flower_wheat' ? this.state.images.plant_wheat : (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big);
 
                 let timeLeftText = '';
                 let progress = 0;
@@ -562,19 +564,23 @@ window.farmApp = {
 
                 // Renderizado condicional del cuervo (Castigo de Tiempo)
                 let crowHtml = '';
+                // NUEVO: Sistema de Trigo como cebo y descomposición
                 if (plot.hasCrow) {
-                    if (plot.crowLeavingAt > now) {
-                        crowHtml = `
-                            <div class="absolute top-2 right-2 bg-red-100 border border-red-300 px-2 py-1 rounded-lg text-[10px] font-black text-red-600 z-40 shadow-sm flex items-center gap-1 cursor-not-allowed">
-                                <span class="animate-spin">⏳</span>
-                                <span>Espantando: ${Math.ceil((plot.crowLeavingAt - now) / 60000)}m</span>
-                            </div>
-                        `;
-                    } else {
-                        crowHtml = `
-                            <img src="${this.state.images.crow}" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="absolute top-2 right-2 w-14 h-14 z-40 drop-shadow-xl animate-bounce cursor-pointer hover:scale-125 hover:drop-shadow-2xl transition-all" alt="Cuervo" title="Haz clic para espantar">
-                        `;
+                    if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
+                    
+                    // Si el cuervo lleva más de 15 minutos en el trigo, el trigo muere.
+                    if (plot.plant && plot.plant.id === 'flower_wheat' && (now - plot.crowArrivedAt) > 900000) {
+                        plot.status = 'empty';
+                        plot.potUses = Math.max(0, plot.potUses - 1);
+                        plot.plant = null;
+                        plot.hasCrow = false;
+                        plot.crowArrivedAt = 0;
+                        plot.crowLeavingAt = 0;
+                        changesMade = true;
+                        this.showPlotToast(plot.id, '💀', 'Trigo Destruido');
                     }
+                } else {
+                    plot.crowArrivedAt = 0; // Limpiar contador si no hay cuervo
                 }
 
                 el.innerHTML = `
@@ -824,7 +830,7 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        const reward = plot.plant.id === 'flower_small' ? 4500 : 26000;
+        const reward = plot.plant.id === 'flower_wheat' ? 200 : (plot.plant.id === 'flower_small' ? 4500 : 26000);
         this.addBalance(reward);
         
         plot.potUses += 1;
@@ -1058,8 +1064,12 @@ window.farmApp = {
             
             plot.plantedAt = Date.now();
             
-            const baseHours = seedId === 'flower_small' ? 1 : 5;
-            plot.harvestAt = plot.plantedAt + (baseHours * 3600000);
+            // Lógica de tiempo
+            let msDuration = 3600000; // 1 Hora base (small)
+            if (seedId === 'flower_wheat') msDuration = 300000; // 5 Minutos
+            else if (seedId === 'flower_big') msDuration = 18000000; // 5 Horas
+            
+            plot.harvestAt = plot.plantedAt + msDuration;
 
             this.updateInventoryUI();
             this.closeModals();
