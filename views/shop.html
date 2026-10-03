@@ -231,12 +231,14 @@ window.shopApp = {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         
+        // Animación ultrarrápida
         setTimeout(() => {
             bg.classList.remove('opacity-0');
             card.classList.remove('scale-95', 'opacity-0');
             card.classList.add('scale-100', 'opacity-100');
         }, 10);
 
+        // Agilizado: Se oculta automáticamente después de 1 segundo
         setTimeout(() => {
             bg.classList.add('opacity-0');
             card.classList.remove('scale-100', 'opacity-100');
@@ -244,8 +246,8 @@ window.shopApp = {
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
-            }, 300);
-        }, 2500); // Modal desaparece suavemente tras 2.5 segundos
+            }, 200);
+        }, 1000); 
     },
 
     async buyIAP(packageId) {
@@ -292,7 +294,7 @@ window.shopApp = {
         }
     },
 
-    saveState() {
+    async saveState() {
         let farmState = { seedsBalance: 35000, autoWaterEndTime: 0, plots: [], inventory: {}, lastTick: Date.now() };
         const savedStateStr = localStorage.getItem('cg_farm_state');
         if (savedStateStr) {
@@ -307,20 +309,27 @@ window.shopApp = {
         localStorage.setItem('cg_farm_state', stateToSave);
 
         // FIX DEL ERROR: Inyección de datos a la Granja Fantasma para evitar sobrescrituras
-        if (window.farmApp) {
+        if (window.farmApp && window.farmApp.state) {
             window.farmApp.state.seedsBalance = this.state.seedsBalance;
             window.farmApp.state.inventory = JSON.parse(JSON.stringify(this.state.inventory));
             window.farmApp.state.lastTick = farmState.lastTick;
         }
 
+        // ENVÍO INMEDIATO Y FORZADO A AIVEN
         const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
-            fetch('/api/save_state', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user.username, game_state: stateToSave })
-            }).catch(e => console.error("Error guardando compra:", e));
+            try {
+                await fetch('/api/save_state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user.username, game_state: stateToSave })
+                });
+                // Actualiza el saldo en el header instantáneamente
+                if(window.syncUserData) window.syncUserData();
+            } catch (e) {
+                console.error("Error conectando con Aiven:", e);
+            }
         }
     }
 };

@@ -250,6 +250,11 @@
         }
         
         async function loadView(viewName, clickedBtn = null) {
+            // FIX CRÍTICO: Matar el proceso de la granja fantasma para evitar que sobrescriba la base de datos
+            if (window.farmApp && window.farmApp.state && window.farmApp.state.simulationInterval) {
+                clearInterval(window.farmApp.state.simulationInterval);
+            }
+            
             const contentDiv = document.getElementById('app-content');
             contentDiv.innerHTML = '<div class="flex justify-center mt-32"><div class="w-12 h-12 border-4 border-gray-200 border-t-cg_gold rounded-full animate-spin"></div></div>';
             try {

@@ -268,14 +268,14 @@ window.farmApp = {
             'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
             'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
             'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
-            'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/szXSZjs/Frame-753.png' }, // NUEVO
+            'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/szXSZjs/Frame-753.png' },
             'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
             'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png' }
         },
         images: {
             terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png',
             terrain_dry: 'https://i.ibb.co/rf66qT74/Frame-751.png',
-            plant_wheat: 'https://i.ibb.co/szXSZjs/Frame-753.png', // NUEVO
+            plant_wheat: 'https://i.ibb.co/szXSZjs/Frame-753.png',
             plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',
             plant_big: 'https://i.ibb.co/qF9G5qMw/Frame-744.png',
             crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png'
@@ -283,7 +283,7 @@ window.farmApp = {
         selectedPlotId: null,
         pendingPlotId: null,
         simulationInterval: null,
-        lastTick: Date.now(),
+        lastTick: 0, // FIX CRÍTICO: Iniciar en 0 para forzar actualización con DB
         activeCrowPlotId: null
     },
 
@@ -366,7 +366,7 @@ window.farmApp = {
     },
 
     init() {
-        this.loadLocalAndStart(); // Carga rápido visualmente primero
+        this.loadLocalAndStart(); 
         this.updateUI();
 
         const userStr = localStorage.getItem('user');
@@ -379,12 +379,7 @@ window.farmApp = {
                         try {
                             const s = JSON.parse(data.user.game_state);
                             
-                            // BLOQUEO ANTI-REVERSIÓN: Si el local es más nuevo, rechaza el del servidor y resube el local.
-                            if (s.lastTick && this.state.lastTick && s.lastTick < this.state.lastTick) {
-                                this.saveState();
-                                return; 
-                            }
-
+                            // FIX CRÍTICO: Aceptar SIEMPRE la Base de Datos como verdad absoluta
                             this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
                             this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
                             this.state.plots = s.plots ?? this.state.plots;
@@ -398,7 +393,6 @@ window.farmApp = {
                             }
                             
                             this.state.lastTick = s.lastTick ?? Date.now();
-                            // Fuerza la sincronización del LocalStorage con el servidor validado
                             localStorage.setItem('cg_farm_state', JSON.stringify(this.state));
                         } catch(e) { console.error("Error parseando game_state", e); }
                     }
