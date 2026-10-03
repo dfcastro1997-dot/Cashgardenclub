@@ -120,6 +120,21 @@
     </div>
 </div>
 
+<!-- VENTANA MODAL DE ÉXITO (NUEVA) -->
+<div id="success-tournament-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeSuccessAndGoToFarm()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 flex flex-col border border-green-500 overflow-hidden animate-fade-in text-center p-8">
+        <div class="w-20 h-20 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <span class="text-4xl">✅</span>
+        </div>
+        <h3 class="text-2xl font-black text-cg_navy mb-2">¡Inscripción Exitosa!</h3>
+        <p class="text-sm text-gray-500 mb-6">Se ha habilitado la Parcela de Arena en tu Invernadero. El cronómetro ha comenzado a correr.</p>
+        <button onclick="closeSuccessAndGoToFarm()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest">
+            Ir a mi Invernadero
+        </button>
+    </div>
+</div>
+
 <!-- VENTANA MODAL PRE-COMPRA (EXPLICACIÓN PROFESIONAL) -->
 <div id="pre-tournament-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePreTournamentModal()"></div>
@@ -199,26 +214,41 @@
 <script>
     let pendingTournament = null;
 
-    // Función para bloquear y mostrar el estado del torneo si ya está inscrito
+    // Función inteligente para bloquear y mostrar el estado del torneo si ya está inscrito
     function updateTournamentUI() {
-        if (!window.farmApp) return;
-        const arenaPlot = window.farmApp.state.plots[5];
+        let arenaPlot = null;
+        
+        // Primero intentamos leer del estado vivo en memoria
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.plots) {
+            arenaPlot = window.farmApp.state.plots[5];
+        } else {
+            // Si la memoria no está cargada, leemos el caché local
+            const stateStr = localStorage.getItem('cg_farm_state');
+            if (stateStr) {
+                try {
+                    const state = JSON.parse(stateStr);
+                    arenaPlot = state.plots && state.plots[5];
+                } catch(e) {}
+            }
+        }
+
         const buttons = document.querySelectorAll('.tournament-action-btn');
         
         if (arenaPlot && arenaPlot.status === 'tournament') {
             const now = Date.now();
             let hoursLeft = Math.max(0, (arenaPlot.tournamentEndTime - now) / 3600000);
             let timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
-            if (hoursLeft <= 0) timeLeftText = "Finalizado";
+            if (hoursLeft <= 0) timeLeftText = "Finalizando...";
             const scoreStr = Math.floor(arenaPlot.score).toLocaleString();
 
             buttons.forEach(btn => {
                 btn.disabled = true;
-                btn.className = "w-full bg-gray-50 border border-gray-200 text-center py-2.5 rounded-xl flex flex-col items-center justify-center cursor-not-allowed shadow-inner tournament-action-btn";
+                // Reemplazamos las clases para que parezca un panel inactivo
+                btn.className = "tournament-action-btn w-full bg-gray-50 border border-gray-200 text-center py-2.5 rounded-xl flex flex-col items-center justify-center cursor-not-allowed shadow-inner transition-all";
                 btn.onclick = null;
                 btn.innerHTML = `
                     <span class="text-[10px] font-black text-cg_gold uppercase tracking-widest mb-0.5 animate-pulse">Torneo Activo</span>
-                    <span class="text-xs font-bold text-gray-500 mb-0.5">Faltan: ${timeLeftText}</span>
+                    <span class="text-xs font-bold text-gray-500 mb-0.5">Siguiente disponible en: ${timeLeftText}</span>
                     <span class="text-sm font-black text-cg_navy">${scoreStr} / 10,000 pts 🏆</span>
                 `;
             });
@@ -232,8 +262,18 @@
 
     // 1. Mostrar la Modal antes de comprar
     function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
-        // Bloqueo de seguridad adicional: Evita abrir la modal si ya estás jugando
-        if (window.farmApp && window.farmApp.state.plots[5] && window.farmApp.state.plots[5].status === 'tournament') {
+        // Bloqueo de seguridad: Evita abrir la modal si el sistema detecta un torneo activo
+        let isPlaying = false;
+        if (window.farmApp && window.farmApp.state.plots[5] && window.farmApp.state.plots[5].status === 'tournament') isPlaying = true;
+        const stateStr = localStorage.getItem('cg_farm_state');
+        if (stateStr) {
+            try {
+                const s = JSON.parse(stateStr);
+                if (s.plots && s.plots[5] && s.plots[5].status === 'tournament') isPlaying = true;
+            } catch(e){}
+        }
+
+        if (isPlaying) {
             alert("Ya te encuentras compitiendo en un torneo activo.");
             return;
         }
@@ -284,31 +324,43 @@
             
             if (res.ok) {
                 closePreTournamentModal();
-                alert(`¡Inscripción Exitosa! Se ha habilitado la Parcela #6 en tu Invernadero.`);
                 
                 // Actualizar cuenta global
                 document.getElementById('global-balance').innerText = "$" + data.new_balance_cop.toLocaleString();
                 
-                if(window.farmApp) {
+                // Forzamos actualización tanto en memoria como en localstorage
+                if(window.farmApp && window.farmApp.state) {
                     window.farmApp.state.balance = data.new_balance_cop;
                     window.farmApp.state.seedsBalance = data.new_game_state.seedsBalance;
                     
-                    // ACTIVACIÓN FORZADA DE LA PARCELA 6 DE TORNEO
                     const arenaPlot = window.farmApp.state.plots[5];
                     arenaPlot.status = 'tournament';
                     arenaPlot.score = 10000;
-                    arenaPlot.water = 50; // Inicia con 50% para dar margen al usuario
-                    arenaPlot.tournamentEndTime = Date.now() + (12 * 3600000); // 12 Horas SPRINT
+                    arenaPlot.water = 50; 
+                    arenaPlot.tournamentEndTime = Date.now() + (12 * 3600000); 
                     arenaPlot.isReady = false;
                     
                     window.farmApp.state.lastTick = Date.now();
                     window.farmApp.saveState();
-                    
-                    // Redirigir de inmediato a la granja
-                    loadView('farm', document.querySelectorAll('.nav-btn')[0]);
+                } else {
+                    let state = JSON.parse(localStorage.getItem('cg_farm_state') || '{}');
+                    state.seedsBalance = data.new_game_state.seedsBalance;
+                    if(state.plots && state.plots.length > 5) {
+                         state.plots[5].status = 'tournament';
+                         state.plots[5].score = 10000;
+                         state.plots[5].water = 50;
+                         state.plots[5].tournamentEndTime = Date.now() + (12 * 3600000);
+                         state.plots[5].isReady = false;
+                    }
+                    localStorage.setItem('cg_farm_state', JSON.stringify(state));
                 }
                 
                 if(window.syncUserData) window.syncUserData();
+
+                // Mostramos ventana modal de éxito en lugar del alert nativo
+                document.getElementById('success-tournament-modal').classList.remove('hidden');
+                document.getElementById('success-tournament-modal').classList.add('flex');
+                
             } else {
                 alert("Error al inscribirse: " + data.error);
             }
@@ -319,5 +371,10 @@
             btn.innerText = originalText;
             btn.disabled = false;
         }
+    }
+
+    function closeSuccessAndGoToFarm() {
+        document.getElementById('success-tournament-modal').classList.replace('flex', 'hidden');
+        loadView('farm', document.querySelectorAll('.nav-btn')[0]);
     }
 </script>
