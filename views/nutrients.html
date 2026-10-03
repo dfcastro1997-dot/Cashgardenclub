@@ -10,10 +10,9 @@
         </div>
     </div>
 
-    <!-- TARJETAS DE LIGAS (NUEVO DISEÑO PROFESIONAL) -->
+    <!-- TARJETAS DE LIGAS -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         
-        <!-- Freeroll -->
         <!-- Freeroll -->
         <div class="bg-white rounded-3xl p-6 flex flex-col group relative overflow-hidden border border-green-300 shadow-sm hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start mb-6">
@@ -167,6 +166,21 @@
     </div>
 </div>
 
+<!-- VENTANA MODAL DE ALERTA/ERROR -->
+<div id="alert-modal" class="fixed inset-0 z-[400] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeAlertModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 flex flex-col overflow-hidden animate-fade-in text-center p-8 border border-red-500">
+        <div class="w-16 h-16 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <span class="text-3xl" id="alert-modal-icon">⚠️</span>
+        </div>
+        <h3 class="text-xl font-black text-cg_navy mb-2 leading-tight" id="alert-modal-title">Aviso</h3>
+        <p class="text-sm text-gray-500 mb-6" id="alert-modal-msg">Mensaje.</p>
+        <button onclick="closeAlertModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-xs">
+            Aceptar
+        </button>
+    </div>
+</div>
+
 <script>
     const TOURNAMENT_INFO = {
         1: { name: 'El Bonsái del Maestro', img: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Riego calibrado normal. Si superas el 100% de agua por accidente, se te restará -500 Puntos por ahogamiento.' },
@@ -176,6 +190,20 @@
     };
 
     let pendingTournament = null;
+
+    // NUEVAS FUNCIONES PARA CONTROLAR LA ALERTA MODAL
+    function showAlertModal(title, msg, icon = '⚠️') {
+        document.getElementById('alert-modal-title').innerText = title;
+        document.getElementById('alert-modal-msg').innerText = msg;
+        document.getElementById('alert-modal-icon').innerText = icon;
+        document.getElementById('alert-modal').classList.remove('hidden');
+        document.getElementById('alert-modal').classList.add('flex');
+    }
+
+    function closeAlertModal() {
+        document.getElementById('alert-modal').classList.remove('flex');
+        document.getElementById('alert-modal').classList.add('hidden');
+    }
 
     function updateTournamentUI() {
         let arenaPlot = null;
@@ -231,7 +259,7 @@
         }
 
         if (isPlaying) {
-            alert("Ya te encuentras compitiendo en un torneo activo.");
+            showAlertModal('Torneo en Curso', 'Ya te encuentras compitiendo en un torneo activo.', '⏳');
             return;
         }
 
@@ -314,10 +342,10 @@
                 document.getElementById('success-tournament-modal').classList.remove('hidden');
                 document.getElementById('success-tournament-modal').classList.add('flex');
             } else {
-                alert("Error al inscribirse: " + data.error);
+                showAlertModal('No se pudo inscribir', data.error, '❌');
             }
         } catch(e) {
-            alert("Error conectando con el servidor de la Arena.");
+            showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor de la Arena.', '📡');
         } finally {
             btn.innerText = originalText;
             btn.disabled = false;
