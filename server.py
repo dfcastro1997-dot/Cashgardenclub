@@ -345,6 +345,30 @@ def dispatch_nequi_payout():
     conn.commit(); cur.close(); conn.close()
     return jsonify({"message": "Retiro tramitado hacia Nequi", "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
 
+@app.route('/api/dev/add_cop', methods=['POST'])
+def dev_add_cop():
+    data = request.json
+    username = data.get('username')
+    amount = float(data.get('amount', 0))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE users SET balance = balance + %s WHERE username = %s RETURNING balance", (amount, username))
+        updated_user = cur.fetchone()
+        conn.commit()
+        if updated_user:
+            return jsonify({"message": "Saldo inyectado", "new_balance": float(updated_user['balance'])}), 200
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)

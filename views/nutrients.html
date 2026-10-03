@@ -187,31 +187,36 @@
             }
         }
 
-        const buttons = document.querySelectorAll('.tournament-action-btn');
         if (arenaPlot && arenaPlot.status === 'tournament') {
             const tId = arenaPlot.tournamentId || 1;
             const maxScore = TOURNAMENT_INFO[tId] ? TOURNAMENT_INFO[tId].scoreStr : '10,000';
             const now = Date.now();
-            let hoursLeft = Math.max(0, (arenaPlot.tournamentEndTime - now) / 3600000);
-            let timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
-            if (hoursLeft <= 0) timeLeftText = "Finalizando...";
+            let msLeft = Math.max(0, arenaPlot.tournamentEndTime - now);
+            
+            // Cálculos precisos en tiempo real
+            let h = Math.floor(msLeft / 3600000);
+            let m = Math.floor((msLeft % 3600000) / 60000);
+            let s = Math.floor((msLeft % 60000) / 1000);
+            let timeLeftText = msLeft <= 0 ? "Finalizando..." : `${h}h ${m}m ${s}s`;
 
+            const buttons = document.querySelectorAll('.tournament-action-btn');
             buttons.forEach(btn => {
                 btn.disabled = true;
-                btn.className = "tournament-action-btn w-full bg-gray-50 border border-gray-200 text-center py-2.5 rounded-xl flex flex-col items-center justify-center cursor-not-allowed shadow-inner transition-all";
-                btn.onclick = null;
+                btn.removeAttribute('onclick'); // Remueve el evento inline para bloquearlo por completo
+                btn.className = "tournament-action-btn w-full bg-gray-100 border border-gray-300 text-center py-2.5 rounded-xl flex flex-col items-center justify-center cursor-not-allowed shadow-inner transition-all";
                 btn.innerHTML = `
                     <span class="text-[10px] font-black text-cg_gold uppercase tracking-widest mb-0.5 animate-pulse">Torneo Activo</span>
-                    <span class="text-xs font-bold text-gray-500 mb-0.5">Siguiente disponible en: ${timeLeftText}</span>
+                    <span class="text-[10px] font-bold text-gray-500 mb-0.5">Tiempo restante: ${timeLeftText}</span>
                     <span class="text-sm font-black text-cg_navy">${Math.floor(arenaPlot.score).toLocaleString()} / ${maxScore} pts 🏆</span>
                 `;
             });
         }
     }
 
+    // Ejecuta inmediatamente y luego actualiza CADA SEGUNDO (1000ms) para ver el cronómetro correr en tiempo real
     updateTournamentUI();
     if(window.tourneyUIInterval) clearInterval(window.tourneyUIInterval);
-    window.tourneyUIInterval = setInterval(updateTournamentUI, 60000);
+    window.tourneyUIInterval = setInterval(updateTournamentUI, 1000);
 
     function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
         let isPlaying = false;
