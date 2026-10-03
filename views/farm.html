@@ -404,7 +404,7 @@ window.farmApp = {
                 { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-                { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+                { id: 5, status: 'arena_locked', tournamentId: 1, score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
             ];
             window.farmApp.state.inventory = {
                 'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
@@ -421,9 +421,13 @@ window.farmApp = {
             alert("Terreno e inventario reseteados.");
         },
         addSeeds: (amount) => {
-            window.farmApp.addBalance(amount);
-            window.farmApp.saveState();
-            alert(`Añadidas ${amount} Semillas (🌱).`);
+            if(window.farmApp) {
+                window.farmApp.state.seedsBalance += amount;
+                const balEl = document.getElementById('global-seeds-display');
+                if(balEl) balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                window.farmApp.saveState();
+                alert(`Añadidas ${amount} Semillas (🌱).`);
+            }
         },
         addTime: (hours) => {
             const shift = hours * 3600000; 
@@ -433,6 +437,7 @@ window.farmApp = {
                 if (plot.harvestAt) plot.harvestAt -= shift;
                 if (plot.scarecrowEndTime) plot.scarecrowEndTime = Math.max(0, plot.scarecrowEndTime - shift);
                 if (plot.crowLeavingAt) plot.crowLeavingAt = Math.max(0, plot.crowLeavingAt - shift);
+                if (plot.tournamentEndTime) plot.tournamentEndTime = Math.max(0, plot.tournamentEndTime - shift);
             });
             window.farmApp.processTick();
             window.farmApp.renderPlots();
@@ -447,7 +452,9 @@ window.farmApp = {
                 localStorage.setItem('user', JSON.stringify(user));
                 const balEl = document.getElementById('global-balance');
                 if(balEl) balEl.innerText = "$" + user.balance.toLocaleString();
-                alert(`+$${amount} COP inyectados.`);
+                if(window.farmApp) window.farmApp.state.balance = user.balance;
+                
+                alert(`+$${amount} COP inyectados (Modo Local).\nNota: La BD lo sobrescribirá en el próximo sync automático.`);
             }
         }
     },
