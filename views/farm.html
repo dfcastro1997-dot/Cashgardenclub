@@ -474,7 +474,7 @@ window.farmApp = {
             window.farmApp.saveState();
             alert(`Simulador avanzado artificialmente en ${hours} horas.`);
         },
-        
+
         addCOP: async (amount) => {
             const userStr = localStorage.getItem('user');
             if(userStr) {
@@ -823,17 +823,17 @@ window.farmApp = {
                             // Está en proceso de secado/limpieza (15 mins)
                             const minsLeft = Math.ceil((plot.crowLeavingAt - now) / 60000);
                             crowHtml = `
-                                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-yellow-500/90 border-2 border-yellow-200 rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-xl cursor-not-allowed pointer-events-auto">
-                                    <span class="text-lg animate-spin">⏳</span>
-                                    <span class="text-[10px] font-black text-white">${minsLeft}m</span>
+                                <div class="z-50 bg-yellow-500/90 border-2 border-yellow-200 rounded-full w-10 h-10 flex flex-col items-center justify-center shadow-xl cursor-not-allowed pointer-events-auto shrink-0">
+                                    <span class="text-sm animate-spin">⏳</span>
+                                    <span class="text-[9px] font-black text-white leading-none">${minsLeft}m</span>
                                 </div>
                             `;
                         } else {
-                            // Requiere acción del usuario
+                            // Requiere acción del usuario - Actualizado al emoji de cuervo 🐦‍⬛ y tamaño adaptado a la columna
                             crowHtml = `
-                                <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-16 h-16 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto">
-                                    <span class="text-3xl">${isRotting ? '🦠' : '🦅'}</span>
-                                    <div class="absolute -bottom-6 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap">¡CLICK PARA LIMPIAR!</div>
+                                <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-10 h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
+                                    <span class="text-xl">${isRotting ? '🦠' : '🐦‍⬛'}</span>
+                                    <div class="absolute right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
                                 </button>
                             `;
                         }
@@ -848,8 +848,11 @@ window.farmApp = {
                         <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName}
                     </div>
 
-                    ${crowHtml}
-                    ${isAutoWatering && !plot.hasCrow ? `<img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="absolute top-2 right-2 w-10 h-10 z-40 drop-shadow-md animate-pulse">` : (!plot.hasCrow && plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="absolute top-2 right-2 w-12 h-12 z-40 drop-shadow-md">` : '')}
+                    <div class="absolute top-2 right-2 flex flex-col items-center gap-2 z-50 pointer-events-none">
+                        ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-10 h-10 object-contain drop-shadow-md shrink-0">` : ''}
+                        ${isAutoWatering ? `<img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-8 h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
+                        ${crowHtml}
+                    </div>
 
                     <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
                         <div class="relative w-full h-40 flex items-center justify-center">
@@ -1029,13 +1032,21 @@ window.farmApp = {
 
     openWaterCalibration(plotId = 5) {
         this.calibration.currentPlotId = plotId;
-        let speed = 1.5; // Velocidad por defecto para el Cactus
+        let speed = 1.0; // Velocidad estándar por defecto
         
-        // Si el plotId es 5, usa la configuración del torneo
+        // Asignación de velocidad dinámica
         if (plotId === 5) {
             const plot = this.state.plots[5];
             const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
             speed = conf.speed;
+        } else {
+            const plot = this.state.plots[plotId];
+            if (plot.plant) {
+                if (plot.plant.id === 'flower_wheat') speed = 3.0; // Ultra rápido
+                else if (plot.plant.id === 'flower_small') speed = 1.0; // Moderado
+                else if (plot.plant.id === 'flower_cactus') speed = 1.5; // Desafiante
+                else if (plot.plant.id === 'flower_big') speed = 0.7; // Lento pero de micro-gestión
+            }
         }
 
         const modal = document.getElementById('water-calib-modal');
@@ -1064,8 +1075,6 @@ window.farmApp = {
         cancelAnimationFrame(this.calibration.reqId);
         
         const waterAdded = Math.round(this.calibration.x);
-        
-        // CORRECCIÓN CRÍTICA: Respetar el plotId 0 en lugar de saltar al 5
         const plotId = this.calibration.currentPlotId !== undefined ? this.calibration.currentPlotId : 5;
         const plot = this.state.plots[plotId];
         
@@ -1081,16 +1090,36 @@ window.farmApp = {
                 this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
             }
         } else {
-            // Lógica para el Cactus de Cuarzo en una parcela estándar
+            // LÓGICA DE SUPERVIVENCIA PARA PLANTAS BASE
+            const plantId = plot.plant ? plot.plant.id : '';
+            let isRotting = false;
+            let msgToast = '¡Se pudrió!';
+
+            // Evaluamos los límites
+            if (plantId === 'flower_wheat' && plot.water > 100) {
+                isRotting = true;
+                msgToast = '¡Inundada!';
+            } else if (plantId === 'flower_small' && plot.water > 90) {
+                isRotting = true;
+            } else if (plantId === 'flower_big' && plot.water > 70) {
+                isRotting = true;
+                plot.harvestAt += 30 * 60000; // Penalización severa: +30 minutos extra por errar
+                msgToast = '+30m Penalización';
+            } else if (plantId === 'flower_cactus' && plot.water > 80) {
+                isRotting = true;
+            }
+
+            // Tope físico del agua
             if (plot.water > 100) plot.water = 100;
             
-            // Si superas el 80% lo pudres al instante
-            if (plot.water > 80) {
-                plot.hasCrow = true;
-                this.showPlotToast(plotId, '🦠', '¡Se pudrió!');
+            // Ejecución del castigo o éxito
+            if (isRotting) {
+                plot.hasCrow = true; // Activa el cuervo/pudrición
+                this.showPlotToast(plotId, '🦠', msgToast);
             } else {
                 this.showPlotToast(plotId, '💧', `+${waterAdded}% Agua`);
             }
+            
             this.selectPlot(plotId); // Refresca la barra lateral
         }
         
@@ -1268,15 +1297,11 @@ window.farmApp = {
             plot.potUses = 0;
             this.showPlotToast(plotId, '🏺', 'Maceta Lista');
         } else if(type === 'water') {
-            if (plot.plant && plot.plant.id === 'flower_cactus') {
-                this.state.inventory.tool_water.qty -= 1;
-                this.openWaterCalibration(plotId);
-                this.updateInventoryUI();
-                return; // Saltamos el guardado estándar hasta que termine el minijuego
-            }
+            // MODIFICACIÓN: La regadera automática desaparece. Todas usan el calibrador.
             this.state.inventory.tool_water.qty -= 1;
-            plot.water = 100;
-            this.showPlotToast(plotId, '💧', '¡Regado!');
+            this.openWaterCalibration(plotId);
+            this.updateInventoryUI();
+            return; // Saltamos el guardado estándar hasta que termine el minijuego
         } else if (type === 'scarecrow') {
             this.state.inventory.tool_scarecrow.qty -= 1;
             plot.hasCrow = false;
@@ -1616,8 +1641,8 @@ window.farmApp = {
             const plot = this.state.plots[this.state.selectedPlotId];
             
             plot.status = 'planted';
-            // El Cactus inicia al 50% para obligar a usar el minijuego. Las demás al 100%.
-            plot.water = seedId === 'flower_cactus' ? 50 : 100; 
+            // MODIFICACIÓN: Todas las plantas inician al 50% para requerir destreza inmediata
+            plot.water = 50; 
             plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
             plot.isReady = false;
             
