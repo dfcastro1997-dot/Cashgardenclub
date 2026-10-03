@@ -169,35 +169,36 @@
 
 
 <!-- MODAL BIENVENIDA TORNEO (EXPLICACIÓN) -->
+<!-- MODAL BIENVENIDA TORNEO (EXPLICACIÓN DINÁMICA) -->
 <div id="tournament-welcome-modal" class="fixed inset-0 z-[160] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-cg_gold">
         <div class="bg-gradient-to-r from-cg_navy to-gray-900 p-6 text-center border-b border-gray-800 relative">
             <span class="absolute top-4 right-4 text-white text-2xl cursor-pointer font-bold" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')">✕</span>
             <h3 class="text-2xl font-black text-white tracking-tight">Arena de Gladiadores</h3>
-            <p class="text-cg_gold text-xs font-bold uppercase tracking-widest mt-1">Reglas Oficiales - 12H Sprint</p>
+            <p class="text-cg_gold text-xs font-bold uppercase tracking-widest mt-1">Reglas Oficiales del Torneo</p>
         </div>
         <div class="p-6 space-y-4 bg-gray-50">
             <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                <img src="https://i.ibb.co/0yv9F7D6/Frame-754.png" class="w-16 h-16 object-contain drop-shadow-md" alt="Bonsái">
+                <img id="welcome-plant-img" src="" class="w-16 h-16 object-contain drop-shadow-md" alt="Planta Torneo">
                 <div>
-                    <h4 class="font-black text-cg_navy text-lg leading-tight">El Bonsái del Maestro</h4>
-                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Mantén viva esta planta por 12 horas. Inicias con <strong class="text-cg_gold">10,000 Puntos Perfectos</strong>.</p>
+                    <h4 id="welcome-plant-name" class="font-black text-cg_navy text-lg leading-tight">Nombre Planta</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Inicias con <strong id="welcome-plant-score" class="text-cg_gold">0 Puntos Perfectos</strong>.</p>
                 </div>
             </div>
             
             <div class="space-y-3">
                 <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex gap-3 shadow-sm">
                     <span class="text-xl">⚠️</span>
-                    <p class="text-xs text-red-800"><strong class="font-black">Peligro de Sequía (< 20%):</strong> Si el agua baja del 20%, perderás <strong>10 Puntos por cada minuto</strong> deshidratada.</p>
+                    <p class="text-xs text-red-800"><strong class="font-black">Rango de Supervivencia:</strong> <span id="welcome-plant-limit">0 a 100</span>. Fuera de ahí, perderás puntos continuamente.</p>
                 </div>
                 <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex gap-3 shadow-sm">
                     <span class="text-xl">💧</span>
-                    <p class="text-xs text-blue-800"><strong class="font-black">Riego de Precisión (Minijuego):</strong> No hay riego automático. El porcentaje (%) donde logres detener la flecha será el agua inyectada.</p>
+                    <p class="text-xs text-blue-800"><strong class="font-black">Riego Quirúrgico:</strong> Usa el minijuego de flecha para inyectar agua con precisión milimétrica.</p>
                 </div>
                 <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex gap-3 shadow-sm">
                     <span class="text-xl">💀</span>
-                    <p class="text-xs text-orange-800"><strong class="font-black">Riesgo de Ahogo (> 100%):</strong> Si tu inyección de agua supera el 100%, serás penalizado inmediatamente con <strong>-500 Puntos</strong>.</p>
+                    <p class="text-xs text-orange-800"><strong class="font-black">Riesgo de Ahogo:</strong> Si tu inyección de agua supera el límite máximo, serás penalizado inmediatamente con <strong id="welcome-plant-penalty">-0 Puntos</strong>.</p>
                 </div>
             </div>
             <button onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')" class="w-full bg-cg_gold hover:bg-yellow-600 text-white font-black py-4 rounded-xl transition-all shadow-sm uppercase tracking-widest text-sm mt-3">
@@ -350,7 +351,14 @@
 window.farmApp = {
     PLOT_COSTS: [0, 0, 0, 75000, 150000, 300000],
 
-    calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null }, // Control del minijuego
+    TOURNAMENT_CONFIGS: {
+        1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 10, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 2 },
+        3: { name: 'Orquídea Lunar', image: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durationHours: 6, startScore: 25000, evapPerHour: 20, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 2.5 },
+        4: { name: 'Rosa de Ceniza', image: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durationHours: 8, startScore: 50000, evapPerHour: 30, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 4 },
+        5: { name: 'Loto de Cristal', image: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durationHours: 12, startScore: 100000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 1 }
+    },
+
+    calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null },
     
     state: {
         seedsBalance: 35000,
@@ -361,7 +369,7 @@ window.farmApp = {
             { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
             { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
             { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-            { id: 5, status: 'arena_locked', score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } } // Parcela 6 de Torneo
+            { id: 5, status: 'arena_locked', tournamentId: 1, score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
         ],
         inventory: {
             'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
@@ -579,6 +587,7 @@ window.farmApp = {
             // RENDERIZADO EXCLUSIVO PARA LA PARCELA 6 (TORNEO)
             if (plot.id === 5) {
                 if (plot.status === 'arena_locked' || plot.status === 'locked') {
+                    // ... [Mantener igual el HTML del status locked/arena_locked] ...
                     el.className = `rounded-2xl border-2 border-dashed border-cg_gold bg-gradient-to-b from-white to-orange-50 h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-sm`;
                     el.innerHTML = `
                         <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none opacity-40 grayscale">
@@ -590,33 +599,50 @@ window.farmApp = {
                         </div>
                     `;
                 } else if (plot.status === 'tournament') {
-                    const totalMs = 12 * 3600000;
+                    const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+                    const totalMs = conf.durationHours * 3600000;
                     const elapsed = now - (plot.tournamentEndTime - totalMs);
                     const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
                     const hoursLeft = Math.max(0, (plot.tournamentEndTime - now) / 3600000);
                     const timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
                     
-                    const isAlert = plot.water < 20;
+                    const isAlert = plot.water < conf.minWater || plot.water > conf.maxWater;
                     const borderStyle = isAlert ? 'border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' : 'border-cg_gold bg-gradient-to-b from-white to-yellow-50 shadow-md hover:shadow-lg transition-all';
                     
                     el.className = `rounded-2xl border-2 h-64 relative overflow-hidden flex flex-col ${borderStyle}`;
                     el.innerHTML = `
                         ${localToastHTML}
                         <div class="absolute top-3 left-3 bg-cg_navy text-white px-2 py-1 rounded text-[9px] font-black border border-gray-700 shadow-sm z-20 uppercase tracking-widest">
-                            🔥 12H Sprint
+                            🔥 ${conf.durationHours}H Sprint
                         </div>
                         
-                        <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
-                            <div class="relative w-full h-40 flex items-center justify-center">
-                                <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-40 w-auto object-contain drop-shadow-sm">
-                                <img src="${this.state.images.bonsai}" class="absolute h-36 w-auto object-contain z-10 drop-shadow-xl transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-15%);">
+                        <div class="absolute inset-0 flex items-center justify-center pb-12 z-10">
+                            <div class="relative w-full h-40 flex items-center justify-center group cursor-help">
+                                <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-40 w-auto object-contain drop-shadow-sm pointer-events-none">
+                                <img src="${conf.image}" class="absolute h-36 w-auto object-contain z-10 drop-shadow-xl transition-all ${isAlert ? 'grayscale brightness-75' : ''} pointer-events-none" style="transform: translateY(-15%);">
+                                
+                                <!-- TOOLTIP FLOTANTE DE CUIDADOS -->
+                                <div class="absolute bottom-3/4 left-1/2 transform -translate-x-1/2 mb-2 w-52 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 scale-95 group-hover:scale-100 origin-bottom">
+                                    <div class="flex items-center gap-2 mb-2 border-b border-gray-100 pb-2">
+                                        <div class="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100">
+                                            <img src="${conf.image}" class="w-6 h-6 object-contain">
+                                        </div>
+                                        <span class="text-xs font-black text-cg_navy leading-tight">${conf.name}</span>
+                                    </div>
+                                    <div class="space-y-1.5 text-left">
+                                        <p class="text-[10px] text-gray-500 leading-tight"><strong class="text-blue-600">Consumo:</strong> -${conf.evapPerHour}% agua por hora</p>
+                                        <p class="text-[10px] text-gray-500 leading-tight"><strong class="text-green-600">Rango Seguro:</strong> Entre ${conf.minWater}% y ${conf.maxWater}%</p>
+                                        <p class="text-[10px] text-gray-500 leading-tight"><strong class="text-red-600">Peligro:</strong> Si te sales, perderás puntos continuamente. Penalidad por Ahogo (>100%) de -${conf.overwaterPenalty} pts.</p>
+                                    </div>
+                                    <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white/95 border-b border-r border-gray-200 rotate-45"></div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- LA CAJA DORADA -->
                         <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-30 w-[85%]">
                             <div class="bg-gradient-to-r from-yellow-600 to-cg_gold text-white rounded-lg p-1.5 shadow-lg border border-yellow-300 text-center flex flex-col ${isAlert ? 'animate-pulse' : ''}">
-                                <span class="text-[8px] uppercase tracking-widest font-black opacity-90">Puntaje Competencia</span>
+                                <span class="text-[8px] uppercase tracking-widest font-black opacity-90">${conf.name}</span>
                                 <span class="text-lg font-black tracking-tight leading-none font-mono">${Math.floor(plot.score).toLocaleString()} 🏆</span>
                             </div>
                         </div>
@@ -802,15 +828,15 @@ window.farmApp = {
         
         this.state.plots.forEach(plot => {
             
-            // Lógica Exclusiva Parcela 6 (Torneo)
             if (plot.id === 5 && plot.status === 'tournament') {
+                const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 if (plot.water > 0) {
-                    plot.water = Math.max(0, plot.water - (10 * deltaHours)); // Bonsai consume 10% por hora
+                    plot.water = Math.max(0, plot.water - (conf.evapPerHour * deltaHours)); 
                     changesMade = true;
                 }
-                if (plot.water < 20) { // Sequía castiga el puntaje
+                if (plot.water < conf.minWater || plot.water > conf.maxWater) { 
                     const mins = deltaMS / 60000;
-                    plot.score = Math.max(0, plot.score - (10 * mins)); // Pierde 10 puntos por minuto
+                    plot.score = Math.max(0, plot.score - (conf.drainPerMin * mins)); 
                     changesMade = true;
                 }
                 if (now >= plot.tournamentEndTime && !plot.isReady) {
@@ -881,12 +907,24 @@ window.farmApp = {
     // NUEVAS FUNCIONES DE TORNEO Y MINIJUEGO
     // -----------------------------------------------------
     showTournamentWelcome() {
+        const plot = this.state.plots[5];
+        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+        
+        document.getElementById('welcome-plant-img').src = conf.image;
+        document.getElementById('welcome-plant-name').innerText = conf.name;
+        document.getElementById('welcome-plant-score').innerText = `${conf.startScore.toLocaleString()} Puntos Perfectos`;
+        document.getElementById('welcome-plant-limit').innerText = `Mantén el agua entre ${conf.minWater}% y ${conf.maxWater}%`;
+        document.getElementById('welcome-plant-penalty').innerText = `-${conf.overwaterPenalty} Puntos`;
+        
         const modal = document.getElementById('tournament-welcome-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     },
 
     openWaterCalibration() {
+        const plot = this.state.plots[5];
+        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+
         const modal = document.getElementById('water-calib-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -894,6 +932,7 @@ window.farmApp = {
         this.calibration.active = true;
         this.calibration.x = 0;
         this.calibration.dir = 1;
+        this.calibration.speed = conf.speed; // Ajusta la velocidad según el torneo
         const pointer = document.getElementById('calib-pointer');
         
         const tick = () => {
@@ -913,13 +952,15 @@ window.farmApp = {
         
         const waterAdded = Math.round(this.calibration.x);
         const plot = this.state.plots[5];
+        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
         
         plot.water += waterAdded;
         
-        if (plot.water > 100) {
-            plot.water = 100;
-            plot.score = Math.max(0, plot.score - 500); // Castigo por ahogamiento
-            this.showPlotToast(5, '⚠️', '-500 pts (Ahogado)');
+        // Regla de penalización por desbordamiento según la planta
+        if (plot.water > conf.maxWater) {
+            plot.water = Math.min(100, plot.water);
+            plot.score = Math.max(0, plot.score - conf.overwaterPenalty); 
+            this.showPlotToast(5, '⚠️', `-${conf.overwaterPenalty} pts`);
         } else {
             this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
         }
