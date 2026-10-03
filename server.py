@@ -242,9 +242,6 @@ def buy_seeds():
         cur.close()
         conn.close()
 
-# ==========================================================
-# ENDPOINT TRANSACCIONAL DE TORNEOS (ARENA P2P)
-# ==========================================================
 @app.route('/api/tournaments/join', methods=['POST'])
 def join_tournament():
     data = request.json
@@ -266,26 +263,49 @@ def join_tournament():
         if not cur.fetchone():
             cur.execute("INSERT INTO tournaments (id, title, entry_fee_cop) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING", (t_id, f"Arena {fee}", fee))
         
-        # Flujo 1: Freeroll (Cobra Semillas 🌱)
+        # CORRECCIÓN: Costo de Freeroll ajustado a 500 para coincidir con la interfaz
+        seed_cost = 0
         if fee == 0:
-            state = json.loads(user['game_state'] or '{}')
-            freeroll_cost = 500
-            if state.get('seedsBalance', 0) < freeroll_cost:
-                return jsonify({"error": f"Requiere {freeroll_cost} 🌱 para el Freeroll"}), 400
-            state['seedsBalance'] -= freeroll_cost
+            seed_cost = 500
+        elif fee == 5000:
+            seed_cost = 5000
+        elif fee == 10000:
+            seed_cost = 15000
+        elif fee == 30000:
+            seed_cost = 30000
+        elif fee == 50000:
+            seed_cost = 50000
+
+        state = json.loads(user['game_state'] or '{}')
+        if state.get('seedsBalance', 0) < seed_cost:
+            return jsonify({"error": f"Requiere {seed_cost} 🌱 para participar en esta liga"}), 400
+
+        if fee == 0:
+            state['seedsBalance'] -= seed_cost
             cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
-        # Flujo 2: Torneos de Pago (Cobra COP, Casa retiene 15%)
         else:
             if float(user['real_balance_cop']) < fee:
                 return jsonify({"error": "Saldo COP insuficiente en tu Billetera"}), 400
             
-            prize_addition = fee * 0.85 # La casa se queda con el 15%
-            cur.execute("UPDATE users SET real_balance_cop = real_balance_cop - %s WHERE id = %s", (fee, user['id']))
+            state['seedsBalance'] -= seed_cost
+            prize_addition = fee * 0.85 
+            cur.execute("UPDATE users SET real_balance_cop = real_balance_cop - %s, game_state = %s WHERE id = %s", (fee, json.dumps(state), user['id']))
             cur.execute("UPDATE tournaments SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, t_id))
             
         cur.execute("INSERT INTO tournament_entries (tournament_id, user_id) VALUES (%s, %s)", (t_id, user['id']))
+        
+        # OBTENER EL SALDO ACTUALIZADO PARA EVITAR LOCALSTORAGE
+        cur.execute("SELECT real_balance_cop FROM users WHERE id = %s", (user['id'],))
+        new_balance_cop = cur.fetchone()['real_balance_cop']
+        
         conn.commit()
-        return jsonify({"message": "Inscripción exitosa a la Arena"})
+        
+        # RETORNAR ESTADO AUTORITATIVO POR RED
+        return jsonify({
+            "message": "Inscripción exitosa a la Arena",
+            "new_balance_cop": float(new_balance_cop),
+            "new_game_state": state
+        })
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
         return jsonify({"error": "Ya te encuentras registrado en esta Arena"}), 400
