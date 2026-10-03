@@ -368,6 +368,30 @@ def dev_add_cop():
         conn.close()
 
 
+@app.route('/api/dev/reset_tournaments', methods=['POST'])
+def dev_reset_tournaments():
+    data = request.json
+    username = data.get('username')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id FROM users WHERE username = %s", (username,))
+        user = cur.fetchone()
+        if user:
+            # Borramos el historial de torneos del usuario para que pueda reingresar
+            cur.execute("DELETE FROM tournament_entries WHERE user_id = %s", (user['id'],))
+            conn.commit()
+            return jsonify({"message": "Campeonato reseteado en BD"}), 200
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))

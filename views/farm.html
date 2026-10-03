@@ -397,14 +397,15 @@ window.farmApp = {
     },
 
     dev: {
-        reset: () => {
+        reset: async () => {
             window.farmApp.state.plots = [
                 { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 1, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-                { id: 5, status: 'arena_locked', tournamentId: 1, score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+                // Restablece la Parcela 6 (Torneo) a su estado original bloqueado
+                { id: 5, status: 'arena_locked', tournamentId: 1, score: 0, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
             ];
             window.farmApp.state.inventory = {
                 'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
@@ -416,9 +417,25 @@ window.farmApp = {
             };
             window.farmApp.state.seedsBalance = 35000;
             window.farmApp.state.autoWaterEndTime = 0;
+            
+            // Limpia la Base de Datos para que te permita volver a inscribirte
+            const userStr = localStorage.getItem('user');
+            if(userStr) {
+                const user = JSON.parse(userStr);
+                try {
+                    await fetch('/api/dev/reset_tournaments', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: user.username })
+                    });
+                } catch(e) {
+                    console.error("Error liberando campeonato en DB", e);
+                }
+            }
+            
             window.farmApp.saveState();
             window.farmApp.updateUI();
-            alert("Terreno e inventario reseteados.");
+            alert("Terreno, inventario y campeonato reseteados exitosamente.");
         },
         addSeeds: (amount) => {
             if(window.farmApp) {
