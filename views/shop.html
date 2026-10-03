@@ -236,24 +236,28 @@ window.shopApp = {
     },
 
     saveState() {
+        // Reconstrucción del estado local a prueba de fallos si está corrupto o vacío
+        let farmState = { seedsBalance: 35000, autoWaterEndTime: 0, plots: [], inventory: {}, lastTick: Date.now() };
         const savedStateStr = localStorage.getItem('cg_farm_state');
         if (savedStateStr) {
-            const farmState = JSON.parse(savedStateStr);
-            farmState.seedsBalance = this.state.seedsBalance;
-            farmState.inventory = this.state.inventory;
-            
-            const stateToSave = JSON.stringify(farmState);
-            localStorage.setItem('cg_farm_state', stateToSave);
+            try { farmState = JSON.parse(savedStateStr); } catch(e) {}
+        }
+        
+        farmState.seedsBalance = this.state.seedsBalance;
+        farmState.inventory = this.state.inventory;
+        farmState.lastTick = Date.now(); // Marca temporal para dominar sobre el servidor viejo
+        
+        const stateToSave = JSON.stringify(farmState);
+        localStorage.setItem('cg_farm_state', stateToSave);
 
-            const userStr = localStorage.getItem('user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                fetch('/api/save_state', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user.username, game_state: stateToSave })
-                }).catch(e => console.error("Error guardando compra:", e));
-            }
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            fetch('/api/save_state', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username, game_state: stateToSave })
+            }).catch(e => console.error("Error guardando compra:", e));
         }
     }
 };

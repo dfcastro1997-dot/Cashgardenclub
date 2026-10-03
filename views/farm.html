@@ -347,6 +347,7 @@ window.farmApp = {
     },
 
     saveState() {
+        this.state.lastTick = Date.now(); // CRÍTICO: Garantiza que este estado es el más nuevo
         const stateToSave = JSON.stringify({
             seedsBalance: this.state.seedsBalance,
             autoWaterEndTime: this.state.autoWaterEndTime,
@@ -368,6 +369,9 @@ window.farmApp = {
     },
 
     init() {
+        this.loadLocalAndStart(); // Carga rápido visualmente primero
+        this.updateUI();
+
         const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
@@ -377,8 +381,15 @@ window.farmApp = {
                     if (data.status === 'success' && data.user.game_state) {
                         try {
                             const s = JSON.parse(data.user.game_state);
-                            this.state.seedsBalance = s.seedsBalance ?? 35000;
-                            this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
+                            
+                            // BLOQUEO ANTI-REVERSIÓN: Si el local es más nuevo, rechaza el del servidor y resube el local.
+                            if (s.lastTick && this.state.lastTick && s.lastTick < this.state.lastTick) {
+                                this.saveState();
+                                return; 
+                            }
+
+                            this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
+                            this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
                             this.state.plots = s.plots ?? this.state.plots;
                             
                             if (s.inventory) {
@@ -390,16 +401,13 @@ window.farmApp = {
                             }
                             
                             this.state.lastTick = s.lastTick ?? Date.now();
+                            // Fuerza la sincronización del LocalStorage con el servidor validado
+                            localStorage.setItem('cg_farm_state', JSON.stringify(this.state));
                         } catch(e) { console.error("Error parseando game_state", e); }
-                    } else {
-                        this.loadLocalAndStart();
                     }
                     this.updateUI();
                 })
-                .catch(e => { this.loadLocalAndStart(); this.updateUI(); });
-        } else {
-            this.loadLocalAndStart();
-            this.updateUI();
+                .catch(e => { console.error(e); });
         }
     },
 
@@ -606,8 +614,8 @@ window.farmApp = {
                             ` : `
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-bold ${isAlert ? 'text-red-500' : 'text-gray-500'}">⏳ ${isAlert ? 'Pausado' : timeLeftText}</span>
-                                    <button onclick="window.farmApp.removePlant(${plot.id}); event.stopPropagation();" class="text-[10px] text-gray-400 hover:text-red-500 font-bold transition-colors uppercase tracking-widest px-1">
-                                        Quit
+                                    <button onclick="window.farmApp.removePlant(${plot.id}); event.stopPropagation();" class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white border border-red-100 hover:border-red-500 text-[9px] font-black transition-all uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm">
+                                        Quitar
                                     </button>
                                 </div>
                             `}
