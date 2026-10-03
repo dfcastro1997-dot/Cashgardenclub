@@ -864,12 +864,12 @@ window.farmApp = {
                             `}
                         </div>
                     </div>
-                `;
+                `; // <--- ¡AQUÍ ESTABA EL ERROR! Faltaban las comillas invertidas de cierre y el punto y coma.
                 el.onclick = () => this.selectPlot(plot.id);
             }
             grid.appendChild(el);
         });
-    }
+    },
 
     processTick() {
         const now = Date.now();
