@@ -816,11 +816,15 @@ window.farmApp = {
                         plot.crowLeavingAt = 0;
                         this.showPlotToast(plot.id, '💀', 'Trigo Destruido');
                     } else {
-                        // Generar el botón interactivo para curar/espantar
-                        const isRotting = plot.plant && plot.plant.id === 'flower_cactus' && plot.water > 80;
+                        // Evaluamos si es pudrición para mostrar la bacteria, o si es cuervo/contagio
+                        const plantId = plot.plant ? plot.plant.id : '';
+                        let isRotting = false;
+                        if (plantId === 'flower_wheat' && plot.water > 100) isRotting = true;
+                        else if (plantId === 'flower_small' && plot.water > 90) isRotting = true;
+                        else if (plantId === 'flower_big' && plot.water > 70) isRotting = true;
+                        else if (plantId === 'flower_cactus' && plot.water > 80) isRotting = true;
                         
                         if (plot.crowLeavingAt > now) {
-                            // Está en proceso de secado/limpieza (15 mins)
                             const minsLeft = Math.ceil((plot.crowLeavingAt - now) / 60000);
                             crowHtml = `
                                 <div class="z-50 bg-yellow-500/90 border-2 border-yellow-200 rounded-full w-10 h-10 flex flex-col items-center justify-center shadow-xl cursor-not-allowed pointer-events-auto shrink-0">
@@ -829,10 +833,14 @@ window.farmApp = {
                                 </div>
                             `;
                         } else {
-                            // Requiere acción del usuario - Actualizado al emoji de cuervo 🐦‍⬛ y tamaño adaptado a la columna
+                            // NUEVO: Uso de la imagen oficial del cuervo
+                            const iconHtml = isRotting 
+                                ? `<span class="text-xl">🦠</span>` 
+                                : `<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-6 h-6 object-contain drop-shadow-md">`;
+
                             crowHtml = `
                                 <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-10 h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                    <span class="text-xl">${isRotting ? '🦠' : '🐦‍⬛'}</span>
+                                    ${iconHtml}
                                     <div class="absolute right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
                                 </button>
                             `;
@@ -907,14 +915,12 @@ window.farmApp = {
         const isAutoWatering = this.state.autoWaterEndTime > now;
         let changesMade = false;
         
-        // NUEVO: Verificamos si hay algún cactus pudriéndose para contagiar a los demás
-        const anyCactusRotting = this.state.plots.some(p => 
-            p.status === 'planted' && !p.isReady && 
-            p.plant && p.plant.id === 'flower_cactus' && p.water > 80
+        // NUEVO: Contagio Global. Si CUALQUIER planta tiene plaga o pudrición, atrae cuervos a las demás.
+        const anyPlantInfected = this.state.plots.some(p => 
+            p.status === 'planted' && !p.isReady && p.hasCrow
         );
         
         this.state.plots.forEach(plot => {
-            
             if (plot.id === 5 && plot.status === 'tournament') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 if (plot.water > 0) {
@@ -931,26 +937,34 @@ window.farmApp = {
                     changesMade = true;
                     if(deltaMS < 60000) this.showPlotToast(plot.id, '🏆', '¡Torneo Finalizado!');
                 }
-                return; // Ignorar el resto de la lógica para esta parcela
+                return; 
             }
 
-            // [Lógica Original Parcelas Normales]
             if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
                 plot.hasCrow = false;
                 plot.crowLeavingAt = 0;
                 
-                // Al terminar de limpiar la pudrición, estabilizamos el agua para evitar un bucle infinito de plagas
-                if (plot.plant && plot.plant.id === 'flower_cactus' && plot.water > 80) {
-                    plot.water = 80;
+                // Estabilizamos el agua al tope seguro al terminar de curar para evitar bucles de pudrición
+                if (plot.plant) {
+                    if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
+                    else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
+                    else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
+                    else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
                 }
                 
                 changesMade = true;
-                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Pudrición curada');
+                if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Plaga/Pudrición curada');
             }
 
             if (plot.status === 'planted' && !plot.isReady) {
                 if (isAutoWatering) {
-                    plot.water = (plot.plant && plot.plant.id === 'flower_cactus') ? 80 : 100;
+                    // El auto-riego mantiene a salvo a todas según su especie
+                    if (plot.plant) {
+                        if (plot.plant.id === 'flower_wheat') plot.water = 100;
+                        else if (plot.plant.id === 'flower_small') plot.water = 90;
+                        else if (plot.plant.id === 'flower_big') plot.water = 70;
+                        else if (plot.plant.id === 'flower_cactus') plot.water = 80;
+                    }
                     plot.hasCrow = false; 
                     plot.crowLeavingAt = 0;
                 } else {
@@ -964,18 +978,13 @@ window.farmApp = {
                         plot.hasCrow = false;
                         plot.crowLeavingAt = 0;
                     } else {
-                        // Generación de Cuervo por sequía, pudrición del cactus O CONTAGIO
                         if (!plot.hasCrow) {
                             if (plot.water < 20) {
                                 plot.hasCrow = true;
-                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
+                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Sequía (Plaga)!');
                                 changesMade = true;
-                            } else if (plot.plant && plot.plant.id === 'flower_cactus' && plot.water > 80) {
-                                plot.hasCrow = true;
-                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Se está pudriendo!');
-                                changesMade = true;
-                            } else if (anyCactusRotting) {
-                                plot.hasCrow = true;
+                            } else if (anyPlantInfected) {
+                                plot.hasCrow = true; // Infección por contagio
                                 if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
                                 changesMade = true;
                             }
@@ -983,7 +992,6 @@ window.farmApp = {
                     }
                 }
 
-                // Pausar el crecimiento si falta agua o hay cuervo en la parcela
                 if (plot.water <= 0 || plot.hasCrow) {
                     plot.harvestAt += deltaMS; 
                     changesMade = true;
@@ -1235,8 +1243,17 @@ window.farmApp = {
             const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
             const currentPlantImg = plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big;
 
+            // NUEVO: Diccionario de reglas de riego para mostrar en el panel
+            const PLANT_RULES = {
+                'flower_wheat': { range: '60% - 100%', speed: 'Ultra Rápida', penalty: 'Inundación inmediata' },
+                'flower_small': { range: '30% - 90%', speed: 'Moderada', penalty: 'Pudrición (Pausa)' },
+                'flower_cactus': { range: '20% - 80%', speed: 'Desafiante', penalty: 'Pudrición instantánea' },
+                'flower_big': { range: '50% - 70%', speed: 'Lenta', penalty: 'Pudrición + 30m extra' }
+            };
+            const rule = PLANT_RULES[plot.plant.id] || { range: '0% - 100%', speed: 'Normal', penalty: 'Ninguna' };
+
             infoPanel.innerHTML = `
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 mb-3">
                     <div class="relative w-14 h-14 bg-gray-50 rounded-xl border border-gray-200 flex shrink-0 items-center justify-center overflow-hidden">
                         <img src="${currentTerrain}" class="absolute w-14 h-14 object-contain mt-2">
                         <img src="${currentPlantImg}" class="absolute w-10 h-10 object-contain z-10" style="transform: translateY(-20%);">
@@ -1253,6 +1270,13 @@ window.farmApp = {
                                 : (plot.scarecrowEndTime > Date.now() ? `<span class="text-[9px] font-bold text-gray-600 uppercase bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex items-center gap-1">Protegida</span>` : ``)}
                         </div>
                     </div>
+                </div>
+                
+                <!-- NUEVO: Tarjeta de información de riego -->
+                <div class="bg-blue-50/50 rounded-lg p-2.5 border border-blue-100 text-[10px] space-y-1.5 shadow-inner">
+                    <div class="flex justify-between items-center"><span class="text-blue-800 font-bold flex items-center gap-1">🎯 Rango:</span> <span class="font-black text-cg_navy">${rule.range}</span></div>
+                    <div class="flex justify-between items-center"><span class="text-blue-800 font-bold flex items-center gap-1">⚡ Velocidad:</span> <span class="font-black text-cg_navy">${rule.speed}</span></div>
+                    <div class="flex justify-between items-start mt-1 pt-1 border-t border-blue-100"><span class="text-red-500 font-bold flex items-center gap-1">💀 Riesgo:</span> <span class="font-black text-red-600 text-right max-w-[100px] leading-tight">${rule.penalty}</span></div>
                 </div>
             `;
             
@@ -1297,20 +1321,22 @@ window.farmApp = {
             plot.potUses = 0;
             this.showPlotToast(plotId, '🏺', 'Maceta Lista');
         } else if(type === 'water') {
-            // MODIFICACIÓN: La regadera automática desaparece. Todas usan el calibrador.
             this.state.inventory.tool_water.qty -= 1;
             this.openWaterCalibration(plotId);
             this.updateInventoryUI();
-            return; // Saltamos el guardado estándar hasta que termine el minijuego
+            return; 
         } else if (type === 'scarecrow') {
             this.state.inventory.tool_scarecrow.qty -= 1;
             plot.hasCrow = false;
             plot.crowLeavingAt = 0; 
             plot.scarecrowEndTime = Date.now() + (24 * 3600000);
             
-            // NUEVO: Si es un cactus y está ahogado, el espantapájaros drena el exceso de agua
-            if (plot.plant && plot.plant.id === 'flower_cactus' && plot.water > 80) {
-                plot.water = 80;
+            // Drenar exceso de agua a límites seguros para que no vuelva a pudrirse al instante
+            if (plot.plant) {
+                if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
+                else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
+                else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
+                else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
             }
             
             this.showPlotToast(plotId, '🦉', '¡Protegido y Seco!');
