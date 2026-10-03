@@ -277,7 +277,7 @@ def join_tournament():
         
         seed_cost = 0
         if fee == 0:
-            seed_cost = 500
+            seed_cost = 5000
         elif fee == 5000:
             seed_cost = 5000
         elif fee == 10000:

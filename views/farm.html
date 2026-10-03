@@ -630,6 +630,11 @@ window.farmApp = {
             const el = document.createElement('div');
             const isSelected = this.state.selectedPlotId === plot.id;
             
+            // Auto-limpieza del Toast basada en tiempo exacto (inmune a la sincronización)
+            if (plot.toast && plot.toast.active && Date.now() >= plot.toast.expiresAt) {
+                plot.toast.active = false;
+            }
+            
             const localToastHTML = plot.toast && plot.toast.active ? `
                 <div class="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-cg_navy text-white px-3 py-1.5 rounded-full text-[10px] font-bold z-[60] flex items-center gap-1.5 shadow-lg pointer-events-none whitespace-nowrap animate-bounce">
                     <span class="text-[10px] bg-white/20 rounded-full w-4 h-4 flex items-center justify-center">${plot.toast.icon}</span>
@@ -637,7 +642,6 @@ window.farmApp = {
                 </div>
             ` : '';
 
-            // RENDERIZADO EXCLUSIVO PARA LA PARCELA 6 (TORNEO)
             // RENDERIZADO EXCLUSIVO PARA LA PARCELA 6 (TORNEO)
             if (plot.id === 5) {
                 if (plot.status === 'arena_locked' || plot.status === 'locked') {
@@ -1056,21 +1060,16 @@ window.farmApp = {
 
     showPlotToast(plotId, icon, msg) {
         const plot = this.state.plots[plotId];
-        plot.toast = { active: true, icon, msg };
+        // En lugar de usar setTimeout que se pierde al sincronizar, usamos un timestamp de caducidad
+        plot.toast = { active: true, icon, msg, expiresAt: Date.now() + 2500 };
         this.renderPlots();
         
-        // Limpiamos cualquier temporizador anterior para evitar superposiciones y bloqueos
-        if (plot.toastTimer) {
-            clearTimeout(plot.toastTimer);
-        }
-        
-        // Creamos un nuevo temporizador que forzará el cierre de la etiqueta actual
-        plot.toastTimer = setTimeout(() => {
-            if (plot.toast) {
-                plot.toast.active = false;
+        // Disparamos un renderizado forzado una vez que el tiempo se cumple para limpiarlo
+        setTimeout(() => {
+            if (this.state.plots[plotId].toast && Date.now() >= this.state.plots[plotId].toast.expiresAt) {
                 this.renderPlots();
             }
-        }, 2500);
+        }, 2600);
     },
 
     selectPlot(id) {
@@ -1276,7 +1275,8 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        const reward = plot.plant.id === 'flower_wheat' ? 200 : (plot.plant.id === 'flower_small' ? 4500 : 26000);
+        // Actualizamos la recompensa del trigo a 1500 para hacerlo rentable
+        const reward = plot.plant.id === 'flower_wheat' ? 1500 : (plot.plant.id === 'flower_small' ? 4500 : 26000);
         this.addBalance(reward);
         
         plot.potUses += 1;
