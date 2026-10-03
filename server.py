@@ -91,15 +91,22 @@ def process_server_tick(game_state_str):
                         plot['water'] = 100
                         plot['hasCrow'] = False
                     else:
-                        # Deducción determinista de agua (40% por hora)
-                        if plot.get('water', 0) > 0:
-                            plot['water'] = max(0, plot['water'] - (EVAPORATION_RATE * delta_hours))
+                        # Obtenemos la planta actual
+                        plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
+                        evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
                         
-                        # Vulnerabilidad determinista a plagas
+                        # Deducción determinista de agua adaptada
+                        if plot.get('water', 0) > 0:
+                            plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
+                        
+                        # Vulnerabilidad determinista a plagas o pudrición
                         if plot.get('scarecrowEndTime', 0) > now:
                             plot['hasCrow'] = False
-                        elif not plot.get('hasCrow') and plot.get('water', 0) < 20:
-                            plot['hasCrow'] = True
+                        elif not plot.get('hasCrow'):
+                            if plot.get('water', 0) < 20:
+                                plot['hasCrow'] = True
+                            elif plant_id == 'flower_cactus' and plot.get('water', 0) > 80:
+                                plot['hasCrow'] = True
 
                     # Trigo como cebo y descomposición (Server-side)
                     if plot.get('hasCrow'):

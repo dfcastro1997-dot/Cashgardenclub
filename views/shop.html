@@ -57,6 +57,7 @@ window.shopApp = {
         ],
         flowers: [
             { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Atrae cuervos salvando otras plantas, pero muere en 15 mins si es ignorado. Genera 1.500 🌱.', price: 50 },
+            { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: 'Evapora lento (10%/h). ¡Peligro! Si el agua supera el 80% se pudrirá y atraerá plagas. Genera 2.200 🌱.', price: 800 },
             { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 4.500 🌱 al cosecharse.', price: 2000 },
             { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱 al cosecharse.', price: 10000 }
         ],
@@ -194,7 +195,7 @@ window.shopApp = {
                 this.state.inventory[itemId] = { 
                     name: catItem.name, 
                     type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                    reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') ? 'small' : null)),
+                    reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
                     qty: 0, 
                     image: catItem.image 
                 };

@@ -388,6 +388,7 @@ window.farmApp = {
             'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
             'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
             'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/szXSZjs/Frame-753.png' },
+            'flower_cactus': { name: 'Cactus de Cuarzo', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/5gvFssT4/Frame-758.png' },
             'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
             'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png' }
         },
@@ -395,6 +396,7 @@ window.farmApp = {
             terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png',
             terrain_dry: 'https://i.ibb.co/rf66qT74/Frame-751.png',
             plant_wheat: 'https://i.ibb.co/szXSZjs/Frame-753.png',
+            plant_cactus: 'https://i.ibb.co/5gvFssT4/Frame-758.png',
             plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',
             plant_big: 'https://i.ibb.co/qF9G5qMw/Frame-744.png',
             crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png',
@@ -787,7 +789,9 @@ window.farmApp = {
                 const potName = plot.pot === 'small' ? 'MACETA PEQ' : 'MACETA GDE';
                 
                 const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
-                const currentPlantImg = plot.plant && plot.plant.id === 'flower_wheat' ? this.state.images.plant_wheat : (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big);
+                const currentPlantImg = plot.plant && plot.plant.id === 'flower_wheat' ? this.state.images.plant_wheat : 
+                                       (plot.plant && plot.plant.id === 'flower_cactus' ? this.state.images.plant_cactus : 
+                                       (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big));
 
                 let timeLeftText = '';
                 let progress = 0;
@@ -908,17 +912,26 @@ window.farmApp = {
                     plot.crowLeavingAt = 0;
                 } else {
                     if (plot.water > 0) {
-                        plot.water = Math.max(0, plot.water - (40 * deltaHours)); 
+                        let evapRate = (plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40;
+                        plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                         changesMade = true;
                     }
+                    
                     if (plot.scarecrowEndTime > now) {
                         plot.hasCrow = false;
                         plot.crowLeavingAt = 0;
                     } else {
-                        if (!plot.hasCrow && plot.water < 20) {
-                            plot.hasCrow = true;
-                            if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
-                            changesMade = true;
+                        // Generación de Cuervo por sequía o por pudrición del cactus
+                        if (!plot.hasCrow) {
+                            if (plot.water < 20) {
+                                plot.hasCrow = true;
+                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Detectada!');
+                                changesMade = true;
+                            } else if (plot.plant && plot.plant.id === 'flower_cactus' && plot.water > 80) {
+                                plot.hasCrow = true;
+                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Se está pudriendo!');
+                                changesMade = true;
+                            }
                         }
                     }
                 }
@@ -1275,8 +1288,10 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        // Actualizamos la recompensa del trigo a 1500 para hacerlo rentable
-        const reward = plot.plant.id === 'flower_wheat' ? 1500 : (plot.plant.id === 'flower_small' ? 4500 : 26000);
+        // Recompensa estandarizada para el cactus
+        const reward = plot.plant.id === 'flower_wheat' ? 1500 : 
+                      (plot.plant.id === 'flower_cactus' ? 2200 : 
+                      (plot.plant.id === 'flower_small' ? 4500 : 26000));
         this.addBalance(reward);
         
         plot.potUses += 1;
@@ -1513,6 +1528,7 @@ window.farmApp = {
             // Lógica de tiempo
             let msDuration = 3600000; // 1 Hora base (small)
             if (seedId === 'flower_wheat') msDuration = 300000; // 5 Minutos
+            else if (seedId === 'flower_cactus') msDuration = 1800000; // 30 Minutos
             else if (seedId === 'flower_big') msDuration = 18000000; // 5 Horas
             
             plot.harvestAt = plot.plantedAt + msDuration;
