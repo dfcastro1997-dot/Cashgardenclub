@@ -8,11 +8,6 @@
         </div>
         
         <div class="flex flex-wrap items-center gap-3">
-            <!-- DISPLAY LOCAL DE SEMILLAS -->
-            <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
-                <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Semillas</span>
-                <span id="farm-seeds-display" class="text-lg font-black text-green-600 transition-all duration-300">0 🌱</span>
-            </div>
 
             <button onclick="window.farmApp.openInstructionsModal()" class="bg-orange-500 hover:bg-orange-600 border border-orange-600 px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group text-white">
                 <div class="flex flex-col text-left">
@@ -434,7 +429,7 @@ window.farmApp = {
     },
 
     updateUI() {
-        const localBalance = document.getElementById('farm-seeds-display');
+        const localBalance = document.getElementById('global-seeds-display');
         if(localBalance) localBalance.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         
         this.updateSprinklerUI();
@@ -1097,7 +1092,7 @@ window.farmApp = {
     },
 
     animateBalance(text, colorClass) {
-        const balEl = document.getElementById('farm-seeds-display');
+        const balEl = document.getElementById('global-seeds-display');
         if (balEl) {
             balEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             const rect = balEl.getBoundingClientRect();

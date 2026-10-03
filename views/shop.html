@@ -8,13 +8,6 @@
             <h2 class="text-3xl font-black text-cg_navy tracking-tight">Mercado de Insumos</h2>
             <p class="text-sm text-gray-500 font-medium mt-1">Equípate con las mejores herramientas para optimizar tu producción de semillas.</p>
         </div>
-        
-        <div class="flex items-center gap-4">
-            <div class="bg-white border border-gray-200 px-5 py-2.5 rounded-xl shadow-sm flex items-center gap-3">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Saldo Disponible</span>
-                <span id="shop-page-balance" class="text-xl font-black text-green-600 transition-all duration-300">0 🌱</span>
-            </div>
-        </div>
     </div>
 
     <!-- TABS DE NAVEGACIÓN -->
@@ -67,7 +60,7 @@ window.shopApp = {
             } catch(e) { console.error("Error cargando inventario en la tienda"); }
         }
         
-        document.getElementById('shop-page-balance').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+        document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         this.switchTab('tools');
     },
 
@@ -172,10 +165,10 @@ window.shopApp = {
             
             // Actualiza saldo
             this.state.seedsBalance -= total;
-            document.getElementById('shop-page-balance').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+            document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             
             // Efecto visual
-            const balEl = document.getElementById('shop-page-balance');
+            const balEl = document.getElementById('global-seeds-display');
             balEl.classList.add('text-red-500', 'scale-110');
             setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
 

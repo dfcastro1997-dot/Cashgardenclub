@@ -80,10 +80,7 @@
                 
                 <!-- MENU DE NAVEGACIÓN ACTUALIZADO CON "MERCADO" -->
                 <nav class="hidden lg:flex items-center gap-2 h-full">
-                    <button onclick="loadView('dashboard', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
-                        <span>Tablero</span>
-                    </button>
-                    <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                    <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
                         <span>Granja</span>
                     </button>
                     <!-- NUEVO BOTÓN MERCADO -->
@@ -102,6 +99,11 @@
                 <!-- RECURSOS Y USUARIO -->
                 <div class="flex items-center gap-5">
                     <div class="hidden sm:flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+                        <!-- NUEVO: DISPLAY GLOBAL DE SEMILLAS -->
+                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-green-200 shadow-sm relative cursor-default">
+                            <span class="text-sm font-bold text-gray-400">SEMILLAS</span>
+                            <span id="global-seeds-display" class="text-sm font-extrabold text-green-600 transition-all duration-300">0 🌱</span>
+                        </div>
                         <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
                             <span class="text-sm font-bold text-gray-400">COP</span>
                             <span id="global-balance" class="text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
@@ -281,6 +283,15 @@
                 if (response.ok) {
                     const data = await response.json();
                     const dbBalance = data.user.real_balance_cop || data.user.balance;
+                    
+                    // NUEVO: Sincronizar semillas en el topbar global
+                    if (data.user.game_state) {
+                        try {
+                            const state = JSON.parse(data.user.game_state);
+                            const seedsEl = document.getElementById('global-seeds-display');
+                            if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
+                        } catch(e) {}
+                    }
                     
                     if (user.balance !== dbBalance || (window.farmApp && window.farmApp.state.balance !== dbBalance)) {
                         document.getElementById('global-balance').innerText = "$" + dbBalance.toLocaleString();
