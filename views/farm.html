@@ -168,7 +168,6 @@
 </div>
 
 
-<!-- MODAL BIENVENIDA TORNEO (EXPLICACIÓN) -->
 <!-- MODAL BIENVENIDA TORNEO (EXPLICACIÓN DINÁMICA) -->
 <div id="tournament-welcome-modal" class="fixed inset-0 z-[160] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')"></div>
@@ -192,17 +191,30 @@
                     <span class="text-xl">⚠️</span>
                     <p class="text-xs text-red-800"><strong class="font-black">Rango de Supervivencia:</strong> <span id="welcome-plant-limit">0 a 100</span>. Fuera de ahí, perderás puntos continuamente.</p>
                 </div>
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex gap-3 shadow-sm">
-                    <span class="text-xl">💧</span>
-                    <p class="text-xs text-blue-800"><strong class="font-black">Riego Quirúrgico:</strong> Usa el minijuego de flecha para inyectar agua con precisión milimétrica.</p>
+                
+                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm">
+                    <div class="flex gap-3 mb-3">
+                        <span class="text-xl">🎯</span>
+                        <p class="text-xs text-blue-800"><strong class="font-black">Sistema de Riego Quirúrgico:</strong> Usa el calibrador oscilante de precisión. Detén la flecha en el momento exacto para inyectar el porcentaje de agua que le falta a tu planta.</p>
+                    </div>
+                    <!-- Simulación Gráfica del Minijuego -->
+                    <div class="w-full h-5 bg-gray-200 rounded-full flex overflow-hidden relative border border-blue-200 shadow-inner">
+                        <div class="w-1/5 bg-red-200"></div>
+                        <div class="w-1/5 bg-blue-200"></div>
+                        <div class="w-1/5 bg-blue-400"></div>
+                        <div class="w-1/5 bg-blue-200"></div>
+                        <div class="w-1/5 bg-red-200"></div>
+                        <div class="absolute top-0 h-full w-1.5 bg-cg_navy left-[45%] shadow-[0_0_5px_rgba(0,0,0,0.5)]"></div>
+                    </div>
                 </div>
+                
                 <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex gap-3 shadow-sm">
                     <span class="text-xl">💀</span>
                     <p class="text-xs text-orange-800"><strong class="font-black">Riesgo de Ahogo:</strong> Si tu inyección de agua supera el límite máximo, serás penalizado inmediatamente con <strong id="welcome-plant-penalty">-0 Puntos</strong>.</p>
                 </div>
             </div>
             <button onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')" class="w-full bg-cg_gold hover:bg-yellow-600 text-white font-black py-4 rounded-xl transition-all shadow-sm uppercase tracking-widest text-sm mt-3">
-                Comprendo las Reglas
+                Entendido
             </button>
         </div>
     </div>
@@ -652,7 +664,11 @@ window.farmApp = {
                     const isAlert = plot.water < conf.minWater || plot.water > conf.maxWater;
                     const borderStyle = isAlert ? 'border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' : 'border-cg_gold bg-gradient-to-b from-white to-yellow-50 shadow-md hover:shadow-lg transition-all';
                     
-                    el.className = `rounded-2xl border-2 h-64 relative overflow-hidden flex flex-col ${borderStyle}`;
+                    el.className = `rounded-2xl border-2 h-64 relative overflow-hidden flex flex-col cursor-pointer ${borderStyle}`;
+                    
+                    // ¡Aquí vinculamos el clic con la ventana modal!
+                    el.onclick = () => this.showTournamentWelcome();
+                    
                     el.innerHTML = `
                         ${localToastHTML}
                         <div class="absolute top-3 left-3 bg-cg_navy text-white px-2 py-1 rounded text-[9px] font-black border border-gray-700 shadow-sm z-20 uppercase tracking-widest">
