@@ -56,10 +56,10 @@ window.shopApp = {
             { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '24 Horas', usage: '3', desc: 'Protección preventiva contra plagas. Remueve plagas al instante y extrae el exceso de agua.', price: 6000 }
         ],
         flowers: [
-            { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Genera 1.500 🌱.<br><strong class="text-cg_navy">Rango:</strong> 60% a 100% (Ultra Rápido)<br><strong class="text-red-500">Fallo:</strong> Inundación inmediata.', price: 50 },
-            { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: 'Genera 2.200 🌱.<br><strong class="text-cg_navy">Rango:</strong> 20% a 80% (Desafiante)<br><strong class="text-red-500">Fallo:</strong> Pudrición instantánea.', price: 800 },
-            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 4.500 🌱.<br><strong class="text-cg_navy">Rango:</strong> 30% a 90% (Moderado)<br><strong class="text-red-500">Fallo:</strong> Pudrición (Pausa crecimiento).', price: 2000 },
-            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱.<br><strong class="text-cg_navy">Rango:</strong> 50% a 70% (Lento)<br><strong class="text-red-500">Fallo:</strong> Pudrición + 30m extra.', price: 10000 }
+            { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Recompensa de 1.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 60% a 100% (Ultra Rápido)<br><strong class="text-red-500">Peligro:</strong> Inundación inmediata y cuervos.', price: 50 },
+            { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: 'Recompensa de 2.200 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 20% a 80% (Desafiante)<br><strong class="text-red-500">Peligro:</strong> Pudrición instantánea.', price: 800 },
+            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 4.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 30% a 90% (Moderado)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal que detiene el crecimiento.', price: 2000 },
+            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 70% (Lento)<br><strong class="text-red-500">Peligro:</strong> Pudrición con 30m extra de castigo.', price: 10000 }
         ],
         iap: [
             { id: 'iap_sp_12h', name: 'Asistente Auto-Riego 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Automatización', desc: 'Herramienta premium para jugadores competitivos. Automatiza el riego al nivel perfecto y ahuyenta plagas por 12 horas.', price_cop: 2000 },
@@ -143,17 +143,18 @@ window.shopApp = {
                 `;
             }
 
+            // MODIFICADO: Contenedor más alto (h-56) e imagen más grande (h-44)
             card.innerHTML = `
-                <div class="bg-gradient-to-b from-gray-50 to-white h-48 flex items-center justify-center p-6 relative shrink-0 border-b border-gray-100">
+                <div class="bg-gradient-to-b from-gray-50 to-white h-56 flex items-center justify-center p-6 relative shrink-0 border-b border-gray-100">
                     <span class="absolute top-3 left-3 bg-white text-gray-600 text-[10px] font-black px-2.5 py-1 rounded-md shadow-sm border border-gray-200 uppercase tracking-wider z-20">${tag}</span>
                     ${stockBadge}
-                    <img src="${item.image}" class="h-32 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <img src="${item.image}" class="h-44 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
                 </div>
                 <div class="p-6 flex flex-col flex-1">
                     <h4 class="font-black text-cg_navy text-lg leading-tight mb-3">${item.name}</h4>
                     <div class="flex justify-between items-center text-[10px] font-bold text-gray-500 mb-4 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
                         <span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>
-                        <span class="uppercase flex items-center gap-1">⚙️ ${item.usage}</span>
+                        <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
                     </div>
                     <p class="text-sm text-gray-500 mb-6 leading-relaxed flex-1">${item.desc}</p>
                     <div class="mt-auto pt-4 border-t border-gray-100">
