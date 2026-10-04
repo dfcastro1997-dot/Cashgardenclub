@@ -667,24 +667,22 @@ window.farmApp = {
                     const isAlert = plot.water < conf.minWater || plot.water > conf.maxWater;
                     const borderStyle = isAlert ? 'border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' : 'border-cg_gold bg-gradient-to-b from-white to-yellow-50 shadow-md hover:shadow-lg transition-all';
                     
-                    // Modificamos el cursor y ELIMINAMOS la acción el.onclick que abría el modal
                     el.className = `rounded-2xl border-2 h-64 relative overflow-hidden flex flex-col ${borderStyle}`;
                     
                     el.innerHTML = `
                         ${localToastHTML}
-                        <div class="absolute top-3 left-3 bg-white px-2 py-1 rounded text-[9px] font-black text-gray-500 border border-gray-200 flex items-center gap-1 uppercase shadow-sm z-20 pointer-events-none">
-                            <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName}
+                        <div class="absolute top-3 left-3 bg-cg_navy text-white px-2 py-1 rounded text-[9px] font-black border border-gray-700 shadow-sm z-20 uppercase tracking-widest pointer-events-none">
+                            🔥 ${conf.durationHours}H Sprint
                         </div>
 
-                        <!-- NUEVO BOTÓN DE INFO FLOTANTE -->
-                        <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" class="absolute bottom-14 left-3 w-7 h-7 bg-white text-cg_blue border border-blue-200 rounded-full flex items-center justify-center font-black shadow-md hover:bg-blue-50 hover:scale-110 transition-all z-40 text-sm font-serif">
+                        <!-- BOTÓN DE INFO FLOTANTE SEGURO -->
+                        <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 60px; left: 16px;" class="absolute w-8 h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-sm font-serif pointer-events-auto cursor-pointer">
                             i
                         </button>
 
                         <div class="absolute top-2 right-2 flex flex-col items-center gap-2 z-50 pointer-events-none">
                             ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-10 h-10 object-contain drop-shadow-md shrink-0">` : ''}
-                                <img src="${conf.image}" class="absolute h-32 w-auto object-contain z-10 drop-shadow-md transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-20%);">
-                            </div>
+                            <img src="${conf.image}" class="absolute h-32 w-auto object-contain z-10 drop-shadow-md transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-20%);">
                         </div>
 
                         <!-- LA CAJA DORADA -->
@@ -857,6 +855,11 @@ window.farmApp = {
                         <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName}
                     </div>
 
+                    <!-- BOTÓN DE INFO FLOTANTE SEGURO PARA PLANTAS NORMALES -->
+                    <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 60px; left: 16px;" class="absolute w-8 h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-sm font-serif pointer-events-auto cursor-pointer">
+                        i
+                    </button>
+
                     <div class="absolute top-2 right-2 flex flex-col items-center gap-2 z-50 pointer-events-none">
                         ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-10 h-10 object-contain drop-shadow-md shrink-0">` : ''}
                         ${isAutoWatering ? `<img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-8 h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
@@ -891,7 +894,7 @@ window.farmApp = {
                                             ${plot.hasCrow ? 'disabled' : ''}>
                                         Quitar
                                     </button>
-                                    ${plot.plant && plot.plant.id === 'flower_cactus' && !plot.hasCrow ? `
+                                    ${!isAutoWatering && plot.water < 100 && !plot.isReady && !plot.hasCrow ? `
                                         <button onclick="window.farmApp.openWaterCalibration(${plot.id}); event.stopPropagation();" class="bg-cg_blue hover:bg-cg_navy text-white text-[9px] font-black transition-all uppercase tracking-widest px-3 py-1 rounded-md shadow-sm">
                                             Regar
                                         </button>
