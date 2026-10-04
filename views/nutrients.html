@@ -268,8 +268,9 @@
     };
 
     let pendingTournament = null;
-    let ritualState = { score: 10000, dirtInt: null, dirtPct: 0, waterReq: null, waterX: 0, waterDir: 1 };
+    let ritualState = { pendingData: null, score: 10000, dirtInt: null, dirtPct: 0, waterReq: null, waterX: 0, waterDir: 1 };
 
+    
     function showAlertModal(title, msg, icon = '⚠️') {
         document.getElementById('alert-modal-title').innerText = title;
         document.getElementById('alert-modal-msg').innerText = msg;
@@ -365,10 +366,13 @@
 
     function confirmJoinTournament() {
         if (!pendingTournament) return;
+        
+        // FIX: Guardar una copia segura de los datos antes de cerrar el modal
+        ritualState.pendingData = { ...pendingTournament };
         closePreTournamentModal();
         
         // Iniciar estado del ritual
-        const info = TOURNAMENT_INFO[pendingTournament.id];
+        const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         ritualState.score = info.scoreNum;
         
         // ================= FASE 1: SEMILLA =================
@@ -386,7 +390,7 @@
             const rect = pot.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            let x = clientX - rect.left - 20; // 20 = mitad ancho semilla
+            let x = clientX - rect.left - 20;
             let y = clientY - rect.top - 20;
             x = Math.max(0, Math.min(x, rect.width - 40));
             y = Math.max(0, Math.min(y, rect.height - 40));
@@ -470,7 +474,7 @@
 
     // ================= FASE 3: AGUA =================
     function startRitualPhase3() {
-        const info = TOURNAMENT_INFO[pendingTournament.id];
+        const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         const safeZone = document.getElementById('ritual-calib-safe');
         safeZone.style.left = `${info.minWater}%`;
         safeZone.style.width = `${info.maxWater - info.minWater}%`;
@@ -497,7 +501,7 @@
         cancelAnimationFrame(ritualState.waterReq);
         ritualState.waterReq = null;
         
-        const info = TOURNAMENT_INFO[pendingTournament.id];
+        const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         const finalWater = Math.round(ritualState.waterX);
         
         let penalty = 0;
@@ -519,9 +523,9 @@
 
     // ================= ENVÍO A BASE DE DATOS =================
     async function finalizeTournamentAPI(initialWater) {
-        if (!pendingTournament) return;
-        const t_id = pendingTournament.id;
-        const fee_cop = pendingTournament.fee;
+        if (!ritualState.pendingData) return;
+        const t_id = ritualState.pendingData.id;
+        const fee_cop = ritualState.pendingData.fee;
         const info = TOURNAMENT_INFO[t_id];
         const username = document.getElementById('profile-name').innerText;
         if(!username || username === 'Usuario') return;
@@ -552,8 +556,8 @@
                          const ap = state.plots[5];
                          ap.status = 'tournament';
                          ap.tournamentId = t_id;
-                         ap.score = finalScore;   // SE APLICA EL PUNTAJE DEL RITUAL
-                         ap.water = initialWater; // SE APLICA EL AGUA DEL RITUAL
+                         ap.score = finalScore;   
+                         ap.water = initialWater; 
                          ap.tournamentEndTime = Date.now() + (info.durHours * 3600000);
                          ap.isReady = false;
                     }
