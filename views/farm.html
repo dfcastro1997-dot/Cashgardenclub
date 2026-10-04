@@ -152,25 +152,27 @@
 
 
 <!-- ========================================== -->
-<!-- MINIJUEGO RITUAL DE SIEMBRA (GRANJA)       -->
+<!-- MINIJUEGO RITUAL DE SIEMBRA AVANZADO       -->
 <!-- ========================================== -->
 
 <!-- FASE 1: SEMILLA -->
 <div id="farm-ritual-seed-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
-        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 1: Centrado</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Arrastra la semilla al centro exacto</p>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
+        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 1: Precisión Espacial</h3>
+        <p class="text-[10px] sm:text-xs text-red-500 mb-6 font-bold uppercase tracking-widest">Arrastra la semilla al centro. Tienes 1 solo intento al soltar.</p>
         
-        <div class="relative w-40 h-40 sm:w-48 sm:h-48 mx-auto bg-[#8B5A2B] rounded-full border-8 border-[#5C3A21] overflow-hidden mb-6 shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)] touch-none" id="farm-ritual-pot">
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/50"></div>
-                <div class="absolute w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white shadow-[0_0_8px_white]"></div>
+        <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto bg-[#8B5A2B] rounded-full border-8 border-[#5C3A21] overflow-hidden mb-2 shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)] touch-none" id="farm-ritual-pot">
+            <!-- Círculos concéntricos con % -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-50">
+                <div class="absolute w-[90%] h-[90%] rounded-full border border-white/20 flex justify-center"><span class="text-white/40 text-[10px] mt-1 font-bold">25%</span></div>
+                <div class="absolute w-[60%] h-[60%] rounded-full border border-white/40 flex justify-center"><span class="text-white/60 text-[10px] mt-1 font-bold">50%</span></div>
+                <div class="absolute w-[30%] h-[30%] rounded-full border-dashed border-white/60 flex justify-center"><span class="text-white/80 text-[10px] mt-1 font-bold">75%</span></div>
+                <div class="absolute w-4 h-4 rounded-full bg-white shadow-[0_0_12px_white] flex items-center justify-center"><span class="text-black text-[6px] font-black">100</span></div>
             </div>
-            <div id="farm-ritual-seed" class="absolute w-10 h-10 bg-white rounded-full border-2 border-green-200 shadow-lg cursor-grab flex items-center justify-center text-xl touch-none transition-transform active:scale-110 z-20" style="left: 10px; top: 10px;">🌱</div>
+            <!-- Semilla -->
+            <div id="farm-ritual-seed" class="absolute w-12 h-12 bg-white rounded-full border-2 border-green-200 shadow-xl cursor-grab flex items-center justify-center text-2xl touch-none transition-transform active:scale-110 z-20" style="left: 10px; top: 10px;">🌱</div>
         </div>
-        
-        <button onclick="window.farmApp.farmRitualPhase1Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md active:scale-95 transition-all">Plantar Semilla</button>
     </div>
 </div>
 
@@ -179,16 +181,15 @@
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 2: Cobertura</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-4 font-bold uppercase tracking-widest">Suelta el botón en la zona verde (80-85%)</p>
+        <p class="text-[10px] sm:text-xs text-red-500 mb-4 font-bold uppercase tracking-widest">Mantén y suelta en la franja verde (1 Intento)</p>
         
-        <div class="relative w-12 sm:w-14 h-40 sm:h-48 mx-auto bg-gray-100 rounded-full mb-4 border border-gray-300 overflow-hidden flex items-end shadow-inner">
+        <div class="relative w-16 sm:w-20 h-48 sm:h-56 mx-auto bg-gray-100 rounded-full mb-4 border-2 border-gray-300 overflow-hidden flex items-end shadow-inner">
             <div id="farm-ritual-dirt-fill" class="w-full bg-[#5C3A21] transition-all duration-75" style="height: 0%;"></div>
-            <div class="absolute w-full h-[5%] bg-green-400/80 bottom-[80%] border-y-2 border-green-600 shadow-[0_0_10px_rgba(74,222,128,0.8)] z-10 pointer-events-none"></div>
+            <div id="farm-ritual-dirt-target" class="absolute w-full h-[6%] bg-green-400/80 bottom-[50%] border-y-2 border-green-600 shadow-[0_0_15px_rgba(74,222,128,0.8)] z-10 pointer-events-none transition-all"></div>
         </div>
-        <p id="farm-ritual-dirt-pct" class="text-2xl font-black text-cg_navy mb-6">0%</p>
+        <p id="farm-ritual-dirt-pct" class="text-3xl font-black text-cg_navy mb-6">0%</p>
         
-        <button id="farm-ritual-dirt-btn" class="w-full bg-[#8B5A2B] active:bg-[#5C3A21] text-white font-black py-4 sm:py-5 rounded-xl shadow-lg uppercase tracking-widest select-none touch-none text-sm transition-colors">MANTENER PARA TIERRA</button>
-        <button onclick="window.farmApp.farmRitualPhase2Done()" class="w-full mt-3 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl uppercase tracking-widest text-xs transition-colors">Confirmar Nivel</button>
+        <button id="farm-ritual-dirt-btn" class="w-full bg-[#8B5A2B] active:bg-[#5C3A21] text-white font-black py-4 sm:py-5 rounded-xl shadow-lg uppercase tracking-widest select-none touch-none text-sm transition-colors">MANTENER Y SOLTAR</button>
     </div>
 </div>
 
@@ -197,18 +198,18 @@
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 3: Riego Vital</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la zona azul</p>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha exactamente en el centro azul</p>
         
-        <div class="relative w-full h-10 sm:h-12 bg-red-100 rounded-full mb-8 sm:mb-10 shadow-inner border border-red-200 overflow-hidden">
+        <div class="relative w-full h-12 sm:h-14 bg-red-100 rounded-full mb-8 sm:mb-10 shadow-inner border border-red-200 overflow-hidden">
             <div id="farm-ritual-calib-safe" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500"></div>
             
-            <div class="absolute top-0 left-[20%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">20%</div>
-            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">50%</div>
-            <div class="absolute top-0 left-[80%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">80%</div>
+            <div class="absolute top-0 left-[20%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10 pointer-events-none">20%</div>
+            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10 pointer-events-none">50%</div>
+            <div class="absolute top-0 left-[80%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10 pointer-events-none">80%</div>
             
-            <div id="farm-ritual-calib-ptr" class="absolute top-0 h-full w-2 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
-                 <div class="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] sm:border-l-[8px] border-r-[6px] sm:border-r-[8px] border-t-[8px] sm:border-t-[10px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
-                 <div class="absolute -bottom-2 sm:-bottom-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] sm:border-l-[8px] border-r-[6px] sm:border-r-[8px] border-b-[8px] sm:border-b-[10px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
+            <div id="farm-ritual-calib-ptr" class="absolute top-0 h-full w-2.5 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
+                 <div class="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] sm:border-l-[10px] border-r-[8px] sm:border-r-[10px] border-t-[10px] sm:border-t-[12px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
+                 <div class="absolute -bottom-3 sm:-bottom-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] sm:border-l-[10px] border-r-[8px] sm:border-r-[10px] border-b-[10px] sm:border-b-[12px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
             </div>
         </div>
         
@@ -218,15 +219,21 @@
     </div>
 </div>
 
-<!-- ALERTA DEL RITUAL FARM -->
-<div id="farm-alert-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="window.farmApp.closeFarmAlert()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden animate-fade-in text-center p-6 md:p-8 border border-cg_gold">
-        <div class="w-14 h-14 md:w-16 md:h-16 bg-orange-50 rounded-full border-4 border-orange-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
-            <span class="text-2xl md:text-3xl" id="farm-alert-icon">⚠️</span>
+<!-- RESULTADO DEL RITUAL -->
+<div id="farm-ritual-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold overflow-hidden animate-fade-in">
+        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Calidad de Siembra</h3>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Análisis de tu técnica</p>
+        
+        <div class="relative w-32 h-32 mx-auto bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center shadow-inner mb-4">
+            <img id="farm-ritual-result-img" src="" class="w-20 h-20 object-contain drop-shadow-lg animate-bounce">
         </div>
-        <h3 class="text-lg md:text-xl font-black text-cg_navy mb-2 leading-tight" id="farm-alert-title">Aviso</h3>
-        <p class="text-xs md:text-sm text-gray-500 mb-6" id="farm-alert-msg">Mensaje.</p>
+        
+        <div class="text-5xl font-black text-cg_navy mb-2" id="farm-ritual-result-pct">100%</div>
+        <p class="text-sm font-bold text-gray-500 mb-6 px-4" id="farm-ritual-result-msg">¡Perfección absoluta!</p>
+        
+        <button onclick="window.farmApp.closeRitualResult()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md transition-transform active:scale-95">Completar Siembra</button>
     </div>
 </div>
 
@@ -1740,7 +1747,8 @@ window.farmApp = {
     },
 
     ritual: {
-        plotId: null, seedId: null, dirtInt: null, dirtPct: 0, waterReq: null, waterX: 0, waterDir: 1, speed: 1, minWater: 0, maxWater: 100
+        plotId: null, seedId: null, dirtInt: null, dirtPct: 0, dirtTarget: 50, waterReq: null, waterX: 0, waterDir: 1, speed: 1, minWater: 0, maxWater: 100,
+        p1: 0, p2: 0, p3: 0, isStressed: false, finalWater: 0
     },
 
     plantSeed(seedId) {
@@ -1753,32 +1761,46 @@ window.farmApp = {
     startPlantingRitual(plotId, seedId) {
         this.ritual.plotId = plotId;
         this.ritual.seedId = seedId;
+        this.ritual.p1 = 0; this.ritual.p2 = 0; this.ritual.p3 = 0;
         
         document.getElementById('farm-ritual-seed-modal').classList.remove('hidden');
         document.getElementById('farm-ritual-seed-modal').classList.add('flex');
         
         const seedEl = document.getElementById('farm-ritual-seed');
-        seedEl.innerHTML = `<img src="${this.state.inventory[seedId].image}" class="w-6 h-6 object-contain pointer-events-none">`;
+        seedEl.innerHTML = `<img src="${this.state.inventory[seedId].image}" class="w-8 h-8 object-contain pointer-events-none">`;
         seedEl.style.left = '10px'; seedEl.style.top = '10px';
+        
         let isDragging = false;
+        let hasMoved = false;
         const pot = document.getElementById('farm-ritual-pot');
         
         const move = (e) => {
             if(!isDragging) return;
+            hasMoved = true;
             e.preventDefault();
             const rect = pot.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            let x = clientX - rect.left - 20; 
-            let y = clientY - rect.top - 20;
-            x = Math.max(0, Math.min(x, rect.width - 40));
-            y = Math.max(0, Math.min(y, rect.height - 40));
+            let x = clientX - rect.left - 24; 
+            let y = clientY - rect.top - 24;
+            x = Math.max(0, Math.min(x, rect.width - 48));
+            y = Math.max(0, Math.min(y, rect.height - 48));
             seedEl.style.left = x + 'px';
             seedEl.style.top = y + 'px';
         };
         
-        const up = () => { isDragging = false; };
-        const down = () => { isDragging = true; };
+        const up = () => { 
+            if(isDragging && hasMoved) {
+                isDragging = false;
+                // Intento Único: Al soltar se bloquea y calcula
+                document.onmousemove = null; document.ontouchmove = null;
+                document.onmouseup = null; document.ontouchend = null;
+                this.farmRitualPhase1Done();
+            } else {
+                isDragging = false;
+            }
+        };
+        const down = () => { isDragging = true; hasMoved = false; };
         
         seedEl.onmousedown = down; seedEl.ontouchstart = down;
         document.onmousemove = move; document.ontouchmove = move;
@@ -1792,28 +1814,23 @@ window.farmApp = {
         
         const cx = rect.width / 2;
         const cy = rect.height / 2;
-        const sx = parseFloat(seedEl.style.left) + 20;
-        const sy = parseFloat(seedEl.style.top) + 20;
+        const sx = parseFloat(seedEl.style.left) + 24;
+        const sy = parseFloat(seedEl.style.top) + 24;
+        
         const dist = Math.sqrt(Math.pow(sx - cx, 2) + Math.pow(sy - cy, 2));
+        const maxDist = cx; 
         
-        let msg = '¡Semilla perfectamente centrada!';
-        let icon = '🎯';
-        if(dist > 5) {
-            msg = 'Semilla descentrada. Afectará la salud de la planta al nacer.';
-            icon = '⚠️';
-        }
+        this.ritual.p1 = Math.max(0, 100 - (dist / maxDist) * 100);
 
-        this.showFarmAlert('Calidad de Siembra', msg, icon);
         document.getElementById('farm-ritual-seed-modal').classList.replace('flex', 'hidden');
-        
-        setTimeout(() => { 
-            this.closeFarmAlert(); 
-            this.startFarmRitualPhase2(); 
-        }, 2000);
+        this.startFarmRitualPhase2(); 
     },
 
     startFarmRitualPhase2() {
         this.ritual.dirtPct = 0;
+        this.ritual.dirtTarget = Math.floor(Math.random() * 50) + 25; // Meta aleatoria (25% a 75%)
+        
+        document.getElementById('farm-ritual-dirt-target').style.bottom = `${this.ritual.dirtTarget}%`;
         document.getElementById('farm-ritual-dirt-fill').style.height = '0%';
         document.getElementById('farm-ritual-dirt-pct').innerText = '0%';
         
@@ -1821,7 +1838,10 @@ window.farmApp = {
         document.getElementById('farm-ritual-dirt-modal').classList.add('flex');
         
         const btn = document.getElementById('farm-ritual-dirt-btn');
+        let used = false;
+
         const down = (e) => {
+            if(used) return;
             e.preventDefault();
             if(this.ritual.dirtInt) clearInterval(this.ritual.dirtInt);
             this.ritual.dirtInt = setInterval(() => {
@@ -1831,29 +1851,28 @@ window.farmApp = {
                 document.getElementById('farm-ritual-dirt-pct').innerText = Math.floor(this.ritual.dirtPct) + '%';
             }, 30);
         };
-        const up = (e) => { e.preventDefault(); clearInterval(this.ritual.dirtInt); };
+        
+        const up = (e) => { 
+            if(used) return;
+            e.preventDefault(); 
+            clearInterval(this.ritual.dirtInt); 
+            used = true; // Intento único: Evalúa inmediatamente al soltar
+            this.farmRitualPhase2Done();
+        };
         
         btn.onmousedown = down; btn.ontouchstart = down;
         btn.onmouseup = up; btn.ontouchend = up; btn.onmouseleave = up;
     },
 
     farmRitualPhase2Done() {
-        const pct = this.ritual.dirtPct;
-        let msg = '¡Tierra perfecta (80-85%)!';
-        let icon = '🎯';
+        const targetCenter = this.ritual.dirtTarget + 3; // Centro de la franja del 6%
+        const diff = Math.abs(this.ritual.dirtPct - targetCenter);
         
-        if(pct < 80 || pct > 85) {
-            msg = `Cantidad subóptima (${Math.floor(pct)}%). La planta nacerá muy estresada.`;
-            icon = '⚠️';
-        }
+        // Si fallas por más del 20%, sacas 0%
+        this.ritual.p2 = Math.max(0, 100 - (diff / 20) * 100);
 
-        this.showFarmAlert('Cobertura de Tierra', msg, icon);
         document.getElementById('farm-ritual-dirt-modal').classList.replace('flex', 'hidden');
-        
-        setTimeout(() => { 
-            this.closeFarmAlert(); 
-            this.startFarmRitualPhase3(); 
-        }, 2000);
+        this.startFarmRitualPhase3(); 
     },
 
     startFarmRitualPhase3() {
@@ -1895,24 +1914,42 @@ window.farmApp = {
         cancelAnimationFrame(this.ritual.waterReq);
         this.ritual.waterReq = null;
         
-        const finalWater = Math.round(this.ritual.waterX);
-        const isSafe = finalWater >= this.ritual.minWater && finalWater <= this.ritual.maxWater;
+        this.ritual.finalWater = Math.round(this.ritual.waterX);
+        const centerSafe = (this.ritual.minWater + this.ritual.maxWater) / 2;
+        const radiusSafe = (this.ritual.maxWater - this.ritual.minWater) / 2;
+        const diff = Math.abs(this.ritual.finalWater - centerSafe);
         
-        let msg = '¡Riego inicial perfecto!';
-        let icon = '🎯';
-        
-        if(!isSafe) {
-            msg = `Riego fuera de zona segura (${finalWater}%). Riesgo inminente.`;
-            icon = '⚠️';
+        if(this.ritual.finalWater >= this.ritual.minWater && this.ritual.finalWater <= this.ritual.maxWater) {
+            this.ritual.p3 = Math.max(0, 100 - (diff / radiusSafe) * 50); // Mínimo 50% si cae dentro de la franja
+        } else {
+            this.ritual.p3 = 0;
         }
 
-        this.showFarmAlert('Riego Inicial', msg, icon);
         document.getElementById('farm-ritual-water-modal').classList.replace('flex', 'hidden');
+        this.showRitualResult();
+    },
+
+    showRitualResult() {
+        const totalPct = Math.round((this.ritual.p1 + this.ritual.p2 + this.ritual.p3) / 3);
+        this.ritual.isStressed = totalPct < 70 || this.ritual.p3 === 0;
         
-        setTimeout(() => {
-            this.closeFarmAlert();
-            this.finalizeFarmPlanting(finalWater, !isSafe);
-        }, 2000);
+        const modal = document.getElementById('farm-ritual-result-modal');
+        document.getElementById('farm-ritual-result-img').src = this.state.inventory[this.ritual.seedId].image;
+        document.getElementById('farm-ritual-result-pct').innerText = totalPct + '%';
+        
+        let msg = '';
+        if(totalPct >= 90) { msg = '¡Perfección absoluta! Crecimiento óptimo.'; document.getElementById('farm-ritual-result-pct').className = 'text-5xl font-black text-green-500 mb-2'; }
+        else if(totalPct >= 70) { msg = 'Buena técnica. La planta crecerá sana.'; document.getElementById('farm-ritual-result-pct').className = 'text-5xl font-black text-blue-500 mb-2'; }
+        else { msg = 'Siembra deficiente. La planta nacerá estresada (Plaga).'; document.getElementById('farm-ritual-result-pct').className = 'text-5xl font-black text-red-500 mb-2'; }
+        
+        document.getElementById('farm-ritual-result-msg').innerText = msg;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    },
+
+    closeRitualResult() {
+        document.getElementById('farm-ritual-result-modal').classList.replace('flex', 'hidden');
+        this.finalizeFarmPlanting(this.ritual.finalWater, this.ritual.isStressed);
     },
 
     finalizeFarmPlanting(initialWater, isStressed) {
@@ -1947,22 +1984,7 @@ window.farmApp = {
         this.saveState();
     },
 
-    showFarmAlert(title, msg, icon) {
-        const modal = document.getElementById('farm-alert-modal');
-        if(modal) {
-            document.getElementById('farm-alert-title').innerText = title;
-            document.getElementById('farm-alert-msg').innerText = msg;
-            document.getElementById('farm-alert-icon').innerText = icon;
-            modal.classList.replace('hidden', 'flex');
-        }
-    },
-
-    closeFarmAlert() {
-        const modal = document.getElementById('farm-alert-modal');
-        if(modal) modal.classList.replace('flex', 'hidden');
-    },
-
-    closeModals() { // Sobrescribe tu antigua closeModals
+    closeModals() {
         ['plot-modal', 'plant-modal', 'instructions-modal'].forEach(id => {
             const el = document.getElementById(id);
             if(el) {
