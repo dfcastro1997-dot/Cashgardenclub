@@ -168,27 +168,28 @@
 </div>
 
 <!-- MODAL BIENVENIDA TORNEO (EXPLICACIÓN DINÁMICA) -->
+<!-- MODAL BIENVENIDA TORNEO E INFO DE PLANTA -->
 <div id="tournament-welcome-modal" class="fixed inset-0 z-[160] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-cg_gold">
         <div class="bg-white p-6 text-center border-b border-gray-100 relative">
             <span class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy text-xl cursor-pointer font-bold" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')">✕</span>
             <h3 class="text-2xl font-black text-cg_navy tracking-tight">Información de la planta</h3>
-            <p class="text-cg_gold text-xs font-bold uppercase tracking-widest mt-1">Reglas Oficiales del Torneo</p>
+            <p id="welcome-plant-rules-title" class="text-cg_gold text-xs font-bold uppercase tracking-widest mt-1">Reglas Oficiales del Torneo</p>
         </div>
         <div class="p-6 space-y-4 bg-gray-50">
             <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                <img id="welcome-plant-img" src="" class="w-16 h-16 object-contain drop-shadow-md" alt="Planta Torneo">
+                <img id="welcome-plant-img" src="" class="w-16 h-16 object-contain drop-shadow-md" alt="Planta">
                 <div>
                     <h4 id="welcome-plant-name" class="font-black text-cg_navy text-lg leading-tight">Nombre Planta</h4>
-                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Inicias con <strong id="welcome-plant-score" class="text-cg_gold">0 Puntos Perfectos</strong>.</p>
+                    <p id="welcome-plant-desc" class="text-xs text-gray-500 mt-1 leading-relaxed">Inicias con <strong class="text-cg_gold">0 Puntos Perfectos</strong>.</p>
                 </div>
             </div>
             
             <div class="space-y-3">
                 <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex gap-3 shadow-sm">
                     <span class="text-xl">⚠️</span>
-                    <p class="text-xs text-red-800"><strong class="font-black">Rango de Supervivencia:</strong> <span id="welcome-plant-limit">0 a 100</span>. Fuera de ahí, perderás puntos continuamente.</p>
+                    <p class="text-xs text-red-800"><strong class="font-black">Rango de Supervivencia:</strong> <span id="welcome-plant-limit">0 a 100. Fuera de ahí, perderás puntos continuamente.</span></p>
                 </div>
                 
                 <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm">
@@ -196,7 +197,6 @@
                         <span class="text-xl">🎯</span>
                         <p class="text-xs text-blue-800"><strong class="font-black">Sistema de Riego Quirúrgico:</strong> Usa el calibrador oscilante de precisión. Detén la flecha en el momento exacto para inyectar el porcentaje de agua que le falta a tu planta.</p>
                     </div>
-                    <!-- Simulación Gráfica del Minijuego -->
                     <div class="w-full h-5 bg-gray-200 rounded-full flex overflow-hidden relative border border-blue-200 shadow-inner">
                         <div class="w-1/5 bg-red-200"></div>
                         <div class="w-1/5 bg-blue-200"></div>
@@ -209,7 +209,7 @@
                 
                 <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex gap-3 shadow-sm">
                     <span class="text-xl">💀</span>
-                    <p class="text-xs text-orange-800"><strong class="font-black">Riesgo de Ahogo:</strong> Si tu inyección de agua supera el límite máximo, serás penalizado inmediatamente con <strong id="welcome-plant-penalty">-0 Puntos</strong>.</p>
+                    <p id="welcome-plant-penalty" class="text-xs text-orange-800"><strong class="font-black">Riesgo de Daño:</strong> Si tu inyección de agua supera el límite máximo, serás penalizado inmediatamente.</p>
                 </div>
             </div>
             <button onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden')" class="w-full bg-cg_gold hover:bg-yellow-600 text-white font-black py-4 rounded-xl transition-all shadow-sm uppercase tracking-widest text-sm mt-3">
@@ -1018,18 +1018,43 @@ window.farmApp = {
         }
     },
 
-    // -----------------------------------------------------
-    // NUEVAS FUNCIONES DE TORNEO Y MINIJUEGO
-    // -----------------------------------------------------
-    showTournamentWelcome() {
-        const plot = this.state.plots[5];
-        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+    showPlantInfoModal(plotId) {
+        const plot = this.state.plots[plotId];
+        let name, img, scoreText, limitText, penaltyText, rulesTitle;
+
+        if (plotId === 5 && plot.status === 'tournament') {
+            const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
+            name = conf.name;
+            img = conf.image;
+            scoreText = `Inicias con <strong class="text-cg_gold">${conf.startScore.toLocaleString()} Puntos Perfectos</strong>.`;
+            limitText = `Mantén el agua entre ${conf.minWater}% y ${conf.maxWater}%. Fuera de ahí, perderás puntos continuamente.`;
+            penaltyText = `Si tu inyección de agua supera el límite máximo, serás penalizado inmediatamente con <strong class="text-red-600">-${conf.overwaterPenalty} Puntos</strong>.`;
+            rulesTitle = "REGLAS OFICIALES DEL TORNEO";
+        } else if (plot.status === 'planted' && plot.plant) {
+            const PLANT_RULES = {
+                'flower_wheat': { range: '60% y 100%', penalty: 'Inundación inmediata (Plaga automática)' },
+                'flower_small': { range: '30% y 90%', penalty: 'Pudrición (Pausa el crecimiento)' },
+                'flower_cactus': { range: '20% y 80%', penalty: 'Pudrición instantánea (Riesgo de contagio)' },
+                'flower_big': { range: '50% y 70%', penalty: 'Pudrición + 30 Minutos de castigo extra' }
+            };
+            const rule = PLANT_RULES[plot.plant.id] || { range: '0% y 100%', penalty: 'Ninguno' };
+            name = plot.plant.name;
+            img = plot.plant.icon; 
+            
+            scoreText = `<strong class="text-cg_blue">Planta de Cultivo Estándar</strong>. Presta atención al riego.`;
+            limitText = `Mantén el agua estrictamente entre ${rule.range}.`;
+            penaltyText = `Si excedes el rango, sufrirás: <strong class="text-red-600">${rule.penalty}</strong>.`;
+            rulesTitle = "INFORMACIÓN DE LA PLANTA";
+        } else {
+            return;
+        }
         
-        document.getElementById('welcome-plant-img').src = conf.image;
-        document.getElementById('welcome-plant-name').innerText = conf.name;
-        document.getElementById('welcome-plant-score').innerText = `${conf.startScore.toLocaleString()} Puntos Perfectos`;
-        document.getElementById('welcome-plant-limit').innerText = `Mantén el agua entre ${conf.minWater}% y ${conf.maxWater}%`;
-        document.getElementById('welcome-plant-penalty').innerText = `-${conf.overwaterPenalty} Puntos`;
+        document.getElementById('welcome-plant-img').src = img;
+        document.getElementById('welcome-plant-name').innerText = name;
+        document.getElementById('welcome-plant-desc').innerHTML = scoreText;
+        document.getElementById('welcome-plant-limit').innerText = limitText;
+        document.getElementById('welcome-plant-penalty').innerHTML = `<strong class="font-black">Riesgo de Daño:</strong> ${penaltyText}`;
+        document.getElementById('welcome-plant-rules-title').innerText = rulesTitle;
         
         const modal = document.getElementById('tournament-welcome-modal');
         modal.classList.remove('hidden');
@@ -1214,12 +1239,10 @@ window.farmApp = {
         this.renderPlots(); 
 
         const plot = this.state.plots[id];
-        const infoPanel = document.getElementById('selected-plot-info');
-        if(!infoPanel) return;
-
         const inv = this.state.inventory;
         const isAutoWatering = this.state.autoWaterEndTime > Date.now();
 
+        // Desactivamos herramientas visualmente por defecto
         ['pot_small', 'pot_big', 'water', 'scarecrow'].forEach(toolType => {
             const el = document.getElementById(`inv-item-${toolType}`);
             if (el) {
@@ -1233,76 +1256,20 @@ window.farmApp = {
         });
 
         if (plot.status === 'empty') {
-            infoPanel.className = 'bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-center';
-            infoPanel.innerHTML = `
-                <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-2 border border-gray-200">
-                    <img src="${this.state.images.terrain_empty}" class="w-8 h-8 object-contain">
-                </div>
-                <p class="text-sm font-black text-carbon">Terreno Vacío</p>
-                <p class="text-xs text-gray-500 mt-1">Coloca una maceta desde tu inventario.</p>`;
-            
             if(inv.tool_pot_small && inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
             if(inv.tool_pot_big && inv.tool_pot_big.qty > 0) this.enableToolBtn('pot_big');
-
         } else if (plot.status === 'pot') {
-            const potImg = plot.pot === 'small' ? inv.tool_pot_small.image : inv.tool_pot_big.image;
-            const potName = plot.pot === 'small' ? 'Maceta Pequeña' : 'Maceta Grande';
-            infoPanel.className = 'bg-white border border-gray-100 shadow-sm rounded-xl p-4 text-center';
-            infoPanel.innerHTML = `
-                <img src="${potImg}" class="w-12 h-12 object-contain mx-auto mb-2 drop-shadow-sm">
-                <p class="text-sm font-black text-carbon">${potName}</p>
-                <p class="text-xs text-gray-500 mt-1">Haz clic en la parcela para sembrar.</p>`;
-        
+            // Se mantiene igual (esperando siembra)
         } else if (plot.status === 'planted') {
-            infoPanel.className = 'bg-white border border-gray-100 rounded-xl p-4 text-left shadow-sm';
             
-            const displayWater = isAutoWatering ? 100 : plot.water;
-            const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
-            const currentPlantImg = plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big;
-
-            // NUEVO: Diccionario de reglas de riego para mostrar en el panel
-            const PLANT_RULES = {
-                'flower_wheat': { range: '60% - 100%', speed: 'Ultra Rápida', penalty: 'Inundación inmediata' },
-                'flower_small': { range: '30% - 90%', speed: 'Moderada', penalty: 'Pudrición (Pausa)' },
-                'flower_cactus': { range: '20% - 80%', speed: 'Desafiante', penalty: 'Pudrición instantánea' },
-                'flower_big': { range: '50% - 70%', speed: 'Lenta', penalty: 'Pudrición + 30m extra' }
-            };
-            const rule = PLANT_RULES[plot.plant.id] || { range: '0% - 100%', speed: 'Normal', penalty: 'Ninguna' };
-
-            infoPanel.innerHTML = `
-                <div class="flex items-center gap-4 mb-3">
-                    <div class="relative w-14 h-14 bg-gray-50 rounded-xl border border-gray-200 flex shrink-0 items-center justify-center overflow-hidden">
-                        <img src="${currentTerrain}" class="absolute w-14 h-14 object-contain mt-2">
-                        <img src="${currentPlantImg}" class="absolute w-10 h-10 object-contain z-10" style="transform: translateY(-20%);">
-                    </div>
-                    <div>
-                        <p class="text-sm font-black text-carbon leading-tight mb-1">${plot.plant.name}</p>
-                        <div class="flex flex-col gap-1 items-start">
-                            ${displayWater <= 0 
-                                ? `<span class="text-[9px] font-bold text-red-600 uppercase bg-red-50 border border-red-200 px-2 py-0.5 rounded flex items-center gap-1"><span class="text-[10px]">🚫</span> Poca Agua</span>`
-                                : `<span class="text-[9px] font-bold text-cg_blue uppercase bg-white border border-gray-200 px-2 py-0.5 rounded">Hidratada</span>`}
-                            
-                            ${isAutoWatering 
-                                ? `<span class="text-[9px] font-bold text-blue-600 uppercase bg-blue-50 border border-blue-200 px-2 py-0.5 rounded flex items-center gap-1">AUTO-RIEGO ACTIVO</span>`
-                                : (plot.scarecrowEndTime > Date.now() ? `<span class="text-[9px] font-bold text-gray-600 uppercase bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex items-center gap-1">Protegida</span>` : ``)}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- NUEVO: Tarjeta de información de riego -->
-                <div class="bg-blue-50/50 rounded-lg p-2.5 border border-blue-100 text-[10px] space-y-1.5 shadow-inner">
-                    <div class="flex justify-between items-center"><span class="text-blue-800 font-bold flex items-center gap-1">🎯 Rango:</span> <span class="font-black text-cg_navy">${rule.range}</span></div>
-                    <div class="flex justify-between items-center"><span class="text-blue-800 font-bold flex items-center gap-1">⚡ Velocidad:</span> <span class="font-black text-cg_navy">${rule.speed}</span></div>
-                    <div class="flex justify-between items-start mt-1 pt-1 border-t border-blue-100"><span class="text-red-500 font-bold flex items-center gap-1">💀 Riesgo:</span> <span class="font-black text-red-600 text-right max-w-[100px] leading-tight">${rule.penalty}</span></div>
-                </div>
-            `;
+            // ¡AQUÍ ESTÁ LA MAGIA! Despliega el modal de info al hacer click en cualquier planta sembrada.
+            this.showPlantInfoModal(id);
             
-            // No echar agua si hay cuervo
+            // Validaciones para activar botones del inventario
             if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow) {
                 this.enableToolBtn('water');
             }
             
-            // BLOQUEO ESTRATÉGICO: El espantapájaros NO se puede usar si el usuario ya está siendo castigado
             if(!isAutoWatering && inv.tool_scarecrow && inv.tool_scarecrow.qty > 0 && !plot.isReady && plot.crowLeavingAt <= Date.now()) {
                 this.enableToolBtn('scarecrow');
             }
