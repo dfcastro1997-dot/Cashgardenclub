@@ -1781,9 +1781,11 @@ window.farmApp = {
 
         this.ritual.seedT = 0;
         
+        // CORRECCIÓN: Movimiento más lento en PC (pantallas grandes) y estandarizado en móvil
+        const animationSpeed = window.innerWidth > 1024 ? 0.012 : 0.035;
+        
         const animateSeed = () => {
-            this.ritual.seedT += 0.035; // Velocidad del movimiento caótico
-            // Movimiento complejo (Curva de Lissajous) para dificultar acertar al centro
+            this.ritual.seedT += animationSpeed; 
             const x = cx + Math.sin(this.ritual.seedT * 2.1) * Math.cos(this.ritual.seedT * 0.9) * maxRadius;
             const y = cy + Math.sin(this.ritual.seedT * 1.7) * maxRadius;
             
@@ -1808,8 +1810,8 @@ window.farmApp = {
         
         const cx = rect.width / 2;
         const cy = rect.height / 2;
-        const sx = parseFloat(seedEl.style.left);
-        const sy = parseFloat(seedEl.style.top);
+        const sx = parseFloat(seedEl.style.left) + 24;
+        const sy = parseFloat(seedEl.style.top) + 24;
         
         // Cálculo del porcentaje de perfección
         const dist = Math.sqrt(Math.pow(sx - cx, 2) + Math.pow(sy - cy, 2));
@@ -2015,6 +2017,26 @@ window.farmApp = {
         this.updateInventoryUI();
         this.selectPlot(plotId);
         this.saveState();
+    },
+
+    // CORRECCIÓN: Se agregan las funciones faltantes para la UI de Alertas
+    showFarmAlert(title, msg, icon) {
+        const modal = document.getElementById('farm-alert-modal');
+        if(modal) {
+            document.getElementById('farm-alert-title').innerText = title;
+            document.getElementById('farm-alert-msg').innerText = msg;
+            document.getElementById('farm-alert-icon').innerText = icon;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    },
+
+    closeFarmAlert() {
+        const modal = document.getElementById('farm-alert-modal');
+        if(modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
     },
 
     closeModals() {
