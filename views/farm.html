@@ -835,7 +835,7 @@ window.farmApp = {
                         <span class="bg-gray-100 px-2 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-200 shadow-sm">Terreno Vacío</span>
                     </div>
                 `;
-                el.onclick = () => this.selectPlot(plot.id);
+                el.onclick = () => this.selectPlot(plot.id, true);
 
             } else if (plot.status === 'pot') {
                 el.className = `bg-white rounded-2xl border-2 border-gray-200 h-56 sm:h-64 relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm hover:shadow-md'}`;
@@ -864,7 +864,7 @@ window.farmApp = {
                         </button>
                     </div>
                 `;
-                el.onclick = () => this.selectPlot(plot.id);
+                el.onclick = () => this.selectPlot(plot.id, true);
 
             } else if (plot.status === 'planted') {
                 const displayWater = isAutoWatering ? 100 : Math.floor(plot.water);
@@ -993,7 +993,7 @@ window.farmApp = {
                         </div>
                     </div>
                 `;
-                el.onclick = () => this.selectPlot(plot.id);
+                el.onclick = () => this.selectPlot(plot.id, true);
             }
             grid.appendChild(el);
         });
@@ -1316,7 +1316,7 @@ window.farmApp = {
         }, 2600);
     },
 
-    selectPlot(id) {
+    selectPlot(id, userClicked = false) {
         this.state.selectedPlotId = id;
         this.renderPlots(); 
 
@@ -1350,8 +1350,8 @@ window.farmApp = {
             }
         }
         
-        // Despliega automáticamente las herramientas en móviles al seleccionar una parcela
-        if (window.innerWidth < 1024) {
+        // Despliega automáticamente las herramientas en móviles SOLO si el usuario tocó la parcela
+        if (userClicked && window.innerWidth < 1024) {
             this.toggleToolsMobile(true);
         }
     },
