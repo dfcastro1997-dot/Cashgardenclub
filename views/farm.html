@@ -603,11 +603,17 @@ window.farmApp = {
         const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
-            fetch('/api/save_state', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user.username, game_state: stateToSave })
-            }).catch(e => console.error("Error guardando progreso:", e));
+            
+            // FIX: Implementar un "Debounce" para evitar cruce de peticiones al hacer acciones rápidas
+            if (this.saveTimeout) clearTimeout(this.saveTimeout);
+            
+            this.saveTimeout = setTimeout(() => {
+                fetch('/api/save_state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user.username, game_state: stateToSave })
+                }).catch(e => console.error("Error guardando progreso:", e));
+            }, 500); // 500ms de retraso seguro unificando las peticiones
         }
     },
 
@@ -619,7 +625,6 @@ window.farmApp = {
         if (userStr) {
             const user = JSON.parse(userStr);
             
-            // Mostrar botón Admin solo si es DamianCastro, asegurando que quede oculto en celulares
             if (user.username === 'DamianCastro') {
                 const adminBtn = document.getElementById('admin-dev-btn');
                 if (adminBtn) {
@@ -635,23 +640,26 @@ window.farmApp = {
                         try {
                             const s = JSON.parse(data.user.game_state);
                             
-                            this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
-                            this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
-                            this.state.plots = s.plots ?? this.state.plots;
-                            
-                            if (s.inventory) {
-                                Object.keys(s.inventory).forEach(k => {
-                                    if (this.state.inventory[k]) {
-                                        this.state.inventory[k].qty = s.inventory[k].qty || 0;
-                                    }
-                                });
+                            // FIX CRÍTICO: Solo aceptar los datos del servidor si son más recientes que el local
+                            if (!this.state.lastTick || (s.lastTick && s.lastTick >= this.state.lastTick)) {
+                                this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
+                                this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
+                                this.state.plots = s.plots ?? this.state.plots;
+                                
+                                if (s.inventory) {
+                                    Object.keys(s.inventory).forEach(k => {
+                                        if (this.state.inventory[k]) {
+                                            this.state.inventory[k].qty = s.inventory[k].qty || 0;
+                                        }
+                                    });
+                                }
+                                
+                                this.state.lastTick = s.lastTick ?? Date.now();
+                                localStorage.setItem('cg_farm_state', JSON.stringify(this.state));
+                                this.updateUI(); // Forzar actualización visual solo si el servidor tenía razón
                             }
-                            
-                            this.state.lastTick = s.lastTick ?? Date.now();
-                            localStorage.setItem('cg_farm_state', JSON.stringify(this.state));
                         } catch(e) { console.error("Error parseando game_state", e); }
                     }
-                    this.updateUI();
                 })
                 .catch(e => { console.error(e); });
         }
