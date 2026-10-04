@@ -170,6 +170,80 @@
     </div>
 </div>
 
+
+
+
+<!-- ========================================== -->
+<!-- MINIJUEGO RITUAL DE SIEMBRA (3 FASES)      -->
+<!-- ========================================== -->
+
+<!-- FASE 1: SEMILLA -->
+<div id="ritual-seed-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
+        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 1: Centrado</h3>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Arrastra la semilla al centro exacto</p>
+        
+        <div class="relative w-40 h-40 sm:w-48 sm:h-48 mx-auto bg-[#8B5A2B] rounded-full border-8 border-[#5C3A21] overflow-hidden mb-6 shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)] touch-none" id="ritual-pot">
+            <!-- Diana visual -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/50"></div>
+                <div class="absolute w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white shadow-[0_0_8px_white]"></div>
+            </div>
+            <!-- Semilla Draggable -->
+            <div id="ritual-seed" class="absolute w-10 h-10 bg-[#4CAF50] rounded-full border-2 border-green-200 shadow-lg cursor-grab flex items-center justify-center text-xl touch-none transition-transform active:scale-110 z-20" style="left: 10px; top: 10px;">🌱</div>
+        </div>
+        
+        <button onclick="ritualPhase1Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md active:scale-95 transition-all">Plantar Semilla</button>
+    </div>
+</div>
+
+<!-- FASE 2: TIERRA -->
+<div id="ritual-dirt-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
+        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 2: Cobertura</h3>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-4 font-bold uppercase tracking-widest">Suelta el botón en la zona verde (80-85%)</p>
+        
+        <div class="relative w-12 sm:w-14 h-40 sm:h-48 mx-auto bg-gray-100 rounded-full mb-4 border border-gray-300 overflow-hidden flex items-end shadow-inner">
+            <div id="ritual-dirt-fill" class="w-full bg-[#5C3A21] transition-all duration-75" style="height: 0%;"></div>
+            <!-- Zona verde -->
+            <div class="absolute w-full h-[5%] bg-green-400/80 bottom-[80%] border-y-2 border-green-600 shadow-[0_0_10px_rgba(74,222,128,0.8)] z-10 pointer-events-none"></div>
+        </div>
+        <p id="ritual-dirt-pct" class="text-2xl font-black text-cg_navy mb-6">0%</p>
+        
+        <button id="ritual-dirt-btn" class="w-full bg-[#8B5A2B] active:bg-[#5C3A21] text-white font-black py-4 sm:py-5 rounded-xl shadow-lg uppercase tracking-widest select-none touch-none text-sm transition-colors">MANTENER PARA TIERRA</button>
+        <button onclick="ritualPhase2Done()" class="w-full mt-3 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl uppercase tracking-widest text-xs transition-colors">Confirmar Nivel</button>
+    </div>
+</div>
+
+<!-- FASE 3: PRIMER RIEGO -->
+<div id="ritual-water-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue">
+        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 3: Riego Vital</h3>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la zona azul</p>
+        
+        <div class="relative w-full h-10 sm:h-12 bg-red-100 rounded-full mb-8 sm:mb-10 shadow-inner border border-red-200 overflow-hidden">
+            <div id="ritual-calib-safe" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500"></div>
+            
+            <div class="absolute top-0 left-[20%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">20%</div>
+            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">50%</div>
+            <div class="absolute top-0 left-[80%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">80%</div>
+            
+            <div id="ritual-calib-ptr" class="absolute top-0 h-full w-2 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
+                 <div class="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] sm:border-l-[8px] border-r-[6px] sm:border-r-[8px] border-t-[8px] sm:border-t-[10px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
+                 <div class="absolute -bottom-2 sm:-bottom-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] sm:border-l-[8px] border-r-[6px] sm:border-r-[8px] border-b-[8px] sm:border-b-[10px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
+            </div>
+        </div>
+        
+        <button onclick="ritualPhase3Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-lg py-4 sm:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest">
+            FIJAR Y ENTRAR A LA ARENA
+        </button>
+    </div>
+</div>
+
+
 <!-- VENTANA MODAL DE ALERTA/ERROR -->
 <div id="alert-modal" class="fixed inset-0 z-[400] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeAlertModal()"></div>
@@ -187,13 +261,14 @@
 
 <script>
     const TOURNAMENT_INFO = {
-        1: { name: 'El Bonsái del Maestro', img: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Riego calibrado normal. Si superas el 100% de agua por accidente, se te restará -500 Puntos por ahogamiento.' },
-        3: { name: 'Orquídea Lunar', img: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durHours: 6, dur: '6 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Velocidad de flecha moderada. Penalidad de ahogo (>100%) masiva de -1,000 Puntos. Rango seguro: 20% a 100%.' },
-        4: { name: 'Rosa de Ceniza', img: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durHours: 8, dur: '8 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Fuera del rango 30% a 80%', rules: 'Velocidad de flecha estándar. Penalidad de -3,000 pts por salir del rango superior (>80%). Rango seguro estricto y difícil.' },
-        5: { name: 'Loto de Cristal', img: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Fuera de la franja 40% a 60%', rules: 'Rango de Oro estricto: 40% a 60%. Pierdes 50 pts/min fuera de él. Flecha un poco más lenta, requiere administrar dosis minúsculas de agua con paciencia.' }
+        1: { name: 'El Bonsái del Maestro', img: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Riego calibrado normal. Si superas el 100% de agua por accidente, se te restará -500 Puntos por ahogamiento.', minWater: 20, maxWater: 100, speed: 1.0, overwaterPenalty: 500 },
+        3: { name: 'Orquídea Lunar', img: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durHours: 6, dur: '6 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Velocidad de flecha moderada. Penalidad de ahogo (>100%) masiva de -1,000 Puntos. Rango seguro: 20% a 100%.', minWater: 20, maxWater: 100, speed: 1.2, overwaterPenalty: 1000 },
+        4: { name: 'Rosa de Ceniza', img: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durHours: 8, dur: '8 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Fuera del rango 30% a 80%', rules: 'Velocidad de flecha estándar. Penalidad de -3,000 pts por salir del rango superior (>80%). Rango seguro estricto y difícil.', minWater: 30, maxWater: 80, speed: 1.5, overwaterPenalty: 3000 },
+        5: { name: 'Loto de Cristal', img: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Fuera de la franja 40% a 60%', rules: 'Rango de Oro estricto: 40% a 60%. Pierdes 50 pts/min fuera de él. Flecha un poco más lenta, requiere administrar dosis minúsculas de agua.', minWater: 40, maxWater: 60, speed: 0.8, overwaterPenalty: 5000 }
     };
 
     let pendingTournament = null;
+    let ritualState = { score: 10000, dirtInt: null, dirtPct: 0, waterReq: null, waterX: 0, waterDir: 1 };
 
     function showAlertModal(title, msg, icon = '⚠️') {
         document.getElementById('alert-modal-title').innerText = title;
@@ -288,7 +363,162 @@
         pendingTournament = null;
     }
 
-    async function confirmJoinTournament() {
+    function confirmJoinTournament() {
+        if (!pendingTournament) return;
+        closePreTournamentModal();
+        
+        // Iniciar estado del ritual
+        const info = TOURNAMENT_INFO[pendingTournament.id];
+        ritualState.score = info.scoreNum;
+        
+        // ================= FASE 1: SEMILLA =================
+        document.getElementById('ritual-seed-modal').classList.remove('hidden');
+        document.getElementById('ritual-seed-modal').classList.add('flex');
+        
+        const seed = document.getElementById('ritual-seed');
+        seed.style.left = '10px'; seed.style.top = '10px';
+        let isDragging = false;
+        const pot = document.getElementById('ritual-pot');
+        
+        const move = (e) => {
+            if(!isDragging) return;
+            e.preventDefault();
+            const rect = pot.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            let x = clientX - rect.left - 20; // 20 = mitad ancho semilla
+            let y = clientY - rect.top - 20;
+            x = Math.max(0, Math.min(x, rect.width - 40));
+            y = Math.max(0, Math.min(y, rect.height - 40));
+            seed.style.left = x + 'px';
+            seed.style.top = y + 'px';
+        };
+        
+        const up = () => { isDragging = false; };
+        const down = () => { isDragging = true; };
+        
+        seed.onmousedown = down; seed.ontouchstart = down;
+        document.onmousemove = move; document.ontouchmove = move;
+        document.onmouseup = up; document.ontouchend = up;
+    }
+
+    function ritualPhase1Done() {
+        const pot = document.getElementById('ritual-pot');
+        const seed = document.getElementById('ritual-seed');
+        const rect = pot.getBoundingClientRect();
+        
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const sx = parseFloat(seed.style.left) + 20;
+        const sy = parseFloat(seed.style.top) + 20;
+        const dist = Math.sqrt(Math.pow(sx - cx, 2) + Math.pow(sy - cy, 2));
+        
+        if(dist > 5) {
+            const penalty = Math.min(300, Math.floor(dist * 3));
+            ritualState.score -= penalty;
+            showAlertModal('Calidad de Siembra', `Semilla descentrada. Penalización: -${penalty} pts`, '⚠️');
+        } else {
+            showAlertModal('Calidad de Siembra', '¡Semilla perfectamente centrada! +0 penalización.', '🎯');
+        }
+
+        document.getElementById('ritual-seed-modal').classList.replace('flex', 'hidden');
+        setTimeout(() => { closeAlertModal(); startRitualPhase2(); }, 2000);
+    }
+
+    // ================= FASE 2: TIERRA =================
+    function startRitualPhase2() {
+        ritualState.dirtPct = 0;
+        document.getElementById('ritual-dirt-fill').style.height = '0%';
+        document.getElementById('ritual-dirt-pct').innerText = '0%';
+        
+        document.getElementById('ritual-dirt-modal').classList.remove('hidden');
+        document.getElementById('ritual-dirt-modal').classList.add('flex');
+        
+        const btn = document.getElementById('ritual-dirt-btn');
+        const down = (e) => {
+            e.preventDefault();
+            if(ritualState.dirtInt) clearInterval(ritualState.dirtInt);
+            ritualState.dirtInt = setInterval(() => {
+                ritualState.dirtPct += 1.5;
+                if(ritualState.dirtPct > 100) ritualState.dirtPct = 100;
+                document.getElementById('ritual-dirt-fill').style.height = ritualState.dirtPct + '%';
+                document.getElementById('ritual-dirt-pct').innerText = Math.floor(ritualState.dirtPct) + '%';
+            }, 30);
+        };
+        const up = (e) => { e.preventDefault(); clearInterval(ritualState.dirtInt); };
+        
+        btn.onmousedown = down; btn.ontouchstart = down;
+        btn.onmouseup = up; btn.ontouchend = up; btn.onmouseleave = up;
+    }
+
+    function ritualPhase2Done() {
+        const pct = ritualState.dirtPct;
+        let penalty = 0;
+        if(pct < 80) penalty = Math.floor((80 - pct) * 15);
+        else if(pct > 85) penalty = Math.floor((pct - 85) * 15);
+        
+        if(penalty > 0) {
+            ritualState.score -= penalty;
+            showAlertModal('Cobertura de Tierra', `Cantidad subóptima (${Math.floor(pct)}%). Penalización: -${penalty} pts`, '⚠️');
+        } else {
+            showAlertModal('Cobertura de Tierra', '¡Tierra perfecta (80-85%)! +0 penalización.', '🎯');
+        }
+
+        document.getElementById('ritual-dirt-modal').classList.replace('flex', 'hidden');
+        setTimeout(() => { closeAlertModal(); startRitualPhase3(); }, 2000);
+    }
+
+    // ================= FASE 3: AGUA =================
+    function startRitualPhase3() {
+        const info = TOURNAMENT_INFO[pendingTournament.id];
+        const safeZone = document.getElementById('ritual-calib-safe');
+        safeZone.style.left = `${info.minWater}%`;
+        safeZone.style.width = `${info.maxWater - info.minWater}%`;
+        
+        ritualState.waterX = 0;
+        ritualState.waterDir = 1;
+        
+        document.getElementById('ritual-water-modal').classList.remove('hidden');
+        document.getElementById('ritual-water-modal').classList.add('flex');
+        
+        const ptr = document.getElementById('ritual-calib-ptr');
+        const tick = () => {
+            if(!ritualState.waterReq) return;
+            ritualState.waterX += ritualState.waterDir * info.speed;
+            if(ritualState.waterX > 100) { ritualState.waterX = 100; ritualState.waterDir = -1; }
+            if(ritualState.waterX < 0) { ritualState.waterX = 0; ritualState.waterDir = 1; }
+            ptr.style.left = ritualState.waterX + '%';
+            ritualState.waterReq = requestAnimationFrame(tick);
+        };
+        ritualState.waterReq = requestAnimationFrame(tick);
+    }
+
+    async function ritualPhase3Done() {
+        cancelAnimationFrame(ritualState.waterReq);
+        ritualState.waterReq = null;
+        
+        const info = TOURNAMENT_INFO[pendingTournament.id];
+        const finalWater = Math.round(ritualState.waterX);
+        
+        let penalty = 0;
+        if(finalWater < info.minWater || finalWater > info.maxWater) {
+            penalty = info.overwaterPenalty;
+            ritualState.score -= penalty;
+            showAlertModal('Riego Inicial', `Riego fuera de zona segura (${finalWater}%). Penalización masiva: -${penalty} pts`, '💀');
+        } else {
+            showAlertModal('Riego Inicial', '¡Riego inicial perfecto! +0 penalización.', '🎯');
+        }
+
+        document.getElementById('ritual-water-modal').classList.replace('flex', 'hidden');
+        
+        setTimeout(async () => {
+            closeAlertModal();
+            await finalizeTournamentAPI(finalWater);
+        }, 2000);
+    }
+
+    // ================= ENVÍO A BASE DE DATOS =================
+    async function finalizeTournamentAPI(initialWater) {
         if (!pendingTournament) return;
         const t_id = pendingTournament.id;
         const fee_cop = pendingTournament.fee;
@@ -296,10 +526,11 @@
         const username = document.getElementById('profile-name').innerText;
         if(!username || username === 'Usuario') return;
         
-        const btn = document.getElementById('btn-confirm-tournament');
-        const originalText = btn.innerText;
-        btn.innerHTML = `<div class="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Procesando...`;
-        btn.disabled = true;
+        const finalScore = Math.max(0, ritualState.score);
+        
+        showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción en la Base de Datos...', '⏳');
+        const alertBtn = document.querySelector('#alert-modal button');
+        if(alertBtn) alertBtn.classList.add('hidden');
         
         try {
             const res = await fetch('/api/tournaments/join', {
@@ -309,9 +540,10 @@
             });
             const data = await res.json();
             
+            closeAlertModal();
+            if(alertBtn) alertBtn.classList.remove('hidden');
+            
             if (res.ok) {
-                closePreTournamentModal();
-                
                 document.getElementById('global-balance').innerText = "$" + data.new_balance_cop.toLocaleString();
                 
                 const injectTournament = (state) => {
@@ -320,8 +552,8 @@
                          const ap = state.plots[5];
                          ap.status = 'tournament';
                          ap.tournamentId = t_id;
-                         ap.score = info.scoreNum;
-                         ap.water = 50;
+                         ap.score = finalScore;   // SE APLICA EL PUNTAJE DEL RITUAL
+                         ap.water = initialWater; // SE APLICA EL AGUA DEL RITUAL
                          ap.tournamentEndTime = Date.now() + (info.durHours * 3600000);
                          ap.isReady = false;
                     }
@@ -346,10 +578,9 @@
                 showAlertModal('No se pudo inscribir', data.error, '❌');
             }
         } catch(e) {
-            showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor de la Arena.', '📡');
-        } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
+            closeAlertModal();
+            if(alertBtn) alertBtn.classList.remove('hidden');
+            showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor.', '📡');
         }
     }
 
