@@ -31,18 +31,25 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CDD2D6; border-radius: 10px; }
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Asegurar que en iOS la barra inferior no quede tapada por la barra del sistema */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
     </style>
 </head>
-<body class="bg-bone text-cg_navy h-screen overflow-hidden relative">
+<body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
 
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-bone transition-opacity duration-500">
-        <div class="bg-white rounded-2xl shadow-soft w-full max-w-md p-10 relative z-10 border border-gray-100">
+    <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center bg-bone transition-opacity duration-500 px-4">
+        <div class="bg-white rounded-3xl shadow-soft w-full max-w-md p-6 sm:p-10 relative z-10 border border-gray-100">
             <div class="flex flex-col items-center justify-center mb-8 mt-2">
-                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-32 w-auto mb-4 drop-shadow-lg">
+                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-24 sm:h-32 w-auto mb-4 drop-shadow-lg">
             </div>
             
-            <form id="auth-form" class="space-y-6">
+            <form id="auth-form" class="space-y-5 sm:space-y-6">
                 <div class="text-center mb-4">
                     <p class="text-xs text-gray-500 mt-2 font-medium">Atención: Las plantas requieren gestión constante de tiempo real.</p>
                 </div>
@@ -56,7 +63,7 @@
                     <input type="password" id="password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-medium text-cg_navy" required>
                 </div>
                 
-                <!-- NUEVO: AGE-GATE LEGAL -->
+                <!-- AGE-GATE LEGAL -->
                 <div id="age-gate-container" class="hidden flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                     <input type="checkbox" id="age-gate" class="mt-1 w-4 h-4 text-cg_blue rounded border-gray-300 focus:ring-cg_blue">
                     <label for="age-gate" class="text-[10px] text-gray-500 font-medium leading-tight">
@@ -81,47 +88,49 @@
     </div>
 
     <!-- MAIN APP -->
-    <div id="dashboard-screen" class="hidden h-screen w-full flex-col bg-bone">
+    <div id="dashboard-screen" class="hidden h-screen w-full flex-col bg-bone relative">
         <!-- TOP NAVBAR -->
-        <header class="bg-white border-b border-gray-100 shadow-sm z-20 relative">
-            <div class="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-10 w-auto">
+        <header class="bg-white border-b border-gray-100 shadow-sm z-20 relative shrink-0">
+            <div class="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 shrink-0">
+                    <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-8 sm:h-10 w-auto">
                 </div>
                 
+                <!-- Desktop Nav -->
                 <nav class="hidden lg:flex items-center gap-2 h-full">
-                    <button onclick="loadView('farm', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
+                    <button onclick="loadView('farm', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
                         <span>Granja</span>
                     </button>
-                    <button onclick="loadView('shop', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                    <button onclick="loadView('shop', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Mercado</span>
                     </button>
-                    <button onclick="loadView('nutrients', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                    <button onclick="loadView('nutrients', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
                         <span>Torneos</span>
                     </button>
-                    <button onclick="loadView('news', this)" class="nav-btn h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all relative">
+                    <button onclick="loadView('news', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all relative">
                         <span>Noticias</span>
                         <span class="absolute top-5 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                     </button>
                 </nav>
 
-                <!-- RECURSOS Y USUARIO -->
-                <div class="flex items-center gap-5">
-                    <div class="hidden sm:flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-green-200 shadow-sm relative cursor-default">
-                            <span class="text-sm font-bold text-gray-400">SEMILLAS</span>
-                            <span id="global-seeds-display" class="text-sm font-extrabold text-green-600 transition-all duration-300">0 🌱</span>
+                <!-- RECURSOS Y USUARIO (Responsive) -->
+                <div class="flex items-center gap-2 sm:gap-5 shrink-0">
+                    <div class="flex items-center gap-1.5 sm:gap-3 bg-gray-50 p-1 sm:p-1.5 rounded-xl border border-gray-100">
+                        <div class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-green-200 shadow-sm relative cursor-default">
+                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 hidden sm:inline">SEMILLAS</span>
+                            <span id="global-seeds-display" class="text-[11px] sm:text-sm font-extrabold text-green-600 transition-all duration-300">0 🌱</span>
                         </div>
-                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
-                            <span class="text-sm font-bold text-gray-400">COP</span>
-                            <span id="global-balance" class="text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
+                        <div class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
+                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 hidden sm:inline">COP</span>
+                            <span id="global-balance" class="text-[11px] sm:text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
                         </div>
                     </div>
-                    <div class="w-px h-8 bg-gray-200 hidden md:block"></div>
+                    <div class="w-px h-6 sm:h-8 bg-gray-200 hidden md:block"></div>
                     
                     <div class="relative">
-                        <button onclick="toggleUserMenu(event)" class="flex items-center gap-3 focus:outline-none hover:opacity-80 transition-opacity">
-                            <div id="profile-avatar" class="w-10 h-10 rounded-full bg-cg_navy border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-sm">US</div>
+                        <button onclick="toggleUserMenu(event)" class="flex items-center gap-2 sm:gap-3 focus:outline-none hover:opacity-80 transition-opacity">
+                            <div id="profile-avatar" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-cg_navy border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-xs sm:text-sm">US</div>
                             <div class="hidden md:block text-left">
                                 <p class="text-sm font-bold text-cg_navy leading-tight flex items-center gap-1"><span id="profile-name">Usuario</span> <span class="text-[10px] text-gray-400">▼</span></p>
                             </div>
@@ -147,7 +156,31 @@
                 </div>
             </div>
         </header>
-        <main id="app-content" class="flex-1 overflow-y-auto p-6 md:p-10 relative"></main>
+
+        <!-- MAIN APP CONTENT -->
+        <!-- Se agrega pb-24 para que en celular el contenido no quede oculto detrás del navbar fijo -->
+        <main id="app-content" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 pb-24 lg:pb-10 relative"></main>
+
+        <!-- MOBILE BOTTOM NAV -->
+        <nav class="lg:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-16 z-[100] pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button onclick="loadView('farm', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-cg_gold transition-colors">
+                <span class="text-xl mb-0.5">🌾</span>
+                <span class="text-[10px] font-bold">Granja</span>
+            </button>
+            <button onclick="loadView('shop', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors">
+                <span class="text-xl mb-0.5">🛒</span>
+                <span class="text-[10px] font-bold">Mercado</span>
+            </button>
+            <button onclick="loadView('nutrients', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors">
+                <span class="text-xl mb-0.5">🏆</span>
+                <span class="text-[10px] font-bold">Torneos</span>
+            </button>
+            <button onclick="loadView('news', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors relative">
+                <span class="text-xl mb-0.5">📰</span>
+                <span class="text-[10px] font-bold">Noticias</span>
+                <span class="absolute top-2 right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </button>
+        </nav>
     </div>
 
     <script>
@@ -199,7 +232,7 @@
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
                         document.getElementById('dashboard-screen').classList.add('flex');
-                        loadView('farm', document.querySelectorAll('.nav-btn')[0]); // Cambiado a [0]
+                        loadView('farm', document.querySelector('.nav-btn-desktop')); 
                     }, 300);
                 } else {
                     showError(data.error || 'Ocurrió un error');
@@ -236,7 +269,7 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
                 document.getElementById('dashboard-screen').classList.add('flex');
-                loadView('farm', document.querySelectorAll('.nav-btn')[0]); // Cambiado a [0]
+                loadView('farm', document.querySelector('.nav-btn-desktop')); 
                 syncUserData();
             }
         };
@@ -269,12 +302,28 @@
                 });
 
                 if (clickedBtn) {
-                    document.querySelectorAll('.nav-btn').forEach(btn => {
-                        btn.classList.remove('text-cg_gold', 'border-cg_gold');
-                        btn.classList.add('text-gray-500', 'border-transparent');
+                    // Sincronizar estilos entre Desktop Nav y Mobile Nav
+                    document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile').forEach(btn => {
+                        if(btn.classList.contains('nav-btn-desktop')) {
+                            btn.classList.remove('text-cg_gold', 'border-cg_gold');
+                            btn.classList.add('text-gray-500', 'border-transparent');
+                        } else {
+                            btn.classList.remove('text-cg_gold');
+                            btn.classList.add('text-gray-400');
+                        }
                     });
-                    clickedBtn.classList.remove('text-gray-500', 'border-transparent');
-                    clickedBtn.classList.add('text-cg_gold', 'border-cg_gold');
+                    
+                    const desktopEquivalent = document.querySelector(`.nav-btn-desktop[onclick*="loadView('${viewName}'"]`);
+                    const mobileEquivalent = document.querySelector(`.nav-btn-mobile[onclick*="loadView('${viewName}'"]`);
+                    
+                    if (desktopEquivalent) {
+                        desktopEquivalent.classList.remove('text-gray-500', 'border-transparent');
+                        desktopEquivalent.classList.add('text-cg_gold', 'border-cg_gold');
+                    }
+                    if (mobileEquivalent) {
+                        mobileEquivalent.classList.remove('text-gray-400');
+                        mobileEquivalent.classList.add('text-cg_gold');
+                    }
                 }
             } catch (error) { console.error(error); }
         }

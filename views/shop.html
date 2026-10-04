@@ -1,40 +1,40 @@
-<div class="max-w-[1200px] mx-auto space-y-8 animate-fade-in pb-20 relative">
+<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-cg_blue"></span>
                 <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Suministros Agrícolas</span>
             </div>
-            <h2 class="text-3xl font-black text-cg_navy tracking-tight">Mercado de Insumos</h2>
-            <p class="text-sm text-gray-500 font-medium mt-1">Equípate con las mejores herramientas para optimizar tu producción de semillas.</p>
+            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Mercado de Insumos</h2>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Equípate con las mejores herramientas para optimizar tu producción de semillas.</p>
         </div>
     </div>
 
     <!-- TABS DE NAVEGACIÓN -->
-    <div class="flex gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0">
-        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-4 font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
-        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
-        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-4 font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP (Pago)</button>
+    <div class="flex gap-2 md:gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
+        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
+        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
+        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP (Pago)</button>
     </div>
 
     <!-- CONTENEDORES DE CATÁLOGO -->
-    <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-    <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
-    <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+    <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"></div>
+    <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
+    <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
 
     <!-- VENTANA MODAL TEMPORAL DE COMPRA -->
     <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="purchase-modal-bg"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-8 flex flex-col items-center text-center transform scale-95 opacity-0 transition-all duration-300 border border-gray-100" id="purchase-modal-card">
-            <div class="w-24 h-24 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mb-5 shadow-inner relative">
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center transform scale-95 opacity-0 transition-all duration-300 border border-gray-100" id="purchase-modal-card">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
                 <div class="absolute inset-0 rounded-full border border-green-200 animate-ping opacity-50"></div>
-                <img id="purchase-modal-img" src="" class="w-14 h-14 object-contain relative z-10 drop-shadow-md">
+                <img id="purchase-modal-img" src="" class="w-12 h-12 md:w-14 md:h-14 object-contain relative z-10 drop-shadow-md">
             </div>
-            <h3 class="text-2xl font-black text-cg_navy mb-1" id="purchase-modal-title">¡Compra Exitosa!</h3>
-            <p class="text-sm font-bold text-gray-500 mb-6" id="purchase-modal-desc"></p>
-            <div class="bg-gray-50 border border-gray-200 px-5 py-2.5 rounded-xl flex items-center gap-3">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Inversión:</span>
-                <span class="text-base font-black text-red-500" id="purchase-modal-price"></span>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1" id="purchase-modal-title">¡Compra Exitosa!</h3>
+            <p class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6" id="purchase-modal-desc"></p>
+            <div class="bg-gray-50 border border-gray-200 px-4 md:px-5 py-2.5 rounded-xl flex items-center gap-2 md:gap-3">
+                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Inversión:</span>
+                <span class="text-sm md:text-base font-black text-red-500" id="purchase-modal-price"></span>
             </div>
         </div>
     </div>
@@ -87,10 +87,10 @@ window.shopApp = {
             const tabBtn = document.getElementById(`page-tab-${t}`);
             const contentDiv = document.getElementById(`page-content-${t}`);
             if (t === tab) {
-                tabBtn.className = `pb-3 px-4 font-black ${t === 'iap' ? 'text-green-500 border-green-500' : 'text-cg_blue border-cg_blue'} border-b-4 whitespace-nowrap transition-colors`;
+                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-black ${t === 'iap' ? 'text-green-500 border-green-500' : 'text-cg_blue border-cg_blue'} border-b-4 whitespace-nowrap transition-colors`;
                 contentDiv.classList.remove('hidden');
             } else {
-                tabBtn.className = `pb-3 px-4 font-bold text-gray-400 border-b-4 border-transparent hover:${t === 'iap' ? 'text-green-600' : 'text-cg_navy'} whitespace-nowrap transition-colors`;
+                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:${t === 'iap' ? 'text-green-600' : 'text-cg_navy'} whitespace-nowrap transition-colors`;
                 contentDiv.classList.add('hidden');
             }
         });
@@ -121,42 +121,41 @@ window.shopApp = {
             let stockBadge = '';
 
             if (tab === 'iap') {
-                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} COP</button>`;
+                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} COP</button>`;
             } else {
                 stockBadge = `
                     <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
-                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
-                        <span class="text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
+                        <span class="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
+                        <span class="text-xs md:text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
                     </div>
                 `;
                 actionArea = `
-                    <div class="flex items-center gap-3 w-full">
-                        <div class="flex items-center bg-gray-50 rounded-xl flex-1 border border-gray-200 shadow-inner h-12 overflow-hidden">
+                    <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
+                        <div class="flex items-center bg-gray-50 rounded-xl w-full sm:flex-1 border border-gray-200 shadow-inner h-10 md:h-12 overflow-hidden">
                             <button onclick="window.shopApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">-</button>
                             <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
                             <button onclick="window.shopApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">+</button>
                         </div>
-                        <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="bg-cg_blue hover:bg-cg_navy text-white font-black text-sm h-12 px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
+                        <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="w-full sm:w-auto bg-cg_blue hover:bg-cg_navy text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
                             ${(item.price * qty).toLocaleString()} 🌱
                         </button>
                     </div>
                 `;
             }
 
-            // MODIFICADO: Contenedor más alto (h-56) e imagen más grande (h-44)
             card.innerHTML = `
-                <div class="bg-gradient-to-b from-gray-50 to-white h-56 flex items-center justify-center p-6 relative shrink-0 border-b border-gray-100">
-                    <span class="absolute top-3 left-3 bg-white text-gray-600 text-[10px] font-black px-2.5 py-1 rounded-md shadow-sm border border-gray-200 uppercase tracking-wider z-20">${tag}</span>
+                <div class="bg-gradient-to-b from-gray-50 to-white h-48 md:h-56 flex items-center justify-center p-4 md:p-6 relative shrink-0 border-b border-gray-100">
+                    <span class="absolute top-3 left-3 bg-white text-gray-600 text-[9px] md:text-[10px] font-black px-2 md:px-2.5 py-1 rounded-md shadow-sm border border-gray-200 uppercase tracking-wider z-20">${tag}</span>
                     ${stockBadge}
-                    <img src="${item.image}" class="h-44 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <img src="${item.image}" class="h-36 md:h-44 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
                 </div>
-                <div class="p-6 flex flex-col flex-1">
-                    <h4 class="font-black text-cg_navy text-lg leading-tight mb-3">${item.name}</h4>
-                    <div class="flex justify-between items-center text-[10px] font-bold text-gray-500 mb-4 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                <div class="p-4 md:p-6 flex flex-col flex-1">
+                    <h4 class="font-black text-cg_navy text-base md:text-lg leading-tight mb-3">${item.name}</h4>
+                    <div class="flex justify-between items-center text-[9px] md:text-[10px] font-bold text-gray-500 mb-4 bg-gray-50 p-2 md:p-2.5 rounded-lg border border-gray-100">
                         <span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>
                         <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
                     </div>
-                    <p class="text-sm text-gray-500 mb-6 leading-relaxed flex-1">${item.desc}</p>
+                    <p class="text-xs md:text-sm text-gray-500 mb-6 leading-relaxed flex-1">${item.desc}</p>
                     <div class="mt-auto pt-4 border-t border-gray-100">
                         ${actionArea}
                     </div>
@@ -180,17 +179,13 @@ window.shopApp = {
         const total = unitPrice * qty;
 
         if (this.state.seedsBalance >= total) {
-            
-            // Actualiza saldo UI
             this.state.seedsBalance -= total;
             document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             
-            // Efecto visual saldo
             const balEl = document.getElementById('global-seeds-display');
             balEl.classList.add('text-red-500', 'scale-110');
             setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
 
-            // Inyecta en inventario. Reconstruye el objeto si fue borrado en versiones anteriores.
             if (!this.state.inventory[itemId]) {
                 let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
                 this.state.inventory[itemId] = { 
@@ -208,11 +203,9 @@ window.shopApp = {
 
             this.state.inventory[itemId].qty += addedQty;
             
-            // Guarda en DB y sincroniza granja fantasma
             this.saveState();
             this.renderShopItems(tab);
 
-            // Desplegar Ventana Modal
             let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
             this.showPurchaseModal(catItem.image, catItem.name, addedQty, total);
             
@@ -233,14 +226,12 @@ window.shopApp = {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         
-        // Animación ultrarrápida
         setTimeout(() => {
             bg.classList.remove('opacity-0');
             card.classList.remove('scale-95', 'opacity-0');
             card.classList.add('scale-100', 'opacity-100');
         }, 10);
 
-        // Agilizado: Se oculta automáticamente después de 1 segundo
         setTimeout(() => {
             bg.classList.add('opacity-0');
             card.classList.remove('scale-100', 'opacity-100');
@@ -279,7 +270,6 @@ window.shopApp = {
                         farmState.autoWaterEndTime = Math.max(now, farmState.autoWaterEndTime || 0) + (hours * 3600000);
                         localStorage.setItem('cg_farm_state', JSON.stringify(farmState));
                         
-                        // Sincronizar memoria viva
                         if (window.farmApp) {
                             window.farmApp.state.autoWaterEndTime = farmState.autoWaterEndTime;
                             window.farmApp.updateSprinklerUI();
@@ -310,14 +300,12 @@ window.shopApp = {
         const stateToSave = JSON.stringify(farmState);
         localStorage.setItem('cg_farm_state', stateToSave);
 
-        // FIX DEL ERROR: Inyección de datos a la Granja Fantasma para evitar sobrescrituras
         if (window.farmApp && window.farmApp.state) {
             window.farmApp.state.seedsBalance = this.state.seedsBalance;
             window.farmApp.state.inventory = JSON.parse(JSON.stringify(this.state.inventory));
             window.farmApp.state.lastTick = farmState.lastTick;
         }
 
-        // ENVÍO INMEDIATO Y FORZADO A AIVEN
         const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
@@ -327,7 +315,6 @@ window.shopApp = {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: user.username, game_state: stateToSave })
                 });
-                // Actualiza el saldo en el header instantáneamente
                 if(window.syncUserData) window.syncUserData();
             } catch (e) {
                 console.error("Error conectando con Aiven:", e);
