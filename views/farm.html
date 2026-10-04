@@ -280,6 +280,12 @@
     <span class="text-xs font-black uppercase tracking-widest hidden group-hover:inline-block px-2">Control Admin</span>
 </button>
 
+<!-- REEMPLAZA ESTE BOTÓN QUE ESTÁ JUSTO ENCIMA DE LOS MODALES DE INSTRUCCIONES -->
+<button id="admin-dev-btn" onclick="document.getElementById('dev-modal').classList.replace('hidden','flex')" class="hidden fixed bottom-6 right-6 bg-gray-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-[90] items-center gap-2 group border border-gray-700">
+    <span class="text-xl">⚙</span>
+    <span class="text-xs font-black uppercase tracking-widest hidden group-hover:inline-block px-2">Control Admin</span>
+</button>
+
 <div id="instructions-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden border border-gray-100">
@@ -534,6 +540,16 @@ window.farmApp = {
         const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
+            
+            // NUEVO: Mostrar el botón de Admin SOLO si el usuario es DamianCastro
+            if (user.username === 'DamianCastro') {
+                const adminBtn = document.getElementById('admin-dev-btn');
+                if (adminBtn) {
+                    adminBtn.classList.remove('hidden');
+                    adminBtn.classList.add('flex');
+                }
+            }
+
             fetch(`/api/sync/${user.username}`)
                 .then(res => res.json())
                 .then(data => {
