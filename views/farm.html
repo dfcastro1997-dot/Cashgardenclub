@@ -8,7 +8,11 @@
         </div>
         
         <div class="flex flex-wrap items-center gap-3">
-            <button onclick="window.farmApp.openInstructionsModal()" class="bg-orange-500 hover:bg-orange-600 border border-orange-600 px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group text-white w-full sm:w-auto justify-center">
+            <!-- NUEVO BOTÓN MÓVIL: Toggle para abrir herramientas manualmente -->
+            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 flex-1 sm:flex-none">
+                <span class="text-xl">🛠</span> <span class="text-sm">Herramientas</span>
+            </button>
+            <button onclick="window.farmApp.openInstructionsModal()" class="bg-orange-500 hover:bg-orange-600 border border-orange-600 px-4 py-2 rounded-xl shadow-sm flex items-center gap-3 transition-all cursor-pointer group text-white flex-1 sm:flex-none justify-center">
                 <div class="flex flex-col text-left">
                     <span class="text-[10px] font-extrabold text-orange-200 uppercase tracking-widest">Guía Rápida</span>
                     <span class="text-sm font-black text-white">Instrucciones</span>
@@ -30,15 +34,25 @@
             </div>
         </div>
 
-        <!-- SIDEBAR DERECHO (INVENTARIO Y HERRAMIENTAS) -->
-        <div class="w-full lg:w-80 flex-shrink-0 mb-10 lg:mb-0" id="tools-sidebar">
-            <div class="bg-white rounded-2xl shadow-soft border border-gray-100 h-full flex flex-col overflow-hidden lg:sticky top-0">
-                <div class="bg-white p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between shrink-0">
-                    <h3 class="font-black text-cg_navy text-lg">Panel de Herramientas</h3>
-                    <span class="text-xl">🛠</span>
+        <!-- BACKDROP MÓVIL PARA HERRAMIENTAS -->
+        <div class="fixed inset-0 bg-cg_navy/60 backdrop-blur-sm z-[90] hidden lg:hidden transition-opacity" id="tools-backdrop" onclick="window.farmApp.toggleToolsMobile(false)"></div>
+
+        <!-- SIDEBAR DERECHO (INVENTARIO Y HERRAMIENTAS) MODIFICADO A BOTTOM SHEET EN MÓVILES -->
+        <div class="fixed inset-x-0 bottom-0 z-[100] transform translate-y-full lg:translate-y-0 transition-transform duration-300 ease-in-out lg:relative lg:w-80 lg:z-auto flex-shrink-0 h-[75vh] lg:h-auto" id="tools-sidebar">
+            <div class="bg-white rounded-t-3xl lg:rounded-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] lg:shadow-soft border-t lg:border border-gray-100 h-full flex flex-col overflow-hidden relative z-10 lg:sticky top-0">
+                
+                <!-- Indicador de arrastre para móviles -->
+                <div class="w-full flex justify-center pt-3 pb-1 lg:hidden cursor-pointer" onclick="window.farmApp.toggleToolsMobile(false)">
+                    <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
                 </div>
                 
-                <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-5 bg-white">
+                <div class="px-5 pb-4 pt-1 lg:pt-5 lg:p-5 border-b border-gray-100 flex items-center justify-between shrink-0">
+                    <h3 class="font-black text-cg_navy text-lg">Panel de Herramientas</h3>
+                    <button class="lg:hidden text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors" onclick="window.farmApp.toggleToolsMobile(false)">✕</button>
+                    <span class="hidden lg:block text-xl">🛠</span>
+                </div>
+                
+                <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-5 bg-white pb-10 lg:pb-5">
                     
                     <!-- BANNER DE ASPERSOR AUTOMATICO -->
                     <div id="active-sprinkler-banner" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-center justify-between shadow-inner">
@@ -136,7 +150,7 @@
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('dev-modal').classList.replace('flex','hidden')"></div>
     <div class="bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 border border-gray-700 text-white">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-black flex items-center gap-2">⚙️ Panel de Desarrollo</h3>
+            <h3 class="text-xl font-black flex items-center gap-2">⚙️️ Panel de Desarrollo</h3>
             <button onclick="document.getElementById('dev-modal').classList.replace('flex','hidden')" class="text-gray-400 hover:text-white font-bold text-xl">✕</button>
         </div>
         
@@ -452,8 +466,28 @@ window.farmApp = {
         selectedPlotId: null,
         pendingPlotId: null,
         simulationInterval: null,
-        lastTick: 0, // FIX CRÍTICO: Iniciar en 0 para forzar actualización con DB
+        lastTick: 0, 
         activeCrowPlotId: null
+    },
+
+    // FUNCIÓN NUEVA: Controlar la apertura y cierre del panel inferior en móviles
+    toggleToolsMobile(state) {
+        const sidebar = document.getElementById('tools-sidebar');
+        const backdrop = document.getElementById('tools-backdrop');
+        if (!sidebar || !backdrop) return;
+        
+        const isOpen = !sidebar.classList.contains('translate-y-full');
+        const shouldOpen = state !== undefined ? state : !isOpen;
+        
+        if (shouldOpen) {
+            sidebar.classList.remove('translate-y-full');
+            backdrop.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Previene scroll en body
+        } else {
+            sidebar.classList.add('translate-y-full');
+            backdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
     },
 
     dev: {
@@ -464,7 +498,6 @@ window.farmApp = {
                 { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-                // Restablece la Parcela 6 (Torneo) a su estado original bloqueado
                 { id: 5, status: 'arena_locked', tournamentId: 1, score: 0, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
             ];
             window.farmApp.state.inventory = {
@@ -478,7 +511,6 @@ window.farmApp = {
             window.farmApp.state.seedsBalance = 35000;
             window.farmApp.state.autoWaterEndTime = 0;
             
-            // Limpia la Base de Datos para que te permita volver a inscribirte
             const userStr = localStorage.getItem('user');
             if(userStr) {
                 const user = JSON.parse(userStr);
@@ -538,7 +570,6 @@ window.farmApp = {
                         user.balance = data.new_balance;
                         localStorage.setItem('user', JSON.stringify(user));
                         
-                        // Actualizar encabezado visualmente de inmediato
                         const balEl = document.getElementById('global-balance');
                         if(balEl) balEl.innerText = "$" + user.balance.toLocaleString();
                         if(window.farmApp) window.farmApp.state.balance = user.balance;
@@ -555,7 +586,7 @@ window.farmApp = {
     },
 
     saveState() {
-        this.state.lastTick = Date.now(); // CRÍTICO: Garantiza que este estado es el más nuevo
+        this.state.lastTick = Date.now();
         const stateToSave = JSON.stringify({
             seedsBalance: this.state.seedsBalance,
             autoWaterEndTime: this.state.autoWaterEndTime,
@@ -584,7 +615,6 @@ window.farmApp = {
         if (userStr) {
             const user = JSON.parse(userStr);
             
-            // NUEVO: Mostrar el botón de Admin SOLO si el usuario es DamianCastro
             if (user.username === 'DamianCastro') {
                 const adminBtn = document.getElementById('admin-dev-btn');
                 if (adminBtn) {
@@ -600,7 +630,6 @@ window.farmApp = {
                         try {
                             const s = JSON.parse(data.user.game_state);
                             
-                            // FIX CRÍTICO: Aceptar SIEMPRE la Base de Datos como verdad absoluta
                             this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
                             this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
                             this.state.plots = s.plots ?? this.state.plots;
@@ -689,7 +718,6 @@ window.farmApp = {
             const el = document.createElement('div');
             const isSelected = this.state.selectedPlotId === plot.id;
             
-            // Auto-limpieza del Toast basada en tiempo exacto (inmune a la sincronización)
             if (plot.toast && plot.toast.active && Date.now() >= plot.toast.expiresAt) {
                 plot.toast.active = false;
             }
@@ -734,12 +762,10 @@ window.farmApp = {
                             🔥 ${conf.durationHours}H Sprint
                         </div>
 
-                        <!-- BOTÓN DE INFO FLOTANTE SEGURO -->
                         <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 60px; left: 12px;" class="absolute w-7 h-7 sm:w-8 sm:h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-xs sm:text-sm font-serif pointer-events-auto cursor-pointer">
                             i
                         </button>
 
-                        <!-- CONTENEDOR CENTRAL: TERRENO Y PLANTA RESTAURADOS -->
                         <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center group">
                                 <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
@@ -747,7 +773,6 @@ window.farmApp = {
                             </div>
                         </div>
 
-                        <!-- LA CAJA DORADA -->
                         <div class="absolute bottom-11 sm:bottom-12 left-1/2 transform -translate-x-1/2 z-30 w-max pointer-events-none">
                             <div class="bg-gradient-to-r from-yellow-600 to-cg_gold text-white rounded-lg px-3 sm:px-4 py-1 sm:py-1.5 shadow-lg border border-yellow-300 text-center flex flex-col ${isAlert ? 'animate-pulse' : ''}">
                                 <span class="text-[7px] sm:text-[8px] uppercase tracking-widest font-black opacity-90">${conf.name}</span>
@@ -775,10 +800,10 @@ window.farmApp = {
                     `;
                 }
                 grid.appendChild(el);
-                return; // Termina la iteración exclusiva para la parcela 6
+                return; 
             }
 
-            // [Lógica Original para Parcelas 1 a 5]
+            // [Lógica para Parcelas 1 a 5]
             if (plot.status === 'locked') {
                 const cost = this.PLOT_COSTS[plot.id];
                 el.className = `rounded-2xl border-2 border-dashed border-gray-300 h-56 sm:h-64 flex flex-col items-center justify-center relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : ''}`;
@@ -877,7 +902,6 @@ window.farmApp = {
                         plot.crowLeavingAt = 0;
                         this.showPlotToast(plot.id, '💀', 'Trigo Destruido');
                     } else {
-                        // Evaluamos si es pudrición para mostrar la bacteria, o si es cuervo/contagio
                         const plantId = plot.plant ? plot.plant.id : '';
                         let isRotting = false;
                         if (plantId === 'flower_wheat' && plot.water > 100) isRotting = true;
@@ -894,7 +918,6 @@ window.farmApp = {
                                 </div>
                             `;
                         } else {
-                            // Uso de la imagen oficial del cuervo
                             const iconHtml = isRotting 
                                 ? `<span class="text-lg sm:text-xl">🦠</span>` 
                                 : `<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">`;
@@ -917,7 +940,6 @@ window.farmApp = {
                         <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName}
                     </div>
 
-                    <!-- BOTÓN DE INFO FLOTANTE SEGURO PARA PLANTAS NORMALES -->
                     <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 52px; left: 12px;" class="absolute w-7 h-7 sm:w-8 sm:h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-xs sm:text-sm font-serif pointer-events-auto cursor-pointer sm:bottom-[60px] sm:left-4">
                         i
                     </button>
@@ -981,7 +1003,6 @@ window.farmApp = {
         const isAutoWatering = this.state.autoWaterEndTime > now;
         let changesMade = false;
         
-        // Contagio Global. Si CUALQUIER planta tiene plaga o pudrición, atrae cuervos a las demás.
         const anyPlantInfected = this.state.plots.some(p => 
             p.status === 'planted' && !p.isReady && p.hasCrow
         );
@@ -1010,7 +1031,6 @@ window.farmApp = {
                 plot.hasCrow = false;
                 plot.crowLeavingAt = 0;
                 
-                // Estabilizamos el agua al tope seguro al terminar de curar para evitar bucles de pudrición
                 if (plot.plant) {
                     if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
                     else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
@@ -1024,7 +1044,6 @@ window.farmApp = {
 
             if (plot.status === 'planted' && !plot.isReady) {
                 if (isAutoWatering) {
-                    // El auto-riego mantiene a salvo a todas según su especie
                     if (plot.plant) {
                         if (plot.plant.id === 'flower_wheat') plot.water = 100;
                         else if (plot.plant.id === 'flower_small') plot.water = 90;
@@ -1050,7 +1069,7 @@ window.farmApp = {
                                 if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Sequía (Plaga)!');
                                 changesMade = true;
                             } else if (anyPlantInfected) {
-                                plot.hasCrow = true; // Infección por contagio
+                                plot.hasCrow = true; 
                                 if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
                                 changesMade = true;
                             }
@@ -1058,7 +1077,6 @@ window.farmApp = {
                     }
                 }
 
-                // Pausar el crecimiento si falta agua o hay cuervo en la parcela
                 if (plot.water <= 0 || plot.hasCrow) {
                     plot.harvestAt += deltaMS; 
                     changesMade = true;
@@ -1138,7 +1156,6 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         const currentWater = plot.water || 0;
         
-        // Obtener la velocidad y los límites según la planta/torneo
         if (plotId === 5) {
             const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
             speed = conf.speed;
@@ -1153,15 +1170,12 @@ window.farmApp = {
             }
         }
 
-        // LÓGICA DE ZONA SEGURA: Calcula cuánta agua se debe inyectar
         let targetMin = Math.max(0, minSafe - currentWater);
         let targetMax = Math.max(0, maxSafe - currentWater);
         
-        // Topes visuales (no puede superar el 100% de la barra)
         targetMin = Math.min(100, targetMin);
         targetMax = Math.min(100, targetMax);
 
-        // Actualizar UI: Dibuja la franja azul en el rango permitido
         const safeZone = document.getElementById('calib-safe-zone');
         if (safeZone) {
             safeZone.style.left = `${targetMin}%`;
@@ -1209,12 +1223,10 @@ window.farmApp = {
                 this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
             }
         } else {
-            // LÓGICA DE SUPERVIVENCIA PARA PLANTAS BASE
             const plantId = plot.plant ? plot.plant.id : '';
             let isRotting = false;
             let msgToast = '¡Se pudrió!';
 
-            // Evaluamos los límites
             if (plantId === 'flower_wheat' && plot.water > 100) {
                 isRotting = true;
                 msgToast = '¡Inundada!';
@@ -1222,24 +1234,22 @@ window.farmApp = {
                 isRotting = true;
             } else if (plantId === 'flower_big' && plot.water > 70) {
                 isRotting = true;
-                plot.harvestAt += 30 * 60000; // Penalización severa: +30 minutos extra por errar
+                plot.harvestAt += 30 * 60000; 
                 msgToast = '+30m Penalización';
             } else if (plantId === 'flower_cactus' && plot.water > 80) {
                 isRotting = true;
             }
 
-            // Tope físico del agua
             if (plot.water > 100) plot.water = 100;
             
-            // Ejecución del castigo o éxito
             if (isRotting) {
-                plot.hasCrow = true; // Activa el cuervo/pudrición
+                plot.hasCrow = true;
                 this.showPlotToast(plotId, '🦠', msgToast);
             } else {
                 this.showPlotToast(plotId, '💧', `+${waterAdded}% Agua`);
             }
             
-            this.selectPlot(plotId); // Refresca la barra lateral
+            this.selectPlot(plotId); 
         }
         
         document.getElementById('water-calib-modal').classList.replace('flex', 'hidden');
@@ -1291,11 +1301,9 @@ window.farmApp = {
 
     showPlotToast(plotId, icon, msg) {
         const plot = this.state.plots[plotId];
-        // En lugar de usar setTimeout que se pierde al sincronizar, usamos un timestamp de caducidad
         plot.toast = { active: true, icon, msg, expiresAt: Date.now() + 2500 };
         this.renderPlots();
         
-        // Disparamos un renderizado forzado una vez que el tiempo se cumple para limpiarlo
         setTimeout(() => {
             if (this.state.plots[plotId].toast && Date.now() >= this.state.plots[plotId].toast.expiresAt) {
                 this.renderPlots();
@@ -1311,7 +1319,6 @@ window.farmApp = {
         const inv = this.state.inventory;
         const isAutoWatering = this.state.autoWaterEndTime > Date.now();
 
-        // Desactivamos herramientas visualmente por defecto
         ['pot_small', 'pot_big', 'water', 'scarecrow'].forEach(toolType => {
             const el = document.getElementById(`inv-item-${toolType}`);
             if (el) {
@@ -1328,26 +1335,19 @@ window.farmApp = {
             if(inv.tool_pot_small && inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
             if(inv.tool_pot_big && inv.tool_pot_big.qty > 0) this.enableToolBtn('pot_big');
         } else if (plot.status === 'pot') {
-            // Se mantiene igual (esperando siembra)
-        } else if (plot.status === 'planted') {
             
-            // Validaciones para activar botones del inventario
+        } else if (plot.status === 'planted') {
             if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow) {
                 this.enableToolBtn('water');
             }
-            
-            // BLOQUEO ESTRATÉGICO: El espantapájaros NO se puede usar si el usuario ya está siendo castigado
             if(!isAutoWatering && inv.tool_scarecrow && inv.tool_scarecrow.qty > 0 && !plot.isReady && plot.crowLeavingAt <= Date.now()) {
                 this.enableToolBtn('scarecrow');
             }
         }
         
-        // Auto-Scroll en móviles hacia el panel de herramientas para mejorar la UX
+        // Despliega automáticamente las herramientas en móviles al seleccionar una parcela
         if (window.innerWidth < 1024) {
-            const toolsSidebar = document.getElementById('tools-sidebar');
-            if (toolsSidebar) {
-                toolsSidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            this.toggleToolsMobile(true);
         }
     },
 
@@ -1390,7 +1390,6 @@ window.farmApp = {
             plot.crowLeavingAt = 0; 
             plot.scarecrowEndTime = Date.now() + (24 * 3600000);
             
-            // Drenar exceso de agua a límites seguros para que no vuelva a pudrirse al instante
             if (plot.plant) {
                 if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
                 else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
@@ -1404,13 +1403,15 @@ window.farmApp = {
         this.updateInventoryUI();
         this.selectPlot(plotId); 
         this.saveState();
+        
+        if(type !== 'water' && window.innerWidth < 1024) {
+            this.toggleToolsMobile(false);
+        }
     },
 
     removePlant(plotId) {
         const plot = this.state.plots[plotId];
         
-        // REGLA: No se puede quitar una planta que tiene plaga/pudrición. 
-        // El jugador debe curarla primero (vía gratuita de 15m o vía premium con espantapájaros).
         if (plot.hasCrow) {
             this.showPlotToast(plotId, '⚠️', 'Debes curarla primero');
             return;
@@ -1436,12 +1437,10 @@ window.farmApp = {
         this.saveState();
     },
 
-
     removePot(plotId) {
         const plot = this.state.plots[plotId];
         if (plot.status !== 'pot') return;
         
-        // Devolvemos la maceta al inventario virtual (opcional) o simplemente la quitamos
         plot.status = 'empty';
         plot.pot = null;
         plot.potUses = 0;
@@ -1483,12 +1482,10 @@ window.farmApp = {
         }
     },
 
-
     harvestPlant(plotId) {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        // Recompensa estandarizada para el cactus
         const reward = plot.plant.id === 'flower_wheat' ? 1500 : 
                       (plot.plant.id === 'flower_cactus' ? 2200 : 
                       (plot.plant.id === 'flower_small' ? 4500 : 26000));
@@ -1523,9 +1520,6 @@ window.farmApp = {
         this.saveState();
     },
 
-    // ==========================================
-    // SISTEMA DEL CUERVO: CASTIGO DE TIEMPO
-    // ==========================================
     openCrowModal(plotId) {
         this.state.activeCrowPlotId = plotId;
         const modal = document.getElementById('crow-modal');
