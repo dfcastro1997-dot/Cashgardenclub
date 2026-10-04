@@ -288,33 +288,88 @@
 
 <div id="instructions-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden border border-gray-100">
-        <div class="bg-white p-5 sm:p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
-            <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">📖 Manual del Invernadero</h3>
-            <button onclick="window.farmApp.closeModals()" class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">✕</button>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl relative z-10 flex flex-col max-h-[90vh] overflow-hidden border border-gray-100">
+        <div class="bg-white p-5 sm:p-6 border-b border-gray-100 flex justify-between items-center shrink-0 relative">
+            <div>
+                <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">📖 Manual del Invernadero</h3>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Guía Completa de Habilidad y Gestión</p>
+            </div>
+            <button onclick="window.farmApp.closeModals()" class="text-gray-400 hover:text-cg_navy font-bold w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">✕</button>
         </div>
-        <div class="p-5 sm:p-6 overflow-y-auto space-y-5 bg-gray-50 flex-1">
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
-                <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center shrink-0">
-                    <img src="https://i.ibb.co/rf66qT74/Frame-751.png" class="w-12 h-12 object-contain" alt="Terreno">
+        
+        <div class="p-5 sm:p-6 overflow-y-auto space-y-4 bg-gray-50 flex-1 scroll-smooth">
+            
+            <!-- 1. Terrenos y Macetas -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left">
+                <div class="w-20 h-20 bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-center shrink-0 relative overflow-hidden">
+                    <img src="https://i.ibb.co/BHJVfJhr/Frame-739.png" class="absolute w-8 h-8 z-10" style="transform: translateY(-10px);">
+                    <img src="https://i.ibb.co/rf66qT74/Frame-751.png" class="absolute w-16 h-16 object-contain mt-4" alt="Terreno">
                 </div>
                 <div>
-                    <h4 class="text-base sm:text-lg font-black text-cg_navy">1. Expansión (Token: Semillas 🌱)</h4>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Haz clic en un terreno bloqueado para comprarlo usando tus Semillas (🌱). Esta moneda es exclusiva de la granja y te permite entrar a torneos Freeroll en la Arena.</p>
+                    <h4 class="text-base sm:text-lg font-black text-cg_navy">1. Expansión y Macetas</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Desbloquea nuevos terrenos usando tus Semillas (🌱). Antes de plantar, debes colocar una <strong>Maceta Pequeña (5 Usos)</strong> o una <strong>Maceta Grande (10 Usos)</strong> desde tu inventario. Estas las adquieres en la pestaña del Mercado.</p>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
-                <div class="w-16 h-16 bg-red-50 rounded-xl border border-red-100 flex items-center justify-center shrink-0">
+
+            <!-- 2. Riego Quirúrgico -->
+            <div class="bg-white p-5 rounded-2xl border border-blue-200 shadow-sm flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-bl-full z-0 opacity-50"></div>
+                <div class="w-20 h-20 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-center shrink-0 relative z-10">
+                    <img src="https://i.ibb.co/qYHq54kh/Frame-741.png" class="w-12 h-12 object-contain drop-shadow-md" alt="Regadera">
+                </div>
+                <div class="relative z-10">
+                    <h4 class="text-base sm:text-lg font-black text-blue-900">2. Riego Quirúrgico (Skill-Based)</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">Toca una planta y usa la regadera. Deberás detener una flecha oscilante exactamente dentro de la <strong class="text-blue-600">Franja Azul Segura</strong>. Cada planta tiene velocidades y rangos diferentes. Si calculas mal, puedes ahogar la planta.</p>
+                </div>
+            </div>
+
+            <!-- 3. Plagas y Contagio -->
+            <div class="bg-white p-5 rounded-2xl border border-red-200 shadow-sm flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-red-50 rounded-bl-full z-0 opacity-50"></div>
+                <div class="w-20 h-20 bg-red-50 rounded-2xl border border-red-100 flex items-center justify-center shrink-0 relative z-10">
                     <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-12 h-12 object-contain drop-shadow-md" alt="Plaga">
                 </div>
-                <div>
-                    <h4 class="text-base sm:text-lg font-black text-cg_navy">2. Plagas y Cuervos</h4>
+                <div class="relative z-10">
+                    <h4 class="text-base sm:text-lg font-black text-red-900">3. Plagas, Pudrición y Contagio Global</h4>
                     <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
-                        🦅 <strong>Cuervos:</strong> Aparecen si el agua baja del 20%. Te penalizarán con un retraso en el crecimiento de tu planta al intentar espantarlos.<br>
-                        Para evitar esta pérdida de tiempo, compra <strong>Espantapájaros</strong> o un <strong>Aspersor Automático</strong> VIP en el Mercado.
+                        Si el agua baja del <strong>20% (Sequía)</strong> o supera el límite máximo de la planta <strong>(Pudrición 🦠)</strong>, esta dejará de crecer. Deberás limpiarla manualmente, lo que te aplicará una <strong>penalización de 15 minutos</strong>.<br><br>
+                        <strong class="text-red-600">¡Cuidado!</strong> Una planta podrida atraerá cuervos a tus demás plantas sanas por contagio.
                     </p>
                 </div>
             </div>
+
+            <!-- 4. Herramientas de Protección -->
+            <div class="bg-white p-5 rounded-2xl border border-green-200 shadow-sm flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left">
+                <div class="w-20 h-20 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-center shrink-0 gap-1">
+                    <img src="https://i.ibb.co/pBBDqXXw/Frame-742.png" class="w-8 h-8 object-contain drop-shadow-md" alt="Espantapájaros">
+                    <img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-8 h-8 object-contain drop-shadow-md" alt="Aspersor">
+                </div>
+                <div>
+                    <h4 class="text-base sm:text-lg font-black text-green-900">4. Protección y Asistentes VIP</h4>
+                    <ul class="text-xs sm:text-sm text-gray-600 mt-2 space-y-2 text-left">
+                        <li>🦉 <strong>Espantapájaros:</strong> Protege 1 parcela por 24h. Si lo usas sobre una planta podrida, la curará al instante sin esperar los 15 minutos y drenará el exceso de agua.</li>
+                        <li>🤖 <strong>Aspersor Automático (VIP):</strong> Riega todas tus plantas a la perfección automáticamente y evita plagas. Lo adquieres con COP en la tienda.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 5. Torneos Competitivos -->
+            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-5 rounded-2xl border border-yellow-200 shadow-sm flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left">
+                <div class="w-20 h-20 bg-white rounded-2xl border border-yellow-300 flex items-center justify-center shrink-0 shadow-inner">
+                    <img src="https://i.ibb.co/0yv9F7D6/Frame-754.png" class="w-14 h-14 object-contain drop-shadow-md" alt="Bonsái">
+                </div>
+                <div>
+                    <h4 class="text-base sm:text-lg font-black text-yellow-900">5. Arena de Torneos</h4>
+                    <p class="text-xs sm:text-sm text-yellow-800 mt-1 leading-relaxed">Compite en ligas de destreza pura. Aquí no hay azar, solo tu habilidad con el calibrador de riego. Inicia con 10,000 Puntos y trata de no perderlos manteniendo la planta en su rango estricto. <br><strong>¡Las ganancias se retiran directamente a Nequi!</strong></p>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="p-4 bg-white border-t border-gray-100 flex justify-center shrink-0">
+            <button onclick="window.farmApp.closeModals()" class="w-full max-w-sm bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm">
+                ¡A Cultivar!
+            </button>
         </div>
     </div>
 </div>
@@ -702,8 +757,8 @@ window.farmApp = {
                         </div>
 
                         <!-- LA CAJA DORADA -->
-                        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30 w-[85%] pointer-events-none">
-                            <div class="bg-gradient-to-r from-yellow-600 to-cg_gold text-white rounded-lg p-1.5 shadow-lg border border-yellow-300 text-center flex flex-col ${isAlert ? 'animate-pulse' : ''}">
+                        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30 w-max pointer-events-none">
+                            <div class="bg-gradient-to-r from-yellow-600 to-cg_gold text-white rounded-lg px-4 py-1.5 shadow-lg border border-yellow-300 text-center flex flex-col ${isAlert ? 'animate-pulse' : ''}">
                                 <span class="text-[8px] uppercase tracking-widest font-black opacity-90">${conf.name}</span>
                                 <span class="text-lg font-black tracking-tight leading-none font-mono">${Math.floor(plot.score).toLocaleString()} 🏆</span>
                             </div>
@@ -1637,7 +1692,7 @@ window.farmApp = {
         if (seeds.length === 0) {
             list.innerHTML = `
                 <div class="text-center py-10 bg-white rounded-2xl border border-gray-100 flex flex-col items-center mx-2 sm:mx-0">
-                    <span class="text-4xl sm:text-5xl mb-4 block opacity-50 text-gray-300">🌸</span>
+                    <img src="${this.state.images.plant_small}" class="w-16 h-16 mb-4 opacity-60 object-contain drop-shadow-sm">
                     <h4 class="font-black text-carbon text-base sm:text-lg mb-1">Sin Flores Compatibles</h4>
                     <p class="text-gray-500 text-xs sm:text-sm">Ve al Mercado y compra semillas adecuadas para esta maceta.</p>
                     <button onclick="window.farmApp.closeModals(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="mt-4 bg-cg_blue hover:bg-cg_navy text-white text-xs font-bold py-2 px-4 rounded-lg shadow-sm transition-colors">Ir al Mercado</button>
