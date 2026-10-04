@@ -742,13 +742,16 @@ window.farmApp = {
                         </div>
 
                         <!-- BOTÓN DE INFO FLOTANTE SEGURO -->
-                        <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 60px; left: 16px;" class="absolute w-8 h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-sm font-serif pointer-events-auto cursor-pointer">
+                        <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 75px; left: 16px;" class="absolute w-8 h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-sm font-serif pointer-events-auto cursor-pointer">
                             i
                         </button>
 
-                        <div class="absolute top-2 right-2 flex flex-col items-center gap-2 z-50 pointer-events-none">
-                            ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-10 h-10 object-contain drop-shadow-md shrink-0">` : ''}
-                            <img src="${conf.image}" class="absolute h-32 w-auto object-contain z-10 drop-shadow-md transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-20%);">
+                        <!-- CONTENEDOR CENTRAL: TERRENO Y PLANTA RESTAURADOS -->
+                        <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
+                            <div class="relative w-full h-40 flex items-center justify-center group">
+                                <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-40 w-auto object-contain drop-shadow-sm">
+                                <img src="${conf.image}" class="absolute h-32 w-auto object-contain z-10 drop-shadow-md transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-20%);">
+                            </div>
                         </div>
 
                         <!-- LA CAJA DORADA -->
@@ -922,7 +925,7 @@ window.farmApp = {
                     </div>
 
                     <!-- BOTÓN DE INFO FLOTANTE SEGURO PARA PLANTAS NORMALES -->
-                    <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 60px; left: 16px;" class="absolute w-8 h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-sm font-serif pointer-events-auto cursor-pointer">
+                    <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 75px; left: 16px;" class="absolute w-8 h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-sm font-serif pointer-events-auto cursor-pointer">
                         i
                     </button>
 
