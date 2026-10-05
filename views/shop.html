@@ -69,7 +69,6 @@ window.shopApp = {
     },
 
     init() {
-        // En lugar de leer de LocalStorage, tomar el estado actual de farmApp (que ya está sincronizado)
         if (window.farmApp && window.farmApp.state) {
             this.state.seedsBalance = window.farmApp.state.seedsBalance;
             this.state.inventory = window.farmApp.state.inventory;
@@ -175,7 +174,6 @@ window.shopApp = {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
         
-        // <-- ASEGURAR QUE MODIFICAMOS EL INVENTARIO GLOBAL DIRECTAMENTE
         const targetInventory = (window.farmApp && window.farmApp.state) ? window.farmApp.state.inventory : this.state.inventory;
 
         if (this.state.seedsBalance >= total) {
@@ -206,7 +204,6 @@ window.shopApp = {
             this.saveState();
             this.renderShopItems(tab);
             
-            // <-- FORZAR ACTUALIZACIÓN DE BOTONES DE LA GRANJA TRAS COMPRA
             if (window.farmApp) {
                 window.farmApp.updateInventoryUI();
                 if (window.farmApp.state.selectedPlotId !== null) {
@@ -220,7 +217,7 @@ window.shopApp = {
         } else {
             alert("No tienes Semillas suficientes para realizar esta compra.");
         }
-    }
+    },
 
     showPurchaseModal(imgUrl, itemName, qty, pricePaid) {
         const modal = document.getElementById('purchase-success-modal');
@@ -289,12 +286,12 @@ window.shopApp = {
         }
     },
 
-    async saveState() {
-    if (window.farmApp && window.farmApp.state) {
-        window.farmApp.state.seedsBalance = this.state.seedsBalance;
-        window.farmApp.saveState(); // Deja que la granja gestione el envío
+    saveState() {
+        if (window.farmApp && window.farmApp.state) {
+            window.farmApp.state.seedsBalance = this.state.seedsBalance;
+            window.farmApp.saveState(); 
+        }
     }
-}
 };
 
 window.shopApp.init();
