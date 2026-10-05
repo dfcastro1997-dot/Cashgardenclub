@@ -397,9 +397,25 @@ window.shopApp = {
                     if (window.farmApp) {
                         window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
                         
+                        // Lógica de limpieza inmediata para aplicar sobre terrenos plantados y vacíos
+                        window.farmApp.state.plots.forEach(plot => {
+                            if (plot.status !== 'locked' && plot.status !== 'arena_locked') {
+                                plot.hasCrow = false;
+                                plot.crowLeavingAt = 0;
+                                
+                                // Si ya hay plantas, nivelar el agua a la perfección inmediatamente
+                                if (plot.plant && plot.status === 'planted') {
+                                    if (plot.plant.id === 'flower_wheat') plot.water = 100;
+                                    else if (plot.plant.id === 'flower_small') plot.water = 90;
+                                    else if (plot.plant.id === 'flower_big') plot.water = 70;
+                                    else if (plot.plant.id === 'flower_cactus') plot.water = 80;
+                                }
+                            }
+                        });
+                        
                         // FORZAR ACTUALIZACIÓN INMEDIATA DE LA GRANJA
                         window.farmApp.updateSprinklerUI();
-                        window.farmApp.renderPlots(); // Redibuja los terrenos para mostrar el ícono del aspersor
+                        window.farmApp.renderPlots(); // Redibuja los terrenos para mostrar el ícono del aspersor en todos
                         window.farmApp.saveState(); 
                     }
                     
@@ -419,7 +435,7 @@ window.shopApp = {
         } catch(e) {
             alert("Error de conexión al procesar la compra.");
         }
-    },
+    }
 
     saveState() {
         if (window.farmApp && window.farmApp.state) {
