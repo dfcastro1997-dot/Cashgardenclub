@@ -657,7 +657,8 @@
                     tournament_id: t_id, 
                     fee: fee_cop,
                     precision: precision,
-                    time_used: timeUsed
+                    time_used: timeUsed,
+                    score: finalScore // <-- NUEVO: Enviamos el puntaje con el descuento aplicado
                 }) 
             });
             const data = await res.json();

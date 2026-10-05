@@ -527,6 +527,7 @@ def join_tournament():
     # Nuevas variables capturadas del frontend
     precision = float(data.get('precision', 0.000))
     time_used = float(data.get('time_used', 0.00))
+    score = float(data.get('score', 10000.00)) # <-- NUEVO: Captura el puntaje inicial con descuento
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -569,7 +570,8 @@ def join_tournament():
             cur.execute("UPDATE tournament_instances SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, instance_id))
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
 
-        cur.execute("INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time) VALUES (%s, %s, %s, %s, %s)", (instance_id, user['id'], username, precision, time_used))
+        # NUEVO: Insertamos el current_score calculado en el frontend junto con la precisión
+        cur.execute("INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time, current_score) VALUES (%s, %s, %s, %s, %s, %s)", (instance_id, user['id'], username, precision, time_used, score))
         cur.execute("UPDATE tournament_instances SET players_count = players_count + 1 WHERE id = %s", (instance_id,))
         cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
         conn.commit()
