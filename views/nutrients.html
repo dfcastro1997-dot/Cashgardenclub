@@ -475,7 +475,8 @@
         document.getElementById('pre-tournament-modal').classList.add('flex');
     }
 
-    async function finalizeTournamentAPI(initialWater) {
+    // Actualizamos la definición de la función para que reciba isStressed
+    async function finalizeTournamentAPI(initialWater, isStressed) {
         if (!window.ritualState.pendingData) return;
         const t_id = window.ritualState.pendingData.id;
         const fee_cop = window.ritualState.pendingData.fee;
@@ -515,7 +516,20 @@
                          ap.status = 'tournament';
                          ap.tournamentId = t_id;
                          ap.score = finalScore;   
-                         ap.water = initialWater; 
+                         ap.water = initialWater;
+                         
+                         // Asignar el objeto plant desde la configuración del torneo
+                         ap.plant = {
+                             id: 'tournament_' + t_id,
+                             name: info.name,
+                             icon: info.img
+                         };
+                         
+                         // Asignar hasCrow si la planta nació estresada
+                         if(isStressed) {
+                             ap.hasCrow = true;
+                         }
+
                          ap.tournamentEndTime = Date.now() + (info.durHours * 3600000);
                          ap.isReady = false;
                     }
@@ -1009,7 +1023,8 @@
         if (window.alchemyState.isPractice) {
             showAlertModal('Práctica Concluida', `Tu destreza manual define tu éxito. Sigue entrenando para dominar la arena.`, '🌱');
         } else {
-            await finalizeTournamentAPI(window.alchemyState.finalWater);
+            // Pasamos isStressed (es decir, !isPerfect) a finalizeTournamentAPI
+            await finalizeTournamentAPI(window.alchemyState.finalWater, !window.alchemyState.isPerfect);
         }
     }
 
