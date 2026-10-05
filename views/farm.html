@@ -501,9 +501,9 @@ if (typeof window.farmApp === 'undefined') {
         PLOT_COSTS: [0, 0, 0, 75000, 150000, 300000],
 
         TOURNAMENT_CONFIGS: {
-            1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 10, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
-            3: { name: 'Orquídea Lunar', image: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durationHours: 6, startScore: 10000, evapPerHour: 20, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 1.2 },
-            4: { name: 'Rosa de Ceniza', image: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durationHours: 8, startScore: 10000, evapPerHour: 30, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 1.5 },
+            1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
+            3: { name: 'Orquídea Lunar', image: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durationHours: 6, startScore: 10000, evapPerHour: 55, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 1.2 },
+            4: { name: 'Rosa de Ceniza', image: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durationHours: 8, startScore: 10000, evapPerHour: 35, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 1.5 },
             5: { name: 'Loto de Cristal', image: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durationHours: 12, startScore: 10000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 0.8 }
         },
 
@@ -1583,7 +1583,27 @@ if (typeof window.farmApp === 'undefined') {
 
         harvestTournament() {
             const plot = this.state.plots[5];
-            alert(`¡Torneo Finalizado!\nTu puntaje final es: ${Math.floor(plot.score)} 🏆\nLos resultados serán publicados en el Dashboard pronto.`);
+            const score = Math.floor(plot.score);
+            
+            // Crear y mostrar ventana modal dinámicamente en lugar de 'alert()'
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[500] flex items-center justify-center p-4 animate-fade-in';
+            modal.innerHTML = `
+                <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
+                <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-cg_gold">
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-yellow-50 rounded-full border-4 border-yellow-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                        <span class="text-3xl md:text-4xl">🏆</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">¡Torneo Finalizado!</h3>
+                    <p class="text-sm md:text-base font-bold text-gray-600 mb-2">Tu puntaje final es: <strong class="text-cg_gold text-xl">${score}</strong></p>
+                    <p class="text-xs text-gray-500 mb-6 font-medium">Los resultados serán publicados en el Dashboard pronto.</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm">
+                        Aceptar
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
             plot.status = 'arena_locked';
             plot.isReady = false;
             this.saveState();
