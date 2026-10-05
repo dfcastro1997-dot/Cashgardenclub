@@ -22,6 +22,25 @@
     <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
     <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
 
+
+
+    <!-- VENTANA MODAL DE ERROR (FONDOS INSUFICIENTES) -->
+    <div id="purchase-error-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity duration-300" onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center border border-red-500 animate-fade-in">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
+                <span class="text-3xl md:text-4xl relative z-10 drop-shadow-md">⚠️</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1">Saldo Insuficiente</h3>
+            <p class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes Semillas (🌱) suficientes para realizar esta compra.</p>
+            <button onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3 md:py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] md:text-xs">
+                Aceptar
+            </button>
+        </div>
+    </div>
+
+
+
     <!-- VENTANA MODAL TEMPORAL DE COMPRA -->
     <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="purchase-modal-bg"></div>
@@ -215,7 +234,12 @@ window.shopApp = {
             this.showPurchaseModal(catItem.image, catItem.name, addedQty, total);
             
         } else {
-            alert("No tienes Semillas suficientes para realizar esta compra.");
+            // === BLOQUE MODIFICADO: Llamado a la modal de error ===
+            const errorModal = document.getElementById('purchase-error-modal');
+            if (errorModal) {
+                errorModal.classList.remove('hidden');
+                errorModal.classList.add('flex');
+            }
         }
     },
 
