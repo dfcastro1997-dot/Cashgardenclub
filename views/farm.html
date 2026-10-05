@@ -152,93 +152,88 @@
 
 
 <!-- ========================================== -->
-<!-- MINIJUEGO RITUAL DE SIEMBRA AVANZADO       -->
+<!-- MINIJUEGO RITUAL DE SIEMBRA (SOLO TORNEOS) -->
 <!-- ========================================== -->
 
-<!-- FASE 1: SEMILLA -->
-<div id="farm-ritual-seed-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+<!-- FASE 1: SEMILLA (PÉNDULO) -->
+<div id="ritual-seed-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 1: Precisión Espacial</h3>
-        <p class="text-[10px] sm:text-xs text-red-500 mb-4 font-bold uppercase tracking-widest">Oprime "SOLTAR" cuando la semilla esté en el centro</p>
+        <p class="text-[10px] sm:text-xs text-red-500 mb-4 font-bold uppercase tracking-widest">Oprime "CORTAR HILO" para soltar la semilla en el centro</p>
         
-        <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto bg-[#8B5A2B] rounded-full border-8 border-[#5C3A21] overflow-hidden mb-6 shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)]" id="farm-ritual-pot">
-            <!-- Círculos concéntricos con % -->
+        <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto bg-[#8B5A2B] rounded-full border-8 border-[#5C3A21] overflow-hidden mb-6 shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)]" id="ritual-pot">
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60">
                 <div class="absolute w-[90%] h-[90%] rounded-full border border-white/30 flex items-start justify-center pt-2"><span class="text-white/60 text-[10px] font-bold">25%</span></div>
                 <div class="absolute w-[60%] h-[60%] rounded-full border border-white/50 flex items-start justify-center pt-2"><span class="text-white/80 text-[10px] font-bold">50%</span></div>
                 <div class="absolute w-[30%] h-[30%] rounded-full border-dashed border-white/70 flex items-start justify-center pt-1"><span class="text-white text-[10px] font-bold drop-shadow-md">75%</span></div>
                 <div class="absolute w-6 h-6 rounded-full bg-white/90 shadow-[0_0_15px_white] flex items-center justify-center"><span class="text-black text-[8px] font-black">100</span></div>
             </div>
-            <!-- Semilla Animada Automáticamente -->
-            <div id="farm-ritual-seed" class="absolute w-12 h-12 bg-white/90 backdrop-blur rounded-full border-2 border-green-400 shadow-xl flex items-center justify-center text-2xl z-20 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">🌱</div>
+            <div id="ritual-seed" class="absolute w-12 h-12 bg-white/90 backdrop-blur rounded-full border-2 border-green-400 shadow-xl flex items-center justify-center text-2xl z-20 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300">🌱</div>
         </div>
         
-        <button onclick="window.farmApp.farmRitualPhase1Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black py-4 sm:py-5 rounded-xl uppercase tracking-widest shadow-lg active:scale-95 active:translate-y-1 transition-all text-lg">SOLTAR SEMILLA</button>
+        <button onclick="ritualPhase1Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black py-4 sm:py-5 rounded-xl uppercase tracking-widest shadow-lg active:scale-95 active:translate-y-1 transition-all text-lg">CORTAR HILO</button>
     </div>
 </div>
 
-<!-- FASE 2: TIERRA -->
-<div id="farm-ritual-dirt-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+<!-- FASE 2: TIERRA (PESCA / TENSIÓN) -->
+<div id="ritual-dirt-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 2: Cobertura</h3>
-        <p class="text-[10px] sm:text-xs text-red-500 mb-4 font-bold uppercase tracking-widest">Mantén y suelta exactamente en la franja verde</p>
+        <p class="text-[10px] sm:text-xs text-red-500 mb-4 font-bold uppercase tracking-widest">Mantén el nivel dentro de la zona verde por 3s</p>
         
         <div class="relative w-16 sm:w-20 h-48 sm:h-56 mx-auto bg-gray-100 rounded-full mb-4 border-2 border-gray-300 overflow-hidden flex items-end shadow-inner">
-            <div id="farm-ritual-dirt-fill" class="w-full bg-[#5C3A21] transition-none" style="height: 0%;"></div>
-            <div id="farm-ritual-dirt-target" class="absolute w-full h-[4%] bg-green-400/90 bottom-[50%] border-y-2 border-green-600 shadow-[0_0_15px_rgba(74,222,128,0.9)] z-10 pointer-events-none transition-all"></div>
+            <div id="ritual-dirt-fill" class="w-full bg-[#5C3A21] absolute bottom-0 left-0 transition-none" style="height: 0%;"></div>
+            <div id="ritual-dirt-target" class="absolute w-full h-[15%] bg-green-400/50 bottom-[40%] border-y-2 border-green-600 shadow-[0_0_15px_rgba(74,222,128,0.5)] z-10 pointer-events-none transition-all duration-300"></div>
         </div>
-        <p id="farm-ritual-dirt-pct" class="text-3xl font-black text-cg_navy mb-6 font-mono">0%</p>
         
-        <button id="farm-ritual-dirt-btn" class="w-full bg-[#8B5A2B] active:bg-[#5C3A21] text-white font-black py-5 rounded-xl shadow-lg uppercase tracking-widest select-none touch-none text-base transition-colors">MANTENER Y SOLTAR</button>
+        <div class="w-full h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
+            <div id="ritual-dirt-progress" class="h-full bg-green-500 w-0 transition-all duration-100"></div>
+        </div>
+        
+        <button id="ritual-dirt-btn" class="w-full bg-[#8B5A2B] active:bg-[#5C3A21] text-white font-black py-5 rounded-xl shadow-lg uppercase tracking-widest select-none touch-none text-base transition-colors">MANTENER PARA SUBIR</button>
     </div>
 </div>
 
-<!-- FASE 3: PRIMER RIEGO -->
-<div id="farm-ritual-water-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+<!-- FASE 3: PRIMER RIEGO (QUIRÚRGICO) -->
+<div id="ritual-water-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 3: Riego Vital</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha exactamente en el centro azul</p>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Arrastra el medidor al nivel exacto y fija</p>
         
-        <div class="relative w-full h-12 sm:h-14 bg-red-100 rounded-full mb-8 sm:mb-10 shadow-inner border border-red-200 overflow-hidden">
-            <div id="farm-ritual-calib-safe" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500 transition-all"></div>
-            
-            <div class="absolute top-0 left-[20%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10 pointer-events-none">20%</div>
-            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10 pointer-events-none">50%</div>
-            <div class="absolute top-0 left-[80%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10 pointer-events-none">80%</div>
-            
-            <div id="farm-ritual-calib-ptr" class="absolute top-0 h-full w-2.5 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
-                 <div class="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] sm:border-l-[10px] border-r-[8px] sm:border-r-[10px] border-t-[10px] sm:border-t-[12px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
-                 <div class="absolute -bottom-3 sm:-bottom-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] sm:border-l-[10px] border-r-[8px] sm:border-r-[10px] border-b-[10px] sm:border-b-[12px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
-            </div>
+        <div class="text-3xl font-black text-cg_navy mb-4 font-mono" id="ritual-water-target-txt">Meta: 47%</div>
+
+        <div class="relative w-full h-12 sm:h-14 bg-gray-100 rounded-full mb-8 sm:mb-10 shadow-inner border-2 border-gray-300 flex items-center">
+            <div id="ritual-calib-safe" class="absolute h-full bg-blue-200/50 border-x-2 border-blue-400/50 pointer-events-none"></div>
+            <input type="range" id="ritual-water-slider" min="0" max="100" value="0" class="w-full h-full opacity-0 cursor-pointer absolute z-30" oninput="document.getElementById('ritual-calib-ptr').style.left = this.value + '%'">
+            <div id="ritual-calib-ptr" class="absolute h-[140%] w-4 bg-cg_blue rounded-full shadow-[0_0_10px_rgba(41,150,218,0.8)] border-2 border-white transform -translate-x-1/2 z-20 transition-none pointer-events-none" style="left: 0%;"></div>
         </div>
         
-        <button onclick="window.farmApp.farmRitualPhase3Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-lg py-4 sm:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest">
+        <button onclick="ritualPhase3Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-lg py-4 sm:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest">
             FIJAR RIEGO INICIAL
         </button>
     </div>
 </div>
 
 <!-- RESULTADO DEL RITUAL -->
-<div id="farm-ritual-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+<div id="ritual-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold overflow-hidden animate-fade-in">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Calidad de Siembra</h3>
         <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Análisis de tu técnica general</p>
         
         <div class="relative w-32 h-32 mx-auto bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center shadow-inner mb-4">
-            <img id="farm-ritual-result-img" src="" class="w-20 h-20 object-contain drop-shadow-lg animate-bounce">
+            <img id="ritual-result-img" src="" class="w-20 h-20 object-contain drop-shadow-lg animate-bounce">
         </div>
         
-        <div class="text-5xl font-black mb-2" id="farm-ritual-result-pct">100%</div>
-        <p class="text-sm font-bold text-gray-500 mb-6 px-4" id="farm-ritual-result-msg">¡Perfección absoluta!</p>
+        <div class="text-5xl font-black mb-2" id="ritual-result-pct">100%</div>
+        <p class="text-sm font-bold text-gray-500 mb-6 px-4" id="ritual-result-msg">¡Perfección absoluta!</p>
         
-        <button onclick="window.farmApp.closeRitualResult()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md transition-transform active:scale-95">Completar Siembra</button>
+        <button onclick="closeRitualResult()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md transition-transform active:scale-95">Ingresar a la Arena</button>
     </div>
 </div>
-
 
 
 
@@ -1749,20 +1744,15 @@ window.farmApp = {
 
     ritual: {
         plotId: null, seedId: null, 
-        seedReq: null, seedT: 0, 
-        dirtInt: null, dirtPct: 0, dirtTarget: 50, 
-        waterReq: null, waterX: 0, waterDir: 1, speed: 1, minWater: 0, maxWater: 100,
+        seedReq: null, seedT: 0,
+        dirtInt: null, dirtPct: 0, dirtTarget: 50, dirtProgress: 0, isHoldingDirt: false,
+        waterTarget: 0, minWater: 0, maxWater: 100,
         p1: 0, p2: 0, p3: 0, isStressed: false, finalWater: 0
     },
 
-    plantSeed(seedId) {
-        if (this.state.inventory[seedId].qty > 0) {
-            this.closeModals();
-            this.startPlantingRitual(this.state.selectedPlotId, seedId);
-        }
-    },
-
-    startPlantingRitual(plotId, seedId) {
+    // Iniciar Ritual de Torneo (Solo se llama desde confirmJoinTournament en nutrients.html o si decides conectarlo aquí)
+    startTournamentRitual(plotId, seedId) {
+        this.closeModals();
         this.ritual.plotId = plotId;
         this.ritual.seedId = seedId;
         this.ritual.p1 = 0; this.ritual.p2 = 0; this.ritual.p3 = 0;
@@ -1777,17 +1767,15 @@ window.farmApp = {
         const rect = pot.getBoundingClientRect();
         const cx = rect.width / 2;
         const cy = rect.height / 2;
-        const maxRadius = (rect.width / 2) - 24; // Margen para que no se salga de la pantalla
+        const radius = (rect.width / 2) - 24; 
 
         this.ritual.seedT = 0;
         
-        // CORRECCIÓN: Movimiento más lento en PC (pantallas grandes) y estandarizado en móvil
-        const animationSpeed = window.innerWidth > 1024 ? 0.012 : 0.035;
-        
+        // Animación de Péndulo
         const animateSeed = () => {
-            this.ritual.seedT += animationSpeed; 
-            const x = cx + Math.sin(this.ritual.seedT * 2.1) * Math.cos(this.ritual.seedT * 0.9) * maxRadius;
-            const y = cy + Math.sin(this.ritual.seedT * 1.7) * maxRadius;
+            this.ritual.seedT += 0.05; // Velocidad del péndulo
+            const x = cx + Math.sin(this.ritual.seedT) * radius;
+            const y = cy; // Se mueve solo en el eje X para este efecto de péndulo superior
             
             seedEl.style.left = x + 'px';
             seedEl.style.top = y + 'px';
@@ -1798,10 +1786,47 @@ window.farmApp = {
         this.ritual.seedReq = requestAnimationFrame(animateSeed);
     },
 
+    startPlantingRitual(plotId, seedId) {
+        window.farmApp.ritual.plotId = plotId;
+        window.farmApp.ritual.seedId = seedId;
+        window.farmApp.ritual.p1 = 0; window.farmApp.ritual.p2 = 0; window.farmApp.ritual.p3 = 0;
+        
+        document.getElementById('farm-ritual-seed-modal').classList.remove('hidden');
+        document.getElementById('farm-ritual-seed-modal').classList.add('flex');
+        
+        const seedEl = document.getElementById('farm-ritual-seed');
+        seedEl.innerHTML = `<img src="${window.farmApp.state.inventory[seedId].image}" class="w-8 h-8 sm:w-10 sm:h-10 object-contain pointer-events-none drop-shadow-md">`;
+        
+        const pot = document.getElementById('farm-ritual-pot');
+        const rect = pot.getBoundingClientRect();
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const maxRadius = (rect.width / 2) - 24; 
+
+        // FIX: Movimiento basado en TIEMPO REAL (independiente de los Hz del monitor)
+        const startTime = Date.now();
+        const baseSpeed = 1.2; // Velocidad suave y predecible en cualquier dispositivo
+        
+        const animateSeed = () => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            window.farmApp.ritual.seedT = elapsed * baseSpeed;
+            
+            const x = cx + Math.sin(window.farmApp.ritual.seedT * 2.1) * Math.cos(window.farmApp.ritual.seedT * 0.9) * maxRadius;
+            const y = cy + Math.sin(window.farmApp.ritual.seedT * 1.7) * maxRadius;
+            
+            seedEl.style.left = x + 'px';
+            seedEl.style.top = y + 'px';
+            
+            window.farmApp.ritual.seedReq = requestAnimationFrame(animateSeed);
+        };
+        
+        window.farmApp.ritual.seedReq = requestAnimationFrame(animateSeed);
+    },
+
     farmRitualPhase1Done() {
-        if(this.ritual.seedReq) {
-            cancelAnimationFrame(this.ritual.seedReq);
-            this.ritual.seedReq = null;
+        if(window.farmApp.ritual.seedReq) {
+            cancelAnimationFrame(window.farmApp.ritual.seedReq);
+            window.farmApp.ritual.seedReq = null;
         }
 
         const pot = document.getElementById('farm-ritual-pot');
@@ -1811,156 +1836,163 @@ window.farmApp = {
         const cx = rect.width / 2;
         const cy = rect.height / 2;
         const sx = parseFloat(seedEl.style.left) + 24;
-        const sy = parseFloat(seedEl.style.top) + 24;
+        const sy = parseFloat(seedEl.style.top) + 24; // Toma la posición Y real
         
-        // Cálculo del porcentaje de perfección
         const dist = Math.sqrt(Math.pow(sx - cx, 2) + Math.pow(sy - cy, 2));
         const maxDist = cx; 
-        this.ritual.p1 = Math.max(0, 100 - (dist / maxDist) * 100);
+        window.farmApp.ritual.p1 = Math.max(0, 100 - (dist / maxDist) * 100);
 
-        let msg = `Precisión lograda: ${Math.floor(this.ritual.p1)}%`;
-        let icon = this.ritual.p1 >= 80 ? '🎯' : '⚠️';
+        let msg = `Precisión lograda: ${Math.floor(window.farmApp.ritual.p1)}%`;
+        let icon = window.farmApp.ritual.p1 >= 80 ? '🎯' : '⚠️';
 
-        this.showFarmAlert('Puntuación de Centrado', msg, icon);
+        // FIX: Usar explícitamente window.farmApp en lugar de this
+        window.farmApp.showFarmAlert('Puntuación de Centrado', msg, icon);
         document.getElementById('farm-ritual-seed-modal').classList.replace('flex', 'hidden');
         
         setTimeout(() => { 
-            this.closeFarmAlert(); 
-            this.startFarmRitualPhase2(); 
+            window.farmApp.closeFarmAlert(); 
+            window.farmApp.startFarmRitualPhase2(); 
         }, 2000);
     },
 
     startFarmRitualPhase2() {
-        this.ritual.dirtPct = 0;
-        // La zona verde aparece de forma completamente aleatoria entre el 15% y el 85% de la barra
-        this.ritual.dirtTarget = Math.floor(Math.random() * 70) + 15; 
+        window.farmApp.ritual.dirtPct = 0;
+        window.farmApp.ritual.dirtProgress = 0;
+        window.farmApp.ritual.isHoldingDirt = false;
         
-        document.getElementById('farm-ritual-dirt-target').style.bottom = `${this.ritual.dirtTarget}%`;
+        window.farmApp.ritual.dirtTarget = Math.floor(Math.random() * 60) + 20; 
+        
+        document.getElementById('farm-ritual-dirt-target').style.bottom = `${window.farmApp.ritual.dirtTarget}%`;
         document.getElementById('farm-ritual-dirt-fill').style.height = '0%';
-        document.getElementById('farm-ritual-dirt-pct').innerText = '0%';
+        document.getElementById('farm-ritual-dirt-progress').style.width = '0%';
         
         document.getElementById('farm-ritual-dirt-modal').classList.remove('hidden');
         document.getElementById('farm-ritual-dirt-modal').classList.add('flex');
         
         const btn = document.getElementById('farm-ritual-dirt-btn');
-        let used = false;
+        let isDone = false;
 
-        const down = (e) => {
-            if(used) return;
-            e.preventDefault();
-            if(this.ritual.dirtInt) clearInterval(this.ritual.dirtInt);
-            this.ritual.dirtInt = setInterval(() => {
-                this.ritual.dirtPct += 2.0; // Velocidad de subida exigente
-                if(this.ritual.dirtPct > 100) this.ritual.dirtPct = 100;
-                document.getElementById('farm-ritual-dirt-fill').style.height = this.ritual.dirtPct + '%';
-                document.getElementById('farm-ritual-dirt-pct').innerText = Math.floor(this.ritual.dirtPct) + '%';
-            }, 20); 
+        const loop = () => {
+            if(isDone) return;
+            
+            if(window.farmApp.ritual.isHoldingDirt) {
+                window.farmApp.ritual.dirtPct += 1.5; 
+            } else {
+                window.farmApp.ritual.dirtPct -= 1.0; 
+            }
+            
+            window.farmApp.ritual.dirtPct = Math.max(0, Math.min(100, window.farmApp.ritual.dirtPct));
+            document.getElementById('farm-ritual-dirt-fill').style.height = window.farmApp.ritual.dirtPct + '%';
+            
+            const inZone = Math.abs(window.farmApp.ritual.dirtPct - (window.farmApp.ritual.dirtTarget + 7.5)) <= 7.5;
+            
+            if(inZone) {
+                window.farmApp.ritual.dirtProgress += 1; 
+                document.getElementById('farm-ritual-dirt-target').classList.add('bg-green-500/80');
+            } else {
+                window.farmApp.ritual.dirtProgress = Math.max(0, window.farmApp.ritual.dirtProgress - 0.5); 
+                document.getElementById('farm-ritual-dirt-target').classList.remove('bg-green-500/80');
+            }
+            
+            document.getElementById('farm-ritual-dirt-progress').style.width = (window.farmApp.ritual.dirtProgress / 100 * 100) + '%';
+            
+            if(window.farmApp.ritual.dirtProgress >= 100) {
+                isDone = true;
+                window.farmApp.farmRitualPhase2Done(true);
+            } else {
+                window.farmApp.ritual.dirtInt = requestAnimationFrame(loop);
+            }
         };
-        
-        const up = (e) => { 
-            if(used) return;
-            e.preventDefault(); 
-            clearInterval(this.ritual.dirtInt); 
-            used = true; // Intento único
-            this.farmRitualPhase2Done();
-        };
+
+        const down = (e) => { e.preventDefault(); window.farmApp.ritual.isHoldingDirt = true; };
+        const up = (e) => { e.preventDefault(); window.farmApp.ritual.isHoldingDirt = false; };
         
         btn.onmousedown = down; btn.ontouchstart = down;
         btn.onmouseup = up; btn.ontouchend = up; btn.onmouseleave = up;
+        
+        window.farmApp.ritual.dirtInt = requestAnimationFrame(loop);
     },
 
-    farmRitualPhase2Done() {
-        const targetCenter = this.ritual.dirtTarget + 2; 
-        const diff = Math.abs(this.ritual.dirtPct - targetCenter);
+    farmRitualPhase2Done(success) {
+        cancelAnimationFrame(window.farmApp.ritual.dirtInt);
         
-        // Si fallas por más de un 15% de margen, sacas un 0% automático
-        this.ritual.p2 = Math.max(0, 100 - (diff / 15) * 100);
+        window.farmApp.ritual.p2 = success ? 100 : 0; 
 
-        let msg = `Nivel de Tierra exacto: ${Math.floor(this.ritual.p2)}%`;
-        let icon = this.ritual.p2 >= 80 ? '🎯' : '⚠️';
+        let msg = `Nivel de Tierra exacto: ${Math.floor(window.farmApp.ritual.p2)}%`;
+        let icon = window.farmApp.ritual.p2 >= 80 ? '🎯' : '⚠️';
 
-        this.showFarmAlert('Calidad de Cobertura', msg, icon);
+        window.farmApp.showFarmAlert('Calidad de Cobertura', msg, icon);
         document.getElementById('farm-ritual-dirt-modal').classList.replace('flex', 'hidden');
         
         setTimeout(() => { 
-            this.closeFarmAlert(); 
-            this.startFarmRitualPhase3(); 
+            window.farmApp.closeFarmAlert(); 
+            window.farmApp.startFarmRitualPhase3(); 
         }, 2000);
     },
 
     startFarmRitualPhase3() {
-        let speed = 1.0; let minSafe = 0; let maxSafe = 100;
-        const seedId = this.ritual.seedId;
+        const seedId = window.farmApp.ritual.seedId;
         
-        // Aumentamos la velocidad de las plantas para que sea más retador
-        if (seedId === 'flower_wheat') { speed = 3.5; minSafe = 60; maxSafe = 100; }
-        else if (seedId === 'flower_small') { speed = 1.5; minSafe = 30; maxSafe = 90; }
-        else if (seedId === 'flower_cactus') { speed = 2.0; minSafe = 20; maxSafe = 80; }
-        else if (seedId === 'flower_big') { speed = 1.0; minSafe = 50; maxSafe = 70; }
+        let minSafe = 20, maxSafe = 80;
+        if (seedId === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+        else if (seedId === 'flower_small') { minSafe = 30; maxSafe = 90; }
+        else if (seedId === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
+        else if (seedId === 'flower_big') { minSafe = 50; maxSafe = 70; }
 
-        this.ritual.speed = speed;
-        this.ritual.minWater = minSafe;
-        this.ritual.maxWater = maxSafe;
+        window.farmApp.ritual.minWater = minSafe;
+        window.farmApp.ritual.maxWater = maxSafe;
+        
+        window.farmApp.ritual.waterTarget = Math.floor(Math.random() * (maxSafe - minSafe + 1)) + minSafe;
+        document.getElementById('farm-ritual-water-target-txt').innerText = `Meta: ${window.farmApp.ritual.waterTarget}%`;
 
         const safeZone = document.getElementById('farm-ritual-calib-safe');
         safeZone.style.left = `${minSafe}%`;
         safeZone.style.width = `${maxSafe - minSafe}%`;
         
-        this.ritual.waterX = 0;
-        this.ritual.waterDir = 1;
+        const slider = document.getElementById('farm-ritual-water-slider');
+        slider.value = 0;
+        document.getElementById('farm-ritual-calib-ptr').style.left = '0%';
         
         document.getElementById('farm-ritual-water-modal').classList.remove('hidden');
         document.getElementById('farm-ritual-water-modal').classList.add('flex');
-        
-        const ptr = document.getElementById('farm-ritual-calib-ptr');
-        const tick = () => {
-            if(!this.ritual.waterReq) return;
-            this.ritual.waterX += this.ritual.waterDir * this.ritual.speed;
-            if(this.ritual.waterX > 100) { this.ritual.waterX = 100; this.ritual.waterDir = -1; }
-            if(this.ritual.waterX < 0) { this.ritual.waterX = 0; this.ritual.waterDir = 1; }
-            ptr.style.left = this.ritual.waterX + '%';
-            this.ritual.waterReq = requestAnimationFrame(tick);
-        };
-        this.ritual.waterReq = requestAnimationFrame(tick);
     },
 
     farmRitualPhase3Done() {
-        cancelAnimationFrame(this.ritual.waterReq);
-        this.ritual.waterReq = null;
+        const slider = document.getElementById('farm-ritual-water-slider');
+        window.farmApp.ritual.finalWater = parseInt(slider.value);
         
-        this.ritual.finalWater = Math.round(this.ritual.waterX);
-        const centerSafe = (this.ritual.minWater + this.ritual.maxWater) / 2;
-        const radiusSafe = (this.ritual.maxWater - this.ritual.minWater) / 2;
-        const diff = Math.abs(this.ritual.finalWater - centerSafe);
+        const diff = Math.abs(window.farmApp.ritual.finalWater - window.farmApp.ritual.waterTarget);
         
-        if(this.ritual.finalWater >= this.ritual.minWater && this.ritual.finalWater <= this.ritual.maxWater) {
-            // Garantiza mínimo 50% de puntaje si se atinó dentro de la zona azul
-            this.ritual.p3 = Math.max(50, 100 - (diff / radiusSafe) * 50); 
+        if (diff === 0) {
+            window.farmApp.ritual.p3 = 100;
+        } else if (diff <= 5) {
+            window.farmApp.ritual.p3 = 80;
+        } else if (diff <= 15) {
+            window.farmApp.ritual.p3 = 50;
         } else {
-            this.ritual.p3 = 0; // Ahogamiento o Sequía
+            window.farmApp.ritual.p3 = 0; 
         }
 
-        let msg = `Precisión del primer riego: ${Math.floor(this.ritual.p3)}%`;
-        let icon = this.ritual.p3 >= 80 ? '🎯' : '💀';
+        let msg = `Precisión del primer riego: ${Math.floor(window.farmApp.ritual.p3)}%`;
+        let icon = window.farmApp.ritual.p3 >= 80 ? '🎯' : '💀';
 
-        this.showFarmAlert('Impacto de Agua', msg, icon);
+        window.farmApp.showFarmAlert('Impacto de Agua', msg, icon);
         document.getElementById('farm-ritual-water-modal').classList.replace('flex', 'hidden');
         
         setTimeout(() => {
-            this.closeFarmAlert();
-            this.showRitualResult();
+            window.farmApp.closeFarmAlert();
+            window.farmApp.showRitualResult();
         }, 2000);
     },
 
     showRitualResult() {
-        const totalPct = Math.round((this.ritual.p1 + this.ritual.p2 + this.ritual.p3) / 3);
+        const totalPct = Math.round((window.farmApp.ritual.p1 + window.farmApp.ritual.p2 + window.farmApp.ritual.p3) / 3);
         
-        // Regla agresiva: Si tu promedio es menor a 70% o si fallaste por completo el agua (0%), nace enferma.
-        this.ritual.isStressed = totalPct < 70 || this.ritual.p3 === 0;
+        window.farmApp.ritual.isStressed = totalPct < 70 || window.farmApp.ritual.p3 === 0;
         
         const modal = document.getElementById('farm-ritual-result-modal');
         const pctText = document.getElementById('farm-ritual-result-pct');
-        document.getElementById('farm-ritual-result-img').src = this.state.inventory[this.ritual.seedId].image;
+        document.getElementById('farm-ritual-result-img').src = window.farmApp.state.inventory[window.farmApp.ritual.seedId].image;
         
         pctText.innerText = totalPct + '%';
         
@@ -1983,19 +2015,24 @@ window.farmApp = {
 
     closeRitualResult() {
         document.getElementById('farm-ritual-result-modal').classList.replace('flex', 'hidden');
-        this.finalizeFarmPlanting(this.ritual.finalWater, this.ritual.isStressed);
+        
+        if (window.farmApp.ritual.plotId === 5) {
+            if(window.finalizeTournamentAPI) window.finalizeTournamentAPI(window.farmApp.ritual.finalWater, window.farmApp.ritual.isStressed, window.farmApp.ritual.p1, window.farmApp.ritual.p2, window.farmApp.ritual.p3);
+        } else {
+            window.farmApp.finalizeFarmPlanting(window.farmApp.ritual.finalWater, window.farmApp.ritual.isStressed);
+        }
     },
 
     finalizeFarmPlanting(initialWater, isStressed) {
-        const seedId = this.ritual.seedId;
-        const plotId = this.ritual.plotId;
+        const seedId = window.farmApp.ritual.seedId;
+        const plotId = window.farmApp.ritual.plotId;
         
-        this.state.inventory[seedId].qty -= 1;
-        const plot = this.state.plots[plotId];
+        window.farmApp.state.inventory[seedId].qty -= 1;
+        const plot = window.farmApp.state.plots[plotId];
         
         plot.status = 'planted';
         plot.water = initialWater; 
-        plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
+        plot.plant = { id: seedId, name: window.farmApp.state.inventory[seedId].name, icon: window.farmApp.state.inventory[seedId].image };
         plot.isReady = false;
         plot.plantedAt = Date.now();
         
@@ -2006,20 +2043,18 @@ window.farmApp = {
         
         plot.harvestAt = plot.plantedAt + msDuration;
 
-        // Consecuencia del Minijuego
         if(isStressed) {
             plot.hasCrow = true; 
-            this.showPlotToast(plotId, '🦠', 'Nació enferma');
+            window.farmApp.showPlotToast(plotId, '🦠', 'Nació enferma');
         } else {
-            this.showPlotToast(plotId, '🌱', '¡Sembrado Exitoso!');
+            window.farmApp.showPlotToast(plotId, '🌱', '¡Sembrado Exitoso!');
         }
 
-        this.updateInventoryUI();
-        this.selectPlot(plotId);
-        this.saveState();
+        window.farmApp.updateInventoryUI();
+        window.farmApp.selectPlot(plotId);
+        window.farmApp.saveState();
     },
 
-    // CORRECCIÓN: Se agregan las funciones faltantes para la UI de Alertas
     showFarmAlert(title, msg, icon) {
         const modal = document.getElementById('farm-alert-modal');
         if(modal) {
@@ -2036,6 +2071,34 @@ window.farmApp = {
         if(modal) {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        }
+    },
+
+
+    plantSeed(seedId) {
+        if (this.state.inventory[seedId].qty > 0) {
+            this.state.inventory[seedId].qty -= 1;
+            const plot = this.state.plots[this.state.selectedPlotId];
+            
+            plot.status = 'planted';
+            plot.water = 50; 
+            plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
+            plot.isReady = false;
+            plot.plantedAt = Date.now();
+            
+            let msDuration = 3600000; 
+            if (seedId === 'flower_wheat') msDuration = 300000; 
+            else if (seedId === 'flower_cactus') msDuration = 1800000; 
+            else if (seedId === 'flower_big') msDuration = 18000000; 
+            
+            plot.harvestAt = plot.plantedAt + msDuration;
+
+            this.updateInventoryUI();
+            this.closeModals();
+            this.selectPlot(this.state.selectedPlotId);
+            this.showPlotToast(this.state.selectedPlotId, '🌱', '¡Sembrado Exitoso!');
+            
+            this.saveState();
         }
     },
 
