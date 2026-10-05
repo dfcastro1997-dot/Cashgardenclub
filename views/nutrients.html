@@ -644,6 +644,10 @@
         
         showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción...', '⏳');
         
+        // DECLARACIÓN FALTANTE: Seleccionamos y ocultamos el botón de la alerta para que el usuario no cierre mientras carga
+        const alertBtn = document.querySelector('#alert-modal button');
+        if(alertBtn) alertBtn.classList.add('hidden');
+        
         try {
             const res = await fetch('/api/tournaments/join', {
                 method: 'POST',
@@ -653,13 +657,14 @@
                     session_token: token, 
                     tournament_id: t_id, 
                     fee: fee_cop,
-                    precision: precision, // Nuevo
-                    time_used: timeUsed   // Nuevo
+                    precision: precision,
+                    time_used: timeUsed
                 }) 
             });
             const data = await res.json();
             
             closeAlertModal();
+            // Restauramos el botón por si se necesita para futuras alertas
             if(alertBtn) alertBtn.classList.remove('hidden');
             
             if (res.ok) {
@@ -706,6 +711,7 @@
             }
         } catch(e) {
             closeAlertModal();
+            // Restauramos el botón en caso de error de conexión
             if(alertBtn) alertBtn.classList.remove('hidden');
             showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor.', '📡');
         }
