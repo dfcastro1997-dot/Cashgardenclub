@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <!-- TARJETAS DE LIGAS (Ahora con 5 columnas en monitores anchos para acomodar la práctica) -->
+    <!-- TARJETAS DE LIGAS -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
         
         <!-- Práctica de Sintonización -->
@@ -318,7 +318,7 @@
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-yellow-600 mb-1 px-1">
-                    <span class="flex items-center gap-2">☀️ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
+                    <span class="flex items-center gap-2">☀️️ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-light" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
                 <input type="range" id="slider-light" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
@@ -370,17 +370,17 @@
 </div>
 
 <script>
-    const TOURNAMENT_INFO = {
+    window.TOURNAMENT_INFO = window.TOURNAMENT_INFO || {
         1: { name: 'El Bonsái del Maestro', img: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Riego calibrado normal. Si superas el 100% de agua por accidente, se te restará -500 Puntos por ahogamiento.', minWater: 20, maxWater: 100, speed: 1.0, overwaterPenalty: 500 },
         3: { name: 'Orquídea Lunar', img: 'https://i.ibb.co/HTQJSPT3/Frame-755.png', durHours: 6, dur: '6 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Si el agua baja del 20%', rules: 'Velocidad de flecha moderada. Penalidad de ahogo (>100%) masiva de -1,000 Puntos. Rango seguro: 20% a 100%.', minWater: 20, maxWater: 100, speed: 1.2, overwaterPenalty: 1000 },
         4: { name: 'Rosa de Ceniza', img: 'https://i.ibb.co/bRq5k4G3/Frame-756.png', durHours: 8, dur: '8 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Fuera del rango 30% a 80%', rules: 'Velocidad de flecha estándar. Penalidad de -3,000 pts por salir del rango superior (>80%). Rango seguro estricto y difícil.', minWater: 30, maxWater: 80, speed: 1.5, overwaterPenalty: 3000 },
         5: { name: 'Loto de Cristal', img: 'https://i.ibb.co/Y9pLC6Z/Frame-757.png', durHours: 12, dur: '12 Horas exactas', scoreNum: 10000, scoreStr: '10,000', limits: 'Fuera de la franja 40% a 60%', rules: 'Rango de Oro estricto: 40% a 60%. Pierdes 50 pts/min fuera de él. Flecha un poco más lenta, requiere administrar dosis minúsculas de agua.', minWater: 40, maxWater: 60, speed: 0.8, overwaterPenalty: 5000 }
     };
 
-    let pendingTournament = null;
-    let ritualState = { pendingData: null, score: 10000 };
+    window.pendingTournament = window.pendingTournament || null;
+    window.ritualState = window.ritualState || { pendingData: null, score: 10000 };
     
-    let alchemyState = {
+    window.alchemyState = window.alchemyState || {
         targetW: 0, targetN: 0, targetL: 0, targetT: 0,
         valW: 50, valN: 50, valL: 50, valT: 50,
         timer: 10, interval: null, active: false,
@@ -425,7 +425,7 @@
 
         if (arenaPlot && arenaPlot.status === 'tournament') {
             const tId = arenaPlot.tournamentId || 1;
-            const maxScore = TOURNAMENT_INFO[tId] ? TOURNAMENT_INFO[tId].scoreStr : '10,000';
+            const maxScore = window.TOURNAMENT_INFO[tId] ? window.TOURNAMENT_INFO[tId].scoreStr : '10,000';
             const now = Date.now();
             let msLeft = Math.max(0, arenaPlot.tournamentEndTime - now);
             
@@ -457,8 +457,8 @@
             return;
         }
 
-        pendingTournament = { id: t_id, fee: fee_cop };
-        const info = TOURNAMENT_INFO[t_id];
+        window.pendingTournament = { id: t_id, fee: fee_cop };
+        const info = window.TOURNAMENT_INFO[t_id];
         
         document.getElementById('pt-title').innerText = `Contrato: ${info.name}`;
         document.getElementById('pt-name').innerText = info.name;
@@ -476,15 +476,17 @@
     }
 
     async function finalizeTournamentAPI(initialWater) {
-        if (!ritualState.pendingData) return;
-        const t_id = ritualState.pendingData.id;
-        const fee_cop = ritualState.pendingData.fee;
-        const info = TOURNAMENT_INFO[t_id];
+        if (!window.ritualState.pendingData) return;
+        const t_id = window.ritualState.pendingData.id;
+        const fee_cop = window.ritualState.pendingData.fee;
+        const info = window.TOURNAMENT_INFO[t_id];
         
         const username = sessionStorage.getItem('username');
-        if(!username) return;
+        const token = sessionStorage.getItem('session_token'); 
         
-        const finalScore = Math.max(0, ritualState.score);
+        if(!username || !token) return;
+        
+        const finalScore = Math.max(0, window.ritualState.score);
         
         showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción en la Base de Datos...', '⏳');
         const alertBtn = document.querySelector('#alert-modal button');
@@ -494,7 +496,7 @@
             const res = await fetch('/api/tournaments/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, tournament_id: t_id, fee: fee_cop })
+                body: JSON.stringify({ username: username, session_token: token, tournament_id: t_id, fee: fee_cop }) 
             });
             const data = await res.json();
             
@@ -541,8 +543,10 @@
 
     // ================= FUNCIONES DE PRÁCTICA =================
     async function buyPractice() {
-        const username = document.getElementById('profile-name').innerText;
-        if(!username || username === 'Usuario') return;
+        const username = sessionStorage.getItem('username'); 
+        const token = sessionStorage.getItem('session_token'); 
+        
+        if(!username || !token) return;
 
         if (!window.farmApp || window.farmApp.state.seedsBalance < 500) {
             showAlertModal('Saldo Insuficiente', 'Necesitas al menos 500 🌱 para adquirir las prácticas de sintonización.', '❌');
@@ -553,7 +557,7 @@
             const res = await fetch('/api/store/buy_practice', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, cost: 500, amount: 5 })
+                body: JSON.stringify({ username: username, session_token: token, cost: 500, amount: 5 }) 
             });
             const data = await res.json();
             
@@ -577,19 +581,18 @@
     function startPractice() {
         if (!window.farmApp || !window.farmApp.state.practiceTokens || window.farmApp.state.practiceTokens <= 0) return;
         
-        // Consumir token y guardar estado localmente
         window.farmApp.state.practiceTokens -= 1;
         window.farmApp.saveState();
         updateTournamentUI();
 
-        alchemyState.isPractice = true;
+        window.alchemyState.isPractice = true;
         
-        alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
-        alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
-        alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
-        alchemyState.targetT = Math.floor(Math.random() * 41) + 30; 
+        window.alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
+        window.alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
+        window.alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
+        window.alchemyState.targetT = Math.floor(Math.random() * 41) + 30; 
         
-        alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50; alchemyState.valT = 50;
+        window.alchemyState.valW = 50; window.alchemyState.valN = 50; window.alchemyState.valL = 50; window.alchemyState.valT = 50;
         document.getElementById('slider-water').value = 50;
         document.getElementById('slider-nutrients').value = 50;
         document.getElementById('slider-light').value = 50;
@@ -598,7 +601,6 @@
         document.getElementById('victory-overlay').classList.replace('flex', 'hidden');
         document.getElementById('fail-overlay').classList.replace('flex', 'hidden');
         
-        // Estilo especial para práctica (Púrpura)
         document.getElementById('alchemy-container').className = "bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-purple-400 transition-all duration-300 overflow-hidden";
         document.getElementById('timer-box').classList.replace('bg-red-600', 'bg-red-100');
         document.getElementById('timer-box').classList.replace('text-white', 'text-red-600');
@@ -607,37 +609,37 @@
         document.getElementById('seed-img').style.filter = "none";
         document.getElementById('fail-plant-img').src = "https://i.ibb.co/mrJyDqV8/Frame-743.png";
 
-        setupTrack('track-water', alchemyState.targetW);
-        setupTrack('track-nutrients', alchemyState.targetN);
-        setupTrack('track-light', alchemyState.targetL);
-        setupTrack('track-earth', alchemyState.targetT);
+        setupTrack('track-water', window.alchemyState.targetW);
+        setupTrack('track-nutrients', window.alchemyState.targetN);
+        setupTrack('track-light', window.alchemyState.targetL);
+        setupTrack('track-earth', window.alchemyState.targetT);
 
         updateAlchemyUI();
         
-        document.getElementById('target-water').innerText = alchemyState.targetW + '%';
+        document.getElementById('target-water').innerText = window.alchemyState.targetW + '%';
         document.getElementById('target-water').classList.remove('text-red-500', 'animate-pulse');
-        document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
+        document.getElementById('target-nutrients').innerText = window.alchemyState.targetN + '%';
         document.getElementById('target-nutrients').classList.remove('text-red-500', 'animate-pulse');
-        document.getElementById('target-light').innerText = alchemyState.targetL + '%';
+        document.getElementById('target-light').innerText = window.alchemyState.targetL + '%';
         document.getElementById('target-light').classList.remove('text-red-500', 'animate-pulse');
-        document.getElementById('target-earth').innerText = alchemyState.targetT + '%';
+        document.getElementById('target-earth').innerText = window.alchemyState.targetT + '%';
         document.getElementById('target-earth').classList.remove('text-red-500', 'animate-pulse');
         
         document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
         document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        alchemyState.timer = 10;
-        document.getElementById('alchemy-timer').innerText = alchemyState.timer;
-        alchemyState.active = true;
-        alchemyState.isPerfect = false;
+        window.alchemyState.timer = 10;
+        document.getElementById('alchemy-timer').innerText = window.alchemyState.timer;
+        window.alchemyState.active = true;
+        window.alchemyState.isPerfect = false;
         
-        if(alchemyState.interval) clearInterval(alchemyState.interval);
-        alchemyState.interval = setInterval(() => {
-            if(!alchemyState.active) return;
-            alchemyState.timer--;
-            document.getElementById('alchemy-timer').innerText = alchemyState.timer;
+        if(window.alchemyState.interval) clearInterval(window.alchemyState.interval);
+        window.alchemyState.interval = setInterval(() => {
+            if(!window.alchemyState.active) return;
+            window.alchemyState.timer--;
+            document.getElementById('alchemy-timer').innerText = window.alchemyState.timer;
             
-            if (alchemyState.timer === 5 && !alchemyState.isPerfect) {
+            if (window.alchemyState.timer === 5 && !window.alchemyState.isPerfect) {
                 document.getElementById('target-water').innerText = '???';
                 document.getElementById('target-water').classList.add('text-red-500', 'animate-pulse');
                 document.getElementById('target-nutrients').innerText = '???';
@@ -648,14 +650,14 @@
                 document.getElementById('target-earth').classList.add('text-red-500', 'animate-pulse');
             }
 
-            if (alchemyState.timer <= 3 && !alchemyState.isPerfect) {
+            if (window.alchemyState.timer <= 3 && !window.alchemyState.isPerfect) {
                 document.getElementById('alchemy-container').classList.add('glitch-border');
                 document.getElementById('timer-box').classList.replace('bg-red-100', 'bg-red-600');
                 document.getElementById('timer-box').classList.replace('text-red-600', 'text-white');
                 document.getElementById('seed-img').style.filter = "hue-rotate(90deg) contrast(200%)";
             }
             
-            if(alchemyState.timer <= 0) {
+            if(window.alchemyState.timer <= 0) {
                 finishAlchemyTimeOut(); 
             }
         }, 1000);
@@ -665,7 +667,7 @@
     function closePreTournamentModal() {
         document.getElementById('pre-tournament-modal').classList.add('hidden');
         document.getElementById('pre-tournament-modal').classList.remove('flex');
-        pendingTournament = null;
+        window.pendingTournament = null;
     }
 
     function setupTrack(id, target) {
@@ -676,19 +678,19 @@
     }
 
     function confirmJoinTournament() {
-        if (!pendingTournament) return;
-        ritualState.pendingData = { ...pendingTournament };
+        if (!window.pendingTournament) return;
+        window.ritualState.pendingData = { ...window.pendingTournament };
         closePreTournamentModal();
         
-        const info = TOURNAMENT_INFO[ritualState.pendingData.id];
-        ritualState.score = info.scoreNum;
+        const info = window.TOURNAMENT_INFO[window.ritualState.pendingData.id];
+        window.ritualState.score = info.scoreNum;
         
-        alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
-        alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
-        alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
-        alchemyState.targetT = Math.floor(Math.random() * 41) + 30; 
+        window.alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
+        window.alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
+        window.alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
+        window.alchemyState.targetT = Math.floor(Math.random() * 41) + 30; 
         
-        alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50; alchemyState.valT = 50;
+        window.alchemyState.valW = 50; window.alchemyState.valN = 50; window.alchemyState.valL = 50; window.alchemyState.valT = 50;
         document.getElementById('slider-water').value = 50;
         document.getElementById('slider-nutrients').value = 50;
         document.getElementById('slider-light').value = 50;
@@ -704,38 +706,38 @@
         document.getElementById('seed-img').style.filter = "none";
         document.getElementById('fail-plant-img').src = info.img;
 
-        setupTrack('track-water', alchemyState.targetW);
-        setupTrack('track-nutrients', alchemyState.targetN);
-        setupTrack('track-light', alchemyState.targetL);
-        setupTrack('track-earth', alchemyState.targetT);
+        setupTrack('track-water', window.alchemyState.targetW);
+        setupTrack('track-nutrients', window.alchemyState.targetN);
+        setupTrack('track-light', window.alchemyState.targetL);
+        setupTrack('track-earth', window.alchemyState.targetT);
 
         updateAlchemyUI();
         
-        document.getElementById('target-water').innerText = alchemyState.targetW + '%';
+        document.getElementById('target-water').innerText = window.alchemyState.targetW + '%';
         document.getElementById('target-water').classList.remove('text-red-500', 'animate-pulse');
-        document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
+        document.getElementById('target-nutrients').innerText = window.alchemyState.targetN + '%';
         document.getElementById('target-nutrients').classList.remove('text-red-500', 'animate-pulse');
-        document.getElementById('target-light').innerText = alchemyState.targetL + '%';
+        document.getElementById('target-light').innerText = window.alchemyState.targetL + '%';
         document.getElementById('target-light').classList.remove('text-red-500', 'animate-pulse');
-        document.getElementById('target-earth').innerText = alchemyState.targetT + '%';
+        document.getElementById('target-earth').innerText = window.alchemyState.targetT + '%';
         document.getElementById('target-earth').classList.remove('text-red-500', 'animate-pulse');
         
         document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
         document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        alchemyState.timer = 10;
-        document.getElementById('alchemy-timer').innerText = alchemyState.timer;
-        alchemyState.active = true;
-        alchemyState.isPractice = false;
-        alchemyState.isPerfect = false;
+        window.alchemyState.timer = 10;
+        document.getElementById('alchemy-timer').innerText = window.alchemyState.timer;
+        window.alchemyState.active = true;
+        window.alchemyState.isPractice = false;
+        window.alchemyState.isPerfect = false;
         
-        if(alchemyState.interval) clearInterval(alchemyState.interval);
-        alchemyState.interval = setInterval(() => {
-            if(!alchemyState.active) return;
-            alchemyState.timer--;
-            document.getElementById('alchemy-timer').innerText = alchemyState.timer;
+        if(window.alchemyState.interval) clearInterval(window.alchemyState.interval);
+        window.alchemyState.interval = setInterval(() => {
+            if(!window.alchemyState.active) return;
+            window.alchemyState.timer--;
+            document.getElementById('alchemy-timer').innerText = window.alchemyState.timer;
             
-            if (alchemyState.timer === 5 && !alchemyState.isPerfect) {
+            if (window.alchemyState.timer === 5 && !window.alchemyState.isPerfect) {
                 document.getElementById('target-water').innerText = '???';
                 document.getElementById('target-water').classList.add('text-red-500', 'animate-pulse');
                 document.getElementById('target-nutrients').innerText = '???';
@@ -746,21 +748,21 @@
                 document.getElementById('target-earth').classList.add('text-red-500', 'animate-pulse');
             }
 
-            if (alchemyState.timer <= 3 && !alchemyState.isPerfect) {
+            if (window.alchemyState.timer <= 3 && !window.alchemyState.isPerfect) {
                 document.getElementById('alchemy-container').classList.add('glitch-border');
                 document.getElementById('timer-box').classList.replace('bg-red-100', 'bg-red-600');
                 document.getElementById('timer-box').classList.replace('text-red-600', 'text-white');
                 document.getElementById('seed-img').style.filter = "hue-rotate(90deg) contrast(200%)";
             }
             
-            if(alchemyState.timer <= 0) {
+            if(window.alchemyState.timer <= 0) {
                 finishAlchemyTimeOut(); 
             }
         }, 1000);
     }
 
     function handleAlchemyInput(source) {
-        if(!alchemyState.active) return;
+        if(!window.alchemyState.active) return;
         
         const wSlider = document.getElementById('slider-water');
         const nSlider = document.getElementById('slider-nutrients');
@@ -772,31 +774,31 @@
         let newL = parseInt(lSlider.value);
         let newT = parseInt(tSlider.value);
         
-        let deltaW = newW - alchemyState.valW;
-        let deltaN = newN - alchemyState.valN;
-        let deltaL = newL - alchemyState.valL;
-        let deltaT = newT - alchemyState.valT;
+        let deltaW = newW - window.alchemyState.valW;
+        let deltaN = newN - window.alchemyState.valN;
+        let deltaL = newL - window.alchemyState.valL;
+        let deltaT = newT - window.alchemyState.valT;
         
         if (source === 'light' && deltaL !== 0) {
-            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5))); 
+            newW = Math.max(0, Math.min(100, window.alchemyState.valW - Math.round(deltaL * 0.5))); 
         } else if (source === 'water' && deltaW !== 0) {
-            newN = Math.max(0, Math.min(100, alchemyState.valN - Math.round(deltaW * 0.4))); 
-            newT = Math.max(0, Math.min(100, alchemyState.valT - Math.round(deltaW * 0.2))); 
+            newN = Math.max(0, Math.min(100, window.alchemyState.valN - Math.round(deltaW * 0.4))); 
+            newT = Math.max(0, Math.min(100, window.alchemyState.valT - Math.round(deltaW * 0.2))); 
         } else if (source === 'nutrients' && deltaN !== 0) {
-            newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3))); 
+            newL = Math.max(0, Math.min(100, window.alchemyState.valL - Math.round(deltaN * 0.3))); 
         } else if (source === 'earth' && deltaT !== 0) {
-            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaT * 0.3))); 
+            newW = Math.max(0, Math.min(100, window.alchemyState.valW - Math.round(deltaT * 0.3))); 
         }
         
-        if (Math.abs(newW - alchemyState.targetW) <= 1) newW = alchemyState.targetW;
-        if (Math.abs(newN - alchemyState.targetN) <= 1) newN = alchemyState.targetN;
-        if (Math.abs(newL - alchemyState.targetL) <= 1) newL = alchemyState.targetL;
-        if (Math.abs(newT - alchemyState.targetT) <= 1) newT = alchemyState.targetT;
+        if (Math.abs(newW - window.alchemyState.targetW) <= 1) newW = window.alchemyState.targetW;
+        if (Math.abs(newN - window.alchemyState.targetN) <= 1) newN = window.alchemyState.targetN;
+        if (Math.abs(newL - window.alchemyState.targetL) <= 1) newL = window.alchemyState.targetL;
+        if (Math.abs(newT - window.alchemyState.targetT) <= 1) newT = window.alchemyState.targetT;
 
-        alchemyState.valW = newW;
-        alchemyState.valN = newN;
-        alchemyState.valL = newL;
-        alchemyState.valT = newT;
+        window.alchemyState.valW = newW;
+        window.alchemyState.valN = newN;
+        window.alchemyState.valL = newL;
+        window.alchemyState.valT = newT;
         
         wSlider.value = newW;
         nSlider.value = newN;
@@ -827,20 +829,20 @@
     }
 
     function updateAlchemyUI() {
-        const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
-        const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
-        const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
-        const diffT = Math.abs(alchemyState.targetT - alchemyState.valT);
+        const diffW = Math.abs(window.alchemyState.targetW - window.alchemyState.valW);
+        const diffN = Math.abs(window.alchemyState.targetN - window.alchemyState.valN);
+        const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
+        const diffT = Math.abs(window.alchemyState.targetT - window.alchemyState.valT);
         
-        document.getElementById('val-water').innerText = alchemyState.valW + '%';
-        document.getElementById('val-nutrients').innerText = alchemyState.valN + '%';
-        document.getElementById('val-light').innerText = alchemyState.valL + '%';
-        document.getElementById('val-earth').innerText = alchemyState.valT + '%';
+        document.getElementById('val-water').innerText = window.alchemyState.valW + '%';
+        document.getElementById('val-nutrients').innerText = window.alchemyState.valN + '%';
+        document.getElementById('val-light').innerText = window.alchemyState.valL + '%';
+        document.getElementById('val-earth').innerText = window.alchemyState.valT + '%';
 
-        updateArrow('arrow-water', alchemyState.valW, alchemyState.targetW);
-        updateArrow('arrow-nutrients', alchemyState.valN, alchemyState.targetN);
-        updateArrow('arrow-light', alchemyState.valL, alchemyState.targetL);
-        updateArrow('arrow-earth', alchemyState.valT, alchemyState.targetT);
+        updateArrow('arrow-water', window.alchemyState.valW, window.alchemyState.targetW);
+        updateArrow('arrow-nutrients', window.alchemyState.valN, window.alchemyState.targetN);
+        updateArrow('arrow-light', window.alchemyState.valL, window.alchemyState.targetL);
+        updateArrow('arrow-earth', window.alchemyState.valT, window.alchemyState.targetT);
         
         const glass = document.getElementById('terrarium-glass');
         const liquid = document.getElementById('terrarium-liquid');
@@ -855,10 +857,10 @@
         document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
         let isChaotic = false;
 
-        if (alchemyState.valT > alchemyState.targetT + 15) {
+        if (window.alchemyState.valT > window.alchemyState.targetT + 15) {
             ground.style.height = '35%';
             isChaotic = true;
-        } else if (alchemyState.valT < alchemyState.targetT - 15) {
+        } else if (window.alchemyState.valT < window.alchemyState.targetT - 15) {
             ground.style.height = '5%';
             isChaotic = true;
         } else {
@@ -866,13 +868,13 @@
         }
 
         ground.className = "absolute bottom-0 left-0 w-full z-10 transition-all duration-300 border-t-4 border-[#3A2210]";
-        if (alchemyState.valW > alchemyState.targetW + 15) {
+        if (window.alchemyState.valW > window.alchemyState.targetW + 15) {
             liquid.style.height = '60%';
             liquid.className = "absolute bottom-0 left-0 w-full bg-blue-900/90 z-20 transition-all duration-300 flex items-start justify-center pt-2";
             fog.style.opacity = '1';
             ground.classList.add('bg-[#2a1a0f]');
             isChaotic = true;
-        } else if (alchemyState.valW < alchemyState.targetW - 15) {
+        } else if (window.alchemyState.valW < window.alchemyState.targetW - 15) {
             liquid.style.height = '0%';
             fog.style.opacity = '0';
             ground.classList.add('bg-[#8b8b8b]', 'border-dashed');
@@ -884,12 +886,12 @@
             ground.classList.add('bg-[#5C3A21]');
         }
 
-        if (alchemyState.valL > alchemyState.targetL + 15) {
+        if (window.alchemyState.valL > window.alchemyState.targetL + 15) {
             glare.style.opacity = '0.8';
             darkness.style.opacity = '0';
             document.getElementById('alchemy-container').classList.add('shake-intense');
             isChaotic = true;
-        } else if (alchemyState.valL < alchemyState.targetL - 15) {
+        } else if (window.alchemyState.valL < window.alchemyState.targetL - 15) {
             glare.style.opacity = '0';
             darkness.style.opacity = '0.85';
             isChaotic = true;
@@ -898,14 +900,14 @@
             darkness.style.opacity = '0';
         }
 
-        if (alchemyState.valN > alchemyState.targetN + 15) {
+        if (window.alchemyState.valN > window.alchemyState.targetN + 15) {
             liquid.classList.replace('bg-blue-900/90', 'bg-purple-600/90');
             liquid.classList.replace('bg-blue-500/50', 'bg-purple-500/80');
             bubbles.classList.remove('hidden');
             seed.style.transform = "translate(-50%, -50%) scale(1.2)";
             seed.style.filter = "hue-rotate(180deg)";
             isChaotic = true;
-        } else if (alchemyState.valN < alchemyState.targetN - 15) {
+        } else if (window.alchemyState.valN < window.alchemyState.targetN - 15) {
             bubbles.classList.add('hidden');
             seed.style.transform = "translate(-50%, -50%) scale(0.8)";
             seed.style.filter = "grayscale(80%) opacity(70%)";
@@ -947,10 +949,10 @@
     }
 
     function triggerPerfectHarmony() {
-        if(alchemyState.isPerfect) return; 
-        alchemyState.isPerfect = true;
-        alchemyState.active = false;
-        clearInterval(alchemyState.interval);
+        if(window.alchemyState.isPerfect) return; 
+        window.alchemyState.isPerfect = true;
+        window.alchemyState.active = false;
+        clearInterval(window.alchemyState.interval);
         
         setTimeout(() => {
             document.getElementById('victory-overlay').classList.remove('hidden');
@@ -959,7 +961,7 @@
             const btn = document.getElementById('btn-victory-continue');
             const desc = document.getElementById('victory-desc');
             
-            if (alchemyState.isPractice) {
+            if (window.alchemyState.isPractice) {
                 desc.innerHTML = `Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">Práctica Exitosa.</strong>`;
                 btn.innerText = "Finalizar Práctica";
             } else {
@@ -967,31 +969,31 @@
                 btn.innerText = "Entrar a la Arena";
             }
             
-            alchemyState.finalWater = alchemyState.valW;
+            window.alchemyState.finalWater = window.alchemyState.valW;
         }, 800); 
     }
 
     function finishAlchemyTimeOut() {
-        alchemyState.active = false;
-        clearInterval(alchemyState.interval);
+        window.alchemyState.active = false;
+        clearInterval(window.alchemyState.interval);
         document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
         
-        const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
-        const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
-        const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
-        const diffT = Math.abs(alchemyState.targetT - alchemyState.valT);
+        const diffW = Math.abs(window.alchemyState.targetW - window.alchemyState.valW);
+        const diffN = Math.abs(window.alchemyState.targetN - window.alchemyState.valN);
+        const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
+        const diffT = Math.abs(window.alchemyState.targetT - window.alchemyState.valT);
         const totalVariance = diffW + diffN + diffL + diffT;
         
         const penalty = totalVariance * 35; 
-        if (!alchemyState.isPractice) {
-            ritualState.score = Math.max(0, ritualState.score - penalty);
+        if (!window.alchemyState.isPractice) {
+            window.ritualState.score = Math.max(0, window.ritualState.score - penalty);
         }
-        alchemyState.finalWater = alchemyState.valW;
+        window.alchemyState.finalWater = window.alchemyState.valW;
         
         document.getElementById('fail-msg').innerHTML = `La planta se estabilizó de emergencia.<br>Varianza total: ${totalVariance}% | Daño Químico: <strong class="text-red-400">-${penalty} Pts</strong>`;
         
         const btn = document.getElementById('btn-fail-continue');
-        if (alchemyState.isPractice) {
+        if (window.alchemyState.isPractice) {
             btn.innerText = "Finalizar Práctica";
         } else {
             btn.innerText = "Asumir Daño y Entrar";
@@ -1004,10 +1006,10 @@
     async function submitAlchemyFinal() {
         document.getElementById('ritual-alchemy-modal').classList.replace('flex', 'hidden');
         
-        if (alchemyState.isPractice) {
+        if (window.alchemyState.isPractice) {
             showAlertModal('Práctica Concluida', `Tu destreza manual define tu éxito. Sigue entrenando para dominar la arena.`, '🌱');
         } else {
-            await finalizeTournamentAPI(alchemyState.finalWater);
+            await finalizeTournamentAPI(window.alchemyState.finalWater);
         }
     }
 

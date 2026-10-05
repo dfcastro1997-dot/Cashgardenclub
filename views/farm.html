@@ -675,14 +675,14 @@ window.farmApp = {
                 fetch('/api/save_state', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // <-- ENVIAR TOKEN EN EL CUERPO JSON
                     body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                 }).then(res => {
                     this.state.isSaving = false; // <-- LIBERAR CANDADO AL TERMINAR
                     if (res.status === 401) {
-                        alert("⚠️ Sesión invalidada. Abierto en otra ubicación.");
-                        sessionStorage.clear();
-                        location.reload();
+                        // En lugar del alert() nativo, usamos la modal bonita de index.html
+                        if (window.showSessionExpiredModal) {
+                            window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
+                        }
                     }
                 }).catch(e => {
                     this.state.isSaving = false; // <-- LIBERAR CANDADO EN CASO DE ERROR
