@@ -644,7 +644,7 @@
         
         showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción...', '⏳');
         
-        // DECLARACIÓN FALTANTE: Seleccionamos y ocultamos el botón de la alerta para que el usuario no cierre mientras carga
+        // ¡ESTA ES LA LÍNEA QUE FALTABA! Declaramos y ocultamos el botón
         const alertBtn = document.querySelector('#alert-modal button');
         if(alertBtn) alertBtn.classList.add('hidden');
         
@@ -664,7 +664,7 @@
             const data = await res.json();
             
             closeAlertModal();
-            // Restauramos el botón por si se necesita para futuras alertas
+            // Restauramos el botón
             if(alertBtn) alertBtn.classList.remove('hidden');
             
             if (res.ok) {
@@ -711,7 +711,7 @@
             }
         } catch(e) {
             closeAlertModal();
-            // Restauramos el botón en caso de error de conexión
+            // Restauramos el botón en caso de error
             if(alertBtn) alertBtn.classList.remove('hidden');
             showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor.', '📡');
         }
