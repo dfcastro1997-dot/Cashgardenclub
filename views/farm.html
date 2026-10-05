@@ -689,7 +689,9 @@ window.farmApp = {
     init() {
    
         const username = sessionStorage.getItem('username');
-        if (username) {
+        const token = sessionStorage.getItem('session_token'); // <-- 1. Obtener el token guardado
+        
+        if (username && token) { // <-- 2. Validar que exista el token
             if (username === 'DamianCastro') {
                 const adminBtn = document.getElementById('admin-dev-btn');
                 if (adminBtn) {
@@ -698,14 +700,17 @@ window.farmApp = {
                 }
             }
 
-            fetch(`/api/sync/${username}`)
-                .then(res => res.json())
+            // <-- 3. Adjuntar el token como parámetro en la URL (?token=...)
+            fetch(`/api/sync/${username}?token=${token}`)
+                .then(res => {
+                    if (res.status === 401) throw new Error("Unauthorized");
+                    return res.json();
+                })
                 .then(data => {
                     if (data.status === 'success' && data.user.game_state) {
                         try {
                             const s = JSON.parse(data.user.game_state);
                             
-                            // ELIMINAR CONDICIÓN DE lastTick PARA FORZAR QUE EL SERVIDOR SIEMPRE GANE
                             this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
                             this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; 
                             this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
@@ -723,11 +728,10 @@ window.farmApp = {
                             this.updateUI(); 
                         } catch(e) { console.error("Error parseando game_state", e); }
                     } else {
-                        // Si no hay estado en el servidor, mostrar estado inicial por defecto
                         this.updateUI();
                     }
                 })
-                .catch(e => { console.error(e); this.updateUI(); }); // Inicializar aunque falle
+                .catch(e => { console.error(e); this.updateUI(); }); 
         }
     },
 
