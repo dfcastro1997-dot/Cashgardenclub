@@ -151,6 +151,10 @@
                                 <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
                                     <span class="text-lg">🏦</span> Billetera Wompi
                                 </button>
+                                <!-- NUEVO BOTÓN DE CÓDIGOS -->
+                                <button onclick="openCodesModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
+                                    <span class="text-lg">🎟️</span> Códigos
+                                </button>
                             </div>
                             <div class="py-2 border-t border-gray-100">
                                 <button onclick="logout()" class="w-full text-left px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-3">
@@ -203,6 +207,23 @@
             <p class="text-xs md:text-sm text-gray-500 mb-6" id="session-expired-msg">Tu sesión ha sido invalidada.</p>
             <button onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
                 Entendido
+            </button>
+        </div>
+    </div>
+
+
+    <!-- NUEVA VENTANA MODAL DE CÓDIGOS -->
+    <div id="codes-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeCodesModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-gray-200">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl md:text-4xl">🎟️</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Canjear Código</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-6">Ingresa tu código promocional o secreto para obtener beneficios.</p>
+            <input type="text" id="secret-code-input" placeholder="Ej: 0000" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-black text-center text-cg_navy tracking-widest text-lg mb-4">
+            <button onclick="submitSecretCode()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
+                Canjear
             </button>
         </div>
     </div>
@@ -455,6 +476,53 @@
                 dropdown.classList.add('hidden');
             }
         });
+
+        setInterval(syncUserData, 10000);
+        window.addEventListener('focus', syncUserData);
+
+
+
+
+        function openCodesModal() {
+            document.getElementById('secret-code-input').value = '';
+            document.getElementById('codes-modal').classList.remove('hidden');
+            document.getElementById('codes-modal').classList.add('flex');
+        }
+
+        function closeCodesModal() {
+            document.getElementById('codes-modal').classList.add('hidden');
+            document.getElementById('codes-modal').classList.remove('flex');
+        }
+
+        function submitSecretCode() {
+            const code = document.getElementById('secret-code-input').value.trim();
+            
+            // Verificamos si la instancia de la granja (donde están las funciones de dev) está cargada
+            if (!window.farmApp || !window.farmApp.dev) {
+                alert("Debes estar en la pestaña 'Granja' para poder usar códigos.");
+                return;
+            }
+            
+            switch (code) {
+                case '0000':
+                    window.farmApp.dev.addSeeds(50000);
+                    break;
+                case '1111':
+                    window.farmApp.dev.addCOP(50000);
+                    break;
+                case '2222':
+                    window.farmApp.dev.addTime(1);
+                    break;
+                case '3333':
+                    window.farmApp.dev.addTime(2);
+                    break;
+                default:
+                    alert("El código ingresado es inválido o ha expirado.");
+                    return;
+            }
+            
+            closeCodesModal();
+        }
 
         setInterval(syncUserData, 10000);
         window.addEventListener('focus', syncUserData);
