@@ -328,10 +328,15 @@ def save_state():
             
         try:
             incoming_state = json.loads(incoming_state_str)
-            db_state = json.loads(user['game_state'] or '{}')
+            db_state_raw = user['game_state']
+            db_state = json.loads(db_state_raw) if db_state_raw else {}
             
             incoming_seeds = incoming_state.get('seedsBalance', 0)
-            db_seeds = db_state.get('seedsBalance', 0)
+            
+            # CORRECCIÓN AQUÍ: Si el usuario no tiene estado guardado previo (cuenta nueva), 
+            # el balance base que acepta el anti-cheat es 35000, de lo contrario lee la BD.
+            db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
+            
             if incoming_seeds > db_seeds + 30000:
                 incoming_state['seedsBalance'] = db_seeds 
                 
@@ -353,7 +358,7 @@ def save_state():
     
     cur.close(); conn.close()
     return jsonify({"message": "Progreso guardado y validado"})
-
+    
 @app.route('/api/store/buy_practice', methods=['POST'])
 def buy_practice():
     data = request.json
