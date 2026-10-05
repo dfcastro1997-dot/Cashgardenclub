@@ -141,10 +141,10 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div class="bg-blue-50 border border-blue-100 p-4 md:p-5 rounded-xl shadow-sm">
                     <div class="flex items-center gap-3 mb-2 md:mb-3">
-                        <span class="text-xl md:text-2xl drop-shadow-sm">💧</span>
-                        <h5 class="font-black text-blue-900 text-xs md:text-sm">Riego Quirúrgico</h5>
+                        <span class="text-xl md:text-2xl drop-shadow-sm">🧪</span>
+                        <h5 class="font-black text-blue-900 text-xs md:text-sm">Alquimia Inicial</h5>
                     </div>
-                    <p class="text-[11px] md:text-xs text-blue-800 leading-relaxed">Se desactiva la regadera estándar. Aplicarás agua deteniendo una flecha a alta velocidad en nuestro calibrador de precisión.</p>
+                    <p class="text-[11px] md:text-xs text-blue-800 leading-relaxed">Tendrás solo 15 segundos para equilibrar la luz, nutrientes y agua. Tu precisión definirá cuántos puntos logras mantener antes de empezar.</p>
                 </div>
                 <div class="bg-red-50 border border-red-100 p-4 md:p-5 rounded-xl shadow-sm">
                     <div class="flex items-center gap-3 mb-2 md:mb-3">
@@ -171,78 +171,63 @@
 </div>
 
 
-
-
 <!-- ========================================== -->
-<!-- MINIJUEGO RITUAL DE SIEMBRA (3 FASES)      -->
+<!-- MINIJUEGO: ALQUIMIA BOTÁNICA (ENTRADA)     -->
 <!-- ========================================== -->
-
-<!-- FASE 1: SEMILLA -->
-<div id="ritual-seed-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+<div id="ritual-alchemy-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
-        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 1: Centrado</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Arrastra la semilla al centro exacto</p>
-        
-        <div class="relative w-40 h-40 sm:w-48 sm:h-48 mx-auto bg-[#8B5A2B] rounded-full border-8 border-[#5C3A21] overflow-hidden mb-6 shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)] touch-none" id="ritual-pot">
-            <!-- Diana visual -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/50"></div>
-                <div class="absolute w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white shadow-[0_0_8px_white]"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-xl sm:text-2xl font-black text-cg_navy">Alquimia Botánica</h3>
+            <div class="bg-red-100 text-red-600 font-black px-3 py-1 rounded-lg text-lg flex items-center gap-1 shadow-inner">
+                ⏱ <span id="alchemy-timer">15</span>s
             </div>
-            <!-- Semilla Draggable -->
-            <div id="ritual-seed" class="absolute w-10 h-10 bg-[#4CAF50] rounded-full border-2 border-green-200 shadow-lg cursor-grab flex items-center justify-center text-xl touch-none transition-transform active:scale-110 z-20" style="left: 10px; top: 10px;">🌱</div>
         </div>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest leading-tight">Estabiliza la fórmula antes que acabe el tiempo.<br><strong class="text-red-500">¡Las válvulas están interconectadas!</strong></p>
         
-        <button onclick="ritualPhase1Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md active:scale-95 transition-all">Plantar Semilla</button>
-    </div>
-</div>
-
-<!-- FASE 2: TIERRA -->
-<div id="ritual-dirt-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-2 border-cg_gold">
-        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 2: Cobertura</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-4 font-bold uppercase tracking-widest">Suelta el botón en la zona verde (80-85%)</p>
-        
-        <div class="relative w-12 sm:w-14 h-40 sm:h-48 mx-auto bg-gray-100 rounded-full mb-4 border border-gray-300 overflow-hidden flex items-end shadow-inner">
-            <div id="ritual-dirt-fill" class="w-full bg-[#5C3A21] transition-all duration-75" style="height: 0%;"></div>
-            <!-- Zona verde -->
-            <div class="absolute w-full h-[5%] bg-green-400/80 bottom-[80%] border-y-2 border-green-600 shadow-[0_0_10px_rgba(74,222,128,0.8)] z-10 pointer-events-none"></div>
+        <!-- Metas Dinámicas -->
+        <div class="grid grid-cols-3 gap-2 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-200 shadow-sm">
+            <div class="text-center">
+                <p class="text-[9px] font-bold text-gray-400 uppercase">Meta Agua</p>
+                <p class="text-base sm:text-lg font-black text-blue-600" id="target-water">0%</p>
+            </div>
+            <div class="text-center border-x border-gray-200">
+                <p class="text-[9px] font-bold text-gray-400 uppercase">Nutrientes</p>
+                <p class="text-base sm:text-lg font-black text-green-600" id="target-nutrients">0%</p>
+            </div>
+            <div class="text-center">
+                <p class="text-[9px] font-bold text-gray-400 uppercase">Meta Luz</p>
+                <p class="text-base sm:text-lg font-black text-yellow-500" id="target-light">0%</p>
+            </div>
         </div>
-        <p id="ritual-dirt-pct" class="text-2xl font-black text-cg_navy mb-6">0%</p>
-        
-        <button id="ritual-dirt-btn" class="w-full bg-[#8B5A2B] active:bg-[#5C3A21] text-white font-black py-4 sm:py-5 rounded-xl shadow-lg uppercase tracking-widest select-none touch-none text-sm transition-colors">MANTENER PARA TIERRA</button>
-        <button onclick="ritualPhase2Done()" class="w-full mt-3 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl uppercase tracking-widest text-xs transition-colors">Confirmar Nivel</button>
-    </div>
-</div>
 
-<!-- FASE 3: PRIMER RIEGO -->
-<div id="ritual-water-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue">
-        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Fase 3: Riego Vital</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la zona azul</p>
-        
-        <div class="relative w-full h-10 sm:h-12 bg-red-100 rounded-full mb-8 sm:mb-10 shadow-inner border border-red-200 overflow-hidden">
-            <div id="ritual-calib-safe" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500"></div>
-            
-            <div class="absolute top-0 left-[20%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">20%</div>
-            <div class="absolute top-0 left-[50%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">50%</div>
-            <div class="absolute top-0 left-[80%] transform -translate-x-1/2 h-full flex items-center font-black text-[10px] text-black/40 z-10">80%</div>
-            
-            <div id="ritual-calib-ptr" class="absolute top-0 h-full w-2 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;">
-                 <div class="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] sm:border-l-[8px] border-r-[6px] sm:border-r-[8px] border-t-[8px] sm:border-t-[10px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
-                 <div class="absolute -bottom-2 sm:-bottom-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] sm:border-l-[8px] border-r-[6px] sm:border-r-[8px] border-b-[8px] sm:border-b-[10px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
+        <!-- Sliders Interactivos -->
+        <div class="space-y-5 mb-8 text-left">
+            <div>
+                <label class="flex justify-between text-xs font-black text-blue-800 mb-1">
+                    <span>💧 Inyección de Agua</span> <span id="val-water" class="font-mono">50%</span>
+                </label>
+                <input type="range" id="slider-water" min="0" max="100" value="50" class="w-full accent-blue-500 h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer" oninput="handleAlchemyInput('water')">
+            </div>
+            <div>
+                <label class="flex justify-between text-xs font-black text-green-800 mb-1">
+                    <span>🌱 Dosis Nutrientes</span> <span id="val-nutrients" class="font-mono">50%</span>
+                </label>
+                <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="w-full accent-green-500 h-3 bg-green-100 rounded-lg appearance-none cursor-pointer" oninput="handleAlchemyInput('nutrients')">
+            </div>
+            <div>
+                <label class="flex justify-between text-xs font-black text-yellow-600 mb-1">
+                    <span>☀️ Exposición a Luz</span> <span id="val-light" class="font-mono">50%</span>
+                </label>
+                <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-400 h-3 bg-yellow-100 rounded-lg appearance-none cursor-pointer" oninput="handleAlchemyInput('light')">
             </div>
         </div>
         
-        <button onclick="ritualPhase3Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-lg py-4 sm:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest">
-            FIJAR Y ENTRAR A LA ARENA
+        <button onclick="finishAlchemy()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 sm:py-5 rounded-xl uppercase tracking-widest shadow-[0_5px_0_#c27818] active:translate-y-[5px] active:shadow-none transition-all text-sm">
+            FIJAR MEZCLA
         </button>
     </div>
 </div>
-
 
 <!-- VENTANA MODAL DE ALERTA/ERROR -->
 <div id="alert-modal" class="fixed inset-0 z-[400] hidden items-center justify-center p-4">
@@ -268,8 +253,14 @@
     };
 
     let pendingTournament = null;
-    let ritualState = { pendingData: null, score: 10000, dirtInt: null, dirtPct: 0, waterReq: null, waterX: 0, waterDir: 1 };
-
+    let ritualState = { pendingData: null, score: 10000 };
+    
+    // Estado del minijuego de Alquimia
+    let alchemyState = {
+        targetW: 0, targetN: 0, targetL: 0,
+        valW: 50, valN: 50, valL: 50,
+        timer: 15, interval: null, active: false
+    };
     
     function showAlertModal(title, msg, icon = '⚠️') {
         document.getElementById('alert-modal-title').innerText = title;
@@ -367,158 +358,130 @@
     function confirmJoinTournament() {
         if (!pendingTournament) return;
         
-        // FIX: Guardar una copia segura de los datos antes de cerrar el modal
         ritualState.pendingData = { ...pendingTournament };
         closePreTournamentModal();
         
-        // Iniciar estado del ritual
         const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         ritualState.score = info.scoreNum;
         
-        // ================= FASE 1: SEMILLA =================
-        document.getElementById('ritual-seed-modal').classList.remove('hidden');
-        document.getElementById('ritual-seed-modal').classList.add('flex');
+        // Generar Fórmula Meta Dinámica
+        alchemyState.targetW = Math.floor(Math.random() * 41) + 30; // 30 a 70%
+        alchemyState.targetN = Math.floor(Math.random() * 31) + 20; // 20 a 50%
+        alchemyState.targetL = Math.floor(Math.random() * 41) + 20; // 20 a 60%
         
-        const seed = document.getElementById('ritual-seed');
-        seed.style.left = '10px'; seed.style.top = '10px';
-        let isDragging = false;
-        const pot = document.getElementById('ritual-pot');
+        // Resetear Valores
+        alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50;
+        document.getElementById('slider-water').value = 50;
+        document.getElementById('slider-nutrients').value = 50;
+        document.getElementById('slider-light').value = 50;
+        updateAlchemyUI();
         
-        const move = (e) => {
-            if(!isDragging) return;
-            e.preventDefault();
-            const rect = pot.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            let x = clientX - rect.left - 20;
-            let y = clientY - rect.top - 20;
-            x = Math.max(0, Math.min(x, rect.width - 40));
-            y = Math.max(0, Math.min(y, rect.height - 40));
-            seed.style.left = x + 'px';
-            seed.style.top = y + 'px';
-        };
+        document.getElementById('target-water').innerText = alchemyState.targetW + '%';
+        document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
+        document.getElementById('target-light').innerText = alchemyState.targetL + '%';
         
-        const up = () => { isDragging = false; };
-        const down = () => { isDragging = true; };
+        document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
+        document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        seed.onmousedown = down; seed.ontouchstart = down;
-        document.onmousemove = move; document.ontouchmove = move;
-        document.onmouseup = up; document.ontouchend = up;
+        // Iniciar Temporizador de Tensión
+        alchemyState.timer = 15;
+        document.getElementById('alchemy-timer').innerText = alchemyState.timer;
+        alchemyState.active = true;
+        
+        if(alchemyState.interval) clearInterval(alchemyState.interval);
+        alchemyState.interval = setInterval(() => {
+            if(!alchemyState.active) return;
+            alchemyState.timer--;
+            document.getElementById('alchemy-timer').innerText = alchemyState.timer;
+            if(alchemyState.timer <= 0) {
+                finishAlchemy(); // Auto-completar si el tiempo se agota
+            }
+        }, 1000);
     }
 
-    function ritualPhase1Done() {
-        const pot = document.getElementById('ritual-pot');
-        const seed = document.getElementById('ritual-seed');
-        const rect = pot.getBoundingClientRect();
+    function handleAlchemyInput(source) {
+        if(!alchemyState.active) return;
         
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        const sx = parseFloat(seed.style.left) + 20;
-        const sy = parseFloat(seed.style.top) + 20;
-        const dist = Math.sqrt(Math.pow(sx - cx, 2) + Math.pow(sy - cy, 2));
+        const wSlider = document.getElementById('slider-water');
+        const nSlider = document.getElementById('slider-nutrients');
+        const lSlider = document.getElementById('slider-light');
         
-        if(dist > 5) {
-            const penalty = Math.min(300, Math.floor(dist * 3));
-            ritualState.score -= penalty;
-            showAlertModal('Calidad de Siembra', `Semilla descentrada. Penalización: -${penalty} pts`, '⚠️');
-        } else {
-            showAlertModal('Calidad de Siembra', '¡Semilla perfectamente centrada! +0 penalización.', '🎯');
+        let newW = parseInt(wSlider.value);
+        let newN = parseInt(nSlider.value);
+        let newL = parseInt(lSlider.value);
+        
+        // Calcular diferencia (Delta)
+        let deltaW = newW - alchemyState.valW;
+        let deltaN = newN - alchemyState.valN;
+        let deltaL = newL - alchemyState.valL;
+        
+        // MECÁNICA DE INTERCONEXIÓN: Un slider afecta matemáticamente a los otros
+        if (source === 'light' && deltaL !== 0) {
+            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5)));
+        } else if (source === 'water' && deltaW !== 0) {
+            newN = Math.max(0, Math.min(100, alchemyState.valN - Math.round(deltaW * 0.4)));
+        } else if (source === 'nutrients' && deltaN !== 0) {
+            newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3)));
         }
-
-        document.getElementById('ritual-seed-modal').classList.replace('flex', 'hidden');
-        setTimeout(() => { closeAlertModal(); startRitualPhase2(); }, 2000);
+        
+        // Guardar estado nuevo
+        alchemyState.valW = newW;
+        alchemyState.valN = newN;
+        alchemyState.valL = newL;
+        
+        // Forzar actualización visual
+        wSlider.value = newW;
+        nSlider.value = newN;
+        lSlider.value = newL;
+        
+        updateAlchemyUI();
+    }
+    
+    function updateAlchemyUI() {
+        document.getElementById('val-water').innerText = alchemyState.valW + '%';
+        document.getElementById('val-nutrients').innerText = alchemyState.valN + '%';
+        document.getElementById('val-light').innerText = alchemyState.valL + '%';
     }
 
-    // ================= FASE 2: TIERRA =================
-    function startRitualPhase2() {
-        ritualState.dirtPct = 0;
-        document.getElementById('ritual-dirt-fill').style.height = '0%';
-        document.getElementById('ritual-dirt-pct').innerText = '0%';
+    async function finishAlchemy() {
+        if(!alchemyState.active) return;
+        alchemyState.active = false;
+        clearInterval(alchemyState.interval);
         
-        document.getElementById('ritual-dirt-modal').classList.remove('hidden');
-        document.getElementById('ritual-dirt-modal').classList.add('flex');
+        // Cálculo de Varianza Matemática
+        const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
+        const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
+        const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
         
-        const btn = document.getElementById('ritual-dirt-btn');
-        const down = (e) => {
-            e.preventDefault();
-            if(ritualState.dirtInt) clearInterval(ritualState.dirtInt);
-            ritualState.dirtInt = setInterval(() => {
-                ritualState.dirtPct += 1.5;
-                if(ritualState.dirtPct > 100) ritualState.dirtPct = 100;
-                document.getElementById('ritual-dirt-fill').style.height = ritualState.dirtPct + '%';
-                document.getElementById('ritual-dirt-pct').innerText = Math.floor(ritualState.dirtPct) + '%';
-            }, 30);
-        };
-        const up = (e) => { e.preventDefault(); clearInterval(ritualState.dirtInt); };
+        const totalVariance = diffW + diffN + diffL;
         
-        btn.onmousedown = down; btn.ontouchstart = down;
-        btn.onmouseup = up; btn.ontouchend = up; btn.onmouseleave = up;
-    }
-
-    function ritualPhase2Done() {
-        const pct = ritualState.dirtPct;
-        let penalty = 0;
-        if(pct < 80) penalty = Math.floor((80 - pct) * 15);
-        else if(pct > 85) penalty = Math.floor((pct - 85) * 15);
+        // Castigo severo: Cada 1% de error cuesta 35 puntos del pozo inicial
+        const penalty = totalVariance * 35; 
+        ritualState.score = Math.max(0, ritualState.score - penalty);
         
-        if(penalty > 0) {
-            ritualState.score -= penalty;
-            showAlertModal('Cobertura de Tierra', `Cantidad subóptima (${Math.floor(pct)}%). Penalización: -${penalty} pts`, '⚠️');
-        } else {
-            showAlertModal('Cobertura de Tierra', '¡Tierra perfecta (80-85%)! +0 penalización.', '🎯');
+        let icon = '💀';
+        let title = 'Fórmula Inestable';
+        let msgExtra = 'La planta iniciará gravemente estresada.';
+        
+        if (totalVariance <= 15) { 
+            icon = '🎯'; 
+            title = 'Fórmula Perfecta'; 
+            msgExtra = 'Crecimiento óptimo asegurado.';
+        } else if (totalVariance <= 45) { 
+            icon = '⚠️'; 
+            title = 'Mezcla Desequilibrada'; 
+            msgExtra = 'Requiere atención temprana.';
         }
-
-        document.getElementById('ritual-dirt-modal').classList.replace('flex', 'hidden');
-        setTimeout(() => { closeAlertModal(); startRitualPhase3(); }, 2000);
-    }
-
-    // ================= FASE 3: AGUA =================
-    function startRitualPhase3() {
-        const info = TOURNAMENT_INFO[ritualState.pendingData.id];
-        const safeZone = document.getElementById('ritual-calib-safe');
-        safeZone.style.left = `${info.minWater}%`;
-        safeZone.style.width = `${info.maxWater - info.minWater}%`;
         
-        ritualState.waterX = 0;
-        ritualState.waterDir = 1;
+        document.getElementById('ritual-alchemy-modal').classList.replace('flex', 'hidden');
         
-        document.getElementById('ritual-water-modal').classList.remove('hidden');
-        document.getElementById('ritual-water-modal').classList.add('flex');
-        
-        const ptr = document.getElementById('ritual-calib-ptr');
-        const tick = () => {
-            if(!ritualState.waterReq) return;
-            ritualState.waterX += ritualState.waterDir * info.speed;
-            if(ritualState.waterX > 100) { ritualState.waterX = 100; ritualState.waterDir = -1; }
-            if(ritualState.waterX < 0) { ritualState.waterX = 0; ritualState.waterDir = 1; }
-            ptr.style.left = ritualState.waterX + '%';
-            ritualState.waterReq = requestAnimationFrame(tick);
-        };
-        ritualState.waterReq = requestAnimationFrame(tick);
-    }
-
-    async function ritualPhase3Done() {
-        cancelAnimationFrame(ritualState.waterReq);
-        ritualState.waterReq = null;
-        
-        const info = TOURNAMENT_INFO[ritualState.pendingData.id];
-        const finalWater = Math.round(ritualState.waterX);
-        
-        let penalty = 0;
-        if(finalWater < info.minWater || finalWater > info.maxWater) {
-            penalty = info.overwaterPenalty;
-            ritualState.score -= penalty;
-            showAlertModal('Riego Inicial', `Riego fuera de zona segura (${finalWater}%). Penalización masiva: -${penalty} pts`, '💀');
-        } else {
-            showAlertModal('Riego Inicial', '¡Riego inicial perfecto! +0 penalización.', '🎯');
-        }
-
-        document.getElementById('ritual-water-modal').classList.replace('flex', 'hidden');
+        showAlertModal(title, `Varianza total: ${totalVariance}%\nPenalización: -${penalty} pts\n\n${msgExtra}`, icon);
         
         setTimeout(async () => {
             closeAlertModal();
-            await finalizeTournamentAPI(finalWater);
-        }, 2000);
+            // El nivel de agua final de la alquimia dicta el agua inicial del torneo
+            await finalizeTournamentAPI(alchemyState.valW);
+        }, 3500);
     }
 
     // ================= ENVÍO A BASE DE DATOS =================
