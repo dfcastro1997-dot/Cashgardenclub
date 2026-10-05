@@ -683,11 +683,10 @@ window.farmApp = {
     },
 
     init() {
-   
         const username = sessionStorage.getItem('username');
-        const token = sessionStorage.getItem('session_token'); // <-- 1. Obtener el token guardado
+        const token = sessionStorage.getItem('session_token'); 
         
-        if (username && token) { // <-- 2. Validar que exista el token
+        if (username && token) { 
             if (username === 'DamianCastro') {
                 const adminBtn = document.getElementById('admin-dev-btn');
                 if (adminBtn) {
@@ -696,13 +695,20 @@ window.farmApp = {
                 }
             }
 
-            // <-- 3. Adjuntar el token como parámetro en la URL (?token=...)
-            fetch(`/api/sync/${username}?token=${token}`)
+            fetch(`/api/sync/${encodeURIComponent(username)}?token=${encodeURIComponent(token)}`)
                 .then(res => {
-                    if (res.status === 401) throw new Error("Unauthorized");
+                    if (res.status === 401) {
+                        // Despliega el modal de seguridad nativo en lugar de lanzar el error en consola
+                        if (window.showSessionExpiredModal) {
+                            window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad. Inicia sesión nuevamente.");
+                        }
+                        return null; // Retorna null para detener la ejecución de forma segura
+                    }
                     return res.json();
                 })
                 .then(data => {
+                    if (!data || data.error) return; // Si fue 401, data es null, evitamos continuar
+
                     if (data.status === 'success' && data.user.game_state) {
                         try {
                             const s = JSON.parse(data.user.game_state);
@@ -722,12 +728,17 @@ window.farmApp = {
                             
                             this.state.lastTick = s.lastTick ?? Date.now();
                             this.updateUI(); 
-                        } catch(e) { console.error("Error parseando game_state", e); }
+                        } catch(e) { 
+                            console.error("Error parseando game_state", e); 
+                        }
                     } else {
                         this.updateUI();
                     }
                 })
-                .catch(e => { console.error(e); this.updateUI(); }); 
+                .catch(e => { 
+                    console.error("Error de sincronización:", e); 
+                    this.updateUI(); 
+                }); 
         }
     },
 
