@@ -1529,9 +1529,20 @@ if (typeof window.farmApp === 'undefined') {
             if (plotId === 5) {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 if (plot.water > conf.maxWater) {
+                    // --- NUEVO: CÁLCULO DE PENALIZACIÓN DINÁMICA POR GRAVEDAD ---
+                    const excess = plot.water - conf.maxWater;
+                    
+                    // Multiplicador: cada 10% de exceso equivale a 1x la penalidad base.
+                    // Se establece un castigo mínimo de 0.5x por equivocaciones leves.
+                    let multiplier = excess / 10;
+                    if (multiplier < 0.5) multiplier = 0.5; 
+                    
+                    const finalPenalty = Math.floor(conf.overwaterPenalty * multiplier);
+                    // -----------------------------------------------------------
+                    
                     plot.water = Math.min(100, plot.water);
-                    plot.score = Math.max(0, plot.score - conf.overwaterPenalty); 
-                    this.showPlotToast(5, '⚠️', `-${conf.overwaterPenalty} pts`);
+                    plot.score = Math.max(0, plot.score - finalPenalty); 
+                    this.showPlotToast(5, '⚠️', `-${finalPenalty} pts`);
                 } else {
                     this.showPlotToast(5, '💧', `+${waterAdded}% Agua`);
                 }
