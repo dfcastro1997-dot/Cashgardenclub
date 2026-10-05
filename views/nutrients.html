@@ -180,7 +180,7 @@
         50% { transform: translate(2px, -2px) rotate(1deg); }
         75% { transform: translate(-2px, -2px) rotate(-1deg); }
     }
-    /* NUEVAS ANIMACIONES PARA LAS FLECHAS TÉRMICAS */
+    /* ANIMACIONES PARA LAS FLECHAS TÉRMICAS */
     @keyframes blinkFast { 0%, 100% { opacity: 1; transform: scale(1.1); } 50% { opacity: 0.2; transform: scale(0.9); } }
     @keyframes blinkSlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     
@@ -220,8 +220,8 @@
                     <div class="w-1 h-1 bg-white/50 rounded-full animate-ping delay-200"></div>
                 </div>
             </div>
-            <!-- Capa: Tierra resquebrajada (Falta de agua) -->
-            <div id="terrarium-ground" class="absolute bottom-0 left-0 w-full h-[20%] bg-[#5C3A21] z-10 transition-colors duration-300 border-t-4 border-[#3A2210]"></div>
+            <!-- Capa: Tierra resquebrajada (Falta de agua) y variaciones de nivel -->
+            <div id="terrarium-ground" class="absolute bottom-0 left-0 w-full z-10 transition-all duration-300 border-t-4 border-[#3A2210] bg-[#5C3A21]" style="height: 20%;"></div>
             
             <!-- Semilla Central -->
             <div id="terrarium-seed" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 transition-all duration-300">
@@ -236,9 +236,9 @@
             </div>
         </div>
 
-        <!-- Metas Dinámicas Ocultas en Rieles -->
+        <!-- Metas Dinámicas Ocultas en Rieles (4 Columnas) -->
         <div class="flex justify-between px-2 mb-4 relative z-20">
-            <div class="text-center w-1/3 flex flex-col items-center">
+            <div class="text-center w-1/4 flex flex-col items-center">
                 <div class="flex items-center gap-1">
                     <span class="text-xl sm:text-2xl drop-shadow-sm opacity-80" id="icon-water">💧</span>
                     <span id="target-water" class="text-xs sm:text-sm font-black text-blue-600 transition-all">0%</span>
@@ -247,7 +247,7 @@
                     <div id="track-water" class="h-full bg-blue-500/50 absolute transition-all border-x-2 border-blue-600" style="left: 0%; width: 10%;"></div>
                 </div>
             </div>
-            <div class="text-center w-1/3 px-2 flex flex-col items-center">
+            <div class="text-center w-1/4 px-1 flex flex-col items-center">
                 <div class="flex items-center gap-1">
                     <span class="text-xl sm:text-2xl drop-shadow-sm opacity-80" id="icon-nutrients">🌱</span>
                     <span id="target-nutrients" class="text-xs sm:text-sm font-black text-green-600 transition-all">0%</span>
@@ -256,7 +256,7 @@
                     <div id="track-nutrients" class="h-full bg-green-500/50 absolute transition-all border-x-2 border-green-600" style="left: 0%; width: 10%;"></div>
                 </div>
             </div>
-            <div class="text-center w-1/3 flex flex-col items-center">
+            <div class="text-center w-1/4 px-1 flex flex-col items-center">
                 <div class="flex items-center gap-1">
                     <span class="text-xl sm:text-2xl drop-shadow-sm opacity-80" id="icon-light">☀️</span>
                     <span id="target-light" class="text-xs sm:text-sm font-black text-yellow-500 transition-all">0%</span>
@@ -265,10 +265,19 @@
                     <div id="track-light" class="h-full bg-yellow-400/50 absolute transition-all border-x-2 border-yellow-500" style="left: 0%; width: 10%;"></div>
                 </div>
             </div>
+            <div class="text-center w-1/4 flex flex-col items-center">
+                <div class="flex items-center gap-1">
+                    <span class="text-xl sm:text-2xl drop-shadow-sm opacity-80" id="icon-earth">🪨</span>
+                    <span id="target-earth" class="text-xs sm:text-sm font-black text-amber-700 transition-all">0%</span>
+                </div>
+                <div class="h-1.5 w-full bg-gray-200 rounded-full mt-1 overflow-hidden relative shadow-inner">
+                    <div id="track-earth" class="h-full bg-amber-600/50 absolute transition-all border-x-2 border-amber-700" style="left: 0%; width: 10%;"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- Sliders Interactivos -->
-        <div class="space-y-4 mb-2 text-left relative z-20">
+        <!-- Sliders Interactivos (4 Controles) -->
+        <div class="space-y-3 mb-2 text-left relative z-20">
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-blue-800 mb-1 px-1">
                     <span class="flex items-center gap-2">💧 Agua <span id="arrow-water" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
@@ -289,6 +298,13 @@
                     <span id="val-light" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
                 <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-500 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
+            </div>
+            <div>
+                <label class="flex justify-between items-center text-xs font-black text-amber-800 mb-1 px-1">
+                    <span class="flex items-center gap-2">🪨 Tierra <span id="arrow-earth" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
+                    <span id="val-earth" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
+                </label>
+                <input type="range" id="slider-earth" min="0" max="100" value="50" class="w-full accent-amber-700 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('earth')">
             </div>
         </div>
         
@@ -340,10 +356,10 @@
     let pendingTournament = null;
     let ritualState = { pendingData: null, score: 10000 };
     
-    // Estado del minijuego de Alquimia
+    // Estado del minijuego de Alquimia (Ahora con Tierra)
     let alchemyState = {
-        targetW: 0, targetN: 0, targetL: 0,
-        valW: 50, valN: 50, valL: 50,
+        targetW: 0, targetN: 0, targetL: 0, targetT: 0,
+        valW: 50, valN: 50, valL: 50, valT: 50,
         timer: 10, interval: null, active: false,
         isPerfect: false, finalWater: 50
     };
@@ -441,6 +457,13 @@
         pendingTournament = null;
     }
 
+    function setupTrack(id, target) {
+        const track = document.getElementById(id);
+        const min = Math.max(0, target - 5);
+        track.style.left = min + '%';
+        track.style.width = '10%'; 
+    }
+
     function confirmJoinTournament() {
         if (!pendingTournament) return;
         ritualState.pendingData = { ...pendingTournament };
@@ -449,16 +472,18 @@
         const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         ritualState.score = info.scoreNum;
         
-        // Asignar metas dinámicas aleatorias
+        // Asignar 4 metas dinámicas aleatorias
         alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
         alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
         alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
+        alchemyState.targetT = Math.floor(Math.random() * 41) + 30; 
         
         // Reset a 50%
-        alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50;
+        alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50; alchemyState.valT = 50;
         document.getElementById('slider-water').value = 50;
         document.getElementById('slider-nutrients').value = 50;
         document.getElementById('slider-light').value = 50;
+        document.getElementById('slider-earth').value = 50;
         
         // Ocultar overlays y reiniciar estilos
         document.getElementById('victory-overlay').classList.replace('flex', 'hidden');
@@ -470,24 +495,28 @@
         document.getElementById('seed-img').src = info.img;
         document.getElementById('seed-img').style.filter = "none";
 
+        // Configurar los "Rieles" de ±5% de tolerancia
         setupTrack('track-water', alchemyState.targetW);
         setupTrack('track-nutrients', alchemyState.targetN);
         setupTrack('track-light', alchemyState.targetL);
+        setupTrack('track-earth', alchemyState.targetT);
 
         updateAlchemyUI();
         
-        // --- MOSTRAR LOS NÚMEROS META INICIALMENTE ---
+        // MOSTRAR LOS NÚMEROS META INICIALMENTE
         document.getElementById('target-water').innerText = alchemyState.targetW + '%';
         document.getElementById('target-water').classList.remove('text-red-500', 'animate-pulse');
         document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
         document.getElementById('target-nutrients').classList.remove('text-red-500', 'animate-pulse');
         document.getElementById('target-light').innerText = alchemyState.targetL + '%';
         document.getElementById('target-light').classList.remove('text-red-500', 'animate-pulse');
+        document.getElementById('target-earth').innerText = alchemyState.targetT + '%';
+        document.getElementById('target-earth').classList.remove('text-red-500', 'animate-pulse');
         
         document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
         document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        // Iniciar reloj cardíaco (AHORA 10 SEGUNDOS)
+        // Iniciar reloj cardíaco (10 SEGUNDOS)
         alchemyState.timer = 10;
         document.getElementById('alchemy-timer').innerText = alchemyState.timer;
         alchemyState.active = true;
@@ -499,7 +528,7 @@
             alchemyState.timer--;
             document.getElementById('alchemy-timer').innerText = alchemyState.timer;
             
-            // --- NUEVO: AMNESIA NUMÉRICA A LA MITAD DEL TIEMPO (5s) ---
+            // AMNESIA NUMÉRICA A LA MITAD DEL TIEMPO (5s)
             if (alchemyState.timer === 5 && !alchemyState.isPerfect) {
                 document.getElementById('target-water').innerText = '???';
                 document.getElementById('target-water').classList.add('text-red-500', 'animate-pulse');
@@ -507,6 +536,8 @@
                 document.getElementById('target-nutrients').classList.add('text-red-500', 'animate-pulse');
                 document.getElementById('target-light').innerText = '???';
                 document.getElementById('target-light').classList.add('text-red-500', 'animate-pulse');
+                document.getElementById('target-earth').innerText = '???';
+                document.getElementById('target-earth').classList.add('text-red-500', 'animate-pulse');
             }
 
             // Efecto de Tensión en últimos 3s
@@ -523,48 +554,51 @@
         }, 1000);
     }
 
-    function setupTrack(id, target) {
-        const track = document.getElementById(id);
-        const min = Math.max(0, target - 5);
-        track.style.left = min + '%';
-        track.style.width = '10%'; // Ancho visual del ±5%
-    }
-
     function handleAlchemyInput(source) {
         if(!alchemyState.active) return;
         
         const wSlider = document.getElementById('slider-water');
         const nSlider = document.getElementById('slider-nutrients');
         const lSlider = document.getElementById('slider-light');
+        const tSlider = document.getElementById('slider-earth');
         
         let newW = parseInt(wSlider.value);
         let newN = parseInt(nSlider.value);
         let newL = parseInt(lSlider.value);
+        let newT = parseInt(tSlider.value);
         
         let deltaW = newW - alchemyState.valW;
         let deltaN = newN - alchemyState.valN;
         let deltaL = newL - alchemyState.valL;
+        let deltaT = newT - alchemyState.valT;
         
+        // REGAS FÍSICAS DE INTERCONEXIÓN (4 VARIABLES)
         if (source === 'light' && deltaL !== 0) {
-            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5)));
+            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5))); // Luz evapora agua
         } else if (source === 'water' && deltaW !== 0) {
-            newN = Math.max(0, Math.min(100, alchemyState.valN - Math.round(deltaW * 0.4)));
+            newN = Math.max(0, Math.min(100, alchemyState.valN - Math.round(deltaW * 0.4))); // Agua diluye nutrientes
+            newT = Math.max(0, Math.min(100, alchemyState.valT - Math.round(deltaW * 0.2))); // Agua deslava la tierra
         } else if (source === 'nutrients' && deltaN !== 0) {
-            newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3)));
+            newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3))); // Nutrientes densos tapan luz
+        } else if (source === 'earth' && deltaT !== 0) {
+            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaT * 0.3))); // Tierra absorbe agua
         }
         
-        // ATRACCIÓN MAGNÉTICA AL PUNTO DULCE (AHORA SOLO ±1% - PRECISIÓN QUIRÚRGICA)
+        // ATRACCIÓN MAGNÉTICA AL PUNTO DULCE (±1% - PRECISIÓN QUIRÚRGICA)
         if (Math.abs(newW - alchemyState.targetW) <= 1) newW = alchemyState.targetW;
         if (Math.abs(newN - alchemyState.targetN) <= 1) newN = alchemyState.targetN;
         if (Math.abs(newL - alchemyState.targetL) <= 1) newL = alchemyState.targetL;
+        if (Math.abs(newT - alchemyState.targetT) <= 1) newT = alchemyState.targetT;
 
         alchemyState.valW = newW;
         alchemyState.valN = newN;
         alchemyState.valL = newL;
+        alchemyState.valT = newT;
         
         wSlider.value = newW;
         nSlider.value = newN;
         lSlider.value = newL;
+        tSlider.value = newT;
         
         updateAlchemyUI();
     }
@@ -574,12 +608,12 @@
         const arrow = document.getElementById(id);
         const diff = Math.abs(currentVal - targetVal);
         
-        // Si está en el punto perfecto (tolerancia extrema de 1%), oculta la flecha
         if (diff <= 1) {
             arrow.classList.add('hidden');
         } else {
             arrow.classList.remove('hidden');
             arrow.innerText = currentVal < targetVal ? '⬆' : '⬇';
+            
             arrow.classList.remove('text-red-500', 'text-yellow-500', 'blink-fast', 'blink-slow');
             
             if (diff > 15) {
@@ -594,12 +628,19 @@
         const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
         const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
         const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
+        const diffT = Math.abs(alchemyState.targetT - alchemyState.valT);
         
-        // --- NUEVO: ACTUALIZAR FLECHAS TÉRMICAS ---
+        // ACTUALIZAR TEXTOS
+        document.getElementById('val-water').innerText = alchemyState.valW + '%';
+        document.getElementById('val-nutrients').innerText = alchemyState.valN + '%';
+        document.getElementById('val-light').innerText = alchemyState.valL + '%';
+        document.getElementById('val-earth').innerText = alchemyState.valT + '%';
+
+        // ACTUALIZAR FLECHAS TÉRMICAS
         updateArrow('arrow-water', alchemyState.valW, alchemyState.targetW);
         updateArrow('arrow-nutrients', alchemyState.valN, alchemyState.targetN);
         updateArrow('arrow-light', alchemyState.valL, alchemyState.targetL);
-        // ------------------------------------------
+        updateArrow('arrow-earth', alchemyState.valT, alchemyState.targetT);
         
         const glass = document.getElementById('terrarium-glass');
         const liquid = document.getElementById('terrarium-liquid');
@@ -614,23 +655,35 @@
         document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
         let isChaotic = false;
 
-        // RETROALIMENTACIÓN DE AGUA
+        // RETROALIMENTACIÓN DE TIERRA (Ajusta la altura de la base)
+        if (alchemyState.valT > alchemyState.targetT + 15) {
+            ground.style.height = '35%';
+            isChaotic = true;
+        } else if (alchemyState.valT < alchemyState.targetT - 15) {
+            ground.style.height = '5%';
+            isChaotic = true;
+        } else {
+            ground.style.height = '20%';
+        }
+
+        // RETROALIMENTACIÓN DE AGUA (Ajusta colores y condensación)
+        ground.className = "absolute bottom-0 left-0 w-full z-10 transition-all duration-300 border-t-4 border-[#3A2210]";
         if (alchemyState.valW > alchemyState.targetW + 15) {
             liquid.style.height = '60%';
             liquid.className = "absolute bottom-0 left-0 w-full bg-blue-900/90 z-20 transition-all duration-300 flex items-start justify-center pt-2";
             fog.style.opacity = '1';
-            ground.className = "absolute bottom-0 left-0 w-full h-[20%] bg-[#2a1a0f] z-10 transition-colors duration-300 border-t-4 border-[#1a0f08]";
+            ground.classList.add('bg-[#2a1a0f]');
             isChaotic = true;
         } else if (alchemyState.valW < alchemyState.targetW - 15) {
             liquid.style.height = '0%';
             fog.style.opacity = '0';
-            ground.className = "absolute bottom-0 left-0 w-full h-[20%] bg-[#8b8b8b] z-10 transition-colors duration-300 border-t-4 border-[#5b5b5b] border-dashed";
+            ground.classList.add('bg-[#8b8b8b]', 'border-dashed');
             isChaotic = true;
         } else {
             liquid.style.height = '20%';
             liquid.className = "absolute bottom-0 left-0 w-full bg-blue-500/50 z-20 transition-all duration-300 flex items-start justify-center pt-2";
             fog.style.opacity = '0';
-            ground.className = "absolute bottom-0 left-0 w-full h-[20%] bg-[#5C3A21] z-10 transition-colors duration-300 border-t-4 border-[#3A2210]";
+            ground.classList.add('bg-[#5C3A21]');
         }
 
         // RETROALIMENTACIÓN DE LUZ
@@ -667,8 +720,8 @@
             if(!isChaotic) seed.style.filter = "none";
         }
 
-        // DETECCIÓN DE CLÍMAX (VICTORIA INMEDIATA - AHORA EXIGE ±1%)
-        if (diffW <= 1 && diffN <= 1 && diffL <= 1) {
+        // DETECCIÓN DE CLÍMAX (VICTORIA INMEDIATA)
+        if (diffW <= 1 && diffN <= 1 && diffL <= 1 && diffT <= 1) {
             document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
             fog.style.opacity = '0'; glare.style.opacity = '0'; darkness.style.opacity = '0';
             liquid.style.height = '20%'; liquid.className = "absolute bottom-0 left-0 w-full bg-blue-300/30 z-20 transition-all duration-300";
@@ -684,6 +737,7 @@
             document.getElementById('slider-water').classList.add('accent-yellow-400');
             document.getElementById('slider-nutrients').classList.add('accent-yellow-400');
             document.getElementById('slider-light').classList.add('accent-yellow-400');
+            document.getElementById('slider-earth').classList.add('accent-yellow-400');
 
             triggerPerfectHarmony();
         } else {
@@ -693,6 +747,7 @@
             document.getElementById('slider-water').classList.remove('accent-yellow-400');
             document.getElementById('slider-nutrients').classList.remove('accent-yellow-400');
             document.getElementById('slider-light').classList.remove('accent-yellow-400');
+            document.getElementById('slider-earth').classList.remove('accent-yellow-400');
         }
     }
 
@@ -717,7 +772,8 @@
         const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
         const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
         const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
-        const totalVariance = diffW + diffN + diffL;
+        const diffT = Math.abs(alchemyState.targetT - alchemyState.valT);
+        const totalVariance = diffW + diffN + diffL + diffT;
         
         const penalty = totalVariance * 35; 
         ritualState.score = Math.max(0, ritualState.score - penalty);
