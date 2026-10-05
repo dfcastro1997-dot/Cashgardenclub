@@ -227,6 +227,54 @@ def save_state():
     cur.close(); conn.close()
     return jsonify({"message": "Progreso guardado y validado"})
 
+
+
+
+
+
+@app.route('/api/store/buy_practice', methods=['POST'])
+def buy_practice():
+    data = request.json
+    username = data.get('username')
+    cost = int(data.get('cost', 500))
+    amount = int(data.get('amount', 5))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (username,))
+        user = cur.fetchone()
+        
+        if not user: 
+            return jsonify({"error": "Usuario no encontrado"}), 404
+            
+        state = json.loads(user['game_state'] or '{}')
+        seeds_balance = state.get('seedsBalance', 0)
+        
+        if seeds_balance < cost:
+            return jsonify({"error": "No tienes Semillas (🌱) suficientes para comprar el pase."}), 400
+            
+        # Descontamos semillas y agregamos intentos de práctica
+        state['seedsBalance'] = seeds_balance - cost
+        state['practiceTokens'] = state.get('practiceTokens', 0) + amount
+        
+        cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
+        conn.commit()
+        
+        return jsonify({
+            "message": "Prácticas adquiridas con éxito", 
+            "new_seeds": state['seedsBalance'],
+            "new_tokens": state['practiceTokens']
+        })
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+
+
 # ==========================================================
 # MONETIZACIÓN DIRECTA (IN-APP PURCHASES DE SEMILLAS Y ASPERSORES)
 # ==========================================================
