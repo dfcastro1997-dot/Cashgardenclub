@@ -505,6 +505,7 @@ window.farmApp = {
     
     state: {
         seedsBalance: 35000,
+        practiceTokens: 0, // <-- AÑADIR ESTA LÍNEA
         autoWaterEndTime: 0, 
         plots: [
             { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -660,14 +661,13 @@ window.farmApp = {
         this.state.lastTick = Date.now();
         const stateToSave = JSON.stringify({
             seedsBalance: this.state.seedsBalance,
+            practiceTokens: this.state.practiceTokens || 0, // <-- AÑADIR ESTA LÍNEA
             autoWaterEndTime: this.state.autoWaterEndTime,
             plots: this.state.plots,
             inventory: this.state.inventory,
             lastTick: this.state.lastTick
         });
         localStorage.setItem('cg_farm_state', stateToSave);
-
-        const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
             
@@ -707,9 +707,9 @@ window.farmApp = {
                         try {
                             const s = JSON.parse(data.user.game_state);
                             
-                            // FIX CRÍTICO: Solo aceptar los datos del servidor si son más recientes que el local
                             if (!this.state.lastTick || (s.lastTick && s.lastTick >= this.state.lastTick)) {
                                 this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
+                                this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; // <-- AÑADIR ESTA LÍNEA
                                 this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
                                 this.state.plots = s.plots ?? this.state.plots;
                                 
@@ -738,6 +738,7 @@ window.farmApp = {
             try {
                 const s = JSON.parse(savedStateStr);
                 this.state.seedsBalance = s.seedsBalance ?? 35000;
+                this.state.practiceTokens = s.practiceTokens ?? 0; // <-- AÑADIR ESTA LÍNEA
                 this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
                 this.state.plots = s.plots ?? this.state.plots;
                 
