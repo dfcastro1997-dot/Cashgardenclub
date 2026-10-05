@@ -183,6 +183,21 @@
         </nav>
     </div>
 
+    <!-- MODAL DE SEGURIDAD / SESIÓN MÚLTIPLE -->
+    <div id="session-expired-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-red-500">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl md:text-4xl">🔒</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Sesión Finalizada</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-6" id="session-expired-msg">Tu sesión ha sido invalidada.</p>
+            <button onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
+                Entendido
+            </button>
+        </div>
+    </div>
+
     <script>
         let isLoginMode = true;
 
@@ -252,6 +267,12 @@
             document.getElementById('auth-error').classList.remove('hidden');
         }
 
+        function showSessionExpiredModal(msg) {
+            document.getElementById('session-expired-msg').innerText = msg;
+            document.getElementById('session-expired-modal').classList.remove('hidden');
+            document.getElementById('session-expired-modal').classList.add('flex');
+        }
+
         window.onload = async () => {
             const username = sessionStorage.getItem('username');
             const token = sessionStorage.getItem('session_token');
@@ -259,9 +280,8 @@
                  try {
                      const response = await fetch(`/api/sync/${username}?token=${token}`);
                      if (response.status === 401) {
-                         alert("⚠️ Sesión inválida o expirada. Por favor, inicia sesión nuevamente.");
-                         logout(); 
-                         return;
+                         showSessionExpiredModal("Tu sesión es inválida o ha expirado. Por favor, inicia sesión nuevamente.");
+                         return; 
                      }
                      if (response.ok) {
                          const data = await response.json();
@@ -355,8 +375,7 @@
                 const response = await fetch(`/api/sync/${username}?token=${token}`);
                 
                 if (response.status === 401) {
-                    alert("⚠️ Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión se cerrará.");
-                    logout();
+                    showSessionExpiredModal("Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión local ha sido desconectada.");
                     return;
                 }
                 
