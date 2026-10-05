@@ -252,14 +252,74 @@
         }
 
         function updateProfileUI(userData) {
-            document.getElementById('profile-name').innerText = userData.username;
-            document.getElementById('dropdown-username').innerText = userData.username;
-            document.getElementById('profile-avatar').innerText = userData.username.substring(0, 2).toUpperCase();
+            // Asegurar un nombre de usuario válido si userData.username es undefined
+            const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
+            
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('dropdown-username').innerText = name;
+            document.getElementById('profile-avatar').innerText = name.substring(0, 2).toUpperCase();
             
             const balance = userData.balance || 0;
             document.getElementById('global-balance').innerText = "$" + balance.toLocaleString();
             
             if(window.farmApp) window.farmApp.state.balance = balance;
+        }
+
+        async function syncUserData() {
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            if (!username || !token) return;
+            
+            try {
+                const response = await fetch(`/api/sync/${username}?token=${token}`);
+                
+                if (response.status === 401) {
+                    showSessionExpiredModal("Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión local ha sido desconectada.");
+                    return;
+                }
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const dbBalance = data.user.real_balance_cop || data.user.balance;
+                    
+                    if (data.user.game_state) {
+                        try {
+                            const state = JSON.parse(data.user.game_state);
+                            const seedsEl = document.getElementById('global-seeds-display');
+                            if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
+                            
+                            if (window.farmApp && window.farmApp.state) {
+                                // Solo actualizar si el estado del servidor es más reciente
+                                if ((state.lastTick || 0) > (window.farmApp.state.lastTick || 0)) {
+                                    window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
+                                    window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
+                                    window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
+                                    if (state.plots) window.farmApp.state.plots = state.plots;
+                                    if (state.inventory) window.farmApp.state.inventory = state.inventory;
+                                    window.farmApp.state.lastTick = state.lastTick;
+                                    window.farmApp.updateUI();
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                    
+                    if ((window.farmApp && window.farmApp.state.balance !== dbBalance)) {
+                        document.getElementById('global-balance').innerText = "$" + dbBalance.toLocaleString();
+                        const balEl = document.getElementById('global-balance');
+                        balEl.classList.add('text-green-500', 'scale-125');
+                        setTimeout(() => balEl.classList.remove('text-green-500', 'scale-125'), 1000);
+
+                        if (window.farmApp) { window.farmApp.state.balance = dbBalance; }
+                        
+                        const walletDisplay = document.getElementById('wallet-balance-display');
+                        if (walletDisplay) {
+                            walletDisplay.innerText = "$" + dbBalance.toLocaleString() + " COP";
+                            const cashoutAmount = document.getElementById('cashout-amount');
+                            if(cashoutAmount) cashoutAmount.max = dbBalance;
+                        }
+                    }
+                }
+            } catch (e) { console.error("Error sincronizando saldo:", e); }
         }
 
         function showError(msg) {
@@ -374,55 +434,6 @@
                 dropdown.classList.add('hidden');
             }
         });
-
-        async function syncUserData() {
-            const username = sessionStorage.getItem('username');
-            const token = sessionStorage.getItem('session_token');
-            if (!username || !token) return;
-            
-            try {
-                const response = await fetch(`/api/sync/${username}?token=${token}`);
-                
-                if (response.status === 401) {
-                    showSessionExpiredModal("Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión local ha sido desconectada.");
-                    return;
-                }
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const dbBalance = data.user.real_balance_cop || data.user.balance;
-                    
-                    if (data.user.game_state) {
-                        try {
-                            const state = JSON.parse(data.user.game_state);
-                            const seedsEl = document.getElementById('global-seeds-display');
-                            if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
-                            
-                            if (window.farmApp && window.farmApp.state) {
-                                window.farmApp.state = Object.assign(window.farmApp.state, state);
-                                window.farmApp.updateUI();
-                            }
-                        } catch(e) {}
-                    }
-                    
-                    if ((window.farmApp && window.farmApp.state.balance !== dbBalance)) {
-                        document.getElementById('global-balance').innerText = "$" + dbBalance.toLocaleString();
-                        const balEl = document.getElementById('global-balance');
-                        balEl.classList.add('text-green-500', 'scale-125');
-                        setTimeout(() => balEl.classList.remove('text-green-500', 'scale-125'), 1000);
-
-                        if (window.farmApp) { window.farmApp.state.balance = dbBalance; }
-                        
-                        const walletDisplay = document.getElementById('wallet-balance-display');
-                        if (walletDisplay) {
-                            walletDisplay.innerText = "$" + dbBalance.toLocaleString() + " COP";
-                            const cashoutAmount = document.getElementById('cashout-amount');
-                            if(cashoutAmount) cashoutAmount.max = dbBalance;
-                        }
-                    }
-                }
-            } catch (e) { console.error("Error sincronizando saldo:", e); }
-        }
 
         setInterval(syncUserData, 10000);
         window.addEventListener('focus', syncUserData);
