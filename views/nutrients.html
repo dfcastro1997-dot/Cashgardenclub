@@ -206,8 +206,7 @@
                     <tr>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center w-24">Rank</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest">Jugador Competitivo</th>
-                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center" title="Sintonización Orgánica">Precisión Inicial</th>
-                        <th class="p-4 md:p-5 text-xs font-black text-blue-500 uppercase tracking-widest text-center">Tiempo (s)</th>
+                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center" title="Precisión del Minijuego">Sintonización Orgánica</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Puntaje Retenido</th>
                     </tr>
                 </thead>
@@ -1291,13 +1290,9 @@
                 
                 const isMe = player.username === sessionStorage.getItem('username');
                 
-                // Variables para el desempate (muestran un guión '--' si la Base de Datos aún no las envía)
+                // Variables para el desempate
                 let precisionStr = player.alchemy_precision 
                     ? parseFloat(player.alchemy_precision).toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + '%' 
-                    : '<span class="text-gray-300 text-xs">--</span>';
-                    
-                let timeStr = player.alchemy_time 
-                    ? parseFloat(player.alchemy_time).toFixed(2) + 's' 
                     : '<span class="text-gray-300 text-xs">--</span>';
                                 
                 tbody.innerHTML += `
@@ -1309,9 +1304,6 @@
                         </td>
                         <td class="p-4 md:p-5 text-center font-black text-purple-600 tracking-wider">
                             ${precisionStr}
-                        </td>
-                        <td class="p-4 md:p-5 text-center font-black text-blue-500 tracking-wider">
-                            ${timeStr}
                         </td>
                         <td class="p-4 md:p-5 text-right">
                             <span class="font-black text-lg ${index === 0 ? 'text-cg_gold' : 'text-gray-600'}">${parseFloat(player.current_score).toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3})}</span>
