@@ -843,19 +843,23 @@ window.farmApp = {
                             </div>
                         </div>
 
-                        <!-- Tarjeta Dorada modificada: Nombre central, puntos verticales a la derecha -->
-                        <div class="absolute bottom-14 sm:bottom-16 left-1/2 transform -translate-x-1/2 z-30 w-max pointer-events-none">
-                            <div class="bg-gradient-to-r from-yellow-500 to-cg_gold text-white rounded-xl pl-4 pr-3 py-2 shadow-xl border-2 border-yellow-200 flex items-center justify-between gap-4 ${isAlert ? 'animate-pulse' : ''}">
+                        <!-- Tarjeta Dorada (Diseño de la imagen proporcionada) -->
+                        <div class="absolute bottom-14 sm:bottom-16 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
+                            <div class="bg-[#dfa209] text-white rounded-xl p-3 sm:px-4 sm:py-3 shadow-lg border-2 border-yellow-300 flex flex-row items-stretch gap-3 sm:gap-4 ${isAlert ? 'animate-pulse' : ''}">
                                 
-                                <!-- Nombre de la planta (Centro) -->
-                                <span class="text-[10px] sm:text-xs uppercase tracking-widest font-black opacity-95 drop-shadow-sm text-center max-w-[80px] leading-tight">
-                                    ${conf.name}
-                                </span>
+                                <!-- Nombre de la planta -->
+                                <div class="flex items-center justify-center min-w-[70px] max-w-[90px]">
+                                    <span class="text-[11px] sm:text-xs uppercase tracking-widest font-black drop-shadow-sm text-center leading-tight">
+                                        ${conf.name}
+                                    </span>
+                                </div>
                                 
-                                <!-- Puntuación Vertical (Lateral Derecho) -->
-                                <div class="flex flex-col items-center justify-center font-mono font-black drop-shadow-md border-l border-yellow-200/50 pl-3 text-[10px] sm:text-xs leading-[1.1]">
+                                <!-- Separador vertical -->
+                                <div class="w-[1.5px] bg-yellow-200/50 my-0.5 rounded-full"></div>
+                                
+                                <!-- Puntuación Vertical (Derecha) -->
+                                <div class="flex flex-col items-center justify-center font-black drop-shadow-md text-xs sm:text-sm leading-[1.1]">
                                     ${Math.floor(plot.score).toString().split('').map(num => `<span>${num}</span>`).join('')}
-                                    <span class="mt-1 text-[8px] sm:text-[10px]">🏆</span>
                                 </div>
                                 
                             </div>
