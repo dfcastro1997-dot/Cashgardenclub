@@ -382,6 +382,11 @@ window.shopApp = {
                 if(window.farmApp) {
                     window.farmApp.state.balance = data.new_balance_cop;
                 }
+                
+                // Actualizar saldo superior
+                const copEl = document.getElementById('global-balance');
+                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
+
                 if(window.syncUserData) window.syncUserData(); 
 
                 if (packageId.startsWith('iap_sp_')) {
@@ -390,7 +395,10 @@ window.shopApp = {
                     
                     if (window.farmApp) {
                         window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
+                        
+                        // FORZAR ACTUALIZACIÓN INMEDIATA DE LA GRANJA
                         window.farmApp.updateSprinklerUI();
+                        window.farmApp.renderPlots(); // Redibuja los terrenos para mostrar el ícono del aspersor
                         window.farmApp.saveState(); 
                     }
                     

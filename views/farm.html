@@ -913,8 +913,21 @@ window.farmApp = {
 
             } else if (plot.status === 'empty') {
                 el.className = `bg-white rounded-2xl border-2 border-dashed border-gray-200 h-56 sm:h-64 relative cursor-pointer hover:border-cg_blue transition-all ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm'}`;
+                
+                // INYECCIÓN DE ICONOS DE PROTECCIÓN PARA TERRENO VACÍO
+                let protectionHtml = '';
+                if (plot.scarecrowEndTime > now || isAutoWatering) {
+                    protectionHtml = `
+                        <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
+                            ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md shrink-0">` : ''}
+                            ${isAutoWatering ? `<img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
+                        </div>
+                    `;
+                }
+
                 el.innerHTML = `
                     ${localToastHTML}
+                    ${protectionHtml}
                     <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
                         <img src="${this.state.images.terrain_empty}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno Vacío">
                     </div>
@@ -929,12 +942,25 @@ window.farmApp = {
                 const potImg = plot.pot === 'small' ? this.state.inventory.tool_pot_small.image : this.state.inventory.tool_pot_big.image;
                 const potName = plot.pot === 'small' ? 'MACETA PEQ.' : 'MACETA GDE.';
                 
+                // INYECCIÓN DE ICONOS DE PROTECCIÓN PARA MACETA
+                let protectionHtml = '';
+                if (plot.scarecrowEndTime > now || isAutoWatering) {
+                    protectionHtml = `
+                        <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
+                            ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md shrink-0">` : ''}
+                            ${isAutoWatering ? `<img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
+                        </div>
+                    `;
+                }
+
                 el.innerHTML = `
                     ${localToastHTML}
                     <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white px-1.5 sm:px-2 py-1 rounded-lg text-[8px] sm:text-[9px] font-bold text-gray-500 border border-gray-200 flex items-center gap-1 uppercase shadow-sm z-20 pointer-events-none">
                         <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName} (Uso ${plot.potUses}/${plot.pot === 'small' ? 5 : 10})
                     </div>
                     
+                    ${protectionHtml}
+
                     <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
                         <div class="relative w-full h-32 sm:h-40 flex items-center justify-center">
                             <img src="${this.state.images.terrain_empty}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
