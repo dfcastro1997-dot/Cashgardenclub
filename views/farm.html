@@ -127,18 +127,6 @@
                                 <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors" disabled onclick="window.farmApp.useTool('water')">Usar</button>
                             </div>
                             
-                            <div class="flex items-center justify-between p-2.5 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all" id="inv-item-scarecrow">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
-                                        <img src="https://i.ibb.co/pBBDqXXw/Frame-742.png" class="w-full h-full object-contain">
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-bold text-cg_navy leading-tight truncate">Protección</p>
-                                        <p class="text-[10px] font-bold text-cg_cyan"><span id="inv-scarecrow">0</span> usos</p>
-                                    </div>
-                                </div>
-                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors" disabled onclick="window.farmApp.useTool('scarecrow')">Usar</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1085,7 +1073,7 @@ window.farmApp = {
                     </div>
                 `;
 
-                
+
                 el.onclick = () => this.selectPlot(plot.id, true);
             }
             grid.appendChild(el);
@@ -1414,12 +1402,10 @@ window.farmApp = {
         const eWater = document.getElementById('inv-water');
         const ePotSmall = document.getElementById('inv-pot-small');
         const ePotBig = document.getElementById('inv-pot-big');
-        const eScarecrow = document.getElementById('inv-scarecrow');
         
         if (eWater) eWater.innerText = inv.tool_water?.qty || 0;
         if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small?.qty || 0;
         if (ePotBig) ePotBig.innerText = inv.tool_pot_big?.qty || 0;
-        if (eScarecrow) eScarecrow.innerText = inv.tool_scarecrow?.qty || 0;
     },
 
     buyPlotPrompt(id) {
@@ -1462,7 +1448,7 @@ window.farmApp = {
         const inv = this.state.inventory;
         const isAutoWatering = this.state.autoWaterEndTime > Date.now();
 
-        ['pot_small', 'pot_big', 'water', 'scarecrow'].forEach(toolType => {
+        ['pot_small', 'pot_big', 'water'].forEach(toolType => { // Eliminado 'scarecrow'
             const el = document.getElementById(`inv-item-${toolType}`);
             if (el) {
                 el.classList.add('opacity-50');
@@ -1483,9 +1469,7 @@ window.farmApp = {
             if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow) {
                 this.enableToolBtn('water');
             }
-            if(!isAutoWatering && inv.tool_scarecrow && inv.tool_scarecrow.qty > 0 && !plot.isReady && plot.crowLeavingAt <= Date.now()) {
-                this.enableToolBtn('scarecrow');
-            }
+            // Bloque del espantapájaros eliminado de aquí
         }
         
         // Despliega automáticamente las herramientas en móviles SOLO si el usuario tocó la parcela
@@ -1527,21 +1511,8 @@ window.farmApp = {
             this.openWaterCalibration(plotId);
             this.updateInventoryUI();
             return; 
-        } else if (type === 'scarecrow') {
-            this.state.inventory.tool_scarecrow.qty -= 1;
-            plot.hasCrow = false;
-            plot.crowLeavingAt = 0; 
-            plot.scarecrowEndTime = Date.now() + (24 * 3600000);
-            
-            if (plot.plant) {
-                if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
-                else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
-                else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
-                else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
-            }
-            
-            this.showPlotToast(plotId, '🦉', '¡Protegido y Seco!');
-        }
+        } 
+        // Lógica del espantapájaros eliminada
 
         this.updateInventoryUI();
         this.selectPlot(plotId); 

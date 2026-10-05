@@ -70,7 +70,7 @@ window.shopApp = {
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png', duration: '5 Siembras', usage: '1', desc: 'Soporta flores y trigo.', price: 5000 },
             { id: 'tool_pot_big', name: 'Maceta Grande', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png', duration: '10 Siembras', usage: '1', desc: 'Resiste el ciclo profundo de flores grandes.', price: 15000 },
             { id: 'tool_water', name: 'Regadera', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual en el minijuego de riego.', price: 500 },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '24 Horas', usage: '3', desc: 'Protección preventiva contra plagas. Remueve plagas al instante y extrae el exceso de agua.', price: 6000 }
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png', duration: '24 Horas', usage: 'Global', desc: 'Protección preventiva contra plagas. Remueve plagas al instante y extrae el exceso de agua. Se aplica a todas las parcelas.', price: 6000 }
         ],
         flowers: [
             { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Recompensa de 1.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 60% a 100% (Ultra Rápido)<br><strong class="text-red-500">Peligro:</strong> Inundación inmediata y cuervos.', price: 50 },
@@ -149,12 +149,14 @@ window.shopApp = {
             } else if (tab === 'exchange') {
                 actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
             } else {
-                stockBadge = `
-                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
-                        <span class="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
-                        <span class="text-xs md:text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
-                    </div>
-                `;
+                if (item.id !== 'tool_scarecrow') {
+                    stockBadge = `
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
+                            <span class="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
+                            <span class="text-xs md:text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
+                        </div>
+                    `;
+                }
                 actionArea = `
                     <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
                         <div class="flex items-center bg-gray-50 rounded-xl w-full sm:flex-1 border border-gray-200 shadow-inner h-10 md:h-12 overflow-hidden">
@@ -216,22 +218,45 @@ window.shopApp = {
             balEl.classList.add('text-red-500', 'scale-110');
             setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
 
-            if (!targetInventory[itemId]) {
-                let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-                targetInventory[itemId] = { 
-                    name: catItem.name, 
-                    type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                    reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
-                    qty: 0, 
-                    image: catItem.image 
-                };
-            }
-
             let addedQty = qty;
-            if(itemId === 'tool_scarecrow') addedQty = 3 * qty;
-            else if (itemId === 'tool_water') addedQty = 10 * qty;
+            
+            if (itemId === 'tool_scarecrow') {
+                if (window.farmApp && window.farmApp.state) {
+                    const now = Date.now();
+                    const durationMs = 12 * 3600000; 
+                    
+                    window.farmApp.state.plots.forEach(plot => {
+                         if (plot.status !== 'empty' && plot.status !== 'locked' && plot.status !== 'arena_locked') {
+                            plot.scarecrowEndTime = Math.max(plot.scarecrowEndTime || 0, now) + (durationMs * qty);
+                            plot.hasCrow = false;
+                            plot.crowLeavingAt = 0;
+                            
+                            if (plot.plant && plot.status === 'planted') {
+                                if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
+                                else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
+                                else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
+                                else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
+                            }
+                         }
+                    });
+                    window.farmApp.renderPlots();
+                }
+            } else {
+                if (!targetInventory[itemId]) {
+                    let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                    targetInventory[itemId] = { 
+                        name: catItem.name, 
+                        type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                        reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
+                        qty: 0, 
+                        image: catItem.image 
+                    };
+                }
 
-            targetInventory[itemId].qty += addedQty;
+                if (itemId === 'tool_water') addedQty = 10 * qty;
+
+                targetInventory[itemId].qty += addedQty;
+            }
             
             this.saveState();
             this.renderShopItems(tab);
@@ -356,7 +381,7 @@ window.shopApp = {
                     if (window.farmApp) {
                         window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
                         window.farmApp.updateSprinklerUI();
-                        window.farmApp.saveState(); // El guardado se procesa por red a la DB
+                        window.farmApp.saveState(); 
                     }
                     
                     let catItem = this.catalog.iap.find(i => i.id === packageId);
