@@ -1637,6 +1637,17 @@ window.farmApp = {
     harvestPlant(plotId) {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
+        
+        // --- INICIO CORRECCIÓN: BLOQUEO DE UI ---
+        // Prevenir doble clic o navegación mientras guarda
+        if (this.state.isSaving) return;
+        
+        // Ocultar botones de navegación temporalmente para evitar interrupciones
+        const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
+        navButtons.forEach(btn => btn.style.pointerEvents = 'none');
+        // Mostrar modal de carga nativo o indicador
+        this.showPlotToast(plotId, '⏳', 'Guardando Cosecha...');
+        // --- FIN CORRECCIÓN ---
 
         let reward = plot.plant.id === 'flower_wheat' ? 1500 : 
                       (plot.plant.id === 'flower_cactus' ? 3200 : 
@@ -1652,7 +1663,6 @@ window.farmApp = {
         this.addBalance(reward);
         
         plot.potUses += 1;
-        this.showPlotToast(plotId, plot.isSpoiled ? '🦠' : '✨', msg);
         
         const maxUses = plot.pot === 'small' ? 5 : 10;
         if (plot.potUses >= maxUses) {
@@ -1678,7 +1688,49 @@ window.farmApp = {
         } else {
             this.renderPlots();
         }
-        this.saveState();
+        
+        // --- INICIO CORRECCIÓN: GUARDADO FORZADO E INMEDIATO ---
+        this.state.lastTick = Date.now();
+        this.state.isSaving = true; 
+        
+        const stateToSave = JSON.stringify({
+            seedsBalance: this.state.seedsBalance,
+            practiceTokens: this.state.practiceTokens || 0, 
+            autoWaterEndTime: this.state.autoWaterEndTime,
+            plots: this.state.plots,
+            inventory: this.state.inventory,
+            lastTick: this.state.lastTick
+        });
+
+        const username = sessionStorage.getItem('username'); 
+        const token = sessionStorage.getItem('session_token');
+        
+        if (username && token) {
+            // Se limpia el debounce normal para evitar conflictos
+            if (this.saveTimeout) clearTimeout(this.saveTimeout);
+            
+            // Petición inmediata, no hay setTimeout
+            fetch('/api/save_state', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
+            }).then(res => {
+                this.state.isSaving = false; 
+                navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
+                
+                if (res.status === 401) {
+                    if (window.showSessionExpiredModal) window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
+                } else if (res.ok) {
+                    this.showPlotToast(plotId, plot.isSpoiled ? '🦠' : '✨', msg);
+                }
+            }).catch(e => {
+                this.state.isSaving = false; 
+                navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
+                console.error("Error guardando progreso:", e);
+                this.showPlotToast(plotId, '⚠️', 'Error al guardar');
+            });
+        }
+        // --- FIN CORRECCIÓN ---
     },
 
     openCrowModal(plotId) {
