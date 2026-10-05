@@ -50,6 +50,12 @@
             </div>
             <p class="text-xs md:text-sm text-gray-500 mb-2 flex-1 leading-relaxed text-center relative z-10">Torneo de acceso por habilidad. Cultiva el delicado Bonsái y demuestra tu técnica de riego.</p>
             
+            <!-- NUEVO CONTADOR DE JUGADORES -->
+            <div class="text-center mb-3 relative z-10">
+                <span id="card-players-1" class="text-3xl md:text-4xl font-black text-green-600">0</span>
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Jugadores Activos</p>
+            </div>
+
             <div class="bg-gray-50/80 rounded-xl p-3 md:p-4 mb-5 flex flex-col items-center justify-center border border-gray-100 relative z-10 mt-auto">
                 <span class="text-[10px] md:text-[11px] font-bold text-gray-400 mb-1 tracking-widest">INICIA EN</span>
                 <span class="text-2xl md:text-3xl font-black text-cg_blue font-mono tourney-countdown">00:00:00</span>
@@ -75,6 +81,13 @@
             <div class="w-full h-32 md:h-40 flex items-center justify-center mb-4 mt-2 relative z-10 group-hover:scale-110 transition-transform duration-500">
                 <div class="absolute inset-0 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
                 <img src="https://i.ibb.co/HTQJSPT3/Frame-755.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Orquídea Lunar">
+            </div>
+            
+            <!-- NUEVA DESCRIPCIÓN Y CONTADOR -->
+            <p class="text-xs md:text-sm text-gray-500 mb-2 flex-1 leading-relaxed text-center relative z-10">Torneo de nivel intermedio. Margen de error moderado pero con altas penalizaciones.</p>
+            <div class="text-center mb-3 relative z-10">
+                <span id="card-players-3" class="text-3xl md:text-4xl font-black text-blue-600">0</span>
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Jugadores Activos</p>
             </div>
             
             <div class="bg-gray-50/80 rounded-xl p-3 md:p-4 mb-5 flex flex-col items-center justify-center border border-gray-100 relative z-10 mt-auto">
@@ -104,6 +117,13 @@
                 <img src="https://i.ibb.co/bRq5k4G3/Frame-756.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Rosa de Ceniza">
             </div>
             
+            <!-- NUEVA DESCRIPCIÓN Y CONTADOR -->
+            <p class="text-xs md:text-sm text-gray-500 mb-2 flex-1 leading-relaxed text-center relative z-10">Competencia avanzada. Rango de supervivencia estricto y alta exigencia de precisión.</p>
+            <div class="text-center mb-3 relative z-10">
+                <span id="card-players-4" class="text-3xl md:text-4xl font-black text-orange-500">0</span>
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Jugadores Activos</p>
+            </div>
+            
             <div class="bg-gray-50/80 rounded-xl p-3 md:p-4 mb-5 flex flex-col items-center justify-center border border-gray-100 relative z-10 mt-auto">
                 <span class="text-[10px] md:text-[11px] font-bold text-gray-400 mb-1 tracking-widest">INICIA EN</span>
                 <span class="text-2xl md:text-3xl font-black text-cg_blue font-mono tourney-countdown">00:00:00</span>
@@ -129,6 +149,13 @@
             <div class="w-full h-32 md:h-40 flex items-center justify-center mb-4 mt-2 relative z-10 group-hover:scale-110 transition-transform duration-500">
                 <div class="absolute inset-0 bg-gray-200 rounded-full blur-3xl opacity-40"></div>
                 <img src="https://i.ibb.co/Y9pLC6Z/Frame-757.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Loto de Cristal">
+            </div>
+            
+            <!-- NUEVA DESCRIPCIÓN Y CONTADOR -->
+            <p class="text-xs md:text-sm text-gray-500 mb-2 flex-1 leading-relaxed text-center relative z-10">El reto definitivo para la élite. Franja de supervivencia extrema de tan solo el 20%.</p>
+            <div class="text-center mb-3 relative z-10">
+                <span id="card-players-5" class="text-3xl md:text-4xl font-black text-gray-800">0</span>
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Jugadores Activos</p>
             </div>
             
             <div class="bg-gray-50/80 rounded-xl p-3 md:p-4 mb-5 flex flex-col items-center justify-center border border-gray-100 relative z-10 mt-auto">
@@ -1293,5 +1320,30 @@
     if(window.lbInterval) clearInterval(window.lbInterval);
     window.lbInterval = setInterval(window.refreshLeaderboard, 5000);
     setTimeout(window.refreshLeaderboard, 1000);
+
+    async function updateAllTournamentCounts() {
+        const tIds = [1, 3, 4, 5];
+        for (let id of tIds) {
+            try {
+                const res = await fetch('/api/tournaments/global_leaderboard/' + id);
+                if (res.ok) {
+                    const data = await res.json();
+                    const countEl = document.getElementById('card-players-' + id);
+                    if (countEl) {
+                        countEl.innerText = data.players_count || 0;
+                    }
+                }
+            } catch(e) {
+                console.error("Error sincronizando conteos globales:", e);
+            }
+        }
+    }
+    
+    // Llamada inicial y sincronización cada 15 segundos para no saturar el servidor
+    updateAllTournamentCounts();
+    setInterval(updateAllTournamentCounts, 15000);
+
+
+    
 </script>
 </div>
