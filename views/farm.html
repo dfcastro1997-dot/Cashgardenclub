@@ -15,16 +15,10 @@
                 <span class="text-xs sm:text-sm">Herramientas</span>
             </button>
             
-            <!-- Botón Instrucciones -->
-            <button onclick="window.farmApp.openInstructionsModal()" class="w-full h-full min-h-[48px] bg-orange-500 hover:bg-orange-600 border border-orange-600 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer group text-white active:scale-95 px-2 sm:px-4">
-                <div class="flex flex-col text-left justify-center">
-                    <span class="text-[9px] font-extrabold text-orange-200 uppercase tracking-widest leading-none">Guía Rápida</span>
-                    <span class="text-xs font-black text-white leading-tight mt-0.5">Instrucciones</span>
-                </div>
-                <div class="w-7 h-7 rounded-full bg-orange-400 flex items-center justify-center border border-orange-300 text-white group-hover:scale-110 transition-transform shrink-0 shadow-inner">
-                    📖
-                </div>
-            </button>
+            <!-- NUEVO: WIDGET DE CLIMA / ESTACIÓN ACTUAL -->
+            <div id="season-widget" class="w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-between px-3 sm:px-4 relative overflow-hidden">
+                <!-- Se inyecta por JS -->
+            </div>
         </div>
     </div>
 
@@ -491,6 +485,51 @@ window.farmApp = {
 
     calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null },
     
+
+
+
+    getSeasonData(timestamp_ms) {
+        const d = new Date(timestamp_ms);
+        const day = d.getDate();
+        if (day >= 1 && day <= 9) return { name: 'Invierno', icon: '❄️', mult: 0.5, color: 'text-blue-600', bg: 'bg-blue-100', endDay: 9 };
+        else if (day >= 10 && day <= 19) return { name: 'Otoño', icon: '🍂', mult: 1.5, color: 'text-orange-600', bg: 'bg-orange-100', endDay: 19 };
+        else if (day >= 20 && day <= 26) return { name: 'Primavera', icon: '🌸', mult: 1.0, color: 'text-pink-600', bg: 'bg-pink-100', endDay: 26 };
+        else return { name: 'Verano', icon: '☀️', mult: 2.0, color: 'text-red-600', bg: 'bg-red-100', endDay: new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() };
+    },
+
+    updateSeasonWidget() {
+        const el = document.getElementById('season-widget');
+        if (!el) return;
+        const now = Date.now();
+        const season = this.getSeasonData(now);
+        const d = new Date(now);
+        const end = new Date(d.getFullYear(), d.getMonth(), season.endDay, 23, 59, 59).getTime();
+        const left = Math.max(0, end - now);
+        
+        const days = Math.floor(left / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((left % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((left % (1000 * 60 * 60)) / (1000 * 60));
+        
+        const dateStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        el.innerHTML = `
+            <div class="absolute -right-4 -top-4 w-16 h-16 ${season.bg} rounded-full blur-xl opacity-80 pointer-events-none"></div>
+            <div class="flex items-center gap-3 relative z-10 w-full py-1">
+                <span class="text-2xl sm:text-3xl drop-shadow-sm">${season.icon}</span>
+                <div class="flex flex-col flex-1 text-left">
+                    <div class="flex justify-between items-center w-full">
+                        <span class="text-[10px] font-extrabold ${season.color} uppercase tracking-widest leading-none">${season.name} (Evap x${season.mult})</span>
+                        <span class="text-[9px] font-bold text-gray-400 hidden sm:block">${dateStr} ${timeStr}</span>
+                    </div>
+                    <span class="text-xs font-black text-cg_navy leading-tight mt-0.5">Fin: ${days}d ${hours}h ${mins}m</span>
+                </div>
+            </div>
+        `;
+    },
+
+
+
     state: {
         seedsBalance: 35000,
         practiceTokens: 0, // <-- AÑADIR ESTA LÍNEA
@@ -746,6 +785,7 @@ window.farmApp = {
         const localBalance = document.getElementById('global-seeds-display');
         if(localBalance) localBalance.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         
+        this.updateSeasonWidget(); // <-- AÑADIDO AQUÍ
         this.updateSprinklerUI();
         this.renderPlots();
         this.updateInventoryUI();
@@ -1126,6 +1166,15 @@ window.farmApp = {
         const isAutoWatering = this.state.autoWaterEndTime > now;
         let changesMade = false;
         
+        // --- INICIO NUEVA LÓGICA DE CLIMA ---
+        const currentSeason = this.getSeasonData(now);
+        const seasonMultiplier = currentSeason.mult;
+        
+        if (typeof this.updateSeasonWidget === 'function') {
+            this.updateSeasonWidget(); // Actualiza el widget visual en tiempo real
+        }
+        // --- FIN NUEVA LÓGICA DE CLIMA ---
+        
         const anyPlantInfected = this.state.plots.some(p => 
             p.status === 'planted' && p.hasCrow
         );
@@ -1134,7 +1183,8 @@ window.farmApp = {
             if (plot.id === 5 && plot.status === 'tournament') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 if (plot.water > 0) {
-                    plot.water = Math.max(0, plot.water - (conf.evapPerHour * deltaHours)); 
+                    // --- MODIFICADO: Aplicar multiplicador de estación a la evaporación del torneo ---
+                    plot.water = Math.max(0, plot.water - (conf.evapPerHour * seasonMultiplier * deltaHours)); 
                     changesMade = true;
                 }
 
@@ -1207,6 +1257,9 @@ window.farmApp = {
                     } else {
                         if (plot.water > 0) {
                             let evapRate = (plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40;
+                            // --- MODIFICADO: Aplicar multiplicador de estación a plantas normales ---
+                            evapRate = evapRate * seasonMultiplier;
+                            
                             plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                             changesMade = true;
                         }

@@ -79,6 +79,15 @@ init_db()
 # ==========================================================
 # MOTOR AUTORITATIVO DEL SERVIDOR (SERVER-SIDE VALIDATION)
 # ==========================================================
+
+def get_season_multiplier(now_ms):
+    dt = datetime.fromtimestamp(now_ms / 1000.0, tz=timezone.utc)
+    day = dt.day
+    if 1 <= day <= 9: return 0.5   # Invierno (-50% evaporación)
+    elif 10 <= day <= 19: return 1.5 # Otoño (+50% evaporación)
+    elif 20 <= day <= 26: return 1.0 # Primavera (Normal)
+    else: return 2.0                 # Verano (+100% evaporación)
+
 def process_server_tick(game_state_str):
     if not game_state_str: return game_state_str
     try:
@@ -91,6 +100,9 @@ def process_server_tick(game_state_str):
             delta_hours = delta_ms / 3600000.0
             auto_water_end = state.get('autoWaterEndTime', 0)
             is_auto_watering = auto_water_end > now
+            
+            # --- NUEVO: OBTENER MULTIPLICADOR CLIMÁTICO GLOBAL ---
+            season_multiplier = get_season_multiplier(now)
 
             any_plant_infected = any(
                 p.get('status') == 'planted' and p.get('hasCrow') 
@@ -98,7 +110,7 @@ def process_server_tick(game_state_str):
             )
 
             for plot in state.get('plots', []):
-                # --- NUEVO: VALIDACIÓN PARA LA PLANTA DE TORNEO ---
+                # --- VALIDACIÓN PARA LA PLANTA DE TORNEO ---
                 if plot.get('status') == 'tournament':
                     if any_plant_infected and not plot.get('hasCrow') and plot.get('crowLeavingAt', 0) <= now:
                         plot['hasCrow'] = True
@@ -119,9 +131,22 @@ def process_server_tick(game_state_str):
                     elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
 
                     if not plot.get('isReady'):
-                        # --- CORRECCIÓN: ASIGNAR EL MAX_SAFE REAL SIN EXCEPCIONES INCORRECTAS ---
                         if is_auto_watering:
                             plot['water'] = max_safe 
+                            plot['hasCrow'] = False
+                        else:
+                            # --- NUEVO: APLICAR MULTIPLICADOR A LA EVAPORACIÓN BASE ---
+                            evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
+                            evap_rate = evap_rate * season_multiplier 
+                            
+                            if plot.get('water', 0) > 0:
+                                plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
+                            
+                            if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
+                                plot['hasCrow'] = False
+                                plot['crowLeavingAt'] = 0
+                                if plot.get('water', 0) > max_safe:
+                                    plot['water'] = max_safe
                             plot['hasCrow'] = False
                         # --- FIN CORRECCIÓN ---
                         else:
