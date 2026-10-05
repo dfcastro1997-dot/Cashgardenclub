@@ -490,8 +490,16 @@ def buy_seeds():
         conn.close()
 
 # ==========================================================
-# ENDPOINTS DE TORNEOS SIT & GO DINÁMICOS
+# ENDPOINTS DE TORNEOS (SCHEDULED & SIT&GO HÍBRIDO)
 # ==========================================================
+
+def get_next_schedule_ms():
+    # Establece que los torneos arranquen cada 4 horas
+    now = datetime.now(timezone.utc)
+    next_hour = ((now.hour // 4) + 1) * 4
+    import datetime as dt
+    next_time = now.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(hours=next_hour)
+    return int(next_time.timestamp() * 1000)
 
 @app.route('/api/tournaments/join', methods=['POST'])
 def join_tournament():
@@ -509,52 +517,42 @@ def join_tournament():
         if not user or (user.get('session_token') and user['session_token'] != token):
             return jsonify({"error": "Sesión inválida"}), 401
 
-        # Buscar una sala en espera para este torneo (máximo 10 jugadores)
-        cur.execute("SELECT id, players_count, max_players FROM tournament_instances WHERE template_id = %s AND status = 'waiting' LIMIT 1 FOR UPDATE", (t_id,))
+        # Buscar sala en espera, si no existe, crearla con horario programado
+        cur.execute("SELECT id, players_count, max_players, start_time FROM tournament_instances WHERE template_id = %s AND status = 'waiting' LIMIT 1 FOR UPDATE", (t_id,))
         instance = cur.fetchone()
         
         if not instance:
-            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_cop, max_players) VALUES (%s, %s, 10) RETURNING id", (t_id, fee))
+            start_time = get_next_schedule_ms()
+            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_cop, max_players, start_time, prize_pool_cop) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, 10000 if t_id == 1 else 0))
             instance_id = cur.fetchone()['id']
             players_count = 0
+            tourney_status = 'waiting'
+            end_time = 0
         else:
             instance_id = instance['id']
             players_count = instance['players_count']
+            start_time = instance['start_time']
+            tourney_status = 'waiting'
+            end_time = 0
 
         seed_cost = {0: 5000, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 5000)
         state = json.loads(user['game_state'] or '{}')
         if state.get('seedsBalance', 0) < seed_cost:
             return jsonify({"error": f"Requiere {seed_cost} 🌱 para participar"}), 400
 
-        # Anti-Duplicado en la misma sala
-        cur.execute("SELECT id FROM tournament_players WHERE user_id = %s AND instance_id = %s", (user['id'], instance_id))
-        if cur.fetchone():
-            return jsonify({"error": "Ya estás inscrito en esta sala"}), 400
+        # Anti-Duplicado (Si cambia de torneo, debemos removerlo del anterior. Por seguridad, aquí limpiamos instancias pasadas en estado 'waiting')
+        cur.execute("DELETE FROM tournament_players WHERE user_id = %s AND instance_id IN (SELECT id FROM tournament_instances WHERE status = 'waiting')", (user['id'],))
 
-        # Procesar Cobro
+        # Cobro de Semillas y Dinero Real
         state['seedsBalance'] -= seed_cost
         if fee > 0:
             prize_addition = fee * 0.85 
             cur.execute("UPDATE tournament_instances SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, instance_id))
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
 
-        # Registrar jugador
+        # Inscribir jugador
         cur.execute("INSERT INTO tournament_players (instance_id, user_id, username) VALUES (%s, %s, %s)", (instance_id, user['id'], username))
-        players_count += 1
-        
-        # Validar si se llenó la sala (10/10)
-        tourney_status = 'waiting'
-        start_time = 0
-        end_time = 0
-        if players_count >= 10:
-            tourney_status = 'running'
-            start_time = int(time.time() * 1000)
-            dur_hours = {1: 12, 3: 6, 4: 8, 5: 12}.get(t_id, 6)
-            end_time = start_time + (dur_hours * 3600000)
-            cur.execute("UPDATE tournament_instances SET status = 'running', players_count = %s, start_time = %s, end_time = %s WHERE id = %s", (players_count, start_time, end_time, instance_id))
-        else:
-            cur.execute("UPDATE tournament_instances SET players_count = %s WHERE id = %s", (players_count, instance_id))
-
+        cur.execute("UPDATE tournament_instances SET players_count = players_count + 1 WHERE id = %s", (instance_id,))
         cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
         conn.commit()
         
@@ -567,14 +565,63 @@ def join_tournament():
             "new_balance_cop": float(user['balance']),
             "new_game_state": state
         })
-    except psycopg2.errors.UniqueViolation:
-        conn.rollback()
-        return jsonify({"error": "Ya estás inscrito"}), 400
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close(); conn.close()
+
+
+@app.route('/api/tournaments/global_leaderboard/<int:t_id>', methods=['GET'])
+def global_leaderboard(t_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    # Ubicar la sala activa (corriendo o esperando) más reciente
+    cur.execute("SELECT * FROM tournament_instances WHERE template_id = %s AND status IN ('waiting', 'running') ORDER BY id DESC LIMIT 1", (t_id,))
+    inst = cur.fetchone()
+    
+    if not inst:
+        cur.close(); conn.close()
+        return jsonify({"status": "no_instance", "prize_pool": 10000 if t_id == 1 else 0})
+        
+    now = int(time.time() * 1000)
+    
+    # Motor de Inicio (Se ejecuta cuando alguien consulta la tabla)
+    if inst['status'] == 'waiting' and now >= inst['start_time']:
+        # Freeroll inicia siempre, Pagos inician con mínimo 3 jugadores
+        if t_id == 1 or inst['players_count'] >= 3:
+            dur_hours = {1: 12, 3: 6, 4: 8, 5: 12}.get(t_id, 6)
+            end_time = inst['start_time'] + (dur_hours * 3600000)
+            cur.execute("UPDATE tournament_instances SET status = 'running', end_time = %s WHERE id = %s", (end_time, inst['id']))
+            inst['status'] = 'running'
+            inst['end_time'] = end_time
+        else:
+            # Si no se cumple el mínimo, se reprograma para 4 horas después
+            new_start = inst['start_time'] + (4 * 3600000)
+            cur.execute("UPDATE tournament_instances SET start_time = %s WHERE id = %s", (new_start, inst['id']))
+            inst['start_time'] = new_start
+        conn.commit()
+    
+    cur.execute('''
+        SELECT username, current_score 
+        FROM tournament_players 
+        WHERE instance_id = %s 
+        ORDER BY current_score DESC LIMIT 10
+    ''', (inst['id'],))
+    players = cur.fetchall()
+    cur.close(); conn.close()
+    
+    return jsonify({
+        "prize_pool": inst['prize_pool_cop'],
+        "status": inst['status'],
+        "start_time": inst['start_time'],
+        "end_time": inst['end_time'],
+        "players_count": inst['players_count'],
+        "max_players": inst['max_players'],
+        "leaderboard": players
+    })
+
+# Nota: Puedes eliminar el endpoint obsoleto antiguo '/api/tournaments/leaderboard/<int:instance_id>' ya que el global lo reemplaza.
 
 @app.route('/api/tournaments/status/<int:instance_id>', methods=['GET'])
 def check_tournament_status(instance_id):
