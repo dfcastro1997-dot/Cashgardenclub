@@ -13,6 +13,9 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 
 DB_URI = os.getenv("DATABASE_URL")
 
+
+ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
+
 # Constantes del Servidor (Sin Clima, evaporación constante del 40%/hora)
 EVAPORATION_RATE = 40.0 
 
@@ -263,7 +266,28 @@ def save_state():
             cur.close(); conn.close()
             return jsonify({"error": "Múltiples sesiones detectadas"}), 401
             
-        cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (incoming_state_str, username))
+        # --- INICIO CORRECCIÓN: VALIDACIÓN DEL ESTADO ---
+        try:
+            incoming_state = json.loads(incoming_state_str)
+            db_state = json.loads(user['game_state'] or '{}')
+            
+            # Anti-Cheat Básico: Evitar que se inyecten cantidades absurdas de semillas
+            incoming_seeds = incoming_state.get('seedsBalance', 0)
+            db_seeds = db_state.get('seedsBalance', 0)
+            # Límite seguro de ganancia por tick (ej. 30000 semillas max de golpe)
+            if incoming_seeds > db_seeds + 30000:
+                incoming_state['seedsBalance'] = db_seeds # Revertir trampa a lo que había en DB
+                
+            incoming_state_str = json.dumps(incoming_state)
+            
+            # Validar variables de tiempo usando el motor del servidor
+            validated_state_str = process_server_tick(incoming_state_str)
+        except Exception:
+            # En caso de que falle el parseo por JSON corrupto, se intenta procesar igual
+            validated_state_str = process_server_tick(incoming_state_str)
+        # --- FIN CORRECCIÓN ---
+            
+        cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state_str, username))
         conn.commit()
     
     cur.close(); conn.close()
@@ -494,6 +518,10 @@ def dispatch_nequi_payout():
 @app.route('/api/dev/add_cop', methods=['POST'])
 def dev_add_cop():
     data = request.json
+    # --- CORRECCIÓN: VALIDACIÓN ADMIN ---
+    if data.get('admin_token') != ADMIN_SECRET:
+        return jsonify({"error": "No autorizado"}), 403
+    
     username = data.get('username')
     amount = float(data.get('amount', 0))
     
@@ -516,6 +544,10 @@ def dev_add_cop():
 @app.route('/api/dev/reset_tournaments', methods=['POST'])
 def dev_reset_tournaments():
     data = request.json
+    # --- CORRECCIÓN: VALIDACIÓN ADMIN ---
+    if data.get('admin_token') != ADMIN_SECRET:
+        return jsonify({"error": "No autorizado"}), 403
+        
     username = data.get('username')
     
     conn = get_db_connection()
