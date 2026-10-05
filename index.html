@@ -516,6 +516,15 @@
                 case '3333':
                     window.farmApp.dev.addTime(2);
                     break;
+                case '4444':
+                    window.farmApp.dev.addTime(3);
+                    break;
+                case '5555':
+                    window.farmApp.dev.addTime(4);
+                    break;
+                case '6666':
+                    window.farmApp.dev.reset(true); // Pasa 'true' para ejecutar el Hard Reset (Borrar COP)
+                    break;
                 default:
                     alert("El código ingresado es inválido o ha expirado.");
                     return;

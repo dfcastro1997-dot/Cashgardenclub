@@ -769,6 +769,7 @@ def dev_reset_tournaments():
         return jsonify({"error": "No autorizado"}), 403
         
     username = data.get('username')
+    clear_all = data.get('clear_all', False)
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -777,8 +778,10 @@ def dev_reset_tournaments():
         user = cur.fetchone()
         if user:
             cur.execute("DELETE FROM tournament_players WHERE user_id = %s", (user['id'],))
+            if clear_all:
+                cur.execute("UPDATE users SET balance = 0.00 WHERE id = %s", (user['id'],))
             conn.commit()
-            return jsonify({"message": "Campeonato reseteado en BD"}), 200
+            return jsonify({"message": "Datos de desarrollo reseteados en BD"}), 200
         return jsonify({"error": "Usuario no encontrado"}), 404
     except Exception as e:
         conn.rollback()

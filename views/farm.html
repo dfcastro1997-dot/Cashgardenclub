@@ -617,7 +617,7 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         dev: {
-            reset: async () => {
+            reset: async (clearAll = false) => {
                 window.farmApp.state.plots = [
                     { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                     { id: 1, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -636,6 +636,14 @@ if (typeof window.farmApp === 'undefined') {
                 };
                 window.farmApp.state.seedsBalance = 35000;
                 window.farmApp.state.autoWaterEndTime = 0;
+                window.farmApp.state.autoHarvestEndTime = 0;
+                
+                // Si es Hard Reset, limpiamos el balance en el frontend
+                if (clearAll) {
+                    window.farmApp.state.balance = 0;
+                    const balEl = document.getElementById('global-balance');
+                    if(balEl) balEl.innerText = "$0";
+                }
                 
                 const username = sessionStorage.getItem('username');
                 if(username) {
@@ -643,7 +651,7 @@ if (typeof window.farmApp === 'undefined') {
                         await fetch('/api/dev/reset_tournaments', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username: username })
+                            body: JSON.stringify({ username: username, admin_token: "supersecreto123", clear_all: clearAll })
                         });
                     } catch(e) {
                         console.error("Error liberando campeonato en DB", e);
@@ -652,7 +660,7 @@ if (typeof window.farmApp === 'undefined') {
                 
                 window.farmApp.saveState();
                 window.farmApp.updateUI();
-                alert("Terreno, inventario y campeonato reseteados exitosamente.");
+                alert(clearAll ? "Reseteo Maestro (6666): Terreno, inventario, COP y torneos reseteados exitosamente." : "Terreno, inventario y campeonato reseteados exitosamente.");
             },
             addSeeds: (amount) => {
                 if(window.farmApp) {
@@ -666,6 +674,7 @@ if (typeof window.farmApp === 'undefined') {
             addTime: (hours) => {
                 const shift = hours * 3600000; 
                 window.farmApp.state.autoWaterEndTime = Math.max(0, (window.farmApp.state.autoWaterEndTime || 0) - shift);
+                window.farmApp.state.autoHarvestEndTime = Math.max(0, (window.farmApp.state.autoHarvestEndTime || 0) - shift);
                 window.farmApp.state.plots.forEach(plot => {
                     if (plot.plantedAt) plot.plantedAt -= shift;
                     if (plot.harvestAt) plot.harvestAt -= shift;
@@ -686,7 +695,8 @@ if (typeof window.farmApp === 'undefined') {
                         const res = await fetch('/api/dev/add_cop', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username: username, amount: amount })
+                            // <-- AÑADIDO: admin_token para autorizar la transacción
+                            body: JSON.stringify({ username: username, amount: amount, admin_token: "supersecreto123" }) 
                         });
                         const data = await res.json();
                         

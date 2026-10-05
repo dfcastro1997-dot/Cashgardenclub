@@ -757,6 +757,24 @@
             
             countdownEls[index].innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         });
+
+        // --- NUEVO: Actualizar el tiempo restante del torneo en la tabla de posiciones en vivo ---
+        const lbTimer = document.getElementById('lb-running-timer');
+        if (lbTimer) {
+            let endTime = parseInt(lbTimer.getAttribute('data-endtime'));
+            if (endTime) {
+                let msLeft = Math.max(0, endTime - Date.now());
+                let h = Math.floor(msLeft / 3600000);
+                let m = Math.floor((msLeft % 3600000) / 60000);
+                let s = Math.floor((msLeft % 60000) / 1000);
+                
+                if (msLeft <= 0) {
+                    lbTimer.innerText = "Procesando ganador...";
+                } else {
+                    lbTimer.innerText = `${h}h ${m}m ${s}s`;
+                }
+            }
+        }
     }
     
     setInterval(updateGlobalTournamentCountdown, 1000);
@@ -1291,7 +1309,8 @@
             badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span> INICIA EN ${h}H ${m}M`;
             badge.className = "bg-orange-50 text-orange-600 border border-orange-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1.5 w-fit mb-2 shadow-sm";
         } else if (data.status === 'running') {
-            countText.innerText = `Torneo en progreso (${data.players_count} Jugadores Compitiendo)`;
+            // Se usa innerHTML para inyectar el span con el tiempo restante
+            countText.innerHTML = `Torneo en progreso (${data.players_count} Jugadores Compitiendo) <br><span class="text-red-500 font-black text-sm mt-1 inline-block animate-pulse">⏳ Finaliza en: <span id="lb-running-timer" data-endtime="${data.end_time}">Calculando...</span></span>`;
             badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span> TRANSMISIÓN EN VIVO`;
             badge.className = "bg-red-50 text-red-600 border border-red-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest animate-pulse flex items-center gap-1.5 w-fit mb-2 shadow-sm";
         } else {
