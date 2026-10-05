@@ -1033,7 +1033,7 @@ window.farmApp = {
                                 <span class="text-xs sm:text-sm font-black ${displayWater <= 0 ? 'text-red-600' : 'text-cg_blue'}">💧 ${displayWater}%</span>
                                 ${isAutoWatering ? `<span class="text-[8px] sm:text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-200 px-1 sm:px-1.5 py-0.5 rounded shadow-sm uppercase">AUTO</span>` : (plot.scarecrowEndTime > now ? `<span class="text-[8px] sm:text-[9px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-1 sm:px-1.5 py-0.5 rounded shadow-sm uppercase">🦉 ${( (plot.scarecrowEndTime - now) / 3600000 ).toFixed(1)}h</span>` : '')}
                             </div>
-                            // Reemplazar el bloque del botón de cosecha
+                            
                             ${plot.isReady ? `
                                 <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[9px] sm:text-[10px] ${plot.isSpoiled ? 'bg-orange-600 hover:bg-orange-700' : 'bg-[#2E7D32] hover:bg-green-700'} text-white font-bold transition-colors uppercase tracking-widest px-2 sm:px-3 py-1 rounded shadow-sm animate-pulse">
                                     ${plot.isSpoiled ? 'Cosecha Dañada' : 'Cosechar'}
@@ -1056,6 +1056,8 @@ window.farmApp = {
                         </div>
                     </div>
                 `;
+
+                
                 el.onclick = () => this.selectPlot(plot.id, true);
             }
             grid.appendChild(el);
