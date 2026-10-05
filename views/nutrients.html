@@ -257,7 +257,7 @@
             </div>
         </div>
 
-        <!-- Metas Dinámicas Ocultas en Rieles -->
+        <!-- Metas Dinámicas Ocultas en Rieles (4 Columnas) -->
         <div class="flex justify-between px-2 mb-4 relative z-20">
             <div class="text-center w-1/4 flex flex-col items-center">
                 <div class="flex items-center gap-1">
@@ -330,7 +330,7 @@
         </div>
         
         <!-- Superposición de Victoria -->
-        <div id="victory-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div id="victory-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-6 text-center animate-fade-in rounded-3xl">
             <div class="w-20 h-20 bg-yellow-100 rounded-full border-4 border-yellow-300 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(253,224,98,0.8)] animate-bounce">
                 <span class="text-4xl">✨</span>
             </div>
@@ -339,14 +339,14 @@
             <button onclick="submitAlchemyFinal()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl shadow-lg transition-transform active:scale-95 uppercase tracking-widest text-xs">Entrar a la Arena</button>
         </div>
         
-        <!-- Superposición de Fallo -->
-        <div id="fail-overlay" class="absolute inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-6 text-center border-4 border-red-500 animate-fade-in">
-            <div class="w-20 h-20 bg-red-900 rounded-full border-4 border-red-500 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(255,0,0,0.8)]">
-                <span class="text-4xl">💀</span>
+        <!-- Superposición de Fallo (CLARO) -->
+        <div id="fail-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-6 text-center animate-fade-in rounded-3xl border-4 border-red-400">
+            <div class="w-20 h-20 bg-red-50 rounded-full border-4 border-red-200 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(239,68,68,0.4)] animate-pulse">
+                <img id="fail-plant-img" src="" class="w-12 h-12 object-contain drop-shadow-md">
             </div>
-            <h3 class="text-2xl font-black text-red-500 mb-2 uppercase tracking-widest">Colapso Químico</h3>
-            <p class="text-xs font-medium text-gray-300 mb-6 leading-relaxed" id="fail-msg">La planta nacerá herida.</p>
-            <button onclick="submitAlchemyFinal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg transition-transform active:scale-95 uppercase tracking-widest text-xs">Asumir Daño y Entrar</button>
+            <h3 class="text-2xl font-black text-red-500 mb-1 uppercase tracking-widest">Colapso Químico</h3>
+            <p class="text-xs font-bold text-gray-600 mb-6 leading-relaxed" id="fail-msg">La planta nacerá herida.</p>
+            <button onclick="submitAlchemyFinal()" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-4 rounded-xl shadow-lg transition-transform active:scale-95 uppercase tracking-widest text-xs">Asumir Daño y Entrar</button>
         </div>
     </div>
 </div>
@@ -377,7 +377,6 @@
     let pendingTournament = null;
     let ritualState = { pendingData: null, score: 10000 };
     
-    // Estado del minijuego de Alquimia (Ahora con Tierra)
     let alchemyState = {
         targetW: 0, targetN: 0, targetL: 0, targetT: 0,
         valW: 50, valN: 50, valL: 50, valT: 50,
@@ -493,20 +492,17 @@
         const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         ritualState.score = info.scoreNum;
         
-        // Asignar 4 metas dinámicas aleatorias
         alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
         alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
         alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
         alchemyState.targetT = Math.floor(Math.random() * 41) + 30; 
         
-        // Reset a 50%
         alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50; alchemyState.valT = 50;
         document.getElementById('slider-water').value = 50;
         document.getElementById('slider-nutrients').value = 50;
         document.getElementById('slider-light').value = 50;
         document.getElementById('slider-earth').value = 50;
         
-        // Ocultar overlays y reiniciar estilos
         document.getElementById('victory-overlay').classList.replace('flex', 'hidden');
         document.getElementById('fail-overlay').classList.replace('flex', 'hidden');
         document.getElementById('alchemy-container').className = "bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold transition-all duration-300 overflow-hidden";
@@ -515,8 +511,8 @@
         
         document.getElementById('seed-img').src = info.img;
         document.getElementById('seed-img').style.filter = "none";
+        document.getElementById('fail-plant-img').src = info.img;
 
-        // Configurar los "Rieles" de ±5% de tolerancia
         setupTrack('track-water', alchemyState.targetW);
         setupTrack('track-nutrients', alchemyState.targetN);
         setupTrack('track-light', alchemyState.targetL);
@@ -524,7 +520,6 @@
 
         updateAlchemyUI();
         
-        // MOSTRAR LOS NÚMEROS META INICIALMENTE
         document.getElementById('target-water').innerText = alchemyState.targetW + '%';
         document.getElementById('target-water').classList.remove('text-red-500', 'animate-pulse');
         document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
@@ -537,7 +532,6 @@
         document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
         document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        // Iniciar reloj cardíaco (10 SEGUNDOS)
         alchemyState.timer = 10;
         document.getElementById('alchemy-timer').innerText = alchemyState.timer;
         alchemyState.active = true;
@@ -549,7 +543,6 @@
             alchemyState.timer--;
             document.getElementById('alchemy-timer').innerText = alchemyState.timer;
             
-            // AMNESIA NUMÉRICA A LA MITAD DEL TIEMPO (5s)
             if (alchemyState.timer === 5 && !alchemyState.isPerfect) {
                 document.getElementById('target-water').innerText = '???';
                 document.getElementById('target-water').classList.add('text-red-500', 'animate-pulse');
@@ -561,7 +554,6 @@
                 document.getElementById('target-earth').classList.add('text-red-500', 'animate-pulse');
             }
 
-            // Efecto de Tensión en últimos 3s
             if (alchemyState.timer <= 3 && !alchemyState.isPerfect) {
                 document.getElementById('alchemy-container').classList.add('glitch-border');
                 document.getElementById('timer-box').classList.replace('bg-red-100', 'bg-red-600');
@@ -593,19 +585,17 @@
         let deltaL = newL - alchemyState.valL;
         let deltaT = newT - alchemyState.valT;
         
-        // REGAS FÍSICAS DE INTERCONEXIÓN (4 VARIABLES)
         if (source === 'light' && deltaL !== 0) {
-            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5))); // Luz evapora agua
+            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5))); 
         } else if (source === 'water' && deltaW !== 0) {
-            newN = Math.max(0, Math.min(100, alchemyState.valN - Math.round(deltaW * 0.4))); // Agua diluye nutrientes
-            newT = Math.max(0, Math.min(100, alchemyState.valT - Math.round(deltaW * 0.2))); // Agua deslava la tierra
+            newN = Math.max(0, Math.min(100, alchemyState.valN - Math.round(deltaW * 0.4))); 
+            newT = Math.max(0, Math.min(100, alchemyState.valT - Math.round(deltaW * 0.2))); 
         } else if (source === 'nutrients' && deltaN !== 0) {
-            newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3))); // Nutrientes densos tapan luz
+            newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3))); 
         } else if (source === 'earth' && deltaT !== 0) {
-            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaT * 0.3))); // Tierra absorbe agua
+            newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaT * 0.3))); 
         }
         
-        // ATRACCIÓN MAGNÉTICA AL PUNTO DULCE (±1% - PRECISIÓN QUIRÚRGICA)
         if (Math.abs(newW - alchemyState.targetW) <= 1) newW = alchemyState.targetW;
         if (Math.abs(newN - alchemyState.targetN) <= 1) newN = alchemyState.targetN;
         if (Math.abs(newL - alchemyState.targetL) <= 1) newL = alchemyState.targetL;
@@ -624,7 +614,6 @@
         updateAlchemyUI();
     }
 
-    // LÓGICA DE LAS FLECHAS TÉRMICAS
     function updateArrow(id, currentVal, targetVal) {
         const arrow = document.getElementById(id);
         const diff = Math.abs(currentVal - targetVal);
@@ -651,13 +640,11 @@
         const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
         const diffT = Math.abs(alchemyState.targetT - alchemyState.valT);
         
-        // ACTUALIZAR TEXTOS
         document.getElementById('val-water').innerText = alchemyState.valW + '%';
         document.getElementById('val-nutrients').innerText = alchemyState.valN + '%';
         document.getElementById('val-light').innerText = alchemyState.valL + '%';
         document.getElementById('val-earth').innerText = alchemyState.valT + '%';
 
-        // ACTUALIZAR FLECHAS TÉRMICAS
         updateArrow('arrow-water', alchemyState.valW, alchemyState.targetW);
         updateArrow('arrow-nutrients', alchemyState.valN, alchemyState.targetN);
         updateArrow('arrow-light', alchemyState.valL, alchemyState.targetL);
@@ -676,7 +663,6 @@
         document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
         let isChaotic = false;
 
-        // RETROALIMENTACIÓN DE TIERRA (Ajusta la altura de la base)
         if (alchemyState.valT > alchemyState.targetT + 15) {
             ground.style.height = '35%';
             isChaotic = true;
@@ -687,7 +673,6 @@
             ground.style.height = '20%';
         }
 
-        // RETROALIMENTACIÓN DE AGUA (Ajusta colores y condensación)
         ground.className = "absolute bottom-0 left-0 w-full z-10 transition-all duration-300 border-t-4 border-[#3A2210]";
         if (alchemyState.valW > alchemyState.targetW + 15) {
             liquid.style.height = '60%';
@@ -707,7 +692,6 @@
             ground.classList.add('bg-[#5C3A21]');
         }
 
-        // RETROALIMENTACIÓN DE LUZ
         if (alchemyState.valL > alchemyState.targetL + 15) {
             glare.style.opacity = '0.8';
             darkness.style.opacity = '0';
@@ -722,7 +706,6 @@
             darkness.style.opacity = '0';
         }
 
-        // RETROALIMENTACIÓN DE NUTRIENTES
         if (alchemyState.valN > alchemyState.targetN + 15) {
             liquid.classList.replace('bg-blue-900/90', 'bg-purple-600/90');
             liquid.classList.replace('bg-blue-500/50', 'bg-purple-500/80');
@@ -741,7 +724,6 @@
             if(!isChaotic) seed.style.filter = "none";
         }
 
-        // DETECCIÓN DE CLÍMAX (VICTORIA INMEDIATA)
         if (diffW <= 1 && diffN <= 1 && diffL <= 1 && diffT <= 1) {
             document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
             fog.style.opacity = '0'; glare.style.opacity = '0'; darkness.style.opacity = '0';
