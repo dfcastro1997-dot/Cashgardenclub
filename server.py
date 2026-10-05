@@ -90,6 +90,9 @@ def init_db():
             CONSTRAINT unique_player_instance UNIQUE(instance_id, user_id)
         );
     ''')
+    # Añadir las columnas dinámicamente si no existen (para la precisión y el tiempo)
+    cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_precision NUMERIC(6,3) DEFAULT 0.000;")
+    cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_time NUMERIC(5,2) DEFAULT 0.00;")
     conn.commit()
     cur.close()
     conn.close()
@@ -513,6 +516,10 @@ def join_tournament():
     token = data.get('session_token')
     fee = float(data.get('fee', 0))
     t_id = int(data.get('tournament_id', 1))
+    
+    # Nuevas variables capturadas del frontend
+    precision = float(data.get('precision', 0.000))
+    time_used = float(data.get('time_used', 0.00))
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -555,8 +562,7 @@ def join_tournament():
             cur.execute("UPDATE tournament_instances SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, instance_id))
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
 
-        # Inscribir jugador
-        cur.execute("INSERT INTO tournament_players (instance_id, user_id, username) VALUES (%s, %s, %s)", (instance_id, user['id'], username))
+        cur.execute("INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time) VALUES (%s, %s, %s, %s, %s)", (instance_id, user['id'], username, precision, time_used))
         cur.execute("UPDATE tournament_instances SET players_count = players_count + 1 WHERE id = %s", (instance_id,))
         cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
         conn.commit()
@@ -645,11 +651,11 @@ def get_leaderboard(instance_id):
     instance = cur.fetchone()
     
     cur.execute('''
-        SELECT username, current_score 
+        SELECT username, current_score, alchemy_precision, alchemy_time 
         FROM tournament_players 
         WHERE instance_id = %s 
-        ORDER BY current_score DESC LIMIT 10
-    ''', (instance_id,))
+        ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
+    ''', (inst['id'],))
     players = cur.fetchall()
     cur.close(); conn.close()
     

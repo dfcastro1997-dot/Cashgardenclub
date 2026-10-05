@@ -510,7 +510,8 @@
         targetW: 0, targetN: 0, targetL: 0, targetT: 0,
         valW: 50, valN: 50, valL: 50, valT: 50,
         timer: 10, interval: null, active: false,
-        isPerfect: false, finalWater: 50, isPractice: false
+        isPerfect: false, finalWater: 50, isPractice: false,
+        startTime: 0, precision: 0, timeUsed: 0 // <-- Nuevas variables
     };
 
     function showAlertModal(title, msg, icon = '⚠️') {
@@ -628,7 +629,7 @@
         document.getElementById('pre-tournament-modal').classList.add('flex');
     }
 
-    async function finalizeTournamentAPI(initialWater, isStressed) {
+    async function finalizeTournamentAPI(initialWater, isStressed, precision, timeUsed) {
         if (!window.ritualState.pendingData) return;
         const t_id = window.ritualState.pendingData.id;
         const fee_cop = window.ritualState.pendingData.fee;
@@ -641,15 +642,20 @@
         
         const finalScore = Math.max(0, window.ritualState.score);
         
-        showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción en la Base de Datos...', '⏳');
-        const alertBtn = document.querySelector('#alert-modal button');
-        if(alertBtn) alertBtn.classList.add('hidden');
+        showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción...', '⏳');
         
         try {
             const res = await fetch('/api/tournaments/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, session_token: token, tournament_id: t_id, fee: fee_cop }) 
+                body: JSON.stringify({ 
+                    username: username, 
+                    session_token: token, 
+                    tournament_id: t_id, 
+                    fee: fee_cop,
+                    precision: precision, // Nuevo
+                    time_used: timeUsed   // Nuevo
+                }) 
             });
             const data = await res.json();
             
@@ -938,6 +944,8 @@
         window.alchemyState.isPractice = false;
         window.alchemyState.isPerfect = false;
         
+        window.alchemyState.startTime = Date.now(); // Inicia cronómetro real
+        
         if(window.alchemyState.interval) clearInterval(window.alchemyState.interval);
         window.alchemyState.interval = setInterval(() => {
             if(!window.alchemyState.active) return;
@@ -1125,14 +1133,18 @@
         window.alchemyState.active = false;
         clearInterval(window.alchemyState.interval);
         
-        // CALCULA LA PRECISIÓN DECIMAL COMO DESEMPATE
+        // Calcular tiempo real y precisión decimal
+        window.alchemyState.timeUsed = (Date.now() - window.alchemyState.startTime) / 1000;
+
         const diffW = Math.abs(window.alchemyState.targetW - window.alchemyState.valW);
         const diffN = Math.abs(window.alchemyState.targetN - window.alchemyState.valN);
         const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
         const diffT = Math.abs(window.alchemyState.targetT - window.alchemyState.valT);
         const totalVariance = diffW + diffN + diffL + diffT;
         
-        // Resta la varianza decimal microscópica al puntaje perfecto (Ej: 10000 - 0.452 = 9999.548)
+        window.alchemyState.precision = Math.max(0, 100 - totalVariance);
+        
+        // Resta la varianza decimal microscópica al puntaje perfecto
         if (!window.alchemyState.isPractice) {
             window.ritualState.score = 10000 - totalVariance;
         }
@@ -1148,7 +1160,6 @@
                 desc.innerHTML = `Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">Práctica Exitosa.</strong>`;
                 btn.innerText = "Finalizar Práctica";
             } else {
-                // Notificar al usuario la precisión adquirida usando decimales
                 const scoreStr = window.ritualState.score.toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3});
                 desc.innerHTML = `Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">${scoreStr} Pts Bloqueados.</strong>`;
                 btn.innerText = "Entrar a la Arena";
@@ -1163,13 +1174,16 @@
         clearInterval(window.alchemyState.interval);
         document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
         
-        // CALCULA VARIANZA EXACTA CON DECIMALES
+        window.alchemyState.timeUsed = 10.00; // Penalización máxima de tiempo
+        
         const diffW = Math.abs(window.alchemyState.targetW - window.alchemyState.valW);
         const diffN = Math.abs(window.alchemyState.targetN - window.alchemyState.valN);
         const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
         const diffT = Math.abs(window.alchemyState.targetT - window.alchemyState.valT);
         const totalVariance = diffW + diffN + diffL + diffT;
         
+        window.alchemyState.precision = Math.max(0, 100 - totalVariance);
+
         const penalty = totalVariance * 35; 
         if (!window.alchemyState.isPractice) {
             window.ritualState.score = Math.max(0, 10000 - penalty);
@@ -1196,7 +1210,8 @@
         if (window.alchemyState.isPractice) {
             showAlertModal('Práctica Concluida', `Tu destreza manual define tu éxito. Sigue entrenando para dominar la arena.`, '🌱');
         } else {
-            await finalizeTournamentAPI(window.alchemyState.finalWater, !window.alchemyState.isPerfect);
+            // Se envía precisión y tiempo al API
+            await finalizeTournamentAPI(window.alchemyState.finalWater, !window.alchemyState.isPerfect, window.alchemyState.precision, window.alchemyState.timeUsed);
         }
     }
 
