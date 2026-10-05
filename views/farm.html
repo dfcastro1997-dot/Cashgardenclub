@@ -1931,22 +1931,27 @@ if (typeof window.farmApp === 'undefined') {
             this.saveState();
         },
 
-        // ENCUENTRA ESTA FUNCIÓN EN farm_2.html (alrededor de la línea 750)
         startEnvironmentSimulation() {
             if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
             this.processTick();
 
-            this.state.simulationInterval = setInterval(async () => {
-                this.processTick();
-                
-                // LÓGICA DE INICIO SINCRONIZADO
+            // LÓGICA DE INICIO SINCRONIZADO - SEPARADA PARA EJECUTARLA INMEDIATAMENTE
+            const checkTournamentStart = async () => {
                 const arena = this.state.plots[5];
-                if (arena && arena.status === 'tournament_waiting' && arena.instanceId) {
+                
+                if (arena && arena.status === 'tournament_waiting') {
                     try {
-                        const res = await fetch('/api/tournaments/status/' + arena.instanceId);
+                        // Respaldo: Si el jugador se registró con una versión antigua y no tiene instanceId, 
+                        // usamos el endpoint general para rescatar su estado.
+                        let url = arena.instanceId 
+                            ? '/api/tournaments/status/' + arena.instanceId 
+                            : '/api/tournaments/global_leaderboard/' + (arena.tournamentId || 1);
+                            
+                        const res = await fetch(url);
                         const data = await res.json();
-                        // REEMPLAZA ESTE IF
-                        if (data.status === 'running') {
+                        
+                        // Si ya está corriendo o incluso si ya terminó, forzamos la apertura de la parcela
+                        if (data.status === 'running' || data.status === 'completed') {
                             arena.status = 'tournament';
                             arena.tournamentEndTime = parseInt(data.end_time);
                             
@@ -1955,14 +1960,28 @@ if (typeof window.farmApp === 'undefined') {
                             if(!arena.plant) {
                                 arena.plant = { id: 'tournament_' + arena.tournamentId, name: conf.name, icon: conf.image };
                             }
+                            
+                            // Rescate de puntaje en caso de que esté en 0 o corrupto
+                            if(arena.score === undefined || arena.score <= 0) arena.score = conf.startScore || 10000;
+                            if(arena.water === undefined) arena.water = 50;
 
                             this.showPlotToast(5, '🔥', '¡EL TORNEO HA INICIADO!');
                             this.renderPlots();
                             this.saveState();
                         }
-                        // HASTA AQUÍ
-                    } catch(e) {}
+                    } catch(e) {
+                        console.error("Error sincronizando inicio de torneo:", e);
+                    }
                 }
+            };
+
+            // Ejecutamos inmediatamente al abrir la granja (sin esperar 10 segundos)
+            checkTournamentStart();
+
+            // Mantenemos la verificación cíclica por si inician estando dentro de la granja
+            this.state.simulationInterval = setInterval(() => {
+                this.processTick();
+                checkTournamentStart();
             }, 10000);
         },
 
