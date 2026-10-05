@@ -828,7 +828,7 @@ window.farmApp = {
                     el.innerHTML = `
                         ${localToastHTML}
                         <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-cg_navy text-white px-2 py-1 rounded text-[8px] sm:text-[9px] font-black border border-gray-700 shadow-sm z-20 uppercase tracking-widest pointer-events-none">
-                            🔥 ${conf.durationHours}H Sprint
+                            🏆 Puntos: ${Math.floor(plot.score).toLocaleString('es-ES')}
                         </div>
 
                         <!-- Botón "i" subido a bottom: 75px -->
@@ -1585,7 +1585,7 @@ window.farmApp = {
         if (!plot.isReady) return;
 
         const reward = plot.plant.id === 'flower_wheat' ? 1500 : 
-                      (plot.plant.id === 'flower_cactus' ? 2200 : 
+                      (plot.plant.id === 'flower_cactus' ? 3200 : 
                       (plot.plant.id === 'flower_small' ? 4500 : 26000));
         this.addBalance(reward);
         
