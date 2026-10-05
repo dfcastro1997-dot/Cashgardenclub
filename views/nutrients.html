@@ -190,6 +190,27 @@
     
     .blink-fast { animation: blinkFast 0.3s infinite; }
     .blink-slow { animation: blinkSlow 0.8s infinite; }
+
+    /* ESTILOS PARA LOS BOTONES DESLIZADORES (GRANDES Y ROJOS) */
+    .fat-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 36px;
+        height: 36px;
+        background: #ef4444; /* Rojo vibrante */
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.6);
+    }
+    .fat-slider::-moz-range-thumb {
+        width: 36px;
+        height: 36px;
+        background: #ef4444; /* Rojo vibrante */
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.6);
+    }
 </style>
 
 <div id="ritual-alchemy-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4 transition-all duration-300">
@@ -236,7 +257,7 @@
             </div>
         </div>
 
-        <!-- Metas Dinámicas Ocultas en Rieles (4 Columnas) -->
+        <!-- Metas Dinámicas Ocultas en Rieles -->
         <div class="flex justify-between px-2 mb-4 relative z-20">
             <div class="text-center w-1/4 flex flex-col items-center">
                 <div class="flex items-center gap-1">
@@ -277,34 +298,34 @@
         </div>
 
         <!-- Sliders Interactivos (4 Controles) -->
-        <div class="space-y-3 mb-2 text-left relative z-20">
+        <div class="space-y-4 mb-2 text-left relative z-20">
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-blue-800 mb-1 px-1">
                     <span class="flex items-center gap-2">💧 Agua <span id="arrow-water" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-water" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-water" min="0" max="100" value="50" class="w-full accent-blue-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
+                <input type="range" id="slider-water" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-green-800 mb-1 px-1">
                     <span class="flex items-center gap-2">🌱 Nutrientes <span id="arrow-nutrients" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-nutrients" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="w-full accent-green-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
+                <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-yellow-600 mb-1 px-1">
                     <span class="flex items-center gap-2">☀️ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-light" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-500 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
+                <input type="range" id="slider-light" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-amber-800 mb-1 px-1">
                     <span class="flex items-center gap-2">🪨 Tierra <span id="arrow-earth" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-earth" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-earth" min="0" max="100" value="50" class="w-full accent-amber-700 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('earth')">
+                <input type="range" id="slider-earth" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('earth')">
             </div>
         </div>
         
