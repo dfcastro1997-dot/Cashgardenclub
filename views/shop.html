@@ -240,7 +240,7 @@ window.shopApp = {
         }, 1000); 
     },
 
-    async function buyIAP(packageId) {
+    async buyIAP(packageId) {
         const username = sessionStorage.getItem('username');
         if (!username) return alert("Debes iniciar sesión para realizar compras.");
         
@@ -276,7 +276,7 @@ window.shopApp = {
         } catch(e) {
             alert("Error de conexión al procesar la compra.");
         }
-    }
+    },
 
     async saveState() {
         // En lugar de guardar en LocalStorage, actualizar el estado de farmApp y decirle que guarde

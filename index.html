@@ -218,6 +218,7 @@
                 
                 if (response.ok) {
                     sessionStorage.setItem('username', data.user.username);
+                    sessionStorage.setItem('session_token', data.user.session_token); // <-- GUARDAR TOKEN ÚNICO
                     updateProfileUI(data.user);
                     
                     document.getElementById('login-screen').classList.add('opacity-0');
@@ -253,9 +254,15 @@
 
         window.onload = async () => {
             const username = sessionStorage.getItem('username');
-            if (username) {
+            const token = sessionStorage.getItem('session_token');
+            if (username && token) {
                  try {
-                     const response = await fetch(`/api/sync/${username}`);
+                     const response = await fetch(`/api/sync/${username}?token=${token}`);
+                     if (response.status === 401) {
+                         alert("⚠️ Sesión inválida o expirada. Por favor, inicia sesión nuevamente.");
+                         logout(); 
+                         return;
+                     }
                      if (response.ok) {
                          const data = await response.json();
                          updateProfileUI(data.user);
@@ -269,11 +276,14 @@
                  } catch (e) {
                      console.error("Error validando sesión:", e);
                  }
+            } else if (username) {
+                logout();
             }
         };
 
         function logout() { 
             sessionStorage.removeItem('username');
+            sessionStorage.removeItem('session_token'); // BORRAR TOKEN
             location.reload(); 
         }
         
@@ -338,10 +348,18 @@
 
         async function syncUserData() {
             const username = sessionStorage.getItem('username');
-            if (!username) return;
+            const token = sessionStorage.getItem('session_token');
+            if (!username || !token) return;
             
             try {
-                const response = await fetch(`/api/sync/${username}`);
+                const response = await fetch(`/api/sync/${username}?token=${token}`);
+                
+                if (response.status === 401) {
+                    alert("⚠️ Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión se cerrará.");
+                    logout();
+                    return;
+                }
+                
                 if (response.ok) {
                     const data = await response.json();
                     const dbBalance = data.user.real_balance_cop || data.user.balance;

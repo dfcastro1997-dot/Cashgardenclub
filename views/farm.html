@@ -652,7 +652,6 @@ window.farmApp = {
         }
     },
 
-    // farm_3.html[cite: 17]
     saveState() {
         this.state.lastTick = Date.now();
         const stateToSave = JSON.stringify({
@@ -665,15 +664,23 @@ window.farmApp = {
         });
 
         const username = sessionStorage.getItem('username'); 
+        const token = sessionStorage.getItem('session_token'); // <-- LEER TOKEN
         
-        if (username) {
+        if (username && token) {
             if (this.saveTimeout) clearTimeout(this.saveTimeout);
             
             this.saveTimeout = setTimeout(() => {
                 fetch('/api/save_state', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: username, game_state: stateToSave })
+                    // <-- ENVIAR TOKEN EN EL CUERPO JSON
+                    body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
+                }).then(res => {
+                    if (res.status === 401) {
+                        alert("⚠️ Sesión invalidada. Abierto en otra ubicación.");
+                        sessionStorage.clear();
+                        location.reload();
+                    }
                 }).catch(e => console.error("Error guardando progreso:", e));
             }, 500); 
         }
