@@ -827,8 +827,10 @@ window.farmApp = {
                     
                     el.innerHTML = `
                         ${localToastHTML}
-                        <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-cg_navy text-white px-2 py-1 rounded text-[8px] sm:text-[9px] font-black border border-gray-700 shadow-sm z-20 uppercase tracking-widest pointer-events-none">
-                            🏆 Puntos: ${Math.floor(plot.score).toLocaleString('es-ES')}
+                        
+                        <!-- Badge superior dorado -->
+                        <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-cg_gold text-white px-2 py-1 rounded text-[8px] sm:text-[9px] font-black border border-yellow-300 shadow-sm z-20 uppercase tracking-widest pointer-events-none">
+                            🏆 PUNTOS: ${Math.floor(plot.score).toLocaleString('es-ES')}
                         </div>
 
                         <!-- Botón "i" subido a bottom: 75px -->
@@ -840,15 +842,6 @@ window.farmApp = {
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center group">
                                 <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
                                 <img src="${conf.image}" class="absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-20%);">
-                            </div>
-                        </div>
-
-                        <!-- Tarjeta Dorada Modificada (Formato: Puntos: 9.850) -->
-                        <div class="absolute bottom-14 sm:bottom-16 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
-                            <div class="bg-[#dfa209] text-white rounded-lg px-3 py-1.5 shadow-md border border-yellow-300 flex items-center justify-center ${isAlert ? 'animate-pulse' : ''}">
-                                <span class="font-black drop-shadow-sm text-[10px] sm:text-xs tracking-wider">
-                                    Puntos: ${Math.floor(plot.score).toLocaleString('es-ES')}
-                                </span>
                             </div>
                         </div>
 
