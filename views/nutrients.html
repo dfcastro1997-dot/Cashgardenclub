@@ -201,11 +201,13 @@
             </div>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[600px] bg-white">
+            <table class="w-full text-left border-collapse min-w-[800px] bg-white">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center w-24">Rank</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest">Jugador Competitivo</th>
+                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center" title="Sintonización Orgánica">Precisión Inicial</th>
+                        <th class="p-4 md:p-5 text-xs font-black text-blue-500 uppercase tracking-widest text-center">Tiempo (s)</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Puntaje Retenido</th>
                     </tr>
                 </thead>
@@ -1267,6 +1269,15 @@
                 else { iconBadge = `<span class="text-gray-400 font-bold ml-1">${index + 1}</span>`; }
                 
                 const isMe = player.username === sessionStorage.getItem('username');
+                
+                // Variables para el desempate (muestran un guión '--' si la Base de Datos aún no las envía)
+                let precisionStr = player.alchemy_precision 
+                    ? parseFloat(player.alchemy_precision).toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3}) + '%' 
+                    : '<span class="text-gray-300 text-xs">--</span>';
+                    
+                let timeStr = player.alchemy_time 
+                    ? parseFloat(player.alchemy_time).toFixed(2) + 's' 
+                    : '<span class="text-gray-300 text-xs">--</span>';
                                 
                 tbody.innerHTML += `
                     <tr class="${rowClass} ${isMe ? 'bg-blue-50/30' : ''}">
@@ -1274,6 +1285,12 @@
                         <td class="p-4 md:p-5 font-black ${isMe ? 'text-cg_blue' : 'text-cg_navy'} flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-cg_navy text-white text-[10px] flex items-center justify-center">${player.username.substring(0,2).toUpperCase()}</div>
                             ${player.username} ${isMe ? '<span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full ml-2 uppercase">Tú</span>' : ''}
+                        </td>
+                        <td class="p-4 md:p-5 text-center font-black text-purple-600 tracking-wider">
+                            ${precisionStr}
+                        </td>
+                        <td class="p-4 md:p-5 text-center font-black text-blue-500 tracking-wider">
+                            ${timeStr}
                         </td>
                         <td class="p-4 md:p-5 text-right">
                             <span class="font-black text-lg ${index === 0 ? 'text-cg_gold' : 'text-gray-600'}">${parseFloat(player.current_score).toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3})}</span>
