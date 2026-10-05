@@ -508,13 +508,50 @@ def buy_seeds():
 # ENDPOINTS DE TORNEOS (SCHEDULED & SIT&GO HÍBRIDO)
 # ==========================================================
 
-def get_next_schedule_ms():
-    # Establece que los torneos arranquen cada 4 horas
+def get_next_schedule_ms(t_id):
     now = datetime.now(timezone.utc)
-    next_hour = ((now.hour // 4) + 1) * 4
+    # Desfase para que no todos inicien a la vez: Bonsái(0h), Orquídea(1h), Rosa(2h), Loto(3h)
+    offset_hours = {1: 0, 3: 1, 4: 2, 5: 3}.get(t_id, 0)
+    
+    # Bloque base de 4 horas
+    base_hour = ((now.hour // 4) + 1) * 4
     import datetime as dt
-    next_time = now.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(hours=next_hour)
+    next_time = now.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(hours=base_hour + offset_hours)
+    
+    # Si la hora calculada ya quedó atrás en el tiempo actual, saltar al siguiente ciclo
+    if int(next_time.timestamp() * 1000) <= int(now.timestamp() * 1000):
+        next_time += dt.timedelta(hours=4)
+        
     return int(next_time.timestamp() * 1000)
+
+def process_tournament_lifecycle(inst, conn, cur):
+    now = int(time.time() * 1000)
+    if not inst: return None
+    
+    t_id = inst.get('template_id')
+    
+    # MOTOR DE INICIO
+    if inst['status'] == 'waiting' and now >= inst['start_time']:
+        if t_id == 1 or inst['players_count'] >= 3:
+            dur_hours = {1: 12, 3: 6, 4: 8, 5: 12}.get(t_id, 6)
+            end_time = inst['start_time'] + (dur_hours * 3600000)
+            cur.execute("UPDATE tournament_instances SET status = 'running', end_time = %s WHERE id = %s", (end_time, inst['id']))
+            inst['status'] = 'running'
+            inst['end_time'] = end_time
+        else:
+            # Reprogramar con el desfase correcto si no hay quorum
+            new_start = get_next_schedule_ms(t_id)
+            cur.execute("UPDATE tournament_instances SET start_time = %s WHERE id = %s", (new_start, inst['id']))
+            inst['start_time'] = new_start
+        conn.commit()
+        
+    # MOTOR DE CIERRE (Bloquea inscripciones, define ganador)
+    if inst['status'] == 'running' and now >= inst['end_time']:
+        cur.execute("UPDATE tournament_instances SET status = 'completed' WHERE id = %s", (inst['id'],))
+        conn.commit()
+        inst['status'] = 'completed'
+        
+    return inst
 
 @app.route('/api/tournaments/join', methods=['POST'])
 def join_tournament():
@@ -542,7 +579,7 @@ def join_tournament():
         instance = cur.fetchone()
         
         if not instance:
-            start_time = get_next_schedule_ms()
+            start_time = get_next_schedule_ms(t_id) # <-- Modificado para usar el ID
             cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_cop, max_players, start_time, prize_pool_cop) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, 10000 if t_id == 1 else 0))
             instance_id = cur.fetchone()['id']
             players_count = 0
@@ -596,38 +633,37 @@ def join_tournament():
 def global_leaderboard(t_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    # Ubicar la sala activa (corriendo o esperando) más reciente
     cur.execute("SELECT * FROM tournament_instances WHERE template_id = %s AND status IN ('waiting', 'running') ORDER BY id DESC LIMIT 1", (t_id,))
     inst = cur.fetchone()
     
-    if not inst:
+    if inst:
+        inst = process_tournament_lifecycle(inst, conn, cur)
+        
+    # Si se completó o no hay activos, buscamos al campeón histórico reciente
+    if not inst or inst['status'] == 'completed':
+        cur.execute("SELECT * FROM tournament_instances WHERE template_id = %s AND status = 'completed' ORDER BY id DESC LIMIT 1", (t_id,))
+        last_inst = cur.fetchone()
+        if last_inst:
+            cur.execute('''SELECT username, current_score FROM tournament_players WHERE instance_id = %s ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 1''', (last_inst['id'],))
+            winner = cur.fetchone()
+            cur.close(); conn.close()
+            return jsonify({
+                "status": "completed",
+                "winner": winner['username'] if winner else "Nadie",
+                "winning_score": float(winner['current_score']) if winner else 0,
+                "start_time": last_inst['start_time'],
+                "end_time": last_inst['end_time'],
+                "prize_pool": last_inst['prize_pool_cop']
+            })
         cur.close(); conn.close()
         return jsonify({"status": "no_instance", "prize_pool": 10000 if t_id == 1 else 0})
         
-    now = int(time.time() * 1000)
-    
-    # Motor de Inicio (Se ejecuta cuando alguien consulta la tabla)
-    if inst['status'] == 'waiting' and now >= inst['start_time']:
-        # Freeroll inicia siempre, Pagos inician con mínimo 3 jugadores
-        if t_id == 1 or inst['players_count'] >= 3:
-            dur_hours = {1: 12, 3: 6, 4: 8, 5: 12}.get(t_id, 6)
-            end_time = inst['start_time'] + (dur_hours * 3600000)
-            cur.execute("UPDATE tournament_instances SET status = 'running', end_time = %s WHERE id = %s", (end_time, inst['id']))
-            inst['status'] = 'running'
-            inst['end_time'] = end_time
-        else:
-            # Si no se cumple el mínimo, se reprograma para 4 horas después
-            new_start = inst['start_time'] + (4 * 3600000)
-            cur.execute("UPDATE tournament_instances SET start_time = %s WHERE id = %s", (new_start, inst['id']))
-            inst['start_time'] = new_start
-        conn.commit()
-    
     cur.execute('''
         SELECT username, current_score, alchemy_precision, alchemy_time 
         FROM tournament_players 
         WHERE instance_id = %s 
         ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
-    ''', (inst['id'],))  # <-- CORRECCIÓN: Debe ser inst['id']
+    ''', (inst['id'],))
     players = cur.fetchall()
     cur.close(); conn.close()
     
@@ -645,10 +681,15 @@ def global_leaderboard(t_id):
 def check_tournament_status(instance_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT status, start_time, end_time FROM tournament_instances WHERE id = %s", (instance_id,))
-    data = cur.fetchone()
+    # Ahora trae template_id para el motor
+    cur.execute("SELECT template_id, status, start_time, end_time, players_count FROM tournament_instances WHERE id = %s", (instance_id,))
+    inst = cur.fetchone()
+    
+    if inst:
+        inst = process_tournament_lifecycle(inst, conn, cur)
+        
     cur.close(); conn.close()
-    return jsonify(data if data else {})
+    return jsonify(inst if inst else {})
 
 @app.route('/api/tournaments/leaderboard/<int:instance_id>', methods=['GET'])
 def get_leaderboard(instance_id):

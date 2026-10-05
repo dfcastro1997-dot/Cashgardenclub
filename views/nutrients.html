@@ -724,23 +724,33 @@
     function updateGlobalTournamentCountdown() {
         const now = new Date();
         const utcHours = now.getUTCHours();
-        // El servidor inicia los torneos en bloques de 4 horas: 0, 4, 8, 12, 16, 20 UTC
-        const nextHour = (Math.floor(utcHours / 4) + 1) * 4;
+        const tIds = [1, 3, 4, 5];
+        const offsets = {1: 0, 3: 1, 4: 2, 5: 3}; // Desfases de 1h entre ligas
         
-        const nextStart = new Date(now);
-        nextStart.setUTCHours(nextHour, 0, 0, 0);
+        const countdownEls = document.querySelectorAll('.tourney-countdown');
         
-        let diff = nextStart.getTime() - now.getTime();
-        if (diff < 0) diff = 0;
-        
-        let h = Math.floor(diff / 3600000);
-        let m = Math.floor((diff % 3600000) / 60000);
-        let s = Math.floor((diff % 60000) / 1000);
-        
-        const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        
-        document.querySelectorAll('.tourney-countdown').forEach(el => {
-            el.innerText = timeStr;
+        tIds.forEach((id, index) => {
+            if(!countdownEls[index]) return;
+            
+            const offset = offsets[id];
+            let baseHour = Math.floor(utcHours / 4) * 4;
+            let nextHour = baseHour + offset;
+            
+            if (nextHour <= utcHours) {
+                nextHour = baseHour + 4 + offset;
+            }
+
+            const nextStart = new Date(now);
+            nextStart.setUTCHours(nextHour, 0, 0, 0);
+            
+            let diff = nextStart.getTime() - now.getTime();
+            if (diff < 0) diff = 0;
+            
+            let h = Math.floor(diff / 3600000);
+            let m = Math.floor((diff % 3600000) / 60000);
+            let s = Math.floor((diff % 60000) / 1000);
+            
+            countdownEls[index].innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         });
     }
     
@@ -1241,17 +1251,26 @@
         document.getElementById('lb-tourney-name').innerText = window.TOURNAMENT_INFO[tId].name;
         
         let prizePool = parseFloat(data.prize_pool) || 0;
-        // El Freeroll siempre garantiza $10k
         if (tId == 1 && prizePool < 10000) { prizePool = 10000; }
         
         document.getElementById('lb-prize-pool').innerText = "$" + prizePool.toLocaleString() + " COP";
-        
-        // Asignamos el 100% del premio al primer puesto y se eliminaron el 2do y 3ro
         document.getElementById('lb-prize-1').innerText = "$" + prizePool.toLocaleString();
         
         const countText = document.getElementById('lb-players-count');
         const badge = document.getElementById('lb-status-badge');
         
+        // --- NUEVA LÓGICA DE GANADOR ---
+        if (data.status === 'completed') {
+            const start = new Date(data.start_time).toLocaleString('es-ES', {hour: '2-digit', minute:'2-digit'});
+            const end = new Date(data.end_time).toLocaleString('es-ES', {hour: '2-digit', minute:'2-digit'});
+            countText.innerHTML = `Torneo Finalizado (${start} a ${end})<br><span class="text-cg_gold font-black text-sm mt-1 inline-block">🏆 Ganador: ${data.winner} con ${data.winning_score.toLocaleString()} Pts</span>`;
+            badge.innerHTML = `🏆 CAMPEÓN CORONADO`;
+            badge.className = "bg-yellow-50 text-yellow-600 border border-yellow-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1 w-fit mb-2 shadow-sm";
+            document.getElementById('leaderboard-body').innerHTML = `<tr><td colspan="4" class="text-center p-8 text-gray-500 font-bold bg-gray-50 rounded-b-xl border-t border-gray-100">Inscripciones cerradas por fin de ciclo.<br>Esperando próxima apertura.</td></tr>`;
+            return;
+        }
+        
+        // Lógica anterior para no_instance, waiting, running...
         if (data.status === 'no_instance') {
             countText.innerText = `Esperando el primer jugador para crear la sala...`;
             badge.innerHTML = `SIN SALA ACTIVA`;
