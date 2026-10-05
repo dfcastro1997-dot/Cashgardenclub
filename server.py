@@ -2,7 +2,7 @@ import os
 import time
 import json
 import hashlib
-import uuid # <-- Añadido para la generación de tokens
+import uuid
 from datetime import datetime, timezone
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -12,11 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__, static_folder='.', static_url_path='')
 
 DB_URI = os.getenv("DATABASE_URL")
-
-
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
-
-# Constantes del Servidor (Sin Clima, evaporación constante del 40%/hora)
 EVAPORATION_RATE = 40.0 
 
 def get_db_connection():
@@ -33,10 +29,9 @@ def init_db():
             balance NUMERIC(12, 2) DEFAULT 0.00,
             phone_nequi VARCHAR(15),
             game_state TEXT,
-            session_token VARCHAR(120) -- <-- NUEVA COLUMNA PARA TOKEN ÚNICO
+            session_token VARCHAR(120)
         );
     ''')
-    # Inyectar columna si la tabla ya existía de antes:
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token VARCHAR(120);")
     
     cur.execute('''
@@ -70,6 +65,31 @@ def init_db():
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
     ''')
+    
+    # NUEVA ESTRUCTURA PARA SALAS DE TORNEO SIT & GO (10 JUGADORES)
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS tournament_instances (
+            id SERIAL PRIMARY KEY,
+            template_id INTEGER NOT NULL,
+            entry_fee_cop NUMERIC(10, 2) NOT NULL,
+            status VARCHAR(20) DEFAULT 'waiting',
+            players_count INTEGER DEFAULT 0,
+            max_players INTEGER DEFAULT 10,
+            prize_pool_cop NUMERIC(12, 2) DEFAULT 0.00,
+            start_time BIGINT DEFAULT 0,
+            end_time BIGINT DEFAULT 0
+        );
+    ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS tournament_players (
+            id SERIAL PRIMARY KEY,
+            instance_id INTEGER REFERENCES tournament_instances(id) ON DELETE CASCADE,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            username VARCHAR(50) NOT NULL,
+            current_score NUMERIC(10, 2) DEFAULT 10000.00,
+            CONSTRAINT unique_player_instance UNIQUE(instance_id, user_id)
+        );
+    ''')
     conn.commit()
     cur.close()
     conn.close()
@@ -83,10 +103,10 @@ init_db()
 def get_season_multiplier(now_ms):
     dt = datetime.fromtimestamp(now_ms / 1000.0, tz=timezone.utc)
     day = dt.day
-    if 1 <= day <= 9: return 0.5   # Invierno (-50% evaporación)
-    elif 10 <= day <= 19: return 1.5 # Otoño (+50% evaporación)
-    elif 20 <= day <= 26: return 1.0 # Primavera (Normal)
-    else: return 2.0                 # Verano (+100% evaporación)
+    if 1 <= day <= 9: return 0.5   
+    elif 10 <= day <= 19: return 1.5 
+    elif 20 <= day <= 26: return 1.0 
+    else: return 2.0                 
 
 def process_server_tick(game_state_str):
     if not game_state_str: return game_state_str
@@ -112,6 +132,10 @@ def process_server_tick(game_state_str):
             )
 
             for plot in state.get('plots', []):
+                # Omitir daño a la planta del torneo si aún está "en espera" (waiting)
+                if plot.get('status') in ['tournament_waiting']:
+                    continue
+
                 if plot.get('status') == 'tournament':
                     if any_plant_infected and not plot.get('hasCrow') and plot.get('crowLeavingAt', 0) <= now:
                         plot['hasCrow'] = True
@@ -215,8 +239,6 @@ def process_server_tick(game_state_str):
         print("Server tick error:", e)
     return game_state_str
 
-
-
 @app.route('/')
 def serve_index(): return send_from_directory('.', 'index.html')
 @app.route('/views/<path:path>')
@@ -233,7 +255,7 @@ def register():
     if cur.fetchone(): return jsonify({"error": "El usuario ya existe"}), 400
     
     hashed_pw = generate_password_hash(password)
-    token = str(uuid.uuid4()) # GENERAR TOKEN ÚNICO
+    token = str(uuid.uuid4())
     
     cur.execute("INSERT INTO users (username, password_hash, balance, session_token) VALUES (%s, %s, 0, %s) RETURNING id, username, balance, session_token", (username, hashed_pw, token))
     new_user = cur.fetchone()
@@ -248,7 +270,7 @@ def login():
     cur.execute("SELECT * FROM users WHERE username = %s", (data.get('username'),))
     user = cur.fetchone()
     if user and check_password_hash(user['password_hash'], data.get('password')):
-        token = str(uuid.uuid4()) # NUEVO TOKEN (INVALIDA OTROS DISPOSITIVOS)
+        token = str(uuid.uuid4())
         cur.execute("UPDATE users SET session_token = %s WHERE id = %s", (token, user['id']))
         conn.commit()
         
@@ -270,7 +292,6 @@ def sync_user(username):
     cur.execute("SELECT balance, game_state, session_token FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
     if user_data:
-        # VALIDACIÓN DE SESIÓN ANTI-DUPLICADOS
         if user_data.get('session_token') and user_data['session_token'] != token:
             cur.close(); conn.close()
             return jsonify({"error": "Sesión expirada"}), 401
@@ -297,35 +318,35 @@ def save_state():
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT game_state, session_token FROM users WHERE username = %s FOR UPDATE", (username,))
+    cur.execute("SELECT id, game_state, session_token FROM users WHERE username = %s FOR UPDATE", (username,))
     user = cur.fetchone()
     
     if user:
-        # EVITA SOBREESCRITURA DESDE DISPOSITIVO INVÁLIDO
         if user.get('session_token') and user['session_token'] != token:
             cur.close(); conn.close()
             return jsonify({"error": "Múltiples sesiones detectadas"}), 401
             
-        # --- INICIO CORRECCIÓN: VALIDACIÓN DEL ESTADO ---
         try:
             incoming_state = json.loads(incoming_state_str)
             db_state = json.loads(user['game_state'] or '{}')
             
-            # Anti-Cheat Básico: Evitar que se inyecten cantidades absurdas de semillas
             incoming_seeds = incoming_state.get('seedsBalance', 0)
             db_seeds = db_state.get('seedsBalance', 0)
-            # Límite seguro de ganancia por tick (ej. 30000 semillas max de golpe)
             if incoming_seeds > db_seeds + 30000:
-                incoming_state['seedsBalance'] = db_seeds # Revertir trampa a lo que había en DB
+                incoming_state['seedsBalance'] = db_seeds 
+                
+            # ACTULIZAR LEADERBOARD EN TIEMPO REAL SI EL JUGADOR ESTÁ EN TORNEO
+            plots = incoming_state.get('plots', [])
+            if len(plots) > 5 and plots[5].get('status') in ['tournament', 'tournament_waiting']:
+                t_score = plots[5].get('score', 10000)
+                t_instance = plots[5].get('instanceId')
+                if t_instance:
+                    cur.execute("UPDATE tournament_players SET current_score = %s WHERE user_id = %s AND instance_id = %s", (t_score, user['id'], t_instance))
                 
             incoming_state_str = json.dumps(incoming_state)
-            
-            # Validar variables de tiempo usando el motor del servidor
             validated_state_str = process_server_tick(incoming_state_str)
         except Exception:
-            # En caso de que falle el parseo por JSON corrupto, se intenta procesar igual
             validated_state_str = process_server_tick(incoming_state_str)
-        # --- FIN CORRECCIÓN ---
             
         cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state_str, username))
         conn.commit()
@@ -382,7 +403,7 @@ def buy_seeds():
     username = data.get('username')
     token = data.get('session_token')
     package = data.get('package_id')
-    incoming_inventory = data.get('inventory') # NUEVO: Recibe el inventario
+    incoming_inventory = data.get('inventory') 
     
     costs = {
         "iap_water_24h": {"seeds": 0, "cop": 5000},
@@ -396,7 +417,6 @@ def buy_seeds():
         "exc_50k": {"seeds": 22500, "cop": 50000}
     }
     
-    # NUEVO: Precios para herramientas y semillas (Mercado Estándar)
     standard_costs = {
         "tool_pot_small": 5000,
         "tool_pot_big": 15000,
@@ -421,7 +441,6 @@ def buy_seeds():
             
         state = json.loads(user['game_state'] or '{}')
         
-        # PROCESAR COMPRAS VIP Y EXCHANGE (COP)
         if package in costs:
             cost_cop = costs[package]['cop']
             seeds_amount = costs[package]['seeds']
@@ -442,7 +461,6 @@ def buy_seeds():
                 "new_seeds": state.get('seedsBalance', 0)
             })
             
-        # PROCESAR COMPRAS DE MERCADO ESTÁNDAR (SEMILLAS)
         elif package in standard_costs and incoming_inventory:
             qty = data.get('qty', 1)
             total_seed_cost = standard_costs[package] * qty
@@ -451,7 +469,7 @@ def buy_seeds():
                 return jsonify({"error": "Semillas insuficientes"}), 400
                 
             state['seedsBalance'] -= total_seed_cost
-            state['inventory'] = incoming_inventory # GUARDAR EL INVENTARIO EN DB
+            state['inventory'] = incoming_inventory 
             
             cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
             conn.commit()
@@ -471,6 +489,10 @@ def buy_seeds():
         cur.close()
         conn.close()
 
+# ==========================================================
+# ENDPOINTS DE TORNEOS SIT & GO DINÁMICOS
+# ==========================================================
+
 @app.route('/api/tournaments/join', methods=['POST'])
 def join_tournament():
     data = request.json
@@ -479,62 +501,113 @@ def join_tournament():
     fee = float(data.get('fee', 0))
     t_id = int(data.get('tournament_id', 1))
 
-    if fee not in [0, 5000, 10000, 30000, 50000]: return jsonify({"error": "Tarifa de inscripción inválida"}), 400
-
     conn = get_db_connection()
     cur = conn.cursor()
     try:
         cur.execute("SELECT id, balance, game_state, session_token FROM users WHERE username = %s FOR UPDATE", (username,))
         user = cur.fetchone()
-        if not user: return jsonify({"error": "Usuario no encontrado"}), 404
-        if user.get('session_token') and user['session_token'] != token:
-            cur.close(); conn.close()
+        if not user or (user.get('session_token') and user['session_token'] != token):
             return jsonify({"error": "Sesión inválida"}), 401
 
-        cur.execute("SELECT id FROM tournaments WHERE id = %s", (t_id,))
-        if not cur.fetchone():
-            cur.execute("INSERT INTO tournaments (id, title, entry_fee_cop) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING", (t_id, f"Arena {fee}", fee))
+        # Buscar una sala en espera para este torneo (máximo 10 jugadores)
+        cur.execute("SELECT id, players_count, max_players FROM tournament_instances WHERE template_id = %s AND status = 'waiting' LIMIT 1 FOR UPDATE", (t_id,))
+        instance = cur.fetchone()
         
-        seed_cost = 0
-        if fee == 0: seed_cost = 5000
-        elif fee == 5000: seed_cost = 5000
-        elif fee == 10000: seed_cost = 15000
-        elif fee == 30000: seed_cost = 30000
-        elif fee == 50000: seed_cost = 50000
+        if not instance:
+            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_cop, max_players) VALUES (%s, %s, 10) RETURNING id", (t_id, fee))
+            instance_id = cur.fetchone()['id']
+            players_count = 0
+        else:
+            instance_id = instance['id']
+            players_count = instance['players_count']
 
+        seed_cost = {0: 5000, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 5000)
         state = json.loads(user['game_state'] or '{}')
         if state.get('seedsBalance', 0) < seed_cost:
-            return jsonify({"error": f"Requiere {seed_cost} 🌱 para participar en esta liga"}), 400
+            return jsonify({"error": f"Requiere {seed_cost} 🌱 para participar"}), 400
 
-        if fee == 0:
-            state['seedsBalance'] -= seed_cost
-            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
-        else:
-            state['seedsBalance'] -= seed_cost
+        # Anti-Duplicado en la misma sala
+        cur.execute("SELECT id FROM tournament_players WHERE user_id = %s AND instance_id = %s", (user['id'], instance_id))
+        if cur.fetchone():
+            return jsonify({"error": "Ya estás inscrito en esta sala"}), 400
+
+        # Procesar Cobro
+        state['seedsBalance'] -= seed_cost
+        if fee > 0:
             prize_addition = fee * 0.85 
-            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
-            cur.execute("UPDATE tournaments SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, t_id))
-            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry_wompi', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
-            
-        cur.execute("INSERT INTO tournament_entries (tournament_id, user_id) VALUES (%s, %s)", (t_id, user['id']))
+            cur.execute("UPDATE tournament_instances SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, instance_id))
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
+
+        # Registrar jugador
+        cur.execute("INSERT INTO tournament_players (instance_id, user_id, username) VALUES (%s, %s, %s)", (instance_id, user['id'], username))
+        players_count += 1
         
-        cur.execute("SELECT balance FROM users WHERE id = %s", (user['id'],))
-        new_balance_cop = cur.fetchone()['balance']
+        # Validar si se llenó la sala (10/10)
+        tourney_status = 'waiting'
+        start_time = 0
+        end_time = 0
+        if players_count >= 10:
+            tourney_status = 'running'
+            start_time = int(time.time() * 1000)
+            dur_hours = {1: 12, 3: 6, 4: 8, 5: 12}.get(t_id, 6)
+            end_time = start_time + (dur_hours * 3600000)
+            cur.execute("UPDATE tournament_instances SET status = 'running', players_count = %s, start_time = %s, end_time = %s WHERE id = %s", (players_count, start_time, end_time, instance_id))
+        else:
+            cur.execute("UPDATE tournament_instances SET players_count = %s WHERE id = %s", (players_count, instance_id))
+
+        cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
         conn.commit()
         
         return jsonify({
-            "message": "Inscripción exitosa a la Arena",
-            "new_balance_cop": float(new_balance_cop),
+            "message": "Inscripción exitosa",
+            "instance_id": instance_id,
+            "tourney_status": tourney_status,
+            "start_time": start_time,
+            "end_time": end_time,
+            "new_balance_cop": float(user['balance']),
             "new_game_state": state
         })
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
-        return jsonify({"error": "Ya te encuentras registrado en esta Arena"}), 400
+        return jsonify({"error": "Ya estás inscrito"}), 400
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close(); conn.close()
+
+@app.route('/api/tournaments/status/<int:instance_id>', methods=['GET'])
+def check_tournament_status(instance_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT status, start_time, end_time FROM tournament_instances WHERE id = %s", (instance_id,))
+    data = cur.fetchone()
+    cur.close(); conn.close()
+    return jsonify(data if data else {})
+
+@app.route('/api/tournaments/leaderboard/<int:instance_id>', methods=['GET'])
+def get_leaderboard(instance_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT prize_pool_cop, status, players_count, max_players FROM tournament_instances WHERE id = %s", (instance_id,))
+    instance = cur.fetchone()
+    
+    cur.execute('''
+        SELECT username, current_score 
+        FROM tournament_players 
+        WHERE instance_id = %s 
+        ORDER BY current_score DESC LIMIT 10
+    ''', (instance_id,))
+    players = cur.fetchall()
+    cur.close(); conn.close()
+    
+    return jsonify({
+        "prize_pool": instance['prize_pool_cop'] if instance else 0,
+        "status": instance['status'] if instance else 'unknown',
+        "players_count": instance['players_count'] if instance else 0,
+        "max_players": instance['max_players'] if instance else 10,
+        "leaderboard": players
+    })
 
 @app.route('/api/wallet/payout', methods=['POST'])
 def dispatch_nequi_payout():
@@ -561,7 +634,6 @@ def dispatch_nequi_payout():
 @app.route('/api/dev/add_cop', methods=['POST'])
 def dev_add_cop():
     data = request.json
-    # --- CORRECCIÓN: VALIDACIÓN ADMIN ---
     if data.get('admin_token') != ADMIN_SECRET:
         return jsonify({"error": "No autorizado"}), 403
     
@@ -587,7 +659,6 @@ def dev_add_cop():
 @app.route('/api/dev/reset_tournaments', methods=['POST'])
 def dev_reset_tournaments():
     data = request.json
-    # --- CORRECCIÓN: VALIDACIÓN ADMIN ---
     if data.get('admin_token') != ADMIN_SECRET:
         return jsonify({"error": "No autorizado"}), 403
         
@@ -599,7 +670,7 @@ def dev_reset_tournaments():
         cur.execute("SELECT id FROM users WHERE username = %s", (username,))
         user = cur.fetchone()
         if user:
-            cur.execute("DELETE FROM tournament_entries WHERE user_id = %s", (user['id'],))
+            cur.execute("DELETE FROM tournament_players WHERE user_id = %s", (user['id'],))
             conn.commit()
             return jsonify({"message": "Campeonato reseteado en BD"}), 200
         return jsonify({"error": "Usuario no encontrado"}), 404

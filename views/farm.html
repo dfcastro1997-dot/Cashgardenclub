@@ -895,6 +895,18 @@ window.farmApp = {
                             <span class="font-bold text-gray-500 text-[9px] sm:text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm mt-2 text-center leading-tight">Inscríbete en la pestaña<br>Torneos para desbloquear</span>
                         </div>
                     `;
+                } else if (plot.status === 'tournament_waiting') {
+                    el.className = `rounded-2xl border-2 border-cg_blue bg-blue-50 h-56 sm:h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-md animate-pulse`;
+                    el.innerHTML = `
+                        <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none opacity-50">
+                            <img src="${this.state.images.terrain_empty}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
+                        </div>
+                        <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4 px-2 text-center">
+                            <span class="text-3xl mb-2">⏳</span>
+                            <span class="font-black text-cg_navy uppercase tracking-widest text-xs mb-1">Sala en Preparación</span>
+                            <span class="font-bold text-blue-600 text-[10px] bg-white px-3 py-1 rounded-full border border-blue-200 shadow-sm mt-2 leading-tight">Esperando a que se unan<br>10/10 jugadores...</span>
+                        </div>
+                    `;
                 } else if (plot.status === 'tournament') {
                     const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                     const totalMs = conf.durationHours * 3600000;
@@ -1915,11 +1927,26 @@ window.farmApp = {
 
     startEnvironmentSimulation() {
         if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
-        
         this.processTick();
 
-        this.state.simulationInterval = setInterval(() => {
+        this.state.simulationInterval = setInterval(async () => {
             this.processTick();
+            
+            // LÓGICA DE INICIO SINCRONIZADO
+            const arena = this.state.plots[5];
+            if (arena && arena.status === 'tournament_waiting' && arena.instanceId) {
+                try {
+                    const res = await fetch('/api/tournaments/status/' + arena.instanceId);
+                    const data = await res.json();
+                    if (data.status === 'running') {
+                        arena.status = 'tournament';
+                        arena.tournamentEndTime = parseInt(data.end_time);
+                        this.showPlotToast(5, '🔥', '¡EL TORNEO HA INICIADO!');
+                        this.renderPlots();
+                        this.saveState();
+                    }
+                } catch(e) {}
+            }
         }, 10000);
     },
 

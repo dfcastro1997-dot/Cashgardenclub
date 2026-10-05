@@ -119,6 +119,35 @@
         </div>
 
     </div>
+
+    <!-- LEADERBOARD EN TIEMPO REAL -->
+    <div id="live-leaderboard-container" class="mt-10 bg-white rounded-3xl shadow-lg border-2 border-cg_gold overflow-hidden hidden animate-fade-in">
+        <div class="bg-gradient-to-r from-cg_navy to-gray-900 p-5 md:p-6 flex justify-between items-center relative">
+            <div>
+                <span id="lb-status-badge" class="bg-red-500 text-white text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest animate-pulse flex items-center gap-1 w-fit mb-2"><span class="w-1.5 h-1.5 rounded-full bg-white"></span> TRANSMISIÓN EN VIVO</span>
+                <h3 class="text-xl md:text-2xl font-black text-white">Tabla de Posiciones <span id="lb-tourney-name" class="text-cg_gold"></span></h3>
+                <p id="lb-players-count" class="text-xs text-gray-300 font-medium mt-1">Jugadores inscritos: 0/10</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Pozo Actual</p>
+                <p class="text-xl md:text-2xl font-black text-green-400" id="lb-prize-pool">$0 COP</p>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 text-xs font-black text-gray-500 uppercase tracking-widest">Posición</th>
+                        <th class="p-4 text-xs font-black text-gray-500 uppercase tracking-widest">Jugador</th>
+                        <th class="p-4 text-xs font-black text-gray-500 uppercase tracking-widest text-right">Puntaje Perfecto</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body" class="divide-y divide-gray-100 text-sm font-medium">
+                    <!-- Filas inyectadas por JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- VENTANA MODAL DE ÉXITO -->
@@ -129,7 +158,7 @@
             <span class="text-3xl md:text-4xl">✅</span>
         </div>
         <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2">¡Inscripción Exitosa!</h3>
-        <p class="text-xs md:text-sm text-gray-500 mb-6">Se ha habilitado la Parcela de Arena en tu Invernadero. El cronómetro ha comenzado a correr.</p>
+        <p class="text-xs md:text-sm text-gray-500 mb-6">Tu parcela de Arena ha sido reservada y estás en la Sala de Espera de Jugadores. Revisa la Tabla de Posiciones en vivo.</p>
         <button onclick="closeSuccessAndGoToFarm()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
             Ir a mi Invernadero
         </button>
@@ -318,7 +347,7 @@
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-yellow-600 mb-1 px-1">
-                    <span class="flex items-center gap-2">☀️️ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
+                    <span class="flex items-center gap-2">☀ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-light" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
                 <input type="range" id="slider-light" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
@@ -513,24 +542,23 @@
                     
                     if(window.farmApp.state.plots && window.farmApp.state.plots.length > 5) {
                          const ap = window.farmApp.state.plots[5];
-                         ap.status = 'tournament';
+                         ap.instanceId = data.instance_id; 
                          ap.tournamentId = t_id;
-                         ap.score = finalScore;   
-                         ap.water = initialWater;
+                         ap.plant = { id: 'tournament_' + t_id, name: info.name, icon: info.img };
                          
-                         // Asignar el objeto plant desde la configuración del torneo
-                         ap.plant = {
-                             id: 'tournament_' + t_id,
-                             name: info.name,
-                             icon: info.img
-                         };
+                         if (data.tourney_status === 'waiting') {
+                             ap.status = 'tournament_waiting';
+                         } else {
+                             ap.status = 'tournament';
+                             ap.score = finalScore;   
+                             ap.water = initialWater;
+                             ap.tournamentEndTime = data.end_time;
+                         }
                          
-                         // Asignar hasCrow si la planta nació estresada
                          if(isStressed) {
                              ap.hasCrow = true;
                          }
 
-                         ap.tournamentEndTime = Date.now() + (info.durHours * 3600000);
                          ap.isReady = false;
                     }
                     window.farmApp.state.lastTick = Date.now();
@@ -541,6 +569,8 @@
 
                 document.getElementById('success-tournament-modal').classList.remove('hidden');
                 document.getElementById('success-tournament-modal').classList.add('flex');
+                
+                if(window.refreshLeaderboard) window.refreshLeaderboard();
             } else {
                 showAlertModal('No se pudo inscribir', data.error, '❌');
             }
@@ -595,11 +625,9 @@
     function startPractice() {
         if (!window.farmApp || !window.farmApp.state.practiceTokens || window.farmApp.state.practiceTokens <= 0) return;
         
-        // --- INICIO DE CORRECCIÓN ---
         window.farmApp.state.practiceTokens -= 1;
-        window.farmApp.saveState(); // Se guarda en el servidor
+        window.farmApp.saveState(); 
         
-        // Actualizar el DOM inmediatamente para que la UI no se quede atrás
         const tokenDisplay = document.getElementById('practice-tokens-display');
         if (tokenDisplay) tokenDisplay.innerText = window.farmApp.state.practiceTokens;
         
@@ -613,7 +641,6 @@
                 btnStartPractice.className = "flex-1 bg-gray-100 text-gray-400 font-black text-xs md:text-sm py-3.5 rounded-xl transition-all shadow-sm cursor-not-allowed";
             }
         }
-        // --- FIN DE CORRECCIÓN ---
 
         window.alchemyState.isPractice = true;
         
@@ -1038,15 +1065,87 @@
         if (window.alchemyState.isPractice) {
             showAlertModal('Práctica Concluida', `Tu destreza manual define tu éxito. Sigue entrenando para dominar la arena.`, '🌱');
         } else {
-            // Pasamos isStressed (es decir, !isPerfect) a finalizeTournamentAPI
             await finalizeTournamentAPI(window.alchemyState.finalWater, !window.alchemyState.isPerfect);
         }
     }
-
 
     function closeSuccessAndGoToFarm() {
         document.getElementById('success-tournament-modal').classList.replace('flex', 'hidden');
         loadView('farm', document.querySelectorAll('.nav-btn')[0]);
     }
+
+    // ================= FUNCIONES LEADERBOARD =================
+    window.refreshLeaderboard = async function() {
+        if (!window.farmApp || !window.farmApp.state.plots[5] || !window.farmApp.state.plots[5].instanceId) {
+            document.getElementById('live-leaderboard-container').classList.add('hidden');
+            return;
+        }
+
+        const instanceId = window.farmApp.state.plots[5].instanceId;
+        const tId = window.farmApp.state.plots[5].tournamentId || 1;
+        
+        try {
+            const res = await fetch('/api/tournaments/leaderboard/' + instanceId);
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('live-leaderboard-container').classList.remove('hidden');
+                document.getElementById('lb-tourney-name').innerText = window.TOURNAMENT_INFO[tId].name;
+                document.getElementById('lb-prize-pool').innerText = "$" + parseFloat(data.prize_pool).toLocaleString() + " COP";
+                
+                const countText = document.getElementById('lb-players-count');
+                const badge = document.getElementById('lb-status-badge');
+                if (data.status === 'waiting') {
+                    countText.innerText = `Jugadores inscritos: ${data.players_count}/${data.max_players}`;
+                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-white"></span> ESPERANDO JUGADORES`;
+                    badge.className = "bg-orange-500 text-white text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest animate-pulse flex items-center gap-1 w-fit mb-2";
+                } else if (data.status === 'running') {
+                    countText.innerText = `Torneo en progreso - Cupos Llenos`;
+                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-white"></span> TRANSMISIÓN EN VIVO`;
+                    badge.className = "bg-red-500 text-white text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest animate-pulse flex items-center gap-1 w-fit mb-2";
+                } else {
+                    countText.innerText = `Torneo Finalizado`;
+                    badge.innerHTML = `FINALIZADO`;
+                    badge.className = "bg-gray-500 text-white text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1 w-fit mb-2";
+                }
+
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+                
+                data.leaderboard.forEach((player, index) => {
+                    let iconBadge = '';
+                    let rowClass = 'hover:bg-gray-50 transition-colors';
+                    
+                    if (index === 0) {
+                        iconBadge = '🥇'; rowClass = 'bg-yellow-50/50 border-l-4 border-yellow-400';
+                    } else if (index === 1) {
+                        iconBadge = '🥈'; rowClass = 'bg-gray-50 border-l-4 border-gray-400';
+                    } else if (index === 2) {
+                        iconBadge = '🥉'; rowClass = 'bg-orange-50/30 border-l-4 border-orange-400';
+                    } else {
+                        iconBadge = `<span class="text-gray-400 font-bold ml-1">${index + 1}</span>`;
+                    }
+                    
+                    const isMe = player.username === sessionStorage.getItem('username');
+                    
+                    tbody.innerHTML += `
+                        <tr class="${rowClass} ${isMe ? 'bg-blue-50/30' : ''}">
+                            <td class="p-4 text-xl w-16 text-center">${iconBadge}</td>
+                            <td class="p-4 font-black ${isMe ? 'text-cg_blue' : 'text-cg_navy'} flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-cg_navy text-white text-[10px] flex items-center justify-center">${player.username.substring(0,2).toUpperCase()}</div>
+                                ${player.username} ${isMe ? '<span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full ml-2 uppercase">Tú</span>' : ''}
+                            </td>
+                            <td class="p-4 text-right">
+                                <span class="font-black text-lg ${index < 3 ? 'text-cg_gold' : 'text-gray-600'}">${parseFloat(player.current_score).toLocaleString()}</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch(e) {}
+    }
+
+    if(window.lbInterval) clearInterval(window.lbInterval);
+    window.lbInterval = setInterval(window.refreshLeaderboard, 5000);
+    setTimeout(window.refreshLeaderboard, 1000);
 </script>
 </div>
