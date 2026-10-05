@@ -59,18 +59,16 @@
         if (amount > window.farmApp.state.balance) { if(err) { err.innerText = "Saldo insuficiente."; err.classList.remove('hidden'); } return; }
 
         try {
-            const user = JSON.parse(localStorage.getItem('user'));
+            const username = sessionStorage.getItem('username'); // Obtenido del identificador temporal, no localStorage
             const res = await fetch('/api/wallet/payout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user.username, amount_cop: amount, phone_nequi: phone })
+                body: JSON.stringify({ username: username, amount_cop: amount, phone_nequi: phone })
             });
             const data = await res.json();
             
             if (res.ok) {
-                window.farmApp.state.balance = data.new_balance;
-                user.balance = data.new_balance;
-                localStorage.setItem('user', JSON.stringify(user));
+                if(window.farmApp) window.farmApp.state.balance = data.new_balance;
                 if(suc) {
                     suc.innerText = "¡Retiro exitoso! Ref: " + data.reference;
                     suc.classList.remove('hidden');

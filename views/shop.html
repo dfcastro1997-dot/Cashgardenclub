@@ -69,13 +69,10 @@ window.shopApp = {
     },
 
     init() {
-        const savedStateStr = localStorage.getItem('cg_farm_state');
-        if (savedStateStr) {
-            try {
-                const s = JSON.parse(savedStateStr);
-                this.state.seedsBalance = s.seedsBalance ?? 35000;
-                this.state.inventory = s.inventory ?? {};
-            } catch(e) { console.error("Error cargando inventario en la tienda"); }
+        // En lugar de leer de LocalStorage, tomar el estado actual de farmApp (que ya está sincronizado)
+        if (window.farmApp && window.farmApp.state) {
+            this.state.seedsBalance = window.farmApp.state.seedsBalance;
+            this.state.inventory = window.farmApp.state.inventory;
         }
         
         document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
@@ -243,40 +240,35 @@ window.shopApp = {
         }, 1000); 
     },
 
-    async buyIAP(packageId) {
-        const userStr = localStorage.getItem('user');
-        if (!userStr) return alert("Debes iniciar sesión para realizar compras.");
+    async function buyIAP(packageId) {
+        const username = sessionStorage.getItem('username');
+        if (!username) return alert("Debes iniciar sesión para realizar compras.");
         
-        const user = JSON.parse(userStr);
         try {
             const res = await fetch('/api/store/buy_seeds', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user.username, package_id: packageId })
+                body: JSON.stringify({ username: username, package_id: packageId })
             });
             const data = await res.json();
             
             if (res.ok) {
-                user.balance = data.new_balance_cop;
-                localStorage.setItem('user', JSON.stringify(user));
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                }
                 if(window.syncUserData) window.syncUserData(); 
 
-                const savedStateStr = localStorage.getItem('cg_farm_state');
-                if (savedStateStr) {
-                    const farmState = JSON.parse(savedStateStr);
-                    if (packageId.startsWith('iap_sp_')) {
-                        const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
-                        const now = Date.now();
-                        farmState.autoWaterEndTime = Math.max(now, farmState.autoWaterEndTime || 0) + (hours * 3600000);
-                        localStorage.setItem('cg_farm_state', JSON.stringify(farmState));
-                        
-                        if (window.farmApp) {
-                            window.farmApp.state.autoWaterEndTime = farmState.autoWaterEndTime;
-                            window.farmApp.updateSprinklerUI();
-                        }
-
-                        alert(`¡Compra Exitosa! Asistente activado por ${hours} horas.`);
+                if (packageId.startsWith('iap_sp_')) {
+                    const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
+                    const now = Date.now();
+                    
+                    if (window.farmApp) {
+                        window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
+                        window.farmApp.updateSprinklerUI();
+                        window.farmApp.saveState(); // El guardado se procesa por red a la DB
                     }
+
+                    alert(`¡Compra Exitosa! Asistente activado por ${hours} horas.`);
                 }
             } else {
                 alert("Error al procesar la compra: " + data.error);
@@ -284,41 +276,14 @@ window.shopApp = {
         } catch(e) {
             alert("Error de conexión al procesar la compra.");
         }
-    },
+    }
 
     async saveState() {
-        let farmState = { seedsBalance: 35000, autoWaterEndTime: 0, plots: [], inventory: {}, lastTick: Date.now() };
-        const savedStateStr = localStorage.getItem('cg_farm_state');
-        if (savedStateStr) {
-            try { farmState = JSON.parse(savedStateStr); } catch(e) {}
-        }
-        
-        farmState.seedsBalance = this.state.seedsBalance;
-        farmState.inventory = this.state.inventory;
-        farmState.lastTick = Date.now(); 
-        
-        const stateToSave = JSON.stringify(farmState);
-        localStorage.setItem('cg_farm_state', stateToSave);
-
+        // En lugar de guardar en LocalStorage, actualizar el estado de farmApp y decirle que guarde
         if (window.farmApp && window.farmApp.state) {
             window.farmApp.state.seedsBalance = this.state.seedsBalance;
             window.farmApp.state.inventory = JSON.parse(JSON.stringify(this.state.inventory));
-            window.farmApp.state.lastTick = farmState.lastTick;
-        }
-
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            try {
-                await fetch('/api/save_state', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user.username, game_state: stateToSave })
-                });
-                if(window.syncUserData) window.syncUserData();
-            } catch (e) {
-                console.error("Error conectando con Aiven:", e);
-            }
+            window.farmApp.saveState(); // farmApp ahora maneja el guardado por red
         }
     }
 };

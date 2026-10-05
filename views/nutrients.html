@@ -407,18 +407,8 @@
         if (window.farmApp && window.farmApp.state) {
             if (window.farmApp.state.plots) arenaPlot = window.farmApp.state.plots[5];
             practiceTokens = window.farmApp.state.practiceTokens || 0;
-        } else {
-            const stateStr = localStorage.getItem('cg_farm_state');
-            if (stateStr) {
-                try { 
-                    const s = JSON.parse(stateStr);
-                    if(s.plots) arenaPlot = s.plots[5]; 
-                    practiceTokens = s.practiceTokens || 0;
-                } catch(e) {}
-            }
         }
 
-        // Actualizar Tokens de práctica
         const tokenDisplay = document.getElementById('practice-tokens-display');
         if (tokenDisplay) tokenDisplay.innerText = practiceTokens;
 
@@ -455,6 +445,93 @@
                     <span class="text-xs md:text-sm font-black text-cg_navy">${Math.floor(arenaPlot.score).toLocaleString()} / ${maxScore} pts 🏆</span>
                 `;
             });
+        }
+    }
+
+    function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
+        let isPlaying = false;
+        if (window.farmApp && window.farmApp.state.plots[5] && window.farmApp.state.plots[5].status === 'tournament') isPlaying = true;
+
+        if (isPlaying) {
+            showAlertModal('Torneo en Curso', 'Ya te encuentras compitiendo en un torneo activo.', '⏳');
+            return;
+        }
+
+        pendingTournament = { id: t_id, fee: fee_cop };
+        const info = TOURNAMENT_INFO[t_id];
+        
+        document.getElementById('pt-title').innerText = `Contrato: ${info.name}`;
+        document.getElementById('pt-name').innerText = info.name;
+        document.getElementById('pt-img').src = info.img;
+        document.getElementById('pt-dur').innerText = info.dur;
+        document.getElementById('pt-score').innerText = info.scoreStr;
+        document.getElementById('pt-limits').innerText = `Riesgo de Daño: ${info.limits}. Empezarás a perder puntos por minuto.`;
+        document.getElementById('pt-rules').innerText = info.rules;
+
+        const btn = document.getElementById('btn-confirm-tournament');
+        btn.innerText = fee_cop === 0 ? `Pagar Insumos: ${seedCostStr}` : `Pagar $${fee_cop.toLocaleString()} + ${seedCostStr}`;
+        
+        document.getElementById('pre-tournament-modal').classList.remove('hidden');
+        document.getElementById('pre-tournament-modal').classList.add('flex');
+    }
+
+    async function finalizeTournamentAPI(initialWater) {
+        if (!ritualState.pendingData) return;
+        const t_id = ritualState.pendingData.id;
+        const fee_cop = ritualState.pendingData.fee;
+        const info = TOURNAMENT_INFO[t_id];
+        
+        const username = sessionStorage.getItem('username');
+        if(!username) return;
+        
+        const finalScore = Math.max(0, ritualState.score);
+        
+        showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción en la Base de Datos...', '⏳');
+        const alertBtn = document.querySelector('#alert-modal button');
+        if(alertBtn) alertBtn.classList.add('hidden');
+        
+        try {
+            const res = await fetch('/api/tournaments/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, tournament_id: t_id, fee: fee_cop })
+            });
+            const data = await res.json();
+            
+            closeAlertModal();
+            if(alertBtn) alertBtn.classList.remove('hidden');
+            
+            if (res.ok) {
+                document.getElementById('global-balance').innerText = "$" + data.new_balance_cop.toLocaleString();
+
+                if(window.farmApp && window.farmApp.state) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    window.farmApp.state.seedsBalance = data.new_game_state.seedsBalance;
+                    
+                    if(window.farmApp.state.plots && window.farmApp.state.plots.length > 5) {
+                         const ap = window.farmApp.state.plots[5];
+                         ap.status = 'tournament';
+                         ap.tournamentId = t_id;
+                         ap.score = finalScore;   
+                         ap.water = initialWater; 
+                         ap.tournamentEndTime = Date.now() + (info.durHours * 3600000);
+                         ap.isReady = false;
+                    }
+                    window.farmApp.state.lastTick = Date.now();
+                    window.farmApp.saveState();
+                }
+                
+                if(window.syncUserData) window.syncUserData();
+
+                document.getElementById('success-tournament-modal').classList.remove('hidden');
+                document.getElementById('success-tournament-modal').classList.add('flex');
+            } else {
+                showAlertModal('No se pudo inscribir', data.error, '❌');
+            }
+        } catch(e) {
+            closeAlertModal();
+            if(alertBtn) alertBtn.classList.remove('hidden');
+            showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor.', '📡');
         }
     }
 
@@ -584,40 +661,6 @@
         }, 1000);
     }
     // =========================================================
-
-    function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
-        let isPlaying = false;
-        if (window.farmApp && window.farmApp.state.plots[5] && window.farmApp.state.plots[5].status === 'tournament') isPlaying = true;
-        const stateStr = localStorage.getItem('cg_farm_state');
-        if (stateStr) {
-            try {
-                const s = JSON.parse(stateStr);
-                if (s.plots && s.plots[5] && s.plots[5].status === 'tournament') isPlaying = true;
-            } catch(e){}
-        }
-
-        if (isPlaying) {
-            showAlertModal('Torneo en Curso', 'Ya te encuentras compitiendo en un torneo activo.', '⏳');
-            return;
-        }
-
-        pendingTournament = { id: t_id, fee: fee_cop };
-        const info = TOURNAMENT_INFO[t_id];
-        
-        document.getElementById('pt-title').innerText = `Contrato: ${info.name}`;
-        document.getElementById('pt-name').innerText = info.name;
-        document.getElementById('pt-img').src = info.img;
-        document.getElementById('pt-dur').innerText = info.dur;
-        document.getElementById('pt-score').innerText = info.scoreStr;
-        document.getElementById('pt-limits').innerText = `Riesgo de Daño: ${info.limits}. Empezarás a perder puntos por minuto.`;
-        document.getElementById('pt-rules').innerText = info.rules;
-
-        const btn = document.getElementById('btn-confirm-tournament');
-        btn.innerText = fee_cop === 0 ? `Pagar Insumos: ${seedCostStr}` : `Pagar $${fee_cop.toLocaleString()} + ${seedCostStr}`;
-        
-        document.getElementById('pre-tournament-modal').classList.remove('hidden');
-        document.getElementById('pre-tournament-modal').classList.add('flex');
-    }
 
     function closePreTournamentModal() {
         document.getElementById('pre-tournament-modal').classList.add('hidden');
@@ -968,72 +1011,6 @@
         }
     }
 
-    // ================= ENVÍO A BASE DE DATOS =================
-    async function finalizeTournamentAPI(initialWater) {
-        if (!ritualState.pendingData) return;
-        const t_id = ritualState.pendingData.id;
-        const fee_cop = ritualState.pendingData.fee;
-        const info = TOURNAMENT_INFO[t_id];
-        const username = document.getElementById('profile-name').innerText;
-        if(!username || username === 'Usuario') return;
-        
-        const finalScore = Math.max(0, ritualState.score);
-        
-        showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción en la Base de Datos...', '⏳');
-        const alertBtn = document.querySelector('#alert-modal button');
-        if(alertBtn) alertBtn.classList.add('hidden');
-        
-        try {
-            const res = await fetch('/api/tournaments/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, tournament_id: t_id, fee: fee_cop })
-            });
-            const data = await res.json();
-            
-            closeAlertModal();
-            if(alertBtn) alertBtn.classList.remove('hidden');
-            
-            if (res.ok) {
-                document.getElementById('global-balance').innerText = "$" + data.new_balance_cop.toLocaleString();
-                
-                const injectTournament = (state) => {
-                    state.seedsBalance = data.new_game_state.seedsBalance;
-                    if(state.plots && state.plots.length > 5) {
-                         const ap = state.plots[5];
-                         ap.status = 'tournament';
-                         ap.tournamentId = t_id;
-                         ap.score = finalScore;   
-                         ap.water = initialWater; 
-                         ap.tournamentEndTime = Date.now() + (info.durHours * 3600000);
-                         ap.isReady = false;
-                    }
-                };
-
-                if(window.farmApp && window.farmApp.state) {
-                    window.farmApp.state.balance = data.new_balance_cop;
-                    injectTournament(window.farmApp.state);
-                    window.farmApp.state.lastTick = Date.now();
-                    window.farmApp.saveState();
-                } else {
-                    let state = JSON.parse(localStorage.getItem('cg_farm_state') || '{}');
-                    injectTournament(state);
-                    localStorage.setItem('cg_farm_state', JSON.stringify(state));
-                }
-                
-                if(window.syncUserData) window.syncUserData();
-
-                document.getElementById('success-tournament-modal').classList.remove('hidden');
-                document.getElementById('success-tournament-modal').classList.add('flex');
-            } else {
-                showAlertModal('No se pudo inscribir', data.error, '❌');
-            }
-        } catch(e) {
-            closeAlertModal();
-            if(alertBtn) alertBtn.classList.remove('hidden');
-            showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor.', '📡');
-        }
-    }
 
     function closeSuccessAndGoToFarm() {
         document.getElementById('success-tournament-modal').classList.replace('flex', 'hidden');

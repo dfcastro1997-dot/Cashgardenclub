@@ -217,14 +217,7 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    
-                    if (data.user.game_state) {
-                        localStorage.setItem('cg_farm_state', data.user.game_state);
-                    } else {
-                        localStorage.removeItem('cg_farm_state');
-                    }
-
+                    sessionStorage.setItem('username', data.user.username);
                     updateProfileUI(data.user);
                     
                     document.getElementById('login-screen').classList.add('opacity-0');
@@ -250,9 +243,7 @@
             const balance = userData.balance || 0;
             document.getElementById('global-balance').innerText = "$" + balance.toLocaleString();
             
-            if(window.farmApp) {
-                window.farmApp.state.balance = balance;
-            }
+            if(window.farmApp) window.farmApp.state.balance = balance;
         }
 
         function showError(msg) {
@@ -260,28 +251,33 @@
             document.getElementById('auth-error').classList.remove('hidden');
         }
 
-        window.onload = () => {
-            const savedUser = localStorage.getItem('user');
-            if (savedUser) {
-                const parsedUser = JSON.parse(savedUser);
-
-                updateProfileUI(parsedUser);
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard-screen').classList.remove('hidden');
-                document.getElementById('dashboard-screen').classList.add('flex');
-                loadView('farm', document.querySelector('.nav-btn-desktop')); 
-                syncUserData();
+        window.onload = async () => {
+            const username = sessionStorage.getItem('username');
+            if (username) {
+                 try {
+                     const response = await fetch(`/api/sync/${username}`);
+                     if (response.ok) {
+                         const data = await response.json();
+                         updateProfileUI(data.user);
+                         document.getElementById('login-screen').classList.add('hidden');
+                         document.getElementById('dashboard-screen').classList.remove('hidden');
+                         document.getElementById('dashboard-screen').classList.add('flex');
+                         loadView('farm', document.querySelector('.nav-btn-desktop'));
+                     } else {
+                         logout(); 
+                     }
+                 } catch (e) {
+                     console.error("Error validando sesión:", e);
+                 }
             }
         };
 
         function logout() { 
-            localStorage.removeItem('user');
-            localStorage.removeItem('cg_farm_state');
+            sessionStorage.removeItem('username');
             location.reload(); 
         }
         
         async function loadView(viewName, clickedBtn = null) {
-            // FIX CRÍTICO: Matar el proceso de la granja fantasma para evitar que sobrescriba la base de datos
             if (window.farmApp && window.farmApp.state && window.farmApp.state.simulationInterval) {
                 clearInterval(window.farmApp.state.simulationInterval);
             }
@@ -302,7 +298,6 @@
                 });
 
                 if (clickedBtn) {
-                    // Sincronizar estilos entre Desktop Nav y Mobile Nav
                     document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile').forEach(btn => {
                         if(btn.classList.contains('nav-btn-desktop')) {
                             btn.classList.remove('text-cg_gold', 'border-cg_gold');
@@ -342,12 +337,11 @@
         });
 
         async function syncUserData() {
-            const userStr = localStorage.getItem('user');
-            if (!userStr) return;
-            const user = JSON.parse(userStr);
+            const username = sessionStorage.getItem('username');
+            if (!username) return;
             
             try {
-                const response = await fetch(`/api/sync/${user.username}`);
+                const response = await fetch(`/api/sync/${username}`);
                 if (response.ok) {
                     const data = await response.json();
                     const dbBalance = data.user.real_balance_cop || data.user.balance;
@@ -357,10 +351,15 @@
                             const state = JSON.parse(data.user.game_state);
                             const seedsEl = document.getElementById('global-seeds-display');
                             if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
+                            
+                            if (window.farmApp && window.farmApp.state) {
+                                window.farmApp.state = Object.assign(window.farmApp.state, state);
+                                window.farmApp.updateUI();
+                            }
                         } catch(e) {}
                     }
                     
-                    if (user.balance !== dbBalance || (window.farmApp && window.farmApp.state.balance !== dbBalance)) {
+                    if ((window.farmApp && window.farmApp.state.balance !== dbBalance)) {
                         document.getElementById('global-balance').innerText = "$" + dbBalance.toLocaleString();
                         const balEl = document.getElementById('global-balance');
                         balEl.classList.add('text-green-500', 'scale-125');
@@ -374,9 +373,6 @@
                             const cashoutAmount = document.getElementById('cashout-amount');
                             if(cashoutAmount) cashoutAmount.max = dbBalance;
                         }
-                        
-                        user.balance = dbBalance;
-                        localStorage.setItem('user', JSON.stringify(user));
                     }
                 }
             } catch (e) { console.error("Error sincronizando saldo:", e); }

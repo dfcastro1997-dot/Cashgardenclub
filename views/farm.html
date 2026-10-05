@@ -657,6 +657,7 @@ window.farmApp = {
         }
     },
 
+    // farm_3.html[cite: 17]
     saveState() {
         this.state.lastTick = Date.now();
         const stateToSave = JSON.stringify({
@@ -667,36 +668,29 @@ window.farmApp = {
             inventory: this.state.inventory,
             lastTick: this.state.lastTick
         });
-        localStorage.setItem('cg_farm_state', stateToSave);
 
-        // AÑADIR ESTA LÍNEA PARA SOLUCIONAR EL ERROR
-        const userStr = localStorage.getItem('user'); 
+        const username = sessionStorage.getItem('username'); 
         
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            
-            // FIX: Implementar un "Debounce" para evitar cruce de peticiones al hacer acciones rápidas
+        if (username) {
             if (this.saveTimeout) clearTimeout(this.saveTimeout);
             
             this.saveTimeout = setTimeout(() => {
                 fetch('/api/save_state', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user.username, game_state: stateToSave })
+                    body: JSON.stringify({ username: username, game_state: stateToSave })
                 }).catch(e => console.error("Error guardando progreso:", e));
-            }, 500); // 500ms de retraso seguro unificando las peticiones
+            }, 500); 
         }
     },
 
+    // farm_3.html[cite: 17]
     init() {
-        this.loadLocalAndStart(); 
-        this.updateUI();
-
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            
-            if (user.username === 'DamianCastro') {
+        // ELIMINAR LLAMADA A this.loadLocalAndStart(); 
+        
+        const username = sessionStorage.getItem('username');
+        if (username) {
+            if (username === 'DamianCastro') {
                 const adminBtn = document.getElementById('admin-dev-btn');
                 if (adminBtn) {
                     adminBtn.classList.remove('hidden');
@@ -704,60 +698,41 @@ window.farmApp = {
                 }
             }
 
-            fetch(`/api/sync/${user.username}`)
+            fetch(`/api/sync/${username}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'success' && data.user.game_state) {
                         try {
                             const s = JSON.parse(data.user.game_state);
                             
-                            if (!this.state.lastTick || (s.lastTick && s.lastTick >= this.state.lastTick)) {
-                                this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
-                                this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; // <-- AÑADIR ESTA LÍNEA
-                                this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
-                                this.state.plots = s.plots ?? this.state.plots;
-                                
-                                if (s.inventory) {
-                                    Object.keys(s.inventory).forEach(k => {
-                                        if (this.state.inventory[k]) {
-                                            this.state.inventory[k].qty = s.inventory[k].qty || 0;
-                                        }
-                                    });
-                                }
-                                
-                                this.state.lastTick = s.lastTick ?? Date.now();
-                                localStorage.setItem('cg_farm_state', JSON.stringify(this.state));
-                                this.updateUI(); // Forzar actualización visual solo si el servidor tenía razón
+                            // ELIMINAR CONDICIÓN DE lastTick PARA FORZAR QUE EL SERVIDOR SIEMPRE GANE
+                            this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
+                            this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; 
+                            this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
+                            this.state.plots = s.plots ?? this.state.plots;
+                            
+                            if (s.inventory) {
+                                Object.keys(s.inventory).forEach(k => {
+                                    if (this.state.inventory[k]) {
+                                        this.state.inventory[k].qty = s.inventory[k].qty || 0;
+                                    }
+                                });
                             }
+                            
+                            this.state.lastTick = s.lastTick ?? Date.now();
+                            this.updateUI(); 
                         } catch(e) { console.error("Error parseando game_state", e); }
+                    } else {
+                        // Si no hay estado en el servidor, mostrar estado inicial por defecto
+                        this.updateUI();
                     }
                 })
-                .catch(e => { console.error(e); });
+                .catch(e => { console.error(e); this.updateUI(); }); // Inicializar aunque falle
         }
     },
 
-    loadLocalAndStart() {
-        const savedStateStr = localStorage.getItem('cg_farm_state');
-        if (savedStateStr) {
-            try {
-                const s = JSON.parse(savedStateStr);
-                this.state.seedsBalance = s.seedsBalance ?? 35000;
-                this.state.practiceTokens = s.practiceTokens ?? 0; // <-- AÑADIR ESTA LÍNEA
-                this.state.autoWaterEndTime = s.autoWaterEndTime ?? 0;
-                this.state.plots = s.plots ?? this.state.plots;
-                
-                if (s.inventory) {
-                    Object.keys(s.inventory).forEach(k => {
-                        if (this.state.inventory[k]) {
-                            this.state.inventory[k].qty = s.inventory[k].qty || 0;
-                        }
-                    });
-                }
-                
-                this.state.lastTick = s.lastTick ?? Date.now();
-            } catch(e) { console.error("Error cargando estado local", e); }
-        }
-    },
+    // ELIMINAR ESTA FUNCIÓN COMPLETAMENTE
+    // loadLocalAndStart() { ... }
 
     updateUI() {
         const localBalance = document.getElementById('global-seeds-display');
