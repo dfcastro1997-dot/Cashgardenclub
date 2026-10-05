@@ -16,6 +16,13 @@ ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
 EVAPORATION_RATE = 40.0 
 
 def get_db_connection():
+    # Sistema de reintento para evitar que el servidor se caiga por el límite estricto de Aiven
+    for _ in range(6):
+        try:
+            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
+        except psycopg2.OperationalError:
+            time.sleep(0.5)
+    # Último intento
     return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
 
 def init_db():
@@ -614,11 +621,11 @@ def global_leaderboard(t_id):
         conn.commit()
     
     cur.execute('''
-        SELECT username, current_score 
+        SELECT username, current_score, alchemy_precision, alchemy_time 
         FROM tournament_players 
         WHERE instance_id = %s 
-        ORDER BY current_score DESC LIMIT 10
-    ''', (inst['id'],))
+        ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
+    ''', (instance_id,))
     players = cur.fetchall()
     cur.close(); conn.close()
     
@@ -631,8 +638,6 @@ def global_leaderboard(t_id):
         "max_players": inst['max_players'],
         "leaderboard": players
     })
-
-# Nota: Puedes eliminar el endpoint obsoleto antiguo '/api/tournaments/leaderboard/<int:instance_id>' ya que el global lo reemplaza.
 
 @app.route('/api/tournaments/status/<int:instance_id>', methods=['GET'])
 def check_tournament_status(instance_id):
