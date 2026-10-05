@@ -84,9 +84,9 @@ window.shopApp = {
             { id: 'iap_sp_7d', name: 'Asistente Pro 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Automatización', desc: 'Suscripción Semanal Profesional. Maximiza tu eficiencia sin preocuparte por la micro-gestión ni las plagas del cultivo.', price_cop: 15000 }
         ],
         exchange: [
-            { id: 'exc_10k', name: 'Lote Emergencia', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 15% ($1,500 COP). Recibes pocas semillas por el saldo restante.', price_cop: 10000, seeds: 4250 },
-            { id: 'exc_25k', name: 'Lote Competidor', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 12% ($3,000 COP). Semillas suficientes para un Freeroll.', price_cop: 25000, seeds: 11000 },
-            { id: 'exc_50k', name: 'Lote Inversor', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 10% ($5,000 COP). La mejor tasa de conversión del mercado.', price_cop: 50000, seeds: 22500 }
+            { id: 'exc_10k', name: 'Lote N°1', image: 'https://i.ibb.co/qMwkWzMs/Frame-759.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 15% ($1,500 COP). Recibes pocas semillas por el saldo restante.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote N°2', image: 'https://i.ibb.co/k6DQJbhW/Frame-760.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 12% ($3,000 COP). Semillas suficientes para un Freeroll.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote N°3', image: 'https://i.ibb.co/qFdW7j8f/Frame-761.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 10% ($5,000 COP). La mejor tasa de conversión del mercado.', price_cop: 50000, seeds: 22500 }
         ]
     },
 
@@ -258,13 +258,14 @@ window.shopApp = {
 
     async buyExchange(packageId) {
         const username = sessionStorage.getItem('username');
-        if (!username) return alert("Debes iniciar sesión para realizar cambios.");
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return alert("Debes iniciar sesión para realizar cambios.");
         
         try {
             const res = await fetch('/api/store/buy_seeds', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, package_id: packageId })
+                body: JSON.stringify({ username: username, session_token: token, package_id: packageId })
             });
             const data = await res.json();
             
@@ -331,13 +332,14 @@ window.shopApp = {
 
     async buyIAP(packageId) {
         const username = sessionStorage.getItem('username');
-        if (!username) return alert("Debes iniciar sesión para realizar compras.");
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return alert("Debes iniciar sesión para realizar compras.");
         
         try {
             const res = await fetch('/api/store/buy_seeds', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, package_id: packageId })
+                body: JSON.stringify({ username: username, session_token: token, package_id: packageId })
             });
             const data = await res.json();
             
