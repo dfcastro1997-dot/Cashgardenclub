@@ -1087,6 +1087,31 @@ window.farmApp = {
                     plot.water = Math.max(0, plot.water - (conf.evapPerHour * deltaHours)); 
                     changesMade = true;
                 }
+
+                // ---> INICIO NUEVA LÓGICA DE CONTAGIO PARA TORNEO <---
+                // 1. Quitar el cuervo si ya terminó el tiempo de limpieza de 15 min
+                if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
+                    plot.hasCrow = false;
+                    plot.crowLeavingAt = 0;
+                    changesMade = true;
+                    if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Plaga curada');
+                }
+
+                // 2. Contagiar a la planta del torneo si alguna otra en la granja está podrida
+                if (anyPlantInfected && !plot.hasCrow && plot.crowLeavingAt <= now) {
+                    plot.hasCrow = true;
+                    if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
+                    changesMade = true;
+                }
+
+                // 3. Drenar puntos continuamente mientras tenga la plaga del cuervo
+                if (plot.hasCrow) {
+                    const mins = deltaMS / 60000;
+                    plot.score = Math.max(0, plot.score - (conf.drainPerMin * mins));
+                    changesMade = true;
+                }
+                // ---> FIN NUEVA LÓGICA <---
+
                 if (plot.water < conf.minWater || plot.water > conf.maxWater) { 
                     const mins = deltaMS / 60000;
                     plot.score = Math.max(0, plot.score - (conf.drainPerMin * mins)); 
