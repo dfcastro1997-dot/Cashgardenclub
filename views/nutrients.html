@@ -144,7 +144,7 @@
                         <span class="text-xl md:text-2xl drop-shadow-sm">🧪</span>
                         <h5 class="font-black text-blue-900 text-xs md:text-sm">Alquimia Inicial</h5>
                     </div>
-                    <p class="text-[11px] md:text-xs text-blue-800 leading-relaxed">Tendrás solo 15 segundos para equilibrar la luz, nutrientes y agua. Tu precisión definirá cuántos puntos logras mantener antes de empezar.</p>
+                    <p class="text-[11px] md:text-xs text-blue-800 leading-relaxed">Tendrás solo <strong class="font-black">10 segundos</strong> para equilibrar todo. A la mitad del tiempo, <strong class="text-red-600 font-black">perderás de vista la fórmula</strong>. Tu instinto definirá tus puntos.</p>
                 </div>
                 <div class="bg-red-50 border border-red-100 p-4 md:p-5 rounded-xl shadow-sm">
                     <div class="flex items-center gap-3 mb-2 md:mb-3">
@@ -199,7 +199,7 @@
         <div class="flex justify-between items-center mb-2 relative z-20">
             <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight">Sintonización Orgánica</h3>
             <div id="timer-box" class="bg-red-100 text-red-600 font-black px-3 py-1 rounded-lg text-lg flex items-center gap-1 shadow-inner transition-colors">
-                ⏱ <span id="alchemy-timer">15</span>s
+                ⏱ <span id="alchemy-timer">10</span>s
             </div>
         </div>
         <p class="text-[10px] sm:text-xs text-gray-500 mb-4 font-bold uppercase tracking-widest leading-tight relative z-20">Salva la planta antes que acabe el tiempo.<br><strong class="text-red-500">Todo está conectado.</strong></p>
@@ -335,7 +335,7 @@
     let alchemyState = {
         targetW: 0, targetN: 0, targetL: 0,
         valW: 50, valN: 50, valL: 50,
-        timer: 15, interval: null, active: false,
+        timer: 10, interval: null, active: false,
         isPerfect: false, finalWater: 50
     };
 
@@ -458,22 +458,28 @@
         document.getElementById('timer-box').classList.replace('bg-red-600', 'bg-red-100');
         document.getElementById('timer-box').classList.replace('text-white', 'text-red-600');
         
-        // Inyectar imagen de la planta correspondiente
         document.getElementById('seed-img').src = info.img;
         document.getElementById('seed-img').style.filter = "none";
 
-        // Configurar los "Rieles" de ±5% de tolerancia
         setupTrack('track-water', alchemyState.targetW);
         setupTrack('track-nutrients', alchemyState.targetN);
         setupTrack('track-light', alchemyState.targetL);
 
         updateAlchemyUI();
         
+        // --- MOSTRAR LOS NÚMEROS META INICIALMENTE ---
+        document.getElementById('target-water').innerText = alchemyState.targetW + '%';
+        document.getElementById('target-water').classList.remove('text-red-500', 'animate-pulse');
+        document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
+        document.getElementById('target-nutrients').classList.remove('text-red-500', 'animate-pulse');
+        document.getElementById('target-light').innerText = alchemyState.targetL + '%';
+        document.getElementById('target-light').classList.remove('text-red-500', 'animate-pulse');
+        
         document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
         document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        // Iniciar reloj cardíaco
-        alchemyState.timer = 15;
+        // Iniciar reloj cardíaco (AHORA 10 SEGUNDOS)
+        alchemyState.timer = 10;
         document.getElementById('alchemy-timer').innerText = alchemyState.timer;
         alchemyState.active = true;
         alchemyState.isPerfect = false;
@@ -484,8 +490,18 @@
             alchemyState.timer--;
             document.getElementById('alchemy-timer').innerText = alchemyState.timer;
             
-            // Efecto de Tensión en últimos 5s
-            if (alchemyState.timer <= 5 && !alchemyState.isPerfect) {
+            // --- NUEVO: AMNESIA NUMÉRICA A LA MITAD DEL TIEMPO (5s) ---
+            if (alchemyState.timer === 5 && !alchemyState.isPerfect) {
+                document.getElementById('target-water').innerText = '???';
+                document.getElementById('target-water').classList.add('text-red-500', 'animate-pulse');
+                document.getElementById('target-nutrients').innerText = '???';
+                document.getElementById('target-nutrients').classList.add('text-red-500', 'animate-pulse');
+                document.getElementById('target-light').innerText = '???';
+                document.getElementById('target-light').classList.add('text-red-500', 'animate-pulse');
+            }
+
+            // Efecto de Tensión en últimos 3s
+            if (alchemyState.timer <= 3 && !alchemyState.isPerfect) {
                 document.getElementById('alchemy-container').classList.add('glitch-border');
                 document.getElementById('timer-box').classList.replace('bg-red-100', 'bg-red-600');
                 document.getElementById('timer-box').classList.replace('text-red-600', 'text-white');
@@ -520,7 +536,6 @@
         let deltaN = newN - alchemyState.valN;
         let deltaL = newL - alchemyState.valL;
         
-        // REGAS FÍSICAS DE INTERCONEXIÓN
         if (source === 'light' && deltaL !== 0) {
             newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5)));
         } else if (source === 'water' && deltaW !== 0) {
@@ -529,10 +544,10 @@
             newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3)));
         }
         
-        // ATRACCIÓN MAGNÉTICA AL PUNTO DULCE (±3%)
-        if (Math.abs(newW - alchemyState.targetW) <= 3) newW = alchemyState.targetW;
-        if (Math.abs(newN - alchemyState.targetN) <= 3) newN = alchemyState.targetN;
-        if (Math.abs(newL - alchemyState.targetL) <= 3) newL = alchemyState.targetL;
+        // ATRACCIÓN MAGNÉTICA AL PUNTO DULCE (AHORA SOLO ±1% - PRECISIÓN QUIRÚRGICA)
+        if (Math.abs(newW - alchemyState.targetW) <= 1) newW = alchemyState.targetW;
+        if (Math.abs(newN - alchemyState.targetN) <= 1) newN = alchemyState.targetN;
+        if (Math.abs(newL - alchemyState.targetL) <= 1) newL = alchemyState.targetL;
 
         alchemyState.valW = newW;
         alchemyState.valN = newN;
@@ -550,23 +565,17 @@
         const arrow = document.getElementById(id);
         const diff = Math.abs(currentVal - targetVal);
         
-        // Si está en el punto perfecto (tolerancia de 3%), oculta la flecha
-        if (diff <= 3) {
+        // Si está en el punto perfecto (tolerancia extrema de 1%), oculta la flecha
+        if (diff <= 1) {
             arrow.classList.add('hidden');
         } else {
             arrow.classList.remove('hidden');
-            // Determina la dirección (arriba o abajo)
             arrow.innerText = currentVal < targetVal ? '⬆' : '⬇';
-            
-            // Limpia clases anteriores
             arrow.classList.remove('text-red-500', 'text-yellow-500', 'blink-fast', 'blink-slow');
             
-            // Sistema Frío/Caliente
             if (diff > 15) {
-                // Muy lejos: Rojo y parpadeo rápido
                 arrow.classList.add('text-red-500', 'blink-fast');
             } else {
-                // Cerca: Amarillo y parpadeo suave
                 arrow.classList.add('text-yellow-500', 'blink-slow');
             }
         }
@@ -649,8 +658,8 @@
             if(!isChaotic) seed.style.filter = "none";
         }
 
-        // DETECCIÓN DE CLÍMAX (VICTORIA INMEDIATA)
-        if (diffW <= 3 && diffN <= 3 && diffL <= 3) {
+        // DETECCIÓN DE CLÍMAX (VICTORIA INMEDIATA - AHORA EXIGE ±1%)
+        if (diffW <= 1 && diffN <= 1 && diffL <= 1) {
             document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
             fog.style.opacity = '0'; glare.style.opacity = '0'; darkness.style.opacity = '0';
             liquid.style.height = '20%'; liquid.className = "absolute bottom-0 left-0 w-full bg-blue-300/30 z-20 transition-all duration-300";
@@ -688,7 +697,7 @@
             document.getElementById('victory-overlay').classList.remove('hidden');
             document.getElementById('victory-overlay').classList.add('flex');
             alchemyState.finalWater = alchemyState.valW;
-        }, 800); // 0.8s para dejar que el jugador disfrute la animación sagrada
+        }, 800); 
     }
 
     function finishAlchemyTimeOut() {
