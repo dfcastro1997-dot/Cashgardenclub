@@ -628,6 +628,7 @@
         document.getElementById('pre-tournament-modal').classList.add('flex');
     }
 
+    // ENCUENTRA ESTA FUNCIÓN EN nutrients_2.html (alrededor de la línea 661)
     async function finalizeTournamentAPI(initialWater, isStressed, precision, timeUsed) {
         if (!window.ritualState.pendingData) return;
         const t_id = window.ritualState.pendingData.id;
@@ -674,16 +675,18 @@
                     
                     if(window.farmApp.state.plots && window.farmApp.state.plots.length > 5) {
                          const ap = window.farmApp.state.plots[5];
+                         // REEMPLAZA DESDE AQUÍ
                          ap.instanceId = data.instance_id; 
                          ap.tournamentId = t_id;
                          ap.plant = { id: 'tournament_' + t_id, name: info.name, icon: info.img };
                          
-                         // <-- CORRECCIÓN: Asignar score y water siempre, sin importar si está en espera
                          ap.score = finalScore;   
                          ap.water = initialWater;
                          
+                         // SIEMPRE ASEGURARNOS DE ASIGNAR EL ESTADO CORRECTO QUE DEVUELVE EL SERVIDOR
                          if (data.tourney_status === 'waiting') {
                              ap.status = 'tournament_waiting';
+                             ap.tournamentEndTime = 0; // Se definirá cuando arranque
                          } else {
                              ap.status = 'tournament';
                              ap.tournamentEndTime = data.end_time;
@@ -694,9 +697,11 @@
                          }
 
                          ap.isReady = false;
+                         // HASTA AQUÍ
                     }
                     window.farmApp.state.lastTick = Date.now();
                     window.farmApp.saveState();
+                    window.farmApp.renderPlots(); // FORZAMOS EL RENDER INMEDIATO AQUÍ
                 }
                 
                 if(window.syncUserData) window.syncUserData();

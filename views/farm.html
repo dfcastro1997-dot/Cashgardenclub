@@ -1931,6 +1931,7 @@ if (typeof window.farmApp === 'undefined') {
             this.saveState();
         },
 
+        // ENCUENTRA ESTA FUNCIÓN EN farm_2.html (alrededor de la línea 750)
         startEnvironmentSimulation() {
             if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
             this.processTick();
@@ -1944,13 +1945,22 @@ if (typeof window.farmApp === 'undefined') {
                     try {
                         const res = await fetch('/api/tournaments/status/' + arena.instanceId);
                         const data = await res.json();
+                        // REEMPLAZA ESTE IF
                         if (data.status === 'running') {
                             arena.status = 'tournament';
                             arena.tournamentEndTime = parseInt(data.end_time);
+                            
+                            // Aseguramos que la imagen y los datos persistan
+                            const conf = this.TOURNAMENT_CONFIGS[arena.tournamentId || 1];
+                            if(!arena.plant) {
+                                arena.plant = { id: 'tournament_' + arena.tournamentId, name: conf.name, icon: conf.image };
+                            }
+
                             this.showPlotToast(5, '🔥', '¡EL TORNEO HA INICIADO!');
                             this.renderPlots();
                             this.saveState();
                         }
+                        // HASTA AQUÍ
                     } catch(e) {}
                 }
             }, 10000);
