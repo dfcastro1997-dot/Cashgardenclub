@@ -148,7 +148,7 @@
                 </div>
                 <div class="bg-red-50 border border-red-100 p-4 md:p-5 rounded-xl shadow-sm">
                     <div class="flex items-center gap-3 mb-2 md:mb-3">
-                        <span class="text-xl md:text-2xl drop-shadow-sm">⚠️</span>
+                        <span class="text-xl md:text-2xl drop-shadow-sm">⚠️️</span>
                         <h5 class="font-black text-red-900 text-xs md:text-sm">Riesgo por Daño</h5>
                     </div>
                     <p id="pt-limits" class="text-[11px] md:text-xs text-red-800 leading-relaxed">Si el agua sale del rango seguro, empezarás a perder puntos permanentemente.</p>
@@ -170,62 +170,113 @@
     </div>
 </div>
 
-
 <!-- ========================================== -->
 <!-- MINIJUEGO: ALQUIMIA BOTÁNICA (ENTRADA)     -->
 <!-- ========================================== -->
-<div id="ritual-alchemy-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold">
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="text-xl sm:text-2xl font-black text-cg_navy">Alquimia Botánica</h3>
-            <div class="bg-red-100 text-red-600 font-black px-3 py-1 rounded-lg text-lg flex items-center gap-1 shadow-inner">
+<style>
+    @keyframes shake {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(-2px, 2px) rotate(-1deg); }
+        50% { transform: translate(2px, -2px) rotate(1deg); }
+        75% { transform: translate(-2px, -2px) rotate(-1deg); }
+    }
+    .shake-intense { animation: shake 0.2s infinite; }
+    .shake-mild { animation: shake 0.4s infinite; }
+    .glitch-border { box-shadow: 0 0 15px rgba(255,0,0,0.8), inset 0 0 20px rgba(255,0,0,0.5); border-color: red !important; }
+</style>
+
+<div id="ritual-alchemy-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md transition-all duration-500" id="alchemy-bg"></div>
+    <div id="alchemy-container" class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold transition-all duration-300 overflow-hidden">
+        
+        <div class="flex justify-between items-center mb-2 relative z-20">
+            <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight">Sintonización Orgánica</h3>
+            <div id="timer-box" class="bg-red-100 text-red-600 font-black px-3 py-1 rounded-lg text-lg flex items-center gap-1 shadow-inner transition-colors">
                 ⏱ <span id="alchemy-timer">15</span>s
             </div>
         </div>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest leading-tight">Estabiliza la fórmula antes que acabe el tiempo.<br><strong class="text-red-500">¡Las válvulas están interconectadas!</strong></p>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-4 font-bold uppercase tracking-widest leading-tight relative z-20">Salva la planta antes que acabe el tiempo.<br><strong class="text-red-500">Todo está conectado.</strong></p>
         
-        <!-- Metas Dinámicas -->
-        <div class="grid grid-cols-3 gap-2 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-200 shadow-sm">
-            <div class="text-center">
-                <p class="text-[9px] font-bold text-gray-400 uppercase">Meta Agua</p>
-                <p class="text-base sm:text-lg font-black text-blue-600" id="target-water">0%</p>
+        <!-- TERRARIO VISUAL -->
+        <div class="relative w-40 h-40 sm:w-48 sm:h-48 mx-auto mb-6 rounded-full border-8 border-gray-300 shadow-[inset_0_10px_30px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300" id="terrarium-glass">
+            <!-- Capa: Oscuridad (Falta de luz) -->
+            <div id="terrarium-darkness" class="absolute inset-0 bg-black z-40 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+            <!-- Capa: Resplandor (Exceso de luz) -->
+            <div id="terrarium-glare" class="absolute inset-0 bg-orange-500 mix-blend-overlay z-40 transition-opacity duration-100 opacity-0 pointer-events-none"></div>
+            <!-- Capa: Neblina/Condensación (Exceso de agua) -->
+            <div id="terrarium-fog" class="absolute inset-0 bg-white/60 backdrop-blur-md z-30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+            <!-- Capa: Nivel de Lodo/Agua -->
+            <div id="terrarium-liquid" class="absolute bottom-0 left-0 w-full h-[20%] bg-blue-500/50 z-20 transition-all duration-300 flex items-start justify-center pt-2">
+                <div id="terrarium-bubbles" class="flex gap-1 hidden">
+                    <div class="w-1 h-1 bg-white/50 rounded-full animate-ping"></div>
+                    <div class="w-2 h-2 bg-white/50 rounded-full animate-ping delay-100"></div>
+                    <div class="w-1 h-1 bg-white/50 rounded-full animate-ping delay-200"></div>
+                </div>
             </div>
-            <div class="text-center border-x border-gray-200">
-                <p class="text-[9px] font-bold text-gray-400 uppercase">Nutrientes</p>
-                <p class="text-base sm:text-lg font-black text-green-600" id="target-nutrients">0%</p>
+            <!-- Capa: Tierra resquebrajada (Falta de agua) -->
+            <div id="terrarium-ground" class="absolute bottom-0 left-0 w-full h-[20%] bg-[#5C3A21] z-10 transition-colors duration-300 border-t-4 border-[#3A2210]"></div>
+            
+            <!-- Semilla Central -->
+            <div id="terrarium-seed" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 transition-all duration-300">
+                <img id="seed-img" src="" class="w-12 h-12 object-contain drop-shadow-lg transition-all duration-300">
             </div>
-            <div class="text-center">
-                <p class="text-[9px] font-bold text-gray-400 uppercase">Meta Luz</p>
-                <p class="text-base sm:text-lg font-black text-yellow-500" id="target-light">0%</p>
+            
+            <!-- Efecto Geometría Sagrada (Armonía) -->
+            <div id="terrarium-harmony" class="absolute inset-0 flex items-center justify-center z-10 opacity-0 transition-opacity duration-500 pointer-events-none">
+                <div class="w-24 h-24 border-4 border-yellow-300/50 rounded-full animate-[spin_4s_linear_infinite]"></div>
+                <div class="absolute w-16 h-16 border-4 border-yellow-400/80 rounded-full animate-[spin_3s_linear_infinite_reverse]"></div>
+                <div class="absolute w-full h-full bg-yellow-200/20 mix-blend-overlay animate-pulse"></div>
+            </div>
+        </div>
+
+        <!-- Metas Dinámicas Ocultas en Rieles -->
+        <div class="flex justify-between px-2 mb-4 relative z-20">
+            <div class="text-center w-1/3">
+                <span class="text-2xl drop-shadow-sm opacity-80" id="icon-water">💧</span>
+                <div class="h-1.5 w-full bg-gray-200 rounded-full mt-1 overflow-hidden relative shadow-inner">
+                    <div id="track-water" class="h-full bg-blue-500/50 absolute transition-all border-x-2 border-blue-600" style="left: 0%; width: 10%;"></div>
+                </div>
+            </div>
+            <div class="text-center w-1/3 px-2">
+                <span class="text-2xl drop-shadow-sm opacity-80" id="icon-nutrients">🌱</span>
+                <div class="h-1.5 w-full bg-gray-200 rounded-full mt-1 overflow-hidden relative shadow-inner">
+                    <div id="track-nutrients" class="h-full bg-green-500/50 absolute transition-all border-x-2 border-green-600" style="left: 0%; width: 10%;"></div>
+                </div>
+            </div>
+            <div class="text-center w-1/3">
+                <span class="text-2xl drop-shadow-sm opacity-80" id="icon-light">☀️</span>
+                <div class="h-1.5 w-full bg-gray-200 rounded-full mt-1 overflow-hidden relative shadow-inner">
+                    <div id="track-light" class="h-full bg-yellow-400/50 absolute transition-all border-x-2 border-yellow-500" style="left: 0%; width: 10%;"></div>
+                </div>
             </div>
         </div>
 
         <!-- Sliders Interactivos -->
-        <div class="space-y-5 mb-8 text-left">
-            <div>
-                <label class="flex justify-between text-xs font-black text-blue-800 mb-1">
-                    <span>💧 Inyección de Agua</span> <span id="val-water" class="font-mono">50%</span>
-                </label>
-                <input type="range" id="slider-water" min="0" max="100" value="50" class="w-full accent-blue-500 h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer" oninput="handleAlchemyInput('water')">
-            </div>
-            <div>
-                <label class="flex justify-between text-xs font-black text-green-800 mb-1">
-                    <span>🌱 Dosis Nutrientes</span> <span id="val-nutrients" class="font-mono">50%</span>
-                </label>
-                <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="w-full accent-green-500 h-3 bg-green-100 rounded-lg appearance-none cursor-pointer" oninput="handleAlchemyInput('nutrients')">
-            </div>
-            <div>
-                <label class="flex justify-between text-xs font-black text-yellow-600 mb-1">
-                    <span>☀️ Exposición a Luz</span> <span id="val-light" class="font-mono">50%</span>
-                </label>
-                <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-400 h-3 bg-yellow-100 rounded-lg appearance-none cursor-pointer" oninput="handleAlchemyInput('light')">
-            </div>
+        <div class="space-y-4 mb-2 text-left relative z-20">
+            <input type="range" id="slider-water" min="0" max="100" value="50" class="w-full accent-blue-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
+            <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="w-full accent-green-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
+            <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-500 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
         </div>
         
-        <button onclick="finishAlchemy()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 sm:py-5 rounded-xl uppercase tracking-widest shadow-[0_5px_0_#c27818] active:translate-y-[5px] active:shadow-none transition-all text-sm">
-            FIJAR MEZCLA
-        </button>
+        <!-- Superposición de Victoria -->
+        <div id="victory-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-6 text-center animate-fade-in">
+            <div class="w-20 h-20 bg-yellow-100 rounded-full border-4 border-yellow-300 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(253,224,98,0.8)] animate-bounce">
+                <span class="text-4xl">✨</span>
+            </div>
+            <h3 class="text-2xl font-black text-cg_gold mb-1 uppercase tracking-widest">Fórmula Perfecta</h3>
+            <p class="text-xs font-bold text-gray-500 mb-6">Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">10,000 Pts Bloqueados.</strong></p>
+            <button onclick="submitAlchemyFinal()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl shadow-lg transition-transform active:scale-95 uppercase tracking-widest text-xs">Entrar a la Arena</button>
+        </div>
+        
+        <!-- Superposición de Fallo -->
+        <div id="fail-overlay" class="absolute inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-6 text-center border-4 border-red-500 animate-fade-in">
+            <div class="w-20 h-20 bg-red-900 rounded-full border-4 border-red-500 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(255,0,0,0.8)]">
+                <span class="text-4xl">💀</span>
+            </div>
+            <h3 class="text-2xl font-black text-red-500 mb-2 uppercase tracking-widest">Colapso Químico</h3>
+            <p class="text-xs font-medium text-gray-300 mb-6 leading-relaxed" id="fail-msg">La planta nacerá herida.</p>
+            <button onclick="submitAlchemyFinal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg transition-transform active:scale-95 uppercase tracking-widest text-xs">Asumir Daño y Entrar</button>
+        </div>
     </div>
 </div>
 
@@ -259,9 +310,10 @@
     let alchemyState = {
         targetW: 0, targetN: 0, targetL: 0,
         valW: 50, valN: 50, valL: 50,
-        timer: 15, interval: null, active: false
+        timer: 15, interval: null, active: false,
+        isPerfect: false, finalWater: 50
     };
-    
+
     function showAlertModal(title, msg, icon = '⚠️') {
         document.getElementById('alert-modal-title').innerText = title;
         document.getElementById('alert-modal-msg').innerText = msg;
@@ -357,46 +409,75 @@
 
     function confirmJoinTournament() {
         if (!pendingTournament) return;
-        
         ritualState.pendingData = { ...pendingTournament };
         closePreTournamentModal();
         
         const info = TOURNAMENT_INFO[ritualState.pendingData.id];
         ritualState.score = info.scoreNum;
         
-        // Generar Fórmula Meta Dinámica
-        alchemyState.targetW = Math.floor(Math.random() * 41) + 30; // 30 a 70%
-        alchemyState.targetN = Math.floor(Math.random() * 31) + 20; // 20 a 50%
-        alchemyState.targetL = Math.floor(Math.random() * 41) + 20; // 20 a 60%
+        // Asignar metas dinámicas aleatorias
+        alchemyState.targetW = Math.floor(Math.random() * 41) + 30; 
+        alchemyState.targetN = Math.floor(Math.random() * 31) + 20; 
+        alchemyState.targetL = Math.floor(Math.random() * 41) + 20; 
         
-        // Resetear Valores
+        // Reset a 50%
         alchemyState.valW = 50; alchemyState.valN = 50; alchemyState.valL = 50;
         document.getElementById('slider-water').value = 50;
         document.getElementById('slider-nutrients').value = 50;
         document.getElementById('slider-light').value = 50;
-        updateAlchemyUI();
         
-        document.getElementById('target-water').innerText = alchemyState.targetW + '%';
-        document.getElementById('target-nutrients').innerText = alchemyState.targetN + '%';
-        document.getElementById('target-light').innerText = alchemyState.targetL + '%';
+        // Ocultar overlays y reiniciar estilos
+        document.getElementById('victory-overlay').classList.replace('flex', 'hidden');
+        document.getElementById('fail-overlay').classList.replace('flex', 'hidden');
+        document.getElementById('alchemy-container').className = "bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-cg_gold transition-all duration-300 overflow-hidden";
+        document.getElementById('timer-box').classList.replace('bg-red-600', 'bg-red-100');
+        document.getElementById('timer-box').classList.replace('text-white', 'text-red-600');
+        
+        // Inyectar imagen de la planta correspondiente
+        document.getElementById('seed-img').src = info.img;
+        document.getElementById('seed-img').style.filter = "none";
+
+        // Configurar los "Rieles" de ±5% de tolerancia
+        setupTrack('track-water', alchemyState.targetW);
+        setupTrack('track-nutrients', alchemyState.targetN);
+        setupTrack('track-light', alchemyState.targetL);
+
+        updateAlchemyUI();
         
         document.getElementById('ritual-alchemy-modal').classList.remove('hidden');
         document.getElementById('ritual-alchemy-modal').classList.add('flex');
         
-        // Iniciar Temporizador de Tensión
+        // Iniciar reloj cardíaco
         alchemyState.timer = 15;
         document.getElementById('alchemy-timer').innerText = alchemyState.timer;
         alchemyState.active = true;
+        alchemyState.isPerfect = false;
         
         if(alchemyState.interval) clearInterval(alchemyState.interval);
         alchemyState.interval = setInterval(() => {
             if(!alchemyState.active) return;
             alchemyState.timer--;
             document.getElementById('alchemy-timer').innerText = alchemyState.timer;
+            
+            // Efecto de Tensión en últimos 5s
+            if (alchemyState.timer <= 5 && !alchemyState.isPerfect) {
+                document.getElementById('alchemy-container').classList.add('glitch-border');
+                document.getElementById('timer-box').classList.replace('bg-red-100', 'bg-red-600');
+                document.getElementById('timer-box').classList.replace('text-red-600', 'text-white');
+                document.getElementById('seed-img').style.filter = "hue-rotate(90deg) contrast(200%)";
+            }
+            
             if(alchemyState.timer <= 0) {
-                finishAlchemy(); // Auto-completar si el tiempo se agota
+                finishAlchemyTimeOut(); 
             }
         }, 1000);
+    }
+
+    function setupTrack(id, target) {
+        const track = document.getElementById(id);
+        const min = Math.max(0, target - 5);
+        track.style.left = min + '%';
+        track.style.width = '10%'; // Ancho visual del ±5%
     }
 
     function handleAlchemyInput(source) {
@@ -410,12 +491,11 @@
         let newN = parseInt(nSlider.value);
         let newL = parseInt(lSlider.value);
         
-        // Calcular diferencia (Delta)
         let deltaW = newW - alchemyState.valW;
         let deltaN = newN - alchemyState.valN;
         let deltaL = newL - alchemyState.valL;
         
-        // MECÁNICA DE INTERCONEXIÓN: Un slider afecta matemáticamente a los otros
+        // REGAS FÍSICAS DE INTERCONEXIÓN
         if (source === 'light' && deltaL !== 0) {
             newW = Math.max(0, Math.min(100, alchemyState.valW - Math.round(deltaL * 0.5)));
         } else if (source === 'water' && deltaW !== 0) {
@@ -424,64 +504,157 @@
             newL = Math.max(0, Math.min(100, alchemyState.valL - Math.round(deltaN * 0.3)));
         }
         
-        // Guardar estado nuevo
+        // ATRACCIÓN MAGNÉTICA AL PUNTO DULCE (±3%)
+        if (Math.abs(newW - alchemyState.targetW) <= 3) newW = alchemyState.targetW;
+        if (Math.abs(newN - alchemyState.targetN) <= 3) newN = alchemyState.targetN;
+        if (Math.abs(newL - alchemyState.targetL) <= 3) newL = alchemyState.targetL;
+
         alchemyState.valW = newW;
         alchemyState.valN = newN;
         alchemyState.valL = newL;
         
-        // Forzar actualización visual
         wSlider.value = newW;
         nSlider.value = newN;
         lSlider.value = newL;
         
         updateAlchemyUI();
     }
-    
-    function updateAlchemyUI() {
-        document.getElementById('val-water').innerText = alchemyState.valW + '%';
-        document.getElementById('val-nutrients').innerText = alchemyState.valN + '%';
-        document.getElementById('val-light').innerText = alchemyState.valL + '%';
-    }
 
-    async function finishAlchemy() {
-        if(!alchemyState.active) return;
-        alchemyState.active = false;
-        clearInterval(alchemyState.interval);
-        
-        // Cálculo de Varianza Matemática
+    function updateAlchemyUI() {
         const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
         const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
         const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
         
+        const glass = document.getElementById('terrarium-glass');
+        const liquid = document.getElementById('terrarium-liquid');
+        const fog = document.getElementById('terrarium-fog');
+        const glare = document.getElementById('terrarium-glare');
+        const darkness = document.getElementById('terrarium-darkness');
+        const ground = document.getElementById('terrarium-ground');
+        const seed = document.getElementById('terrarium-seed');
+        const bubbles = document.getElementById('terrarium-bubbles');
+        const harmony = document.getElementById('terrarium-harmony');
+        
+        document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
+        let isChaotic = false;
+
+        // RETROALIMENTACIÓN DE AGUA
+        if (alchemyState.valW > alchemyState.targetW + 15) {
+            liquid.style.height = '60%';
+            liquid.className = "absolute bottom-0 left-0 w-full bg-blue-900/90 z-20 transition-all duration-300 flex items-start justify-center pt-2";
+            fog.style.opacity = '1';
+            ground.className = "absolute bottom-0 left-0 w-full h-[20%] bg-[#2a1a0f] z-10 transition-colors duration-300 border-t-4 border-[#1a0f08]";
+            isChaotic = true;
+        } else if (alchemyState.valW < alchemyState.targetW - 15) {
+            liquid.style.height = '0%';
+            fog.style.opacity = '0';
+            ground.className = "absolute bottom-0 left-0 w-full h-[20%] bg-[#8b8b8b] z-10 transition-colors duration-300 border-t-4 border-[#5b5b5b] border-dashed";
+            isChaotic = true;
+        } else {
+            liquid.style.height = '20%';
+            liquid.className = "absolute bottom-0 left-0 w-full bg-blue-500/50 z-20 transition-all duration-300 flex items-start justify-center pt-2";
+            fog.style.opacity = '0';
+            ground.className = "absolute bottom-0 left-0 w-full h-[20%] bg-[#5C3A21] z-10 transition-colors duration-300 border-t-4 border-[#3A2210]";
+        }
+
+        // RETROALIMENTACIÓN DE LUZ
+        if (alchemyState.valL > alchemyState.targetL + 15) {
+            glare.style.opacity = '0.8';
+            darkness.style.opacity = '0';
+            document.getElementById('alchemy-container').classList.add('shake-intense');
+            isChaotic = true;
+        } else if (alchemyState.valL < alchemyState.targetL - 15) {
+            glare.style.opacity = '0';
+            darkness.style.opacity = '0.85';
+            isChaotic = true;
+        } else {
+            glare.style.opacity = '0';
+            darkness.style.opacity = '0';
+        }
+
+        // RETROALIMENTACIÓN DE NUTRIENTES
+        if (alchemyState.valN > alchemyState.targetN + 15) {
+            liquid.classList.replace('bg-blue-900/90', 'bg-purple-600/90');
+            liquid.classList.replace('bg-blue-500/50', 'bg-purple-500/80');
+            bubbles.classList.remove('hidden');
+            seed.style.transform = "translate(-50%, -50%) scale(1.2)";
+            seed.style.filter = "hue-rotate(180deg)";
+            isChaotic = true;
+        } else if (alchemyState.valN < alchemyState.targetN - 15) {
+            bubbles.classList.add('hidden');
+            seed.style.transform = "translate(-50%, -50%) scale(0.8)";
+            seed.style.filter = "grayscale(80%) opacity(70%)";
+            isChaotic = true;
+        } else {
+            bubbles.classList.add('hidden');
+            seed.style.transform = "translate(-50%, -50%) scale(1)";
+            if(!isChaotic) seed.style.filter = "none";
+        }
+
+        // DETECCIÓN DE CLÍMAX (VICTORIA INMEDIATA)
+        if (diffW <= 3 && diffN <= 3 && diffL <= 3) {
+            document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
+            fog.style.opacity = '0'; glare.style.opacity = '0'; darkness.style.opacity = '0';
+            liquid.style.height = '20%'; liquid.className = "absolute bottom-0 left-0 w-full bg-blue-300/30 z-20 transition-all duration-300";
+            bubbles.classList.add('hidden');
+            
+            seed.style.filter = "drop-shadow(0 0 15px rgba(253,224,98,1))";
+            seed.style.transform = "translate(-50%, -50%) scale(1.15)";
+            
+            harmony.style.opacity = '1';
+            glass.classList.replace('border-gray-300', 'border-yellow-400');
+            glass.classList.add('shadow-[0_0_30px_rgba(253,224,98,0.5)]');
+            
+            document.getElementById('slider-water').classList.add('accent-yellow-400');
+            document.getElementById('slider-nutrients').classList.add('accent-yellow-400');
+            document.getElementById('slider-light').classList.add('accent-yellow-400');
+
+            triggerPerfectHarmony();
+        } else {
+            harmony.style.opacity = '0';
+            glass.classList.replace('border-yellow-400', 'border-gray-300');
+            glass.classList.remove('shadow-[0_0_30px_rgba(253,224,98,0.5)]');
+            document.getElementById('slider-water').classList.remove('accent-yellow-400');
+            document.getElementById('slider-nutrients').classList.remove('accent-yellow-400');
+            document.getElementById('slider-light').classList.remove('accent-yellow-400');
+        }
+    }
+
+    function triggerPerfectHarmony() {
+        if(alchemyState.isPerfect) return; 
+        alchemyState.isPerfect = true;
+        alchemyState.active = false;
+        clearInterval(alchemyState.interval);
+        
+        setTimeout(() => {
+            document.getElementById('victory-overlay').classList.remove('hidden');
+            document.getElementById('victory-overlay').classList.add('flex');
+            alchemyState.finalWater = alchemyState.valW;
+        }, 800); // 0.8s para dejar que el jugador disfrute la animación sagrada
+    }
+
+    function finishAlchemyTimeOut() {
+        alchemyState.active = false;
+        clearInterval(alchemyState.interval);
+        document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
+        
+        const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
+        const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
+        const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
         const totalVariance = diffW + diffN + diffL;
         
-        // Castigo severo: Cada 1% de error cuesta 35 puntos del pozo inicial
         const penalty = totalVariance * 35; 
         ritualState.score = Math.max(0, ritualState.score - penalty);
+        alchemyState.finalWater = alchemyState.valW;
         
-        let icon = '💀';
-        let title = 'Fórmula Inestable';
-        let msgExtra = 'La planta iniciará gravemente estresada.';
-        
-        if (totalVariance <= 15) { 
-            icon = '🎯'; 
-            title = 'Fórmula Perfecta'; 
-            msgExtra = 'Crecimiento óptimo asegurado.';
-        } else if (totalVariance <= 45) { 
-            icon = '⚠️'; 
-            title = 'Mezcla Desequilibrada'; 
-            msgExtra = 'Requiere atención temprana.';
-        }
-        
+        document.getElementById('fail-msg').innerHTML = `La planta se estabilizó de emergencia.<br>Varianza total: ${totalVariance}% | Daño Químico: <strong class="text-red-400">-${penalty} Pts</strong>`;
+        document.getElementById('fail-overlay').classList.remove('hidden');
+        document.getElementById('fail-overlay').classList.add('flex');
+    }
+
+    async function submitAlchemyFinal() {
         document.getElementById('ritual-alchemy-modal').classList.replace('flex', 'hidden');
-        
-        showAlertModal(title, `Varianza total: ${totalVariance}%\nPenalización: -${penalty} pts\n\n${msgExtra}`, icon);
-        
-        setTimeout(async () => {
-            closeAlertModal();
-            // El nivel de agua final de la alquimia dicta el agua inicial del torneo
-            await finalizeTournamentAPI(alchemyState.valW);
-        }, 3500);
+        await finalizeTournamentAPI(alchemyState.finalWater);
     }
 
     // ================= ENVÍO A BASE DE DATOS =================
@@ -556,3 +729,4 @@
         loadView('farm', document.querySelectorAll('.nav-btn')[0]);
     }
 </script>
+</div>
