@@ -643,7 +643,6 @@
         
         showAlertModal('Procesando Contrato', 'Registrando tu destreza y procesando la inscripción...', '⏳');
         
-        // ¡ESTA ES LA LÍNEA QUE FALTABA! Declaramos y ocultamos el botón
         const alertBtn = document.querySelector('#alert-modal button');
         if(alertBtn) alertBtn.classList.add('hidden');
         
@@ -658,13 +657,12 @@
                     fee: fee_cop,
                     precision: precision,
                     time_used: timeUsed,
-                    score: finalScore // <-- NUEVO: Enviamos el puntaje con el descuento aplicado
+                    score: finalScore 
                 }) 
             });
             const data = await res.json();
             
             closeAlertModal();
-            // Restauramos el botón
             if(alertBtn) alertBtn.classList.remove('hidden');
             
             if (res.ok) {
@@ -680,12 +678,14 @@
                          ap.tournamentId = t_id;
                          ap.plant = { id: 'tournament_' + t_id, name: info.name, icon: info.img };
                          
+                         // <-- CORRECCIÓN: Asignar score y water siempre, sin importar si está en espera
+                         ap.score = finalScore;   
+                         ap.water = initialWater;
+                         
                          if (data.tourney_status === 'waiting') {
                              ap.status = 'tournament_waiting';
                          } else {
                              ap.status = 'tournament';
-                             ap.score = finalScore;   
-                             ap.water = initialWater;
                              ap.tournamentEndTime = data.end_time;
                          }
                          
@@ -711,7 +711,6 @@
             }
         } catch(e) {
             closeAlertModal();
-            // Restauramos el botón en caso de error
             if(alertBtn) alertBtn.classList.remove('hidden');
             showAlertModal('Error de Red', 'Ocurrió un problema conectando con el servidor.', '📡');
         }
