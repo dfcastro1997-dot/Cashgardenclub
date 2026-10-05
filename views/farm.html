@@ -583,14 +583,13 @@ window.farmApp = {
             window.farmApp.state.seedsBalance = 35000;
             window.farmApp.state.autoWaterEndTime = 0;
             
-            const userStr = localStorage.getItem('user');
-            if(userStr) {
-                const user = JSON.parse(userStr);
+            const username = sessionStorage.getItem('username');
+            if(username) {
                 try {
                     await fetch('/api/dev/reset_tournaments', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: user.username })
+                        body: JSON.stringify({ username: username })
                     });
                 } catch(e) {
                     console.error("Error liberando campeonato en DB", e);
@@ -627,24 +626,20 @@ window.farmApp = {
         },
 
         addCOP: async (amount) => {
-            const userStr = localStorage.getItem('user');
-            if(userStr) {
-                const user = JSON.parse(userStr);
+            const username = sessionStorage.getItem('username');
+            if(username) {
                 try {
                     const res = await fetch('/api/dev/add_cop', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: user.username, amount: amount })
+                        body: JSON.stringify({ username: username, amount: amount })
                     });
                     const data = await res.json();
                     
                     if(res.ok) {
-                        user.balance = data.new_balance;
-                        localStorage.setItem('user', JSON.stringify(user));
-                        
                         const balEl = document.getElementById('global-balance');
-                        if(balEl) balEl.innerText = "$" + user.balance.toLocaleString();
-                        if(window.farmApp) window.farmApp.state.balance = user.balance;
+                        if(balEl) balEl.innerText = "$" + data.new_balance.toLocaleString();
+                        if(window.farmApp) window.farmApp.state.balance = data.new_balance;
                         
                         alert(`+$${amount} COP inyectados directamente en la Base de Datos.`);
                     } else {
@@ -684,10 +679,8 @@ window.farmApp = {
         }
     },
 
-    // farm_3.html[cite: 17]
     init() {
-        // ELIMINAR LLAMADA A this.loadLocalAndStart(); 
-        
+   
         const username = sessionStorage.getItem('username');
         if (username) {
             if (username === 'DamianCastro') {
@@ -730,9 +723,6 @@ window.farmApp = {
                 .catch(e => { console.error(e); this.updateUI(); }); // Inicializar aunque falle
         }
     },
-
-    // ELIMINAR ESTA FUNCIÓN COMPLETAMENTE
-    // loadLocalAndStart() { ... }
 
     updateUI() {
         const localBalance = document.getElementById('global-seeds-display');
