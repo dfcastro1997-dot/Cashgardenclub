@@ -79,9 +79,12 @@ window.shopApp = {
             { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 70% (Lento)<br><strong class="text-red-500">Peligro:</strong> Pudrición con 30m extra de castigo.', price: 10000 }
         ],
         iap: [
-            { id: 'iap_sp_12h', name: 'Asistente Auto-Riego 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Automatización', desc: 'Herramienta premium para jugadores competitivos. Automatiza el riego al nivel perfecto y ahuyenta plagas por 12 horas.', price_cop: 2000 },
-            { id: 'iap_sp_24h', name: 'Asistente Auto-Riego 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Automatización', desc: 'Herramienta premium. Automatiza tu invernadero por un día completo de forma perfecta.', price_cop: 3500 },
-            { id: 'iap_sp_7d', name: 'Asistente Pro 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Automatización', desc: 'Suscripción Semanal Profesional. Maximiza tu eficiencia sin preocuparte por la micro-gestión ni las plagas del cultivo.', price_cop: 15000 }
+            { id: 'iap_water_24h', name: 'Auto-Riego 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Automatización', desc: 'Riega automáticamente tus plantas al 100% de su rango seguro y ahuyenta plagas por un día entero.', price_cop: 5000 },
+            { id: 'iap_water_72h', name: 'Auto-Riego 72H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '3 Días', usage: 'Automatización', desc: 'Suscripción de riego continuo. Ideal para el fin de semana sin preocupaciones climáticas.', price_cop: 12000 },
+            { id: 'iap_harvest_24h', name: 'El Recolector 24H', image: 'https://i.ibb.co/rKc5bg75/Frame-762.png', duration: '24 Horas', usage: 'Recolección', desc: 'Cosecha tus plantas apenas terminan de crecer y asegura tus semillas. Evita pudriciones por abandono.', price_cop: 4000 },
+            { id: 'iap_harvest_72h', name: 'El Recolector 72H', image: 'https://i.ibb.co/rKc5bg75/Frame-762.png', duration: '3 Días', usage: 'Recolección', desc: 'Garantiza la recolección perfecta de todas tus cosechas de la granja durante 72 horas continuas.', price_cop: 10000 },
+            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'https://i.ibb.co/C5GGQDyy/Frame-763.png', duration: '24 Horas', usage: 'Combo Total', desc: 'Incluye Auto-Riego y Recolector. Tu Invernadero trabajará de forma 100% autónoma por 1 día.', price_cop: 7500 },
+            { id: 'iap_combo_72h', name: 'Pase Granjero 72H', image: 'https://i.ibb.co/C5GGQDyy/Frame-763.png', duration: '3 Días', usage: 'Combo Total', desc: 'Protección y automatización máxima. Riego y cosecha automática durante todo un fin de semana.', price_cop: 18000 }
         ],
         exchange: [
             { id: 'exc_10k', name: 'Lote N°1', image: 'https://i.ibb.co/qMwkWzMs/Frame-759.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 15% ($1,500 COP). Recibes pocas semillas por el saldo restante.', price_cop: 10000, seeds: 4250 },
@@ -208,20 +211,17 @@ window.shopApp = {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
         
-        // Usar SIEMPRE el estado centralizado de farmApp para evitar regresiones y problemas de carrera
         const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
         const targetInventory = farmState.inventory;
 
         if (farmState.seedsBalance >= total) {
             
-            // Lógica especial para el Espantapájaros (No va al inventario, aplica directo a la granja)
             if (itemId === 'tool_scarecrow') {
                 if (window.farmApp && window.farmApp.state) {
                     const now = Date.now();
-                    const durationMs = 24 * 3600000; // Corregido a 24 Horas
+                    const durationMs = 24 * 3600000; 
                     
                     window.farmApp.state.plots.forEach(plot => {
-                         // CORRECCIÓN: Se elimina la restricción 'empty'. Ahora protege terrenos vacíos y macetas.
                          if (plot.status !== 'locked' && plot.status !== 'arena_locked') {
                             plot.scarecrowEndTime = Math.max(plot.scarecrowEndTime || 0, now) + (durationMs * qty);
                             plot.hasCrow = false;
@@ -236,9 +236,8 @@ window.shopApp = {
                          }
                     });
                     
-                    // Descontar saldo estrictamente del estado central y forzar guardado
                     window.farmApp.state.seedsBalance -= total;
-                    this.state.seedsBalance = window.farmApp.state.seedsBalance; // Sincronizar UI local
+                    this.state.seedsBalance = window.farmApp.state.seedsBalance; 
                     window.farmApp.saveState(); 
                     
                     let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
@@ -248,7 +247,6 @@ window.shopApp = {
                 }
             }
 
-            // Preparar el inventario local para guardarlo (Macetas, Semillas, Agua)
             if (!targetInventory[itemId]) {
                 let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
                 targetInventory[itemId] = { 
@@ -264,7 +262,6 @@ window.shopApp = {
             if (itemId === 'tool_water') addedQty = 10 * qty;
             targetInventory[itemId].qty += addedQty;
 
-            // Descontar saldo y guardar en memoria usando la variable central
             farmState.seedsBalance -= total;
             this.state.seedsBalance = farmState.seedsBalance;
             document.getElementById('global-seeds-display').innerText = farmState.seedsBalance.toLocaleString() + " 🌱";
@@ -384,43 +381,43 @@ window.shopApp = {
                     window.farmApp.state.balance = data.new_balance_cop;
                 }
                 
-                // Actualizar saldo superior
                 const copEl = document.getElementById('global-balance');
                 if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
 
                 if(window.syncUserData) window.syncUserData(); 
 
-                if (packageId.startsWith('iap_sp_')) {
-                    const hours = packageId === 'iap_sp_12h' ? 12 : (packageId === 'iap_sp_24h' ? 24 : 168);
+                if (packageId.startsWith('iap_')) {
+                    const hours = packageId.includes('24h') ? 24 : 72;
                     const now = Date.now();
                     
                     if (window.farmApp) {
-                        window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
-                        
-                        // Lógica de aplicación e hidratación inmediata para TODOS los terrenos desbloqueados
-                        window.farmApp.state.plots.forEach(plot => {
-                            // --- CORRECCIÓN: EVITAR LA PLANTA DE TORNEO Y ASIGNAR MAX_SAFE CORRECTO ---
-                            if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 5) {
-                                plot.hasCrow = false;
-                                plot.crowLeavingAt = 0;
-                                
-                                // Si hay una planta sembrada, se hidrata a su nivel máximo óptimo
-                                if (plot.plant && plot.status === 'planted') {
-                                    if (plot.plant.id === 'flower_wheat') plot.water = 100;
-                                    else if (plot.plant.id === 'flower_small') plot.water = 90;
-                                    else if (plot.plant.id === 'flower_big') plot.water = 70;
-                                    else if (plot.plant.id === 'flower_cactus') plot.water = 80;
-                                } else {
-                                    // Si el terreno está vacío o solo con maceta, garantizamos agua al 100% por defecto
-                                    plot.water = 100;
+                        if (packageId.includes('water') || packageId.includes('combo')) {
+                            window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
+                            
+                            window.farmApp.state.plots.forEach(plot => {
+                                if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 5) {
+                                    plot.hasCrow = false;
+                                    plot.crowLeavingAt = 0;
+                                    if (plot.plant && plot.status === 'planted') {
+                                        if (plot.plant.id === 'flower_wheat') plot.water = 100;
+                                        else if (plot.plant.id === 'flower_small') plot.water = 90;
+                                        else if (plot.plant.id === 'flower_big') plot.water = 70;
+                                        else if (plot.plant.id === 'flower_cactus') plot.water = 80;
+                                    } else {
+                                        plot.water = 100;
+                                    }
                                 }
-                            }
-                        });
-                        // --- FIN DE CORRECCIÓN ---
+                            });
+                        }
                         
-                        // FORZAR ACTUALIZACIÓN INMEDIATA DE LA GRANJA E INVENTARIOS
-                        window.farmApp.updateSprinklerUI();
-                        window.farmApp.renderPlots(); // Redibuja todas las parcelas (incluyendo las vacías) mostrando el aspersor
+                        if (packageId.includes('harvest') || packageId.includes('combo')) {
+                            window.farmApp.state.autoHarvestEndTime = Math.max(now, window.farmApp.state.autoHarvestEndTime || 0) + (hours * 3600000);
+                        }
+                        
+                        if (typeof window.farmApp.updateAutomationUI === 'function') {
+                            window.farmApp.updateAutomationUI();
+                        }
+                        window.farmApp.renderPlots(); 
                         window.farmApp.saveState(); 
                     }
                     
@@ -440,7 +437,7 @@ window.shopApp = {
         } catch(e) {
             alert("Error de conexión al procesar la compra.");
         }
-    }, // <--- ¡AQUÍ ESTÁ LA COMA FALTANTE! 
+    }, 
 
     saveState() {
         if (window.farmApp && window.farmApp.state) {
@@ -452,3 +449,4 @@ window.shopApp = {
 
 window.shopApp.init();
 </script>
+</div>

@@ -101,7 +101,9 @@ def process_server_tick(game_state_str):
             auto_water_end = state.get('autoWaterEndTime', 0)
             is_auto_watering = auto_water_end > now
             
-            # --- NUEVO: OBTENER MULTIPLICADOR CLIMÁTICO GLOBAL ---
+            auto_harvest_end = state.get('autoHarvestEndTime', 0)
+            is_auto_harvesting = auto_harvest_end > now
+            
             season_multiplier = get_season_multiplier(now)
 
             any_plant_infected = any(
@@ -110,7 +112,6 @@ def process_server_tick(game_state_str):
             )
 
             for plot in state.get('plots', []):
-                # --- VALIDACIÓN PARA LA PLANTA DE TORNEO ---
                 if plot.get('status') == 'tournament':
                     if any_plant_infected and not plot.get('hasCrow') and plot.get('crowLeavingAt', 0) <= now:
                         plot['hasCrow'] = True
@@ -119,7 +120,6 @@ def process_server_tick(game_state_str):
                         plot['hasCrow'] = False
                         plot['crowLeavingAt'] = 0
 
-                # --- VALIDACIÓN PARA PLANTAS NORMALES ---
                 elif plot.get('status') == 'planted':
                     plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
                     
@@ -135,7 +135,6 @@ def process_server_tick(game_state_str):
                             plot['water'] = max_safe 
                             plot['hasCrow'] = False
                         else:
-                            # --- NUEVO: APLICAR MULTIPLICADOR A LA EVAPORACIÓN BASE ---
                             evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
                             evap_rate = evap_rate * season_multiplier 
                             
@@ -177,10 +176,38 @@ def process_server_tick(game_state_str):
                     if now >= plot.get('harvestAt', now):
                         plot['isReady'] = True
                         
-                        growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
-                        if growth_time > 0 and now >= (plot.get('harvestAt', now) + growth_time):
-                            plot['isSpoiled'] = True
-                            plot['hasCrow'] = True
+                        if is_auto_harvesting and not plot.get('isSpoiled'):
+                            reward = 0
+                            if plant_id == 'flower_wheat': reward = 1500
+                            elif plant_id == 'flower_cactus': reward = 3200
+                            elif plant_id == 'flower_small': reward = 4500
+                            elif plant_id == 'flower_big': reward = 26000
+                            
+                            state['seedsBalance'] = state.get('seedsBalance', 0) + reward
+                            plot['potUses'] = plot.get('potUses', 0) + 1
+                            max_uses = 5 if plot.get('pot') == 'small' else 10
+                            
+                            if plot['potUses'] >= max_uses:
+                                plot['status'] = 'empty'
+                                plot['pot'] = None
+                                plot['potUses'] = 0
+                            else:
+                                plot['status'] = 'pot'
+                                
+                            plot['plant'] = None
+                            plot['water'] = 0
+                            plot['hasCrow'] = False
+                            plot['crowLeavingAt'] = 0
+                            plot['scarecrowEndTime'] = 0
+                            plot['plantedAt'] = 0
+                            plot['harvestAt'] = 0
+                            plot['isReady'] = False
+                            plot['isSpoiled'] = False
+                        else:
+                            growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
+                            if growth_time > 0 and now >= (plot.get('harvestAt', now) + growth_time):
+                                plot['isSpoiled'] = True
+                                plot['hasCrow'] = True
 
             state['lastTick'] = now
             return json.dumps(state)
@@ -358,9 +385,12 @@ def buy_seeds():
     incoming_inventory = data.get('inventory') # NUEVO: Recibe el inventario
     
     costs = {
-        "iap_sp_12h": {"seeds": 0, "cop": 2000},
-        "iap_sp_24h": {"seeds": 0, "cop": 3500},
-        "iap_sp_7d": {"seeds": 0, "cop": 15000},
+        "iap_water_24h": {"seeds": 0, "cop": 5000},
+        "iap_water_72h": {"seeds": 0, "cop": 12000},
+        "iap_harvest_24h": {"seeds": 0, "cop": 4000},
+        "iap_harvest_72h": {"seeds": 0, "cop": 10000},
+        "iap_combo_24h": {"seeds": 0, "cop": 7500},
+        "iap_combo_72h": {"seeds": 0, "cop": 18000},
         "exc_10k": {"seeds": 4250, "cop": 10000},
         "exc_25k": {"seeds": 11000, "cop": 25000},
         "exc_50k": {"seeds": 22500, "cop": 50000}
