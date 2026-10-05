@@ -119,9 +119,11 @@ def process_server_tick(game_state_str):
                     elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
 
                     if not plot.get('isReady'):
+                        # --- CORRECCIÓN: ASIGNAR EL MAX_SAFE REAL SIN EXCEPCIONES INCORRECTAS ---
                         if is_auto_watering:
-                            plot['water'] = max_safe if plant_id != 'flower_wheat' else 100
+                            plot['water'] = max_safe 
                             plot['hasCrow'] = False
+                        # --- FIN CORRECCIÓN ---
                         else:
                             evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
                             

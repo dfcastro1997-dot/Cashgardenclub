@@ -399,7 +399,8 @@ window.shopApp = {
                         
                         // Lógica de aplicación e hidratación inmediata para TODOS los terrenos desbloqueados
                         window.farmApp.state.plots.forEach(plot => {
-                            if (plot.status !== 'locked' && plot.status !== 'arena_locked') {
+                            // --- CORRECCIÓN: EVITAR LA PLANTA DE TORNEO Y ASIGNAR MAX_SAFE CORRECTO ---
+                            if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 5) {
                                 plot.hasCrow = false;
                                 plot.crowLeavingAt = 0;
                                 
@@ -410,11 +411,12 @@ window.shopApp = {
                                     else if (plot.plant.id === 'flower_big') plot.water = 70;
                                     else if (plot.plant.id === 'flower_cactus') plot.water = 80;
                                 } else {
-                                    // Si el terreno está vacío o solo con maceta, garantizamos agua al 100%
+                                    // Si el terreno está vacío o solo con maceta, garantizamos agua al 100% por defecto
                                     plot.water = 100;
                                 }
                             }
                         });
+                        // --- FIN DE CORRECCIÓN ---
                         
                         // FORZAR ACTUALIZACIÓN INMEDIATA DE LA GRANJA E INVENTARIOS
                         window.farmApp.updateSprinklerUI();
