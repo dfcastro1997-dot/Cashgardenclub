@@ -654,6 +654,8 @@ window.farmApp = {
 
     saveState() {
         this.state.lastTick = Date.now();
+        this.state.isSaving = true; // <-- CANDADO AÑADIDO PARA EVITAR SOBREESCRITURA
+        
         const stateToSave = JSON.stringify({
             seedsBalance: this.state.seedsBalance,
             practiceTokens: this.state.practiceTokens || 0, 
@@ -676,15 +678,21 @@ window.farmApp = {
                     // <-- ENVIAR TOKEN EN EL CUERPO JSON
                     body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                 }).then(res => {
+                    this.state.isSaving = false; // <-- LIBERAR CANDADO AL TERMINAR
                     if (res.status === 401) {
                         alert("⚠️ Sesión invalidada. Abierto en otra ubicación.");
                         sessionStorage.clear();
                         location.reload();
                     }
-                }).catch(e => console.error("Error guardando progreso:", e));
+                }).catch(e => {
+                    this.state.isSaving = false; // <-- LIBERAR CANDADO EN CASO DE ERROR
+                    console.error("Error guardando progreso:", e);
+                });
             }, 500); 
+        } else {
+            this.state.isSaving = false;
         }
-    },
+    }
 
     init() {
    

@@ -174,6 +174,9 @@ window.shopApp = {
     buyItem(itemId, unitPrice, tab) {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
+        
+        // <-- ASEGURAR QUE MODIFICAMOS EL INVENTARIO GLOBAL DIRECTAMENTE
+        const targetInventory = (window.farmApp && window.farmApp.state) ? window.farmApp.state.inventory : this.state.inventory;
 
         if (this.state.seedsBalance >= total) {
             this.state.seedsBalance -= total;
@@ -183,9 +186,9 @@ window.shopApp = {
             balEl.classList.add('text-red-500', 'scale-110');
             setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
 
-            if (!this.state.inventory[itemId]) {
+            if (!targetInventory[itemId]) {
                 let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-                this.state.inventory[itemId] = { 
+                targetInventory[itemId] = { 
                     name: catItem.name, 
                     type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
                     reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
@@ -198,10 +201,18 @@ window.shopApp = {
             if(itemId === 'tool_scarecrow') addedQty = 3 * qty;
             else if (itemId === 'tool_water') addedQty = 10 * qty;
 
-            this.state.inventory[itemId].qty += addedQty;
+            targetInventory[itemId].qty += addedQty;
             
             this.saveState();
             this.renderShopItems(tab);
+            
+            // <-- FORZAR ACTUALIZACIÓN DE BOTONES DE LA GRANJA TRAS COMPRA
+            if (window.farmApp) {
+                window.farmApp.updateInventoryUI();
+                if (window.farmApp.state.selectedPlotId !== null) {
+                    window.farmApp.selectPlot(window.farmApp.state.selectedPlotId);
+                }
+            }
 
             let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
             this.showPurchaseModal(catItem.image, catItem.name, addedQty, total);
@@ -209,7 +220,7 @@ window.shopApp = {
         } else {
             alert("No tienes Semillas suficientes para realizar esta compra.");
         }
-    },
+    }
 
     showPurchaseModal(imgUrl, itemName, qty, pricePaid) {
         const modal = document.getElementById('purchase-success-modal');
@@ -279,13 +290,11 @@ window.shopApp = {
     },
 
     async saveState() {
-        // En lugar de guardar en LocalStorage, actualizar el estado de farmApp y decirle que guarde
-        if (window.farmApp && window.farmApp.state) {
-            window.farmApp.state.seedsBalance = this.state.seedsBalance;
-            window.farmApp.state.inventory = JSON.parse(JSON.stringify(this.state.inventory));
-            window.farmApp.saveState(); // farmApp ahora maneja el guardado por red
-        }
+    if (window.farmApp && window.farmApp.state) {
+        window.farmApp.state.seedsBalance = this.state.seedsBalance;
+        window.farmApp.saveState(); // Deja que la granja gestione el envío
     }
+}
 };
 
 window.shopApp.init();

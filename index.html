@@ -270,6 +270,11 @@
             const token = sessionStorage.getItem('session_token');
             if (!username || !token) return;
             
+            // <-- VERIFICACIÓN DE CANDADO PARA IGNORAR SYNC SI EL CLIENTE ESTÁ GUARDANDO
+            if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
+                return;
+            }
+            
             try {
                 const response = await fetch(`/api/sync/${username}?token=${token}`);
                 
