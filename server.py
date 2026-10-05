@@ -625,7 +625,7 @@ def global_leaderboard(t_id):
         FROM tournament_players 
         WHERE instance_id = %s 
         ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
-    ''', (instance_id,))
+    ''', (inst['id'],))  # <-- CORRECCIÓN: Debe ser inst['id']
     players = cur.fetchall()
     cur.close(); conn.close()
     
@@ -660,7 +660,7 @@ def get_leaderboard(instance_id):
         FROM tournament_players 
         WHERE instance_id = %s 
         ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
-    ''', (inst['id'],))
+    ''', (instance_id,))  # <-- CORRECCIÓN: Debe ser instance_id
     players = cur.fetchall()
     cur.close(); conn.close()
     
