@@ -147,19 +147,6 @@ def process_server_tick(game_state_str):
                                 plot['crowLeavingAt'] = 0
                                 if plot.get('water', 0) > max_safe:
                                     plot['water'] = max_safe
-                            plot['hasCrow'] = False
-                        # --- FIN CORRECCIÓN ---
-                        else:
-                            evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
-                            
-                            if plot.get('water', 0) > 0:
-                                plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
-                            
-                            if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
-                                plot['hasCrow'] = False
-                                plot['crowLeavingAt'] = 0
-                                if plot.get('water', 0) > max_safe:
-                                    plot['water'] = max_safe
 
                         if plot.get('scarecrowEndTime', 0) > now:
                             plot['hasCrow'] = False
@@ -200,7 +187,6 @@ def process_server_tick(game_state_str):
     except Exception as e:
         print("Server tick error:", e)
     return game_state_str
-
 
 
 
