@@ -304,7 +304,16 @@
         function logout() { 
             sessionStorage.removeItem('username');
             sessionStorage.removeItem('session_token'); // BORRAR TOKEN
-            location.reload(); 
+            
+            // Ocultar el modal inmediatamente para dar feedback visual instantáneo
+            const sessionModal = document.getElementById('session-expired-modal');
+            if (sessionModal) {
+                sessionModal.classList.remove('flex');
+                sessionModal.classList.add('hidden');
+            }
+            
+            // Forzar una redirección limpia e inmediata (evita el caché del reload estándar)
+            window.location.replace(window.location.pathname); 
         }
         
         async function loadView(viewName, clickedBtn = null) {
