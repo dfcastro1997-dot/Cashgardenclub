@@ -967,8 +967,9 @@ window.farmApp = {
                         plot.crowLeavingAt = 0;
                         this.showPlotToast(plot.id, '💀', 'Trigo Destruido');
                     } else {
+                        // Reemplazar la asignación de isRotting
                         const plantId = plot.plant ? plot.plant.id : '';
-                        let isRotting = false;
+                        let isRotting = plot.isSpoiled || false;
                         if (plantId === 'flower_wheat' && plot.water > 100) isRotting = true;
                         else if (plantId === 'flower_small' && plot.water > 90) isRotting = true;
                         else if (plantId === 'flower_big' && plot.water > 70) isRotting = true;
@@ -1032,9 +1033,10 @@ window.farmApp = {
                                 <span class="text-xs sm:text-sm font-black ${displayWater <= 0 ? 'text-red-600' : 'text-cg_blue'}">💧 ${displayWater}%</span>
                                 ${isAutoWatering ? `<span class="text-[8px] sm:text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-200 px-1 sm:px-1.5 py-0.5 rounded shadow-sm uppercase">AUTO</span>` : (plot.scarecrowEndTime > now ? `<span class="text-[8px] sm:text-[9px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-1 sm:px-1.5 py-0.5 rounded shadow-sm uppercase">🦉 ${( (plot.scarecrowEndTime - now) / 3600000 ).toFixed(1)}h</span>` : '')}
                             </div>
+                            // Reemplazar el bloque del botón de cosecha
                             ${plot.isReady ? `
-                                <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[9px] sm:text-[10px] bg-[#2E7D32] hover:bg-green-700 text-white font-bold transition-colors uppercase tracking-widest px-2 sm:px-3 py-1 rounded shadow-sm animate-pulse">
-                                    Cosechar
+                                <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[9px] sm:text-[10px] ${plot.isSpoiled ? 'bg-orange-600 hover:bg-orange-700' : 'bg-[#2E7D32] hover:bg-green-700'} text-white font-bold transition-colors uppercase tracking-widest px-2 sm:px-3 py-1 rounded shadow-sm animate-pulse">
+                                    ${plot.isSpoiled ? 'Cosecha Dañada' : 'Cosechar'}
                                 </button>
                             ` : `
                                 <div class="flex items-center gap-1.5 sm:gap-2">
@@ -1070,7 +1072,7 @@ window.farmApp = {
         let changesMade = false;
         
         const anyPlantInfected = this.state.plots.some(p => 
-            p.status === 'planted' && !p.isReady && p.hasCrow
+            p.status === 'planted' && p.hasCrow
         );
         
         this.state.plots.forEach(plot => {
@@ -1133,50 +1135,70 @@ window.farmApp = {
                 if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Plaga/Pudrición curada');
             }
 
-            if (plot.status === 'planted' && !plot.isReady) {
-                if (isAutoWatering) {
-                    if (plot.plant) {
-                        if (plot.plant.id === 'flower_wheat') plot.water = 100;
-                        else if (plot.plant.id === 'flower_small') plot.water = 90;
-                        else if (plot.plant.id === 'flower_big') plot.water = 70;
-                        else if (plot.plant.id === 'flower_cactus') plot.water = 80;
-                    }
-                    plot.hasCrow = false; 
-                    plot.crowLeavingAt = 0;
-                } else {
-                    if (plot.water > 0) {
-                        let evapRate = (plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40;
-                        plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
-                        changesMade = true;
-                    }
-                    
-                    if (plot.scarecrowEndTime > now) {
-                        plot.hasCrow = false;
+            if (plot.status === 'planted') {
+                let minSafe = 20, maxSafe = 100;
+                if (plot.plant) {
+                    if (plot.plant.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+                    else if (plot.plant.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
+                    else if (plot.plant.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
+                    else if (plot.plant.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
+                }
+
+                if (!plot.isReady) {
+                    if (isAutoWatering) {
+                        if (plot.plant) { plot.water = maxSafe; }
+                        plot.hasCrow = false; 
                         plot.crowLeavingAt = 0;
                     } else {
-                        if (!plot.hasCrow) {
-                            if (plot.water < 20) {
-                                plot.hasCrow = true;
-                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Sequía (Plaga)!');
-                                changesMade = true;
-                            } else if (anyPlantInfected) {
-                                plot.hasCrow = true; 
-                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
-                                changesMade = true;
+                        if (plot.water > 0) {
+                            let evapRate = (plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40;
+                            plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
+                            changesMade = true;
+                        }
+                        
+                        if (plot.scarecrowEndTime > now) {
+                            plot.hasCrow = false;
+                            plot.crowLeavingAt = 0;
+                        } else {
+                            if (!plot.hasCrow) {
+                                if (plot.water < minSafe) {
+                                    plot.hasCrow = true;
+                                    if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Sequía (Plaga)!');
+                                    changesMade = true;
+                                } else if (plot.water > maxSafe) {
+                                    plot.hasCrow = true;
+                                    if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Pudrición por exceso!');
+                                    changesMade = true;
+                                } else if (anyPlantInfected) {
+                                    plot.hasCrow = true; 
+                                    if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
+                                    changesMade = true;
+                                }
                             }
                         }
                     }
-                }
 
-                if (plot.water <= 0 || plot.hasCrow) {
-                    plot.harvestAt += deltaMS; 
-                    changesMade = true;
-                }
+                    if (plot.water <= 0 || plot.hasCrow) {
+                        plot.harvestAt += deltaMS; 
+                        changesMade = true;
+                    }
 
-                if (now >= plot.harvestAt) {
-                    plot.isReady = true;
-                    changesMade = true;
-                    if(deltaMS < 60000) this.showPlotToast(plot.id, '✨', '¡Lista para Cosecha!');
+                    if (now >= plot.harvestAt) {
+                        plot.isReady = true;
+                        changesMade = true;
+                        if(deltaMS < 60000) this.showPlotToast(plot.id, '✨', '¡Lista para Cosecha!');
+                    }
+                } else {
+                    // CÁLCULO DE CADUCIDAD (SI NO SE COSECHA A TIEMPO)
+                    if (plot.plantedAt) {
+                        const growthTime = plot.harvestAt - plot.plantedAt;
+                        if (now >= (plot.harvestAt + growthTime) && !plot.isSpoiled) {
+                            plot.isSpoiled = true;
+                            plot.hasCrow = true;
+                            changesMade = true;
+                            if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Cosecha Podrida!');
+                        }
+                    }
                 }
             }
         });
@@ -1517,6 +1539,7 @@ window.farmApp = {
         plot.crowLeavingAt = 0;
         plot.scarecrowEndTime = 0;
         plot.isReady = false;
+        plot.isSpoiled = false;
         
         this.showPlotToast(plotId, '🧹', 'Planta removida');
 
@@ -1577,13 +1600,21 @@ window.farmApp = {
         const plot = this.state.plots[plotId];
         if (!plot.isReady) return;
 
-        const reward = plot.plant.id === 'flower_wheat' ? 1500 : 
+        let reward = plot.plant.id === 'flower_wheat' ? 1500 : 
                       (plot.plant.id === 'flower_cactus' ? 3200 : 
                       (plot.plant.id === 'flower_small' ? 4500 : 26000));
+                      
+        let msg = `+${reward} 🌱`;
+        
+        if (plot.isSpoiled) {
+            reward = Math.floor(reward / 2);
+            msg = `+${reward} 🌱 (Daño)`;
+        }
+
         this.addBalance(reward);
         
         plot.potUses += 1;
-        this.showPlotToast(plotId, '✨', `+${reward} 🌱`);
+        this.showPlotToast(plotId, plot.isSpoiled ? '🦠' : '✨', msg);
         
         const maxUses = plot.pot === 'small' ? 5 : 10;
         if (plot.potUses >= maxUses) {
@@ -1602,6 +1633,7 @@ window.farmApp = {
         plot.plantedAt = 0;
         plot.harvestAt = 0;
         plot.isReady = false;
+        plot.isSpoiled = false;
 
         if (this.state.selectedPlotId === plotId) {
             this.selectPlot(plotId);
@@ -1612,6 +1644,10 @@ window.farmApp = {
     },
 
     openCrowModal(plotId) {
+        if (this.state.plots[plotId] && this.state.plots[plotId].isSpoiled) {
+            this.showPlotToast(plotId, '⚠️', 'Cosecha directamente');
+            return;
+        }
         this.state.activeCrowPlotId = plotId;
         const modal = document.getElementById('crow-modal');
         const content = document.getElementById('crow-modal-content');
