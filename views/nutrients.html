@@ -430,28 +430,28 @@
                     <span class="flex items-center gap-2">💧 Agua <span id="arrow-water" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-water" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-water" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
+                <input type="range" id="slider-water" min="0" max="100" step="0.001" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-green-800 mb-1 px-1">
                     <span class="flex items-center gap-2">🌱 Nutrientes <span id="arrow-nutrients" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-nutrients" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
+                <input type="range" id="slider-nutrients" min="0" max="100" step="0.001" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-yellow-600 mb-1 px-1">
                     <span class="flex items-center gap-2">☀ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-light" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-light" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
+                <input type="range" id="slider-light" min="0" max="100" step="0.001" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
             </div>
             <div>
                 <label class="flex justify-between items-center text-xs font-black text-amber-800 mb-1 px-1">
                     <span class="flex items-center gap-2">🪨 Tierra <span id="arrow-earth" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
                     <span id="val-earth" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
                 </label>
-                <input type="range" id="slider-earth" min="0" max="100" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('earth')">
+                <input type="range" id="slider-earth" min="0" max="100" step="0.001" value="50" class="fat-slider w-full h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('earth')">
             </div>
         </div>
         
@@ -974,10 +974,11 @@
         const lSlider = document.getElementById('slider-light');
         const tSlider = document.getElementById('slider-earth');
         
-        let newW = parseInt(wSlider.value);
-        let newN = parseInt(nSlider.value);
-        let newL = parseInt(lSlider.value);
-        let newT = parseInt(tSlider.value);
+        // Ahora lee valores de alta precisión (Float en vez de Int)
+        let newW = parseFloat(wSlider.value);
+        let newN = parseFloat(nSlider.value);
+        let newL = parseFloat(lSlider.value);
+        let newT = parseFloat(tSlider.value);
         
         let deltaW = newW - window.alchemyState.valW;
         let deltaN = newN - window.alchemyState.valN;
@@ -985,20 +986,21 @@
         let deltaT = newT - window.alchemyState.valT;
         
         if (source === 'light' && deltaL !== 0) {
-            newW = Math.max(0, Math.min(100, window.alchemyState.valW - Math.round(deltaL * 0.5))); 
+            newW = Math.max(0, Math.min(100, window.alchemyState.valW - (deltaL * 0.5))); 
         } else if (source === 'water' && deltaW !== 0) {
-            newN = Math.max(0, Math.min(100, window.alchemyState.valN - Math.round(deltaW * 0.4))); 
-            newT = Math.max(0, Math.min(100, window.alchemyState.valT - Math.round(deltaW * 0.2))); 
+            newN = Math.max(0, Math.min(100, window.alchemyState.valN - (deltaW * 0.4))); 
+            newT = Math.max(0, Math.min(100, window.alchemyState.valT - (deltaW * 0.2))); 
         } else if (source === 'nutrients' && deltaN !== 0) {
-            newL = Math.max(0, Math.min(100, window.alchemyState.valL - Math.round(deltaN * 0.3))); 
+            newL = Math.max(0, Math.min(100, window.alchemyState.valL - (deltaN * 0.3))); 
         } else if (source === 'earth' && deltaT !== 0) {
-            newW = Math.max(0, Math.min(100, window.alchemyState.valW - Math.round(deltaT * 0.3))); 
+            newW = Math.max(0, Math.min(100, window.alchemyState.valW - (deltaT * 0.3))); 
         }
         
-        if (Math.abs(newW - window.alchemyState.targetW) <= 1) newW = window.alchemyState.targetW;
-        if (Math.abs(newN - window.alchemyState.targetN) <= 1) newN = window.alchemyState.targetN;
-        if (Math.abs(newL - window.alchemyState.targetL) <= 1) newL = window.alchemyState.targetL;
-        if (Math.abs(newT - window.alchemyState.targetT) <= 1) newT = window.alchemyState.targetT;
+        // Asistencia magnética mínima. Se baja a 0.2 para que lograr la perfección absoluta (0 varianza) sea difícil.
+        if (Math.abs(newW - window.alchemyState.targetW) <= 0.2) newW = window.alchemyState.targetW;
+        if (Math.abs(newN - window.alchemyState.targetN) <= 0.2) newN = window.alchemyState.targetN;
+        if (Math.abs(newL - window.alchemyState.targetL) <= 0.2) newL = window.alchemyState.targetL;
+        if (Math.abs(newT - window.alchemyState.targetT) <= 0.2) newT = window.alchemyState.targetT;
 
         window.alchemyState.valW = newW;
         window.alchemyState.valN = newN;
@@ -1013,23 +1015,16 @@
         updateAlchemyUI();
     }
 
+    // (La función updateArrow se mantiene igual, pasamos directo a updateAlchemyUI)
     function updateArrow(id, currentVal, targetVal) {
         const arrow = document.getElementById(id);
         const diff = Math.abs(currentVal - targetVal);
-        
-        if (diff <= 1) {
-            arrow.classList.add('hidden');
-        } else {
+        if (diff <= 1) { arrow.classList.add('hidden'); } else {
             arrow.classList.remove('hidden');
             arrow.innerText = currentVal < targetVal ? '⬆' : '⬇';
-            
             arrow.classList.remove('text-red-500', 'text-yellow-500', 'blink-fast', 'blink-slow');
-            
-            if (diff > 15) {
-                arrow.classList.add('text-red-500', 'blink-fast');
-            } else {
-                arrow.classList.add('text-yellow-500', 'blink-slow');
-            }
+            if (diff > 15) { arrow.classList.add('text-red-500', 'blink-fast'); } 
+            else { arrow.classList.add('text-yellow-500', 'blink-slow'); }
         }
     }
 
@@ -1039,10 +1034,11 @@
         const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
         const diffT = Math.abs(window.alchemyState.targetT - window.alchemyState.valT);
         
-        document.getElementById('val-water').innerText = window.alchemyState.valW + '%';
-        document.getElementById('val-nutrients').innerText = window.alchemyState.valN + '%';
-        document.getElementById('val-light').innerText = window.alchemyState.valL + '%';
-        document.getElementById('val-earth').innerText = window.alchemyState.valT + '%';
+        // Muestra el número redondeado en la UI visual (La precisión decimal sigue siendo secreta / Oculta)
+        document.getElementById('val-water').innerText = Math.round(window.alchemyState.valW) + '%';
+        document.getElementById('val-nutrients').innerText = Math.round(window.alchemyState.valN) + '%';
+        document.getElementById('val-light').innerText = Math.round(window.alchemyState.valL) + '%';
+        document.getElementById('val-earth').innerText = Math.round(window.alchemyState.valT) + '%';
 
         updateArrow('arrow-water', window.alchemyState.valW, window.alchemyState.targetW);
         updateArrow('arrow-nutrients', window.alchemyState.valN, window.alchemyState.targetN);
@@ -1063,64 +1059,36 @@
         let isChaotic = false;
 
         if (window.alchemyState.valT > window.alchemyState.targetT + 15) {
-            ground.style.height = '35%';
-            isChaotic = true;
+            ground.style.height = '35%'; isChaotic = true;
         } else if (window.alchemyState.valT < window.alchemyState.targetT - 15) {
-            ground.style.height = '5%';
-            isChaotic = true;
-        } else {
-            ground.style.height = '20%';
-        }
+            ground.style.height = '5%'; isChaotic = true;
+        } else { ground.style.height = '20%'; }
 
         ground.className = "absolute bottom-0 left-0 w-full z-10 transition-all duration-300 border-t-4 border-[#3A2210]";
         if (window.alchemyState.valW > window.alchemyState.targetW + 15) {
-            liquid.style.height = '60%';
-            liquid.className = "absolute bottom-0 left-0 w-full bg-blue-900/90 z-20 transition-all duration-300 flex items-start justify-center pt-2";
-            fog.style.opacity = '1';
-            ground.classList.add('bg-[#2a1a0f]');
-            isChaotic = true;
+            liquid.style.height = '60%'; liquid.className = "absolute bottom-0 left-0 w-full bg-blue-900/90 z-20 transition-all duration-300 flex items-start justify-center pt-2";
+            fog.style.opacity = '1'; ground.classList.add('bg-[#2a1a0f]'); isChaotic = true;
         } else if (window.alchemyState.valW < window.alchemyState.targetW - 15) {
-            liquid.style.height = '0%';
-            fog.style.opacity = '0';
-            ground.classList.add('bg-[#8b8b8b]', 'border-dashed');
-            isChaotic = true;
+            liquid.style.height = '0%'; fog.style.opacity = '0'; ground.classList.add('bg-[#8b8b8b]', 'border-dashed'); isChaotic = true;
         } else {
-            liquid.style.height = '20%';
-            liquid.className = "absolute bottom-0 left-0 w-full bg-blue-500/50 z-20 transition-all duration-300 flex items-start justify-center pt-2";
-            fog.style.opacity = '0';
-            ground.classList.add('bg-[#5C3A21]');
+            liquid.style.height = '20%'; liquid.className = "absolute bottom-0 left-0 w-full bg-blue-500/50 z-20 transition-all duration-300 flex items-start justify-center pt-2";
+            fog.style.opacity = '0'; ground.classList.add('bg-[#5C3A21]');
         }
 
         if (window.alchemyState.valL > window.alchemyState.targetL + 15) {
-            glare.style.opacity = '0.8';
-            darkness.style.opacity = '0';
-            document.getElementById('alchemy-container').classList.add('shake-intense');
-            isChaotic = true;
+            glare.style.opacity = '0.8'; darkness.style.opacity = '0';
+            document.getElementById('alchemy-container').classList.add('shake-intense'); isChaotic = true;
         } else if (window.alchemyState.valL < window.alchemyState.targetL - 15) {
-            glare.style.opacity = '0';
-            darkness.style.opacity = '0.85';
-            isChaotic = true;
-        } else {
-            glare.style.opacity = '0';
-            darkness.style.opacity = '0';
-        }
+            glare.style.opacity = '0'; darkness.style.opacity = '0.85'; isChaotic = true;
+        } else { glare.style.opacity = '0'; darkness.style.opacity = '0'; }
 
         if (window.alchemyState.valN > window.alchemyState.targetN + 15) {
-            liquid.classList.replace('bg-blue-900/90', 'bg-purple-600/90');
-            liquid.classList.replace('bg-blue-500/50', 'bg-purple-500/80');
-            bubbles.classList.remove('hidden');
-            seed.style.transform = "translate(-50%, -50%) scale(1.2)";
-            seed.style.filter = "hue-rotate(180deg)";
-            isChaotic = true;
+            liquid.classList.replace('bg-blue-900/90', 'bg-purple-600/90'); liquid.classList.replace('bg-blue-500/50', 'bg-purple-500/80');
+            bubbles.classList.remove('hidden'); seed.style.transform = "translate(-50%, -50%) scale(1.2)"; seed.style.filter = "hue-rotate(180deg)"; isChaotic = true;
         } else if (window.alchemyState.valN < window.alchemyState.targetN - 15) {
-            bubbles.classList.add('hidden');
-            seed.style.transform = "translate(-50%, -50%) scale(0.8)";
-            seed.style.filter = "grayscale(80%) opacity(70%)";
-            isChaotic = true;
+            bubbles.classList.add('hidden'); seed.style.transform = "translate(-50%, -50%) scale(0.8)"; seed.style.filter = "grayscale(80%) opacity(70%)"; isChaotic = true;
         } else {
-            bubbles.classList.add('hidden');
-            seed.style.transform = "translate(-50%, -50%) scale(1)";
-            if(!isChaotic) seed.style.filter = "none";
+            bubbles.classList.add('hidden'); seed.style.transform = "translate(-50%, -50%) scale(1)"; if(!isChaotic) seed.style.filter = "none";
         }
 
         if (diffW <= 1 && diffN <= 1 && diffL <= 1 && diffT <= 1) {
@@ -1128,13 +1096,10 @@
             fog.style.opacity = '0'; glare.style.opacity = '0'; darkness.style.opacity = '0';
             liquid.style.height = '20%'; liquid.className = "absolute bottom-0 left-0 w-full bg-blue-300/30 z-20 transition-all duration-300";
             bubbles.classList.add('hidden');
-            
             seed.style.filter = "drop-shadow(0 0 15px rgba(253,224,98,1))";
             seed.style.transform = "translate(-50%, -50%) scale(1.15)";
-            
             harmony.style.opacity = '1';
-            glass.classList.replace('border-gray-300', 'border-yellow-400');
-            glass.classList.add('shadow-[0_0_30px_rgba(253,224,98,0.5)]');
+            glass.classList.replace('border-gray-300', 'border-yellow-400'); glass.classList.add('shadow-[0_0_30px_rgba(253,224,98,0.5)]');
             
             document.getElementById('slider-water').classList.add('accent-yellow-400');
             document.getElementById('slider-nutrients').classList.add('accent-yellow-400');
@@ -1144,8 +1109,7 @@
             triggerPerfectHarmony();
         } else {
             harmony.style.opacity = '0';
-            glass.classList.replace('border-yellow-400', 'border-gray-300');
-            glass.classList.remove('shadow-[0_0_30px_rgba(253,224,98,0.5)]');
+            glass.classList.replace('border-yellow-400', 'border-gray-300'); glass.classList.remove('shadow-[0_0_30px_rgba(253,224,98,0.5)]');
             document.getElementById('slider-water').classList.remove('accent-yellow-400');
             document.getElementById('slider-nutrients').classList.remove('accent-yellow-400');
             document.getElementById('slider-light').classList.remove('accent-yellow-400');
@@ -1159,6 +1123,18 @@
         window.alchemyState.active = false;
         clearInterval(window.alchemyState.interval);
         
+        // CALCULA LA PRECISIÓN DECIMAL COMO DESEMPATE
+        const diffW = Math.abs(window.alchemyState.targetW - window.alchemyState.valW);
+        const diffN = Math.abs(window.alchemyState.targetN - window.alchemyState.valN);
+        const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
+        const diffT = Math.abs(window.alchemyState.targetT - window.alchemyState.valT);
+        const totalVariance = diffW + diffN + diffL + diffT;
+        
+        // Resta la varianza decimal microscópica al puntaje perfecto (Ej: 10000 - 0.452 = 9999.548)
+        if (!window.alchemyState.isPractice) {
+            window.ritualState.score = 10000 - totalVariance;
+        }
+
         setTimeout(() => {
             document.getElementById('victory-overlay').classList.remove('hidden');
             document.getElementById('victory-overlay').classList.add('flex');
@@ -1170,7 +1146,9 @@
                 desc.innerHTML = `Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">Práctica Exitosa.</strong>`;
                 btn.innerText = "Finalizar Práctica";
             } else {
-                desc.innerHTML = `Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">10,000 Pts Bloqueados.</strong>`;
+                // Notificar al usuario la precisión adquirida usando decimales
+                const scoreStr = window.ritualState.score.toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+                desc.innerHTML = `Equilibrio orgánico logrado.<br><strong class="text-cg_navy text-sm">${scoreStr} Pts Bloqueados.</strong>`;
                 btn.innerText = "Entrar a la Arena";
             }
             
@@ -1183,6 +1161,7 @@
         clearInterval(window.alchemyState.interval);
         document.getElementById('alchemy-container').classList.remove('shake-intense', 'shake-mild');
         
+        // CALCULA VARIANZA EXACTA CON DECIMALES
         const diffW = Math.abs(window.alchemyState.targetW - window.alchemyState.valW);
         const diffN = Math.abs(window.alchemyState.targetN - window.alchemyState.valN);
         const diffL = Math.abs(window.alchemyState.targetL - window.alchemyState.valL);
@@ -1191,11 +1170,12 @@
         
         const penalty = totalVariance * 35; 
         if (!window.alchemyState.isPractice) {
-            window.ritualState.score = Math.max(0, window.ritualState.score - penalty);
+            window.ritualState.score = Math.max(0, 10000 - penalty);
         }
         window.alchemyState.finalWater = window.alchemyState.valW;
         
-        document.getElementById('fail-msg').innerHTML = `La planta se estabilizó de emergencia.<br>Varianza total: ${totalVariance}% | Daño Químico: <strong class="text-red-400">-${penalty} Pts</strong>`;
+        const penaltyStr = penalty.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('fail-msg').innerHTML = `La planta se estabilizó de emergencia.<br>Varianza total: ${totalVariance.toFixed(3)}% | Daño Químico: <strong class="text-red-400">-${penaltyStr} Pts</strong>`;
         
         const btn = document.getElementById('btn-fail-continue');
         if (window.alchemyState.isPractice) {
@@ -1287,7 +1267,7 @@
                 else { iconBadge = `<span class="text-gray-400 font-bold ml-1">${index + 1}</span>`; }
                 
                 const isMe = player.username === sessionStorage.getItem('username');
-                
+                                
                 tbody.innerHTML += `
                     <tr class="${rowClass} ${isMe ? 'bg-blue-50/30' : ''}">
                         <td class="p-4 md:p-5 text-xl w-16 text-center">${iconBadge}</td>
@@ -1296,7 +1276,7 @@
                             ${player.username} ${isMe ? '<span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full ml-2 uppercase">Tú</span>' : ''}
                         </td>
                         <td class="p-4 md:p-5 text-right">
-                            <span class="font-black text-lg ${index === 0 ? 'text-cg_gold' : 'text-gray-600'}">${parseFloat(player.current_score).toLocaleString()}</span>
+                            <span class="font-black text-lg ${index === 0 ? 'text-cg_gold' : 'text-gray-600'}">${parseFloat(player.current_score).toLocaleString('es-ES', {minimumFractionDigits: 3, maximumFractionDigits: 3})}</span>
                         </td>
                     </tr>
                 `;
@@ -1344,6 +1324,6 @@
     setInterval(updateAllTournamentCounts, 15000);
 
 
-    
+
 </script>
 </div>
