@@ -661,13 +661,17 @@ window.farmApp = {
         this.state.lastTick = Date.now();
         const stateToSave = JSON.stringify({
             seedsBalance: this.state.seedsBalance,
-            practiceTokens: this.state.practiceTokens || 0, // <-- AÑADIR ESTA LÍNEA
+            practiceTokens: this.state.practiceTokens || 0, 
             autoWaterEndTime: this.state.autoWaterEndTime,
             plots: this.state.plots,
             inventory: this.state.inventory,
             lastTick: this.state.lastTick
         });
         localStorage.setItem('cg_farm_state', stateToSave);
+
+        // AÑADIR ESTA LÍNEA PARA SOLUCIONAR EL ERROR
+        const userStr = localStorage.getItem('user'); 
+        
         if (userStr) {
             const user = JSON.parse(userStr);
             
