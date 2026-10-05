@@ -843,16 +843,12 @@ window.farmApp = {
                             </div>
                         </div>
 
-                        <!-- Tarjeta Dorada Modificada (Nombre arriba, Puntaje abajo) -->
-                        <div class="absolute bottom-14 sm:bottom-16 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none min-w-[110px] sm:min-w-[130px]">
-                            <div class="bg-[#dfa209] text-white rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-lg border-2 border-yellow-300 flex flex-col items-center justify-center ${isAlert ? 'animate-pulse' : ''}">
-                                
-                                
-                                <!-- Puntaje (Parte inferior centrada) -->
-                                <div class="font-black drop-shadow-md text-sm sm:text-lg tracking-tight flex items-center gap-1">
-                                    ${Math.floor(plot.score).toLocaleString()} <span class="text-[10px] sm:text-xs">🏆</span>
-                                </div>
-                                
+                        <!-- Tarjeta Dorada Modificada (Solo puntaje pequeño) -->
+                        <div class="absolute bottom-14 sm:bottom-16 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
+                            <div class="bg-[#dfa209] text-white rounded-lg px-3 py-1.5 shadow-md border border-yellow-300 flex items-center justify-center ${isAlert ? 'animate-pulse' : ''}">
+                                <span class="font-black drop-shadow-sm text-[10px] sm:text-xs tracking-wider">
+                                    ${Math.floor(plot.score).toLocaleString()}
+                                </span>
                             </div>
                         </div>
 
