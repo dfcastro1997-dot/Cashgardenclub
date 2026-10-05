@@ -318,6 +318,7 @@ def buy_seeds():
     username = data.get('username')
     token = data.get('session_token')
     package = data.get('package_id')
+    incoming_inventory = data.get('inventory') # NUEVO: Recibe el inventario
     
     costs = {
         "iap_sp_12h": {"seeds": 0, "cop": 2000},
@@ -328,10 +329,17 @@ def buy_seeds():
         "exc_50k": {"seeds": 22500, "cop": 50000}
     }
     
-    if package not in costs: return jsonify({"error": "Paquete inválido"}), 400
-        
-    cost_cop = costs[package]['cop']
-    seeds_amount = costs[package]['seeds']
+    # NUEVO: Precios para herramientas y semillas (Mercado Estándar)
+    standard_costs = {
+        "tool_pot_small": 5000,
+        "tool_pot_big": 15000,
+        "tool_water": 500,
+        "tool_scarecrow": 6000,
+        "flower_wheat": 50,
+        "flower_cactus": 800,
+        "flower_small": 2000,
+        "flower_big": 10000
+    }
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -339,25 +347,56 @@ def buy_seeds():
         cur.execute("SELECT id, balance, game_state, session_token FROM users WHERE username = %s FOR UPDATE", (username,))
         user = cur.fetchone()
         
-        if not user or float(user['balance']) < cost_cop:
-            return jsonify({"error": "Saldo COP insuficiente. Completa ofertas o torneos para recargar."}), 400
+        if not user: return jsonify({"error": "Usuario no encontrado"}), 404
         if user.get('session_token') and user['session_token'] != token:
             cur.close(); conn.close()
             return jsonify({"error": "Sesión inválida"}), 401
             
         state = json.loads(user['game_state'] or '{}')
-        if seeds_amount > 0:
-            state['seedsBalance'] = state.get('seedsBalance', 0) + seeds_amount
         
-        cur.execute("UPDATE users SET balance = balance - %s, game_state = %s WHERE id = %s", (cost_cop, json.dumps(state), user['id']))
-        cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'iap_purchase', %s, %s, 'completed')", (user['id'], cost_cop, f"IAP-{user['id']}-{int(time.time())}"))
-        conn.commit()
-        
-        return jsonify({
-            "message": "Transacción exitosa", 
-            "new_balance_cop": float(user['balance']) - cost_cop, 
-            "new_seeds": state.get('seedsBalance', 0)
-        })
+        # PROCESAR COMPRAS VIP Y EXCHANGE (COP)
+        if package in costs:
+            cost_cop = costs[package]['cop']
+            seeds_amount = costs[package]['seeds']
+            
+            if float(user['balance']) < cost_cop:
+                return jsonify({"error": "Saldo COP insuficiente. Completa ofertas o torneos para recargar."}), 400
+                
+            if seeds_amount > 0:
+                state['seedsBalance'] = state.get('seedsBalance', 0) + seeds_amount
+            
+            cur.execute("UPDATE users SET balance = balance - %s, game_state = %s WHERE id = %s", (cost_cop, json.dumps(state), user['id']))
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'iap_purchase', %s, %s, 'completed')", (user['id'], cost_cop, f"IAP-{user['id']}-{int(time.time())}"))
+            conn.commit()
+            
+            return jsonify({
+                "message": "Transacción exitosa", 
+                "new_balance_cop": float(user['balance']) - cost_cop, 
+                "new_seeds": state.get('seedsBalance', 0)
+            })
+            
+        # PROCESAR COMPRAS DE MERCADO ESTÁNDAR (SEMILLAS)
+        elif package in standard_costs and incoming_inventory:
+            qty = data.get('qty', 1)
+            total_seed_cost = standard_costs[package] * qty
+            
+            if state.get('seedsBalance', 0) < total_seed_cost:
+                return jsonify({"error": "Semillas insuficientes"}), 400
+                
+            state['seedsBalance'] -= total_seed_cost
+            state['inventory'] = incoming_inventory # GUARDAR EL INVENTARIO EN DB
+            
+            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
+            conn.commit()
+            
+            return jsonify({
+                "message": "Compra exitosa",
+                "new_seeds": state['seedsBalance']
+            })
+            
+        else:
+            return jsonify({"error": "Paquete inválido"}), 400
+            
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500

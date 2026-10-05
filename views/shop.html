@@ -204,22 +204,15 @@ window.shopApp = {
         }
     },
 
-    buyItem(itemId, unitPrice, tab) {
+    async buyItem(itemId, unitPrice, tab) {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
         
         const targetInventory = (window.farmApp && window.farmApp.state) ? window.farmApp.state.inventory : this.state.inventory;
 
         if (this.state.seedsBalance >= total) {
-            this.state.seedsBalance -= total;
-            document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             
-            const balEl = document.getElementById('global-seeds-display');
-            balEl.classList.add('text-red-500', 'scale-110');
-            setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
-
-            let addedQty = qty;
-            
+            // Lógica especial para el Espantapájaros (No va al inventario, aplica directo)
             if (itemId === 'tool_scarecrow') {
                 if (window.farmApp && window.farmApp.state) {
                     const now = Date.now();
@@ -239,37 +232,73 @@ window.shopApp = {
                             }
                          }
                     });
-                    window.farmApp.renderPlots();
-                }
-            } else {
-                if (!targetInventory[itemId]) {
+                    this.state.seedsBalance -= total;
+                    window.farmApp.state.seedsBalance = this.state.seedsBalance;
+                    window.farmApp.saveState(); // Guardar el estado de las parcelas
+                    
                     let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-                    targetInventory[itemId] = { 
-                        name: catItem.name, 
-                        type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                        reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
-                        qty: 0, 
-                        image: catItem.image 
-                    };
-                }
-
-                if (itemId === 'tool_water') addedQty = 10 * qty;
-
-                targetInventory[itemId].qty += addedQty;
-            }
-            
-            this.saveState();
-            this.renderShopItems(tab);
-            
-            if (window.farmApp) {
-                window.farmApp.updateInventoryUI();
-                if (window.farmApp.state.selectedPlotId !== null) {
-                    window.farmApp.selectPlot(window.farmApp.state.selectedPlotId);
+                    this.showPurchaseModal(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
+                    document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+                    return;
                 }
             }
 
-            let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-            this.showPurchaseModal(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
+            // Preparar el inventario local para guardarlo en la base de datos
+            if (!targetInventory[itemId]) {
+                let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                targetInventory[itemId] = { 
+                    name: catItem.name, 
+                    type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                    reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
+                    qty: 0, 
+                    image: catItem.image 
+                };
+            }
+
+            let addedQty = qty;
+            if (itemId === 'tool_water') addedQty = 10 * qty;
+            targetInventory[itemId].qty += addedQty;
+
+            // LLAMADA AL SERVIDOR PARA GUARDAR EL INVENTARIO DE FORMA SEGURA
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            if (!username || !token) return;
+
+            try {
+                const res = await fetch('/api/store/buy_seeds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        username: username, 
+                        session_token: token, 
+                        package_id: itemId,
+                        qty: qty,
+                        inventory: targetInventory 
+                    })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    this.state.seedsBalance = data.new_seeds;
+                    if(window.farmApp) {
+                        window.farmApp.state.seedsBalance = data.new_seeds;
+                        window.farmApp.state.inventory = targetInventory;
+                        window.farmApp.updateInventoryUI();
+                    }
+                    
+                    document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+                    this.renderShopItems(tab);
+                    
+                    let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                    this.showPurchaseModal(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
+                } else {
+                    targetInventory[itemId].qty -= addedQty; // Revertir si hay error en DB
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                targetInventory[itemId].qty -= addedQty; // Revertir si hay error de red
+                alert("Error de conexión al guardar el inventario.");
+            }
             
         } else {
             const errorModal = document.getElementById('purchase-error-modal');
