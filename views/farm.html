@@ -2340,7 +2340,15 @@ if (typeof window.farmApp === 'undefined') {
                 const plot = this.state.plots[this.state.selectedPlotId];
                 
                 plot.status = 'planted';
-                plot.water = 50; 
+                
+                // --- CORRECCIÓN: AGUA INICIAL DINÁMICA ---
+                // Se asigna el agua en un punto intermedio seguro según la planta
+                if (seedId === 'flower_wheat') plot.water = 80;
+                else if (seedId === 'flower_small') plot.water = 60;
+                else if (seedId === 'flower_big') plot.water = 60;
+                else if (seedId === 'flower_cactus') plot.water = 50;
+                else plot.water = 50; // Fallback
+                
                 plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
                 plot.isReady = false;
                 plot.plantedAt = Date.now();
