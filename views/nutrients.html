@@ -595,9 +595,25 @@
     function startPractice() {
         if (!window.farmApp || !window.farmApp.state.practiceTokens || window.farmApp.state.practiceTokens <= 0) return;
         
+        // --- INICIO DE CORRECCIÓN ---
         window.farmApp.state.practiceTokens -= 1;
-        window.farmApp.saveState();
-        updateTournamentUI();
+        window.farmApp.saveState(); // Se guarda en el servidor
+        
+        // Actualizar el DOM inmediatamente para que la UI no se quede atrás
+        const tokenDisplay = document.getElementById('practice-tokens-display');
+        if (tokenDisplay) tokenDisplay.innerText = window.farmApp.state.practiceTokens;
+        
+        const btnStartPractice = document.getElementById('btn-start-practice');
+        if (btnStartPractice) {
+            if (window.farmApp.state.practiceTokens > 0) {
+                btnStartPractice.disabled = false;
+                btnStartPractice.className = "flex-1 bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm py-3.5 rounded-xl transition-all shadow-sm";
+            } else {
+                btnStartPractice.disabled = true;
+                btnStartPractice.className = "flex-1 bg-gray-100 text-gray-400 font-black text-xs md:text-sm py-3.5 rounded-xl transition-all shadow-sm cursor-not-allowed";
+            }
+        }
+        // --- FIN DE CORRECCIÓN ---
 
         window.alchemyState.isPractice = true;
         
@@ -676,7 +692,6 @@
             }
         }, 1000);
     }
-    // =========================================================
 
     function closePreTournamentModal() {
         document.getElementById('pre-tournament-modal').classList.add('hidden');
