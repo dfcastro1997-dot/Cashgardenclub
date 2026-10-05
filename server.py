@@ -307,9 +307,12 @@ def buy_seeds():
     package = data.get('package_id')
     
     costs = {
-        "iap_sp_12h": {"seeds": 0, "cop": 3000},
-        "iap_sp_24h": {"seeds": 0, "cop": 5000},
-        "iap_sp_7d": {"seeds": 0, "cop": 25000}
+        "iap_sp_12h": {"seeds": 0, "cop": 2000},
+        "iap_sp_24h": {"seeds": 0, "cop": 3500},
+        "iap_sp_7d": {"seeds": 0, "cop": 15000},
+        "exc_10k": {"seeds": 4250, "cop": 10000},
+        "exc_25k": {"seeds": 11000, "cop": 25000},
+        "exc_50k": {"seeds": 22500, "cop": 50000}
     }
     
     if package not in costs: return jsonify({"error": "Paquete inválido"}), 400
@@ -324,7 +327,7 @@ def buy_seeds():
         user = cur.fetchone()
         
         if not user or float(user['balance']) < cost_cop:
-            return jsonify({"error": "Saldo COP insuficiente"}), 400
+            return jsonify({"error": "Saldo COP insuficiente. Completa ofertas o torneos para recargar."}), 400
         if user.get('session_token') and user['session_token'] != token:
             cur.close(); conn.close()
             return jsonify({"error": "Sesión inválida"}), 401
@@ -338,7 +341,7 @@ def buy_seeds():
         conn.commit()
         
         return jsonify({
-            "message": "Compra exitosa", 
+            "message": "Transacción exitosa", 
             "new_balance_cop": float(user['balance']) - cost_cop, 
             "new_seeds": state.get('seedsBalance', 0)
         })

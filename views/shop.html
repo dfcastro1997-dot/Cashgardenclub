@@ -14,15 +14,15 @@
     <div class="flex gap-2 md:gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
         <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
         <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
-        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP (Pago)</button>
+        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP</button>
+        <button onclick="window.shopApp.switchTab('exchange')" id="page-tab-exchange" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-purple-500 border-b-4 border-transparent hover:text-purple-600 whitespace-nowrap transition-colors">Casa de Cambio</button>
     </div>
 
     <!-- CONTENEDORES DE CATÁLOGO -->
     <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"></div>
     <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
     <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
-
-
+    <div id="page-content-exchange" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden"></div>
 
     <!-- VENTANA MODAL DE ERROR (FONDOS INSUFICIENTES) -->
     <div id="purchase-error-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
@@ -31,15 +31,13 @@
             <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
                 <span class="text-3xl md:text-4xl relative z-10 drop-shadow-md">⚠️</span>
             </div>
-            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1">Saldo Insuficiente</h3>
-            <p class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes Semillas (🌱) suficientes para realizar esta compra.</p>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1">Operación Fallida</h3>
+            <p id="purchase-error-text" class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes saldo suficiente para realizar esta compra.</p>
             <button onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3 md:py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] md:text-xs">
                 Aceptar
             </button>
         </div>
     </div>
-
-
 
     <!-- VENTANA MODAL TEMPORAL DE COMPRA -->
     <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
@@ -51,8 +49,8 @@
             </div>
             <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1" id="purchase-modal-title">¡Compra Exitosa!</h3>
             <p class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6" id="purchase-modal-desc"></p>
-            <div class="bg-gray-50 border border-gray-200 px-4 md:px-5 py-2.5 rounded-xl flex items-center gap-2 md:gap-3">
-                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Inversión:</span>
+            <div class="bg-gray-50 border border-gray-200 px-4 md:px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 md:gap-3 w-full">
+                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest" id="purchase-modal-label">Inversión:</span>
                 <span class="text-sm md:text-base font-black text-red-500" id="purchase-modal-price"></span>
             </div>
         </div>
@@ -84,6 +82,11 @@ window.shopApp = {
             { id: 'iap_sp_12h', name: 'Asistente Auto-Riego 12H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '12 Horas', usage: 'Automatización', desc: 'Herramienta premium para jugadores competitivos. Automatiza el riego al nivel perfecto y ahuyenta plagas por 12 horas.', price_cop: 2000 },
             { id: 'iap_sp_24h', name: 'Asistente Auto-Riego 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Automatización', desc: 'Herramienta premium. Automatiza tu invernadero por un día completo de forma perfecta.', price_cop: 3500 },
             { id: 'iap_sp_7d', name: 'Asistente Pro 7 Días', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '7 Días', usage: 'Automatización', desc: 'Suscripción Semanal Profesional. Maximiza tu eficiencia sin preocuparte por la micro-gestión ni las plagas del cultivo.', price_cop: 15000 }
+        ],
+        exchange: [
+            { id: 'exc_10k', name: 'Lote Emergencia', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 15% ($1,500 COP). Recibes pocas semillas por el saldo restante.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote Competidor', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 12% ($3,000 COP). Semillas suficientes para un Freeroll.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote Inversor', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Incluye comisión de red del 10% ($5,000 COP). La mejor tasa de conversión del mercado.', price_cop: 50000, seeds: 22500 }
         ]
     },
 
@@ -98,14 +101,20 @@ window.shopApp = {
     },
 
     switchTab(tab) {
-        ['tools', 'flowers', 'iap'].forEach(t => {
+        ['tools', 'flowers', 'iap', 'exchange'].forEach(t => {
             const tabBtn = document.getElementById(`page-tab-${t}`);
             const contentDiv = document.getElementById(`page-content-${t}`);
             if (t === tab) {
-                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-black ${t === 'iap' ? 'text-green-500 border-green-500' : 'text-cg_blue border-cg_blue'} border-b-4 whitespace-nowrap transition-colors`;
+                let colorClass = 'text-cg_blue border-cg_blue';
+                if (t === 'iap') colorClass = 'text-green-500 border-green-500';
+                if (t === 'exchange') colorClass = 'text-purple-500 border-purple-500';
+                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-black ${colorClass} border-b-4 whitespace-nowrap transition-colors`;
                 contentDiv.classList.remove('hidden');
             } else {
-                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:${t === 'iap' ? 'text-green-600' : 'text-cg_navy'} whitespace-nowrap transition-colors`;
+                let hoverClass = 'hover:text-cg_navy';
+                if (t === 'iap') hoverClass = 'hover:text-green-600';
+                if (t === 'exchange') hoverClass = 'hover:text-purple-600';
+                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent ${hoverClass} whitespace-nowrap transition-colors`;
                 contentDiv.classList.add('hidden');
             }
         });
@@ -130,13 +139,15 @@ window.shopApp = {
             const card = document.createElement('div');
             card.className = 'bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col group';
             
-            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : 'Servicio Premium');
+            let tag = tab === 'tools' ? 'Herramienta' : (tab === 'flowers' ? 'Semilla' : (tab === 'exchange' ? 'Cambio COP' : 'Servicio Premium'));
             
             let actionArea = '';
             let stockBadge = '';
 
             if (tab === 'iap') {
                 actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} COP</button>`;
+            } else if (tab === 'exchange') {
+                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
             } else {
                 stockBadge = `
                     <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
@@ -158,6 +169,8 @@ window.shopApp = {
                 `;
             }
 
+            let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} COP</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
+
             card.innerHTML = `
                 <div class="bg-gradient-to-b from-gray-50 to-white h-48 md:h-56 flex items-center justify-center p-4 md:p-6 relative shrink-0 border-b border-gray-100">
                     <span class="absolute top-3 left-3 bg-white text-gray-600 text-[9px] md:text-[10px] font-black px-2 md:px-2.5 py-1 rounded-md shadow-sm border border-gray-200 uppercase tracking-wider z-20">${tag}</span>
@@ -167,7 +180,7 @@ window.shopApp = {
                 <div class="p-4 md:p-6 flex flex-col flex-1">
                     <h4 class="font-black text-cg_navy text-base md:text-lg leading-tight mb-3">${item.name}</h4>
                     <div class="flex justify-between items-center text-[9px] md:text-[10px] font-bold text-gray-500 mb-4 bg-gray-50 p-2 md:p-2.5 rounded-lg border border-gray-100">
-                        <span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>
+                        ${durationHtml}
                         <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
                     </div>
                     <p class="text-xs md:text-sm text-gray-500 mb-6 leading-relaxed flex-1">${item.desc}</p>
@@ -231,26 +244,70 @@ window.shopApp = {
             }
 
             let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-            this.showPurchaseModal(catItem.image, catItem.name, addedQty, total);
+            this.showPurchaseModal(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
             
         } else {
-            // === BLOQUE MODIFICADO: Llamado a la modal de error ===
             const errorModal = document.getElementById('purchase-error-modal');
             if (errorModal) {
+                document.getElementById('purchase-error-text').innerText = "No tienes Semillas (🌱) suficientes para realizar esta compra.";
                 errorModal.classList.remove('hidden');
                 errorModal.classList.add('flex');
             }
         }
     },
 
-    showPurchaseModal(imgUrl, itemName, qty, pricePaid) {
+    async buyExchange(packageId) {
+        const username = sessionStorage.getItem('username');
+        if (!username) return alert("Debes iniciar sesión para realizar cambios.");
+        
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    window.farmApp.state.seedsBalance = data.new_seeds;
+                    window.farmApp.saveState();
+                }
+                
+                const balEl = document.getElementById('global-seeds-display');
+                if (balEl) balEl.innerText = data.new_seeds.toLocaleString() + " 🌱";
+                const copEl = document.getElementById('global-balance');
+                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
+
+                if(window.syncUserData) window.syncUserData(); 
+
+                let catItem = this.catalog.exchange.find(i => i.id === packageId);
+                this.showPurchaseModal(catItem.image, "Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()} COP`, 'Debitado:');
+            } else {
+                const errorModal = document.getElementById('purchase-error-modal');
+                if (errorModal) {
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.";
+                    errorModal.classList.remove('hidden');
+                    errorModal.classList.add('flex');
+                } else {
+                    alert("Error: " + data.error);
+                }
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar el cambio.");
+        }
+    },
+
+    showPurchaseModal(imgUrl, itemName, qty, pricePaidStr, labelStr) {
         const modal = document.getElementById('purchase-success-modal');
         const bg = document.getElementById('purchase-modal-bg');
         const card = document.getElementById('purchase-modal-card');
         
         document.getElementById('purchase-modal-img').src = imgUrl;
-        document.getElementById('purchase-modal-desc').innerText = `Has adquirido ${qty}x ${itemName} para tu inventario.`;
-        document.getElementById('purchase-modal-price').innerText = `-${pricePaid.toLocaleString()} 🌱`;
+        document.getElementById('purchase-modal-desc').innerText = `Has adquirido ${qty.toLocaleString()}x ${itemName} para tu inventario.`;
+        document.getElementById('purchase-modal-price').innerText = pricePaidStr;
+        document.getElementById('purchase-modal-label').innerText = labelStr;
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -269,7 +326,7 @@ window.shopApp = {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }, 200);
-        }, 1000); 
+        }, 1500); 
     },
 
     async buyIAP(packageId) {
@@ -299,11 +356,19 @@ window.shopApp = {
                         window.farmApp.updateSprinklerUI();
                         window.farmApp.saveState(); // El guardado se procesa por red a la DB
                     }
-
-                    alert(`¡Compra Exitosa! Asistente activado por ${hours} horas.`);
+                    
+                    let catItem = this.catalog.iap.find(i => i.id === packageId);
+                    this.showPurchaseModal(catItem.image, catItem.name, 1, `-$${catItem.price_cop.toLocaleString()} COP`, 'Debitado:');
                 }
             } else {
-                alert("Error al procesar la compra: " + data.error);
+                const errorModal = document.getElementById('purchase-error-modal');
+                if (errorModal) {
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.";
+                    errorModal.classList.remove('hidden');
+                    errorModal.classList.add('flex');
+                } else {
+                    alert("Error: " + data.error);
+                }
             }
         } catch(e) {
             alert("Error de conexión al procesar la compra.");
