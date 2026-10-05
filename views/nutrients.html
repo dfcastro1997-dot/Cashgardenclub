@@ -148,7 +148,7 @@
                 </div>
                 <div class="bg-red-50 border border-red-100 p-4 md:p-5 rounded-xl shadow-sm">
                     <div class="flex items-center gap-3 mb-2 md:mb-3">
-                        <span class="text-xl md:text-2xl drop-shadow-sm">⚠️️</span>
+                        <span class="text-xl md:text-2xl drop-shadow-sm">⚠️</span>
                         <h5 class="font-black text-red-900 text-xs md:text-sm">Riesgo por Daño</h5>
                     </div>
                     <p id="pt-limits" class="text-[11px] md:text-xs text-red-800 leading-relaxed">Si el agua sale del rango seguro, empezarás a perder puntos permanentemente.</p>
@@ -180,9 +180,16 @@
         50% { transform: translate(2px, -2px) rotate(1deg); }
         75% { transform: translate(-2px, -2px) rotate(-1deg); }
     }
+    /* NUEVAS ANIMACIONES PARA LAS FLECHAS TÉRMICAS */
+    @keyframes blinkFast { 0%, 100% { opacity: 1; transform: scale(1.1); } 50% { opacity: 0.2; transform: scale(0.9); } }
+    @keyframes blinkSlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    
     .shake-intense { animation: shake 0.2s infinite; }
     .shake-mild { animation: shake 0.4s infinite; }
     .glitch-border { box-shadow: 0 0 15px rgba(255,0,0,0.8), inset 0 0 20px rgba(255,0,0,0.5); border-color: red !important; }
+    
+    .blink-fast { animation: blinkFast 0.3s infinite; }
+    .blink-slow { animation: blinkSlow 0.8s infinite; }
 </style>
 
 <div id="ritual-alchemy-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4 transition-all duration-300">
@@ -253,9 +260,27 @@
 
         <!-- Sliders Interactivos -->
         <div class="space-y-4 mb-2 text-left relative z-20">
-            <input type="range" id="slider-water" min="0" max="100" value="50" class="w-full accent-blue-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
-            <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="w-full accent-green-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
-            <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-500 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
+            <div>
+                <label class="flex justify-between items-center text-xs font-black text-blue-800 mb-1 px-1">
+                    <span class="flex items-center gap-2">💧 Agua <span id="arrow-water" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
+                    <span id="val-water" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
+                </label>
+                <input type="range" id="slider-water" min="0" max="100" value="50" class="w-full accent-blue-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('water')">
+            </div>
+            <div>
+                <label class="flex justify-between items-center text-xs font-black text-green-800 mb-1 px-1">
+                    <span class="flex items-center gap-2">🌱 Nutrientes <span id="arrow-nutrients" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
+                    <span id="val-nutrients" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
+                </label>
+                <input type="range" id="slider-nutrients" min="0" max="100" value="50" class="w-full accent-green-600 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('nutrients')">
+            </div>
+            <div>
+                <label class="flex justify-between items-center text-xs font-black text-yellow-600 mb-1 px-1">
+                    <span class="flex items-center gap-2">☀️ Luz <span id="arrow-light" class="text-base drop-shadow-md transition-all hidden">⬆</span></span> 
+                    <span id="val-light" class="font-mono text-sm bg-white/50 px-2 rounded">50%</span>
+                </label>
+                <input type="range" id="slider-light" min="0" max="100" value="50" class="w-full accent-yellow-500 h-4 bg-gray-100 border border-gray-200 rounded-full appearance-none cursor-pointer shadow-inner" oninput="handleAlchemyInput('light')">
+            </div>
         </div>
         
         <!-- Superposición de Victoria -->
@@ -520,10 +545,43 @@
         updateAlchemyUI();
     }
 
+    // LÓGICA DE LAS FLECHAS TÉRMICAS
+    function updateArrow(id, currentVal, targetVal) {
+        const arrow = document.getElementById(id);
+        const diff = Math.abs(currentVal - targetVal);
+        
+        // Si está en el punto perfecto (tolerancia de 3%), oculta la flecha
+        if (diff <= 3) {
+            arrow.classList.add('hidden');
+        } else {
+            arrow.classList.remove('hidden');
+            // Determina la dirección (arriba o abajo)
+            arrow.innerText = currentVal < targetVal ? '⬆' : '⬇';
+            
+            // Limpia clases anteriores
+            arrow.classList.remove('text-red-500', 'text-yellow-500', 'blink-fast', 'blink-slow');
+            
+            // Sistema Frío/Caliente
+            if (diff > 15) {
+                // Muy lejos: Rojo y parpadeo rápido
+                arrow.classList.add('text-red-500', 'blink-fast');
+            } else {
+                // Cerca: Amarillo y parpadeo suave
+                arrow.classList.add('text-yellow-500', 'blink-slow');
+            }
+        }
+    }
+
     function updateAlchemyUI() {
         const diffW = Math.abs(alchemyState.targetW - alchemyState.valW);
         const diffN = Math.abs(alchemyState.targetN - alchemyState.valN);
         const diffL = Math.abs(alchemyState.targetL - alchemyState.valL);
+        
+        // --- NUEVO: ACTUALIZAR FLECHAS TÉRMICAS ---
+        updateArrow('arrow-water', alchemyState.valW, alchemyState.targetW);
+        updateArrow('arrow-nutrients', alchemyState.valN, alchemyState.targetN);
+        updateArrow('arrow-light', alchemyState.valL, alchemyState.targetL);
+        // ------------------------------------------
         
         const glass = document.getElementById('terrarium-glass');
         const liquid = document.getElementById('terrarium-liquid');
