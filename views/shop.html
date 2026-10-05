@@ -208,19 +208,21 @@ window.shopApp = {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
         
-        // Referencia directa al inventario central de la granja si está disponible
-        const targetInventory = (window.farmApp && window.farmApp.state) ? window.farmApp.state.inventory : this.state.inventory;
+        // Usar SIEMPRE el estado centralizado de farmApp para evitar regresiones y problemas de carrera
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory;
 
-        if (this.state.seedsBalance >= total) {
+        if (farmState.seedsBalance >= total) {
             
-            // Lógica especial para el Espantapájaros (No va al inventario, aplica directo a la granja en memoria)
+            // Lógica especial para el Espantapájaros (No va al inventario, aplica directo a la granja)
             if (itemId === 'tool_scarecrow') {
                 if (window.farmApp && window.farmApp.state) {
                     const now = Date.now();
-                    const durationMs = 12 * 3600000; 
+                    const durationMs = 24 * 3600000; // Corregido a 24 Horas
                     
                     window.farmApp.state.plots.forEach(plot => {
-                         if (plot.status !== 'empty' && plot.status !== 'locked' && plot.status !== 'arena_locked') {
+                         // CORRECCIÓN: Se elimina la restricción 'empty'. Ahora protege terrenos vacíos y macetas.
+                         if (plot.status !== 'locked' && plot.status !== 'arena_locked') {
                             plot.scarecrowEndTime = Math.max(plot.scarecrowEndTime || 0, now) + (durationMs * qty);
                             plot.hasCrow = false;
                             plot.crowLeavingAt = 0;
@@ -234,14 +236,14 @@ window.shopApp = {
                          }
                     });
                     
-                    // Descontar semillas y forzar guardado centralizado a través de la granja
-                    this.state.seedsBalance -= total;
-                    window.farmApp.state.seedsBalance = this.state.seedsBalance;
+                    // Descontar saldo estrictamente del estado central y forzar guardado
+                    window.farmApp.state.seedsBalance -= total;
+                    this.state.seedsBalance = window.farmApp.state.seedsBalance; // Sincronizar UI local
                     window.farmApp.saveState(); 
                     
                     let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
                     this.showPurchaseModal(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
-                    document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+                    document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
                     return;
                 }
             }
@@ -262,13 +264,12 @@ window.shopApp = {
             if (itemId === 'tool_water') addedQty = 10 * qty;
             targetInventory[itemId].qty += addedQty;
 
-            // Descontar saldo y guardar en memoria
-            this.state.seedsBalance -= total;
-            document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+            // Descontar saldo y guardar en memoria usando la variable central
+            farmState.seedsBalance -= total;
+            this.state.seedsBalance = farmState.seedsBalance;
+            document.getElementById('global-seeds-display').innerText = farmState.seedsBalance.toLocaleString() + " 🌱";
             
-            // Guardar usando el sistema centralizado de saveState() en lugar de un fetch directo que causa conflicto
             if (window.farmApp && window.farmApp.state) {
-                window.farmApp.state.seedsBalance = this.state.seedsBalance;
                 window.farmApp.state.inventory = targetInventory;
                 window.farmApp.updateInventoryUI();
                 window.farmApp.saveState();
