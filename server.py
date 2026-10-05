@@ -95,6 +95,98 @@ def process_server_tick(game_state_str):
             )
 
             for plot in state.get('plots', []):
+                # --- NUEVO: VALIDACIÓN PARA LA PLANTA DE TORNEO ---
+                if plot.get('status') == 'tournament':
+                    if any_plant_infected and not plot.get('hasCrow') and plot.get('crowLeavingAt', 0) <= now:
+                        plot['hasCrow'] = True
+                    
+                    if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
+                        plot['hasCrow'] = False
+                        plot['crowLeavingAt'] = 0
+
+                # --- VALIDACIÓN PARA PLANTAS NORMALES ---
+                elif plot.get('status') == 'planted':
+                    plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
+                    
+                    min_safe = 20
+                    max_safe = 100
+                    if plant_id == 'flower_wheat': min_safe, max_safe = 60, 100
+                    elif plant_id == 'flower_small': min_safe, max_safe = 30, 90
+                    elif plant_id == 'flower_big': min_safe, max_safe = 50, 70
+                    elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
+
+                    if not plot.get('isReady'):
+                        if is_auto_watering:
+                            plot['water'] = max_safe if plant_id != 'flower_wheat' else 100
+                            plot['hasCrow'] = False
+                        else:
+                            evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
+                            
+                            if plot.get('water', 0) > 0:
+                                plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
+                            
+                            if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
+                                plot['hasCrow'] = False
+                                plot['crowLeavingAt'] = 0
+                                if plot.get('water', 0) > max_safe:
+                                    plot['water'] = max_safe
+
+                        if plot.get('scarecrowEndTime', 0) > now:
+                            plot['hasCrow'] = False
+                        elif not plot.get('hasCrow') and not is_auto_watering:
+                            if plot.get('water', 0) < min_safe:
+                                plot['hasCrow'] = True
+                            elif plot.get('water', 0) > max_safe:
+                                plot['hasCrow'] = True
+                            elif any_plant_infected:
+                                plot['hasCrow'] = True
+
+                        if plot.get('hasCrow'):
+                            crow_arrived = plot.get('crowArrivedAt', now)
+                            plot['crowArrivedAt'] = crow_arrived
+                            if plant_id == 'flower_wheat' and (now - crow_arrived) > 900000:
+                                plot['status'] = 'empty'
+                                plot['potUses'] = max(0, plot.get('potUses', 1) - 1)
+                                plot['plant'] = None
+                                plot['hasCrow'] = False
+                                plot['crowArrivedAt'] = 0
+                                plot['crowLeavingAt'] = 0
+                        else:
+                            plot['crowArrivedAt'] = 0
+
+                        if plot.get('water', 0) <= 0 or plot.get('hasCrow'):
+                            plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
+
+                    if now >= plot.get('harvestAt', now):
+                        plot['isReady'] = True
+                        
+                        growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
+                        if growth_time > 0 and now >= (plot.get('harvestAt', now) + growth_time):
+                            plot['isSpoiled'] = True
+                            plot['hasCrow'] = True
+
+            state['lastTick'] = now
+            return json.dumps(state)
+    except Exception as e:
+        print("Server tick error:", e)
+    return game_state_str    if not game_state_str: return game_state_str
+    try:
+        state = json.loads(game_state_str)
+        now = int(time.time() * 1000)
+        last_tick = state.get('lastTick', now)
+        delta_ms = now - last_tick
+        
+        if delta_ms > 0:
+            delta_hours = delta_ms / 3600000.0
+            auto_water_end = state.get('autoWaterEndTime', 0)
+            is_auto_watering = auto_water_end > now
+
+            any_plant_infected = any(
+                p.get('status') == 'planted' and p.get('hasCrow') 
+                for p in state.get('plots', [])
+            )
+
+            for plot in state.get('plots', []):
                 if plot.get('status') == 'planted':
                     plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
                     
@@ -160,6 +252,11 @@ def process_server_tick(game_state_str):
     except Exception as e:
         print("Server tick error:", e)
     return game_state_str
+
+
+
+
+
 
 @app.route('/')
 def serve_index(): return send_from_directory('.', 'index.html')

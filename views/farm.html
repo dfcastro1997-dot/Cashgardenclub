@@ -820,9 +820,32 @@ window.farmApp = {
                     const hoursLeft = Math.max(0, (plot.tournamentEndTime - now) / 3600000);
                     const timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
                     
-                    const isAlert = plot.water < conf.minWater || plot.water > conf.maxWater;
+                    // Se incluye plot.hasCrow para que el borde parpadee en rojo si está contagiada
+                    const isAlert = plot.water < conf.minWater || plot.water > conf.maxWater || plot.hasCrow;
                     const borderStyle = isAlert ? 'border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' : 'border-cg_gold bg-gradient-to-b from-white to-yellow-50 shadow-md hover:shadow-lg transition-all';
                     
+                    // --- RENDERIZADO VISUAL DEL CUERVO ---
+                    let crowHtml = '';
+                    if (plot.hasCrow) {
+                        if (plot.crowLeavingAt > now) {
+                            const minsLeft = Math.ceil((plot.crowLeavingAt - now) / 60000);
+                            crowHtml = `
+                                <div class="z-50 bg-yellow-500/90 border-2 border-yellow-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex flex-col items-center justify-center shadow-xl cursor-not-allowed pointer-events-auto shrink-0">
+                                    <span class="text-xs sm:text-sm animate-spin">⏳</span>
+                                    <span class="text-[8px] sm:text-[9px] font-black text-white leading-none">${minsLeft}m</span>
+                                </div>
+                            `;
+                        } else {
+                            crowHtml = `
+                                <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
+                                    <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">
+                                    <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
+                                </button>
+                            `;
+                        }
+                    }
+                    // -------------------------------------
+
                     el.className = `rounded-2xl border-2 h-56 sm:h-64 relative overflow-hidden flex flex-col ${borderStyle}`;
                     
                     el.innerHTML = `
@@ -837,6 +860,11 @@ window.farmApp = {
                         <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 75px; left: 12px;" class="absolute w-7 h-7 sm:w-8 sm:h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-xs sm:text-sm font-serif pointer-events-auto cursor-pointer">
                             i
                         </button>
+                        
+                        <!-- POSICIÓN DEL CUERVO -->
+                        <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
+                            ${crowHtml}
+                        </div>
 
                         <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center group">
