@@ -385,14 +385,16 @@ def sync_user(username):
     token = request.args.get('token')
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT balance, game_state, session_token FROM users WHERE username = %s", (username,))
+    # MODIFICADO: Se solicita el telegram_chat_id en la consulta
+    cur.execute("SELECT balance, game_state, session_token, telegram_chat_id FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
     if user_data:
         if user_data.get('session_token') and user_data['session_token'] != token:
             cur.close(); conn.close()
             return jsonify({"error": "Sesión expirada"}), 401
             
-        validated_state = process_server_tick(user_data['game_state'])
+        # MODIFICADO: Pasamos el telegram_chat_id para que evalúe las notificaciones en vivo
+        validated_state = process_server_tick(user_data['game_state'], user_data.get('telegram_chat_id'))
         if validated_state != user_data['game_state']:
             cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state, username))
             conn.commit()
@@ -414,7 +416,8 @@ def save_state():
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, game_state, session_token FROM users WHERE username = %s FOR UPDATE", (username,))
+    # MODIFICADO: Incluir telegram_chat_id en la selección FOR UPDATE
+    cur.execute("SELECT id, game_state, session_token, telegram_chat_id FROM users WHERE username = %s FOR UPDATE", (username,))
     user = cur.fetchone()
     
     if user:
@@ -429,14 +432,11 @@ def save_state():
             
             incoming_seeds = incoming_state.get('seedsBalance', 0)
             
-            # CORRECCIÓN AQUÍ: Si el usuario no tiene estado guardado previo (cuenta nueva), 
-            # el balance base que acepta el anti-cheat es 35000, de lo contrario lee la BD.
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
             
             if incoming_seeds > db_seeds + 30000:
                 incoming_state['seedsBalance'] = db_seeds 
                 
-            # ACTULIZAR LEADERBOARD EN TIEMPO REAL SI EL JUGADOR ESTÁ EN TORNEO
             plots = incoming_state.get('plots', [])
             if len(plots) > 5 and plots[5].get('status') in ['tournament', 'tournament_waiting']:
                 t_score = plots[5].get('score', 10000)
@@ -445,9 +445,10 @@ def save_state():
                     cur.execute("UPDATE tournament_players SET current_score = %s WHERE user_id = %s AND instance_id = %s", (t_score, user['id'], t_instance))
                 
             incoming_state_str = json.dumps(incoming_state)
-            validated_state_str = process_server_tick(incoming_state_str)
+            # MODIFICADO: Pasar el chat_id a la validación
+            validated_state_str = process_server_tick(incoming_state_str, user.get('telegram_chat_id'))
         except Exception:
-            validated_state_str = process_server_tick(incoming_state_str)
+            validated_state_str = process_server_tick(incoming_state_str, user.get('telegram_chat_id'))
             
         cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state_str, username))
         conn.commit()
@@ -463,14 +464,24 @@ def link_telegram():
     token = data.get('session_token')
     chat_id = data.get('telegram_chat_id')
     
+    # MODIFICADO: Validación estricta para evitar que ingresen @nombres
+    if not chat_id or not chat_id.replace('-', '').isdigit():
+        return jsonify({"error": "Debes ingresar tu ID Numérico (Ej: 123456789), no tu @usuario. Usa @userinfobot en Telegram."}), 400
+    
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("UPDATE users SET telegram_chat_id = %s WHERE username = %s AND session_token = %s RETURNING id", (chat_id, username, token))
+    
     if cur.fetchone():
-        conn.commit(); cur.close(); conn.close()
-        send_telegram_msg(chat_id, "🌱 ¡Hola! Soy el asistente de CashGarden. A partir de ahora te avisaré si tus plantitas te necesitan. ¡Nos vemos en el invernadero! 👩‍🌾")
+        conn.commit()
+        cur.close()
+        conn.close()
+        # Mensaje de bienvenida para comprobar que el usuario sí inició el bot
+        send_telegram_msg(chat_id, "🌱 ¡Conexión Exitosa! Soy el asistente de CashGarden. Te avisaré aquí cuando tus plantas necesiten atención. 👩‍🌾")
         return jsonify({"message": "Telegram vinculado con éxito."})
-    cur.close(); conn.close()
+        
+    cur.close()
+    conn.close()
     return jsonify({"error": "No autorizado"}), 401
 
 @app.route('/api/cron/check_plants', methods=['GET'])
