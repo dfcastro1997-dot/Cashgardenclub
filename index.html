@@ -355,7 +355,19 @@
                                     window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
                                     window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
                                     window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
-                                    if (state.plots) window.farmApp.state.plots = state.plots;
+                                    iif (state.plots) {
+                                        // MIGRACIÓN AUTOMÁTICA DE 6 A 9 TERRENOS
+                                        if (state.plots.length === 6) {
+                                            const arenaPlot = state.plots[5];
+                                            arenaPlot.id = 8; // Movemos la Arena al último puesto
+                                            
+                                            state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
+                                            state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                            state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                            state.plots.push(arenaPlot);
+                                        }
+                                        window.farmApp.state.plots = state.plots;
+                                    }
                                     if (state.inventory) window.farmApp.state.inventory = state.inventory;
                                     window.farmApp.state.lastTick = state.lastTick;
                                     window.farmApp.updateUI();

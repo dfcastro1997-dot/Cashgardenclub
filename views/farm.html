@@ -635,7 +635,10 @@ if (typeof window.farmApp === 'undefined') {
                     { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                     { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                     { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-                    { id: 5, status: 'arena_locked', tournamentId: 1, score: 0, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+                    { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                    { id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                    { id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                    { id: 8, status: 'arena_locked', tournamentId: 1, score: 0, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
                 ];
                 window.farmApp.state.inventory = {
                     'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
@@ -804,8 +807,19 @@ if (typeof window.farmApp === 'undefined') {
                                 this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
                                 this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; 
                                 this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
-                                this.state.autoHarvestEndTime = s.autoHarvestEndTime ?? 0; // <-- AÑADIDO
+                                this.state.autoHarvestEndTime = s.autoHarvestEndTime ?? 0;
                                 this.state.plots = s.plots ?? this.state.plots;
+                                
+                                // MIGRACIÓN AUTOMÁTICA DE 6 A 9 TERRENOS EN LA CARGA
+                                if (this.state.plots.length === 6) {
+                                    const arenaPlot = this.state.plots[5];
+                                    arenaPlot.id = 8; 
+                                    
+                                    this.state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
+                                    this.state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                    this.state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                    this.state.plots.push(arenaPlot);
+                                }
                                 
                                 if (s.inventory) {
                                     Object.keys(s.inventory).forEach(k => {
