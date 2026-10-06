@@ -230,8 +230,7 @@ def process_server_tick(game_state_str, chat_id=None):
                                 plot['hasCrow'] = True
                             elif plot.get('water', 0) > max_safe:
                                 plot['hasCrow'] = True
-                            elif any_plant_infected:
-                                plot['hasCrow'] = True
+                            
 
                         if plot.get('hasCrow'):
                             crow_arrived = plot.get('crowArrivedAt', now)
