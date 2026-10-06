@@ -16,12 +16,20 @@ DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA") # NUEVO
 
-# Función helper para Telegram
-def send_telegram_msg(chat_id, text):
+# Función helper para Telegram (Soporta Imágenes)
+def send_telegram_msg(chat_id, text, image_url=None):
     if not TELEGRAM_BOT_TOKEN or not chat_id: return
     try:
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=3)
+        if image_url:
+            # Si hay imagen, usa el endpoint sendPhoto
+            url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
+            payload = {"chat_id": chat_id, "photo": image_url, "caption": text}
+        else:
+            # Si no hay imagen, envía solo texto
+            url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+            payload = {"chat_id": chat_id, "text": text}
+            
+        requests.post(url, json=payload, timeout=3)
     except Exception as e:
         print("Telegram error:", e)
 
@@ -276,54 +284,52 @@ def process_server_tick(game_state_str, chat_id=None):
                     # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
                     if chat_id and plot.get('status') == 'planted':
                         plant_name = plot.get('plant', {}).get('name', 'tu plantita')
+                        plant_img = plot.get('plant', {}).get('icon', None) # Extraer la imagen de la planta
                         p_id = plot['id'] + 1
                         
-                        # MENSAJES VARIADOS PARA CUERVO (Ataque y Pánico)
+                        # MENSAJES PICANTES PARA CUERVO (Ataque)
                         crow_msgs = [
-                            f"🦅 ¡AYUDA! ¡SÁCAME DE AQUÍ! 😭\nUn cuervo gigante me está atacando en el Terreno {p_id}. Me duele mucho, ¡no dejes que me destruya! Ven rápido a espantarlo o contagiaré a las demás... 🥀",
-                            f"🦅 ¡AHHH! 😱 ¡Me están comiendo viva en el Terreno {p_id}! ¡Ese pajarraco feo no me deja en paz! Haz algo por favor, soy tu {plant_name} favorita... 😭",
-                            f"🦅 ¡ALERTA ROJA! 🚨 Un cuervo me tiene acorralada en la parcela {p_id}. Si no vienes ya mismo, me voy a marchitar y el resto de tus plantas correrán peligro. ¡Sálvame! 🥺",
-                            f"🦅 ¡Pío, pío... digo, ay! 😭 Soy tu {plant_name} del Terreno {p_id}... un cuervo me está picoteando sin piedad. ¡Pensé que me amabas! ¡Ven a espantarlo! 💔"
+                            f"🦅 ¡Oye, despistado! Un cuervo con cara de pocos amigos me está arrancando las hojas en el Terreno {p_id}. ¡Si no vienes a espantarlo, vas a perder tu inversión! 🤬🥀",
+                            f"🦅 ¡AYUDA! ¡Un pájaro gordo me está usando de ensalada en la parcela {p_id}! ¡Sálvame o juro que me marchito a propósito! 😭🔪",
+                            f"🦅 ¡ALERTA! 🚨 Un cuervo me tiene acorralada en el Terreno {p_id}. Deja lo que estés haciendo y ven a defenderme, ¡soy tu {plant_name} favorita, no me abandones! 🥺"
                         ]
                         
-                        # MENSAJES VARIADOS PARA COSECHA LISTA (Alegría y Recompensa)
+                        # MENSAJES PICANTES PARA COSECHA LISTA (Actitud)
                         ready_msgs = [
-                            f"✨ ¡Estoy lista, mírame brillar! 🥰🌻\nHe crecido fuerte y hermosa en el Terreno {p_id}. Soy una {plant_name} orgullosa. ¡Ven a cosecharme antes de que me pase de madura y me eche a perder!",
-                            f"✨ ¡Misión cumplida, jefe! 🫡\nSoy la {plant_name} del Terreno {p_id} y ya estoy en mi punto perfecto. ¡Recógeme ya para que ganes muchas semillas! 💰🌱",
-                            f"✨ ¡Yuuuju! 🥳 Ya florecí por completo en el Terreno {p_id}. Apresúrate a cosecharme, ¡no quiero pasarme de madura y terminar oliendo feo! 🌸✨",
-                            f"✨ ¡Mírame, soy hermosa! 😍 Tu {plant_name} en la parcela {p_id} está lista para dar frutos. ¡Ven rápido, estoy ansiosa por ir a tu inventario! 🧺💖"
+                            f"✨ ¡Estoy mamasita! 🥰💅 En el Terreno {p_id} ya estoy lista para que me coseches. Mueve esos dedos y ven a buscar tus ganancias antes de que me pase de madura. 🌻💰",
+                            f"✨ ¡Ding, dong! ¡El dinero está servido! 🤑 Soy tu {plant_name} del Terreno {p_id} y estoy en mi prime. Coséchame ya o te empiezo a cobrar alquiler. 💅✨",
+                            f"✨ ¡Mírame, soy puro oro verde! 😍 Tu {plant_name} en la parcela {p_id} está lista para explotar de semillas. ¡Ven rápido, no me gusta esperar! 🧺💖"
                         ]
                         
-                        # MENSAJES VARIADOS PARA SEQUÍA PREVENTIVA (Culpa y Necesidad)
+                        # MENSAJES PICANTES PARA SEQUÍA (Dramatismo)
                         water_msgs = [
-                            f"💧 T-tengo mucha sed... 🥺\nSoy tu {plant_name} en el Terreno {p_id}. Mis hojitas se están secando y no tengo fuerza para crecer. ¿Podrías regalarme un poquito de agua por favor? 🥀",
-                            f"💧 Ay... me desmayo... 😵‍💫\nEl calor está terrible en la parcela {p_id} y ni una gotita de agua me has dado. ¡No dejes que tu pobre {plant_name} se convierta en polvo! 🏜️",
-                            f"💧 ¡Agua... por favor... agua! 🥵\nSoy yo, tu {plant_name} del Terreno {p_id}. Si no me riegas prontito voy a dejar de crecer y llamaré a los cuervos... 😭",
-                            f"💧 ¿Te olvidaste de mí? 💔\nAquí en el Terreno {p_id} estoy sufriendo una sequía terrible. Mis raíces ya no sienten humedad. ¡Un chorrito de tu regadera me salvaría la vida! 🚿🥺"
+                            f"💧 Oye... ¿me quieres matar de sed o qué? 🥵 En el Terreno {p_id} estoy más seca que chisme de monja. ¡Ven a echarme agua, tacaño! 🏜️💔",
+                            f"💧 ¡Me derrito! 🫠 Soy tu {plant_name} en la parcela {p_id}. Si no me riegas en este instante, voy a demandarte por abandono botánico. ¡AGUAAAA! 🚰🥺",
+                            f"💧 ¿Hola? ¿Hay alguien ahí? 💀 Aquí en el Terreno {p_id} estoy sufriendo. Mis raíces parecen fideos crudos. ¡Un chorrito de tu regadera me salvaría la vida! 🚿🥺"
                         ]
                         
-                        # MENSAJES VARIADOS PARA PUDRICIÓN (Tristeza y Decepción)
+                        # MENSAJES PICANTES PARA PUDRICIÓN (Pasivo-agresivos)
                         spoiled_msgs = [
-                            f"🦠 Me siento terrible... 🤒\nCof, cof... Me dejaste pudrir sola en el Terreno {p_id}. Apesto y detuve mi crecimiento. Por favor, ven a limpiarme, prometo crecer bien si me cuidas mejor. 💔",
-                            f"🦠 Ay, qué dolor de barriga... 🤢\nMe pasaste de agua o me dejaste abandonada en el Terreno {p_id}. Soy una {plant_name} podrida ahora... ¿Vas a venir a curarme o me dejarás así? 🥀😭",
-                            f"🦠 ¡Achoo! 🤧 Todo me da vueltas en la parcela {p_id}... Agarré una infección horrible. Si no vienes a limpiarme con el espantapájaros, voy a enfermar a todas mis vecinas. ¡Ayuda! 🧟‍♀️",
-                            f"🦠 Te confié mi vida y mírame... 🥺\nSoy un desastre mohoso en el Terreno {p_id}. Por favor límpiame, aguantaré los 15 minutos de castigo, pero no me dejes tirada aquí... 🗑️💔"
+                            f"🦠 ¡Felicidades! Me ahogaste o me abandonaste, ahora huelo a cañería en el Terreno {p_id}. 🤢 Ven a limpiar tu desastre, ¡qué vergüenza de granjero! 🗑️🧟‍♀️",
+                            f"🦠 Cof, cof... Me pudrí en el Terreno {p_id}. Soy un caldo verde por tu culpa. Límpiame ya o te juro que contagio a todas mis vecinas por pura venganza. 😈🤒",
+                            f"🦠 ¡Qué asco doy! 🤮 Soy un desastre mohoso en la parcela {p_id}. Vas a tener que aguantarte 15 minutos de castigo por limpiarme, ¡te lo mereces por descuidado! 🗑️💔"
                         ]
                         
+                        # Enviar el mensaje con la foto adjunta de la planta (plant_img)
                         if plot.get('hasCrow') and not flags.get('crow'):
-                            send_telegram_msg(chat_id, random.choice(crow_msgs))
+                            send_telegram_msg(chat_id, random.choice(crow_msgs), plant_img)
                             flags['crow'] = True
                         elif plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
-                            send_telegram_msg(chat_id, random.choice(ready_msgs))
+                            send_telegram_msg(chat_id, random.choice(ready_msgs), plant_img)
                             flags['ready'] = True
                         elif plot.get('water', 100) < min_safe and not plot.get('isReady') and not plot.get('hasCrow') and not flags.get('water'):
-                            send_telegram_msg(chat_id, random.choice(water_msgs))
+                            send_telegram_msg(chat_id, random.choice(water_msgs), plant_img)
                             flags['water'] = True
                         elif plot.get('isSpoiled') and not flags.get('spoiled'):
-                            send_telegram_msg(chat_id, random.choice(spoiled_msgs))
+                            send_telegram_msg(chat_id, random.choice(spoiled_msgs), plant_img)
                             flags['spoiled'] = True
 
-                        # Reseteo de banderas si la planta se recuperó o se regó (Permite que el bot vuelva a avisar en el futuro si recae)
+                        # Reseteo de banderas si la planta se recuperó o se regó
                         if not plot.get('hasCrow'): flags['crow'] = False
                         if not plot.get('isReady'): flags['ready'] = False
                         if plot.get('water', 100) >= min_safe: flags['water'] = False
