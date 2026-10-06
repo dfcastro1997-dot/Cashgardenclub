@@ -282,40 +282,40 @@ def process_server_tick(game_state_str, chat_id=None):
                                 plot['hasCrow'] = True
                     
                     # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
+                    # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
                     if chat_id and plot.get('status') == 'planted':
                         plant_name = plot.get('plant', {}).get('name', 'tu plantita')
-                        plant_img = plot.get('plant', {}).get('icon', None) # Extraer la imagen de la planta
+                        plant_img = plot.get('plant', {}).get('icon', None)
                         p_id = plot['id'] + 1
                         
-                        # MENSAJES PICANTES PARA CUERVO (Ataque)
+                        # MENSAJES AMIGABLES DE CUERVO (Ataque)
                         crow_msgs = [
-                            f"🦅 ¡Oye, despistado! Un cuervo con cara de pocos amigos me está arrancando las hojas en el Terreno {p_id}. ¡Si no vienes a espantarlo, vas a perder tu inversión! 🤬🥀",
-                            f"🦅 ¡AYUDA! ¡Un pájaro gordo me está usando de ensalada en la parcela {p_id}! ¡Sálvame o juro que me marchito a propósito! 😭🔪",
-                            f"🦅 ¡ALERTA! 🚨 Un cuervo me tiene acorralada en el Terreno {p_id}. Deja lo que estés haciendo y ven a defenderme, ¡soy tu {plant_name} favorita, no me abandones! 🥺"
+                            f"🦅 ¡Auxilioooo! Un cuervo me está mirando con cara de hambre en el Terreno {p_id}. 😭 ¡Por favor, ven a espantarlo o me voy a quedar sin hojitas! 🥺",
+                            f"🦅 ¡Pío, pío! Digo, ¡ay! 😨 Un pajarote negro y feo no me deja crecer tranquila en la parcela {p_id}. ¡Ven a salvar a tu pobre {plant_name}, te necesito! 🛡️🌱",
+                            f"🦅 ¡Alarma de intruso! 🚨 Un cuervo me está picoteando en el Terreno {p_id}. Apresúrate a echarlo, ¡soy muy pequeña para defenderme solita! 🥺"
                         ]
                         
-                        # MENSAJES PICANTES PARA COSECHA LISTA (Actitud)
+                        # MENSAJES AMIGABLES DE COSECHA LISTA
                         ready_msgs = [
-                            f"✨ ¡Estoy mamasita! 🥰💅 En el Terreno {p_id} ya estoy lista para que me coseches. Mueve esos dedos y ven a buscar tus ganancias antes de que me pase de madura. 🌻💰",
-                            f"✨ ¡Ding, dong! ¡El dinero está servido! 🤑 Soy tu {plant_name} del Terreno {p_id} y estoy en mi prime. Coséchame ya o te empiezo a cobrar alquiler. 💅✨",
-                            f"✨ ¡Mírame, soy puro oro verde! 😍 Tu {plant_name} en la parcela {p_id} está lista para explotar de semillas. ¡Ven rápido, no me gusta esperar! 🧺💖"
+                            f"✨ ¡Tachán! 🎉 Ya estoy gigante y hermosa en el Terreno {p_id}. Soy una orgullosa {plant_name}. ¡Ven a cosecharme prontito para que ganes muchas semillas! 🥰🌻",
+                            f"✨ ¡Misión completada, granjero/a! 🫡 Tu plantita en el Terreno {p_id} ya llegó a su punto máximo. ¡Recógeme antes de que me pase de lista... digo, de madura! 🌸✨",
+                            f"✨ ¡Hola, hola! 👋 Ya di todo de mí en la parcela {p_id}. Estoy listísima para ir a tu inventario. ¡Apresúrate a cosecharme, que huelo delicioso! 🧺💖"
                         ]
                         
-                        # MENSAJES PICANTES PARA SEQUÍA (Dramatismo)
+                        # MENSAJES AMIGABLES PARA SEQUÍA
                         water_msgs = [
-                            f"💧 Oye... ¿me quieres matar de sed o qué? 🥵 En el Terreno {p_id} estoy más seca que chisme de monja. ¡Ven a echarme agua, tacaño! 🏜️💔",
-                            f"💧 ¡Me derrito! 🫠 Soy tu {plant_name} en la parcela {p_id}. Si no me riegas en este instante, voy a demandarte por abandono botánico. ¡AGUAAAA! 🚰🥺",
-                            f"💧 ¿Hola? ¿Hay alguien ahí? 💀 Aquí en el Terreno {p_id} estoy sufriendo. Mis raíces parecen fideos crudos. ¡Un chorrito de tu regadera me salvaría la vida! 🚿🥺"
+                            f"💧 ¡Tengo la garganta seca! 🥺 Tu {plant_name} del Terreno {p_id} necesita un bañito. ¿Me regalarías un poquito de agüita de tu regadera? Prometo crecer grandota. 🚿🌱",
+                            f"💧 ¡Qué calor hace aquí en la parcela {p_id}! 🥵 Mis raíces están pidiendo agua a gritos. ¡Ven a refrescarme por fis, o me voy a desmayar! 🏜️🪴",
+                            f"💧 Glup, glup... ¡Ups, no hay agua! 😢 Estoy un poquito seca en el Terreno {p_id}. Acuérdate de hidratar a tu {plant_name} para que siga feliz y sana. 🚰💖"
                         ]
                         
-                        # MENSAJES PICANTES PARA PUDRICIÓN (Pasivo-agresivos)
+                        # MENSAJES AMIGABLES PARA PUDRICIÓN
                         spoiled_msgs = [
-                            f"🦠 ¡Felicidades! Me ahogaste o me abandonaste, ahora huelo a cañería en el Terreno {p_id}. 🤢 Ven a limpiar tu desastre, ¡qué vergüenza de granjero! 🗑️🧟‍♀️",
-                            f"🦠 Cof, cof... Me pudrí en el Terreno {p_id}. Soy un caldo verde por tu culpa. Límpiame ya o te juro que contagio a todas mis vecinas por pura venganza. 😈🤒",
-                            f"🦠 ¡Qué asco doy! 🤮 Soy un desastre mohoso en la parcela {p_id}. Vas a tener que aguantarte 15 minutos de castigo por limpiarme, ¡te lo mereces por descuidado! 🗑️💔"
+                            f"🦠 Sniff, sniff... me enfermé. 🤧 Agarré un hongo todo feo en el Terreno {p_id} porque me pasaste de agua (o me olvidaste). Ven a curarme con el espantapájaros, ¡quiero volver a crecer! 🥺🩹",
+                            f"🦠 ¡Achoo! 🤒 Me siento muy malita en la parcela {p_id}. Creo que me pasé de humedad y ahora estoy pachucha. Límpiame pronto, por favor, no me dejes así de enfermita... 🗑️💔",
+                            f"🦠 Oh no, me puse marchita. 🥀 Hubo un accidente con el riego en el Terreno {p_id}. Sé que tendrás que esperar 15 minutos de penalización, pero límpiame, ¡quiero mejorar! 🪴✨"
                         ]
                         
-                        # Enviar el mensaje con la foto adjunta de la planta (plant_img)
                         if plot.get('hasCrow') and not flags.get('crow'):
                             send_telegram_msg(chat_id, random.choice(crow_msgs), plant_img)
                             flags['crow'] = True
@@ -391,7 +391,7 @@ def sync_user(username):
     token = request.args.get('token')
     conn = get_db_connection()
     cur = conn.cursor()
-    # MODIFICADO: Se solicita el telegram_chat_id en la consulta
+    # MODIFICADO: Extraemos el telegram_chat_id para enviarlo en el objeto 'user'
     cur.execute("SELECT balance, game_state, session_token, telegram_chat_id FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
     if user_data:
@@ -399,7 +399,6 @@ def sync_user(username):
             cur.close(); conn.close()
             return jsonify({"error": "Sesión expirada"}), 401
             
-        # MODIFICADO: Pasamos el telegram_chat_id para que evalúe las notificaciones en vivo
         validated_state = process_server_tick(user_data['game_state'], user_data.get('telegram_chat_id'))
         if validated_state != user_data['game_state']:
             cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state, username))
@@ -470,25 +469,25 @@ def link_telegram():
     token = data.get('session_token')
     chat_id = data.get('telegram_chat_id')
     
-    # MODIFICADO: Validación estricta para evitar que ingresen @nombres
     if not chat_id or not chat_id.replace('-', '').isdigit():
         return jsonify({"error": "Debes ingresar tu ID Numérico (Ej: 123456789), no tu @usuario. Usa @userinfobot en Telegram."}), 400
     
     conn = get_db_connection()
     cur = conn.cursor()
+    # Forzamos un update seguro que perdurará
     cur.execute("UPDATE users SET telegram_chat_id = %s WHERE username = %s AND session_token = %s RETURNING id", (chat_id, username, token))
+    user_updated = cur.fetchone()
     
-    if cur.fetchone():
+    if user_updated:
         conn.commit()
         cur.close()
         conn.close()
-        # Mensaje de bienvenida para comprobar que el usuario sí inició el bot
-        send_telegram_msg(chat_id, "🌱 ¡Conexión Exitosa! Soy el asistente de CashGarden. Te avisaré aquí cuando tus plantas necesiten atención. 👩‍🌾")
+        send_telegram_msg(chat_id, "🌱 ¡Yupi, conexión exitosa! Soy el asistente de CashGarden. Prometo cuidar tus plantitas y avisarte si necesitan algo. 👩‍🌾✨")
         return jsonify({"message": "Telegram vinculado con éxito."})
         
     cur.close()
     conn.close()
-    return jsonify({"error": "No autorizado"}), 401
+    return jsonify({"error": "Sesión no válida o no autorizada"}), 401
 
 @app.route('/api/cron/check_plants', methods=['GET'])
 def cron_check_plants():
