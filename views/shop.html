@@ -76,7 +76,13 @@ window.shopApp = {
             { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Recompensa de 1.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 60% a 100% (Ultra Rápido)<br><strong class="text-red-500">Peligro:</strong> Inundación inmediata y cuervos.', price: 50 },
             { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: 'Recompensa de 3.200 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 20% a 80% (Desafiante)<br><strong class="text-red-500">Peligro:</strong> Pudrición instantánea.', price: 800 },
             { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 4.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 30% a 90% (Moderado)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal que detiene el crecimiento.', price: 2000 },
-            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 70% (Lento)<br><strong class="text-red-500">Peligro:</strong> Pudrición con 30m extra de castigo.', price: 10000 }
+            { id: 'flower_crystal', name: 'Helecho de Cristal', image: 'https://i.ibb.co/5WcdFhL9/Frame-764.png', duration: '2 Horas', usage: '1', desc: 'Recompensa de 10.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 40% a 80% (Estable)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal.', price: 4000 },
+            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 70% (Lento)<br><strong class="text-red-500">Peligro:</strong> Pudrición con 30m extra de castigo.', price: 10000 },
+            { id: 'flower_moon', name: 'Lirio Lunar', image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png', duration: '12 Horas', usage: '1', desc: 'Recompensa de 55.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 40% a 90% (Resistente)<br><strong class="text-red-500">Peligro:</strong> Atrae cuervos rápidamente si se seca.', price: 20000 },
+            
+            // Plantas Premium (Dinero Real COP)
+            { id: 'flower_solar', name: 'Girasol Solar', image: 'https://i.ibb.co/JW8C2psK/Frame-766.png', duration: '4 Horas', usage: '1', desc: 'Recompensa de 5.000 🌱.<br><strong class="text-cg_gold">Semilla Premium:</strong> Excelente ratio de conversión.<br><strong class="text-red-500">Peligro:</strong> Sensible a sobrehidratación.', price_cop: 2500 },
+            { id: 'flower_neon', name: 'Orquídea Neón', image: 'https://i.ibb.co/mF6QtPRV/Frame-767.png', duration: '8 Horas', usage: '1', desc: 'Recompensa de 12.000 🌱.<br><strong class="text-cg_gold">Semilla VIP:</strong> Inversión sólida.<br><strong class="text-red-500">Peligro:</strong> Rango exigente.', price_cop: 5000 }
         ],
         iap: [
             { id: 'iap_water_24h', name: 'Auto-Riego 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Automatización', desc: 'Riega automáticamente tus plantas al 100% de su rango seguro y ahuyenta plagas por un día entero.', price_cop: 5000 },
@@ -160,18 +166,30 @@ window.shopApp = {
                         </div>
                     `;
                 }
-                actionArea = `
-                    <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
-                        <div class="flex items-center bg-gray-50 rounded-xl w-full sm:flex-1 border border-gray-200 shadow-inner h-10 md:h-12 overflow-hidden">
-                            <button onclick="window.shopApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">-</button>
-                            <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
-                            <button onclick="window.shopApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">+</button>
+                
+                // NUEVO CONDICIONAL PARA SEMILLAS PREMIUM EN COP
+                if (item.price_cop) {
+                    actionArea = `
+                        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
+                            <button onclick="window.shopApp.buyPremiumSeed('${item.id}', ${item.price_cop})" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-1">
+                                Comprar por $${item.price_cop.toLocaleString()} COP
+                            </button>
                         </div>
-                        <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="w-full sm:w-auto bg-cg_blue hover:bg-cg_navy text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
-                            ${(item.price * qty).toLocaleString()} 🌱
-                        </button>
-                    </div>
-                `;
+                    `;
+                } else {
+                    actionArea = `
+                        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
+                            <div class="flex items-center bg-gray-50 rounded-xl w-full sm:flex-1 border border-gray-200 shadow-inner h-10 md:h-12 overflow-hidden">
+                                <button onclick="window.shopApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">-</button>
+                                <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
+                                <button onclick="window.shopApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">+</button>
+                            </div>
+                            <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="w-full sm:w-auto bg-cg_blue hover:bg-cg_navy text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
+                                ${(item.price * qty).toLocaleString()} 🌱
+                            </button>
+                        </div>
+                    `;
+                }
             }
 
             let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} COP</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
@@ -232,6 +250,10 @@ window.shopApp = {
                                 else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
                                 else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
                                 else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
+                                else if (plot.plant.id === 'flower_crystal' && plot.water > 80) plot.water = 80;
+                                else if (plot.plant.id === 'flower_moon' && plot.water > 90) plot.water = 90;
+                                else if (plot.plant.id === 'flower_solar' && plot.water > 70) plot.water = 70;
+                                else if (plot.plant.id === 'flower_neon' && plot.water > 60) plot.water = 60;
                             }
                          }
                     });
@@ -403,6 +425,10 @@ window.shopApp = {
                                         else if (plot.plant.id === 'flower_small') plot.water = 90;
                                         else if (plot.plant.id === 'flower_big') plot.water = 70;
                                         else if (plot.plant.id === 'flower_cactus') plot.water = 80;
+                                        else if (plot.plant.id === 'flower_crystal') plot.water = 80;
+                                        else if (plot.plant.id === 'flower_moon') plot.water = 90;
+                                        else if (plot.plant.id === 'flower_solar') plot.water = 70;
+                                        else if (plot.plant.id === 'flower_neon') plot.water = 60;
                                     } else {
                                         plot.water = 100;
                                     }
