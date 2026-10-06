@@ -490,6 +490,111 @@
     </div>
 </div>
 
+
+
+
+
+
+
+
+<!-- ========================================== -->
+<!-- MINIJUEGOS DE RITUAL DE SIEMBRA            -->
+<!-- ========================================== -->
+
+<!-- FASE 1: CENTRADO DE SEMILLA -->
+<div id="farm-ritual-seed-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center border-4 border-cg_gold">
+        <h3 class="text-xl font-black text-cg_navy mb-2">Fase 1: Precisión</h3>
+        <p class="text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Toca el botón cuando la semilla esté en el centro</p>
+        
+        <div id="farm-ritual-pot" class="relative w-48 h-48 mx-auto bg-gray-100 rounded-full border-4 border-gray-300 mb-8 overflow-hidden flex items-center justify-center">
+            <div class="w-4 h-4 bg-red-500 rounded-full opacity-50"></div> <!-- Punto de mira -->
+            <div id="farm-ritual-seed" class="absolute w-12 h-12 flex items-center justify-center" style="left: 0; top: 0;"></div>
+        </div>
+        
+        <button onclick="window.farmApp.farmRitualPhase1Done()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl uppercase tracking-widest transition-all">
+            SOLTAR SEMILLA
+        </button>
+    </div>
+</div>
+
+<!-- FASE 2: COBERTURA DE TIERRA -->
+<div id="farm-ritual-dirt-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center border-4 border-cg_gold">
+        <h3 class="text-xl font-black text-cg_navy mb-2">Fase 2: Cobertura</h3>
+        <p class="text-xs text-gray-500 mb-6 font-bold uppercase tracking-widest">Mantén presionado para llenar hasta la zona verde</p>
+        
+        <div class="relative w-24 h-48 mx-auto bg-gray-100 border-4 border-gray-300 rounded-xl mb-6 overflow-hidden">
+            <div id="farm-ritual-dirt-target" class="absolute w-full h-[15%] border-2 border-green-500 z-20 transition-colors" style="bottom: 50%;"></div>
+            <div id="farm-ritual-dirt-fill" class="absolute bottom-0 w-full bg-[#B46B43] transition-all" style="height: 0%;"></div>
+        </div>
+        
+        <div class="w-full bg-gray-200 h-2 rounded-full mb-6 overflow-hidden">
+            <div id="farm-ritual-dirt-progress" class="bg-green-500 h-full transition-all" style="width: 0%;"></div>
+        </div>
+        
+        <button id="farm-ritual-dirt-btn" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase tracking-widest select-none active:scale-95 transition-transform">
+            MANTENER PARA LLENAR
+        </button>
+    </div>
+</div>
+
+<!-- FASE 3: PRIMER RIEGO -->
+<div id="farm-ritual-water-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center border-4 border-cg_blue">
+        <h3 class="text-xl font-black text-cg_navy mb-2">Fase 3: Primer Riego</h3>
+        <p class="text-xs text-gray-500 mb-4 font-bold uppercase tracking-widest" id="farm-ritual-water-target-txt">Meta: 50%</p>
+        
+        <div class="relative w-full h-10 bg-red-100 rounded-full mb-8 border border-red-200 overflow-hidden">
+            <div id="farm-ritual-calib-safe" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500"></div>
+            <div id="farm-ritual-calib-ptr" class="absolute top-0 h-full w-1 bg-cg_navy shadow-[0_0_10px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20" style="left: 0%;"></div>
+            <input type="range" id="farm-ritual-water-slider" min="0" max="100" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30" oninput="document.getElementById('farm-ritual-calib-ptr').style.left = this.value + '%'">
+        </div>
+        
+        <button onclick="window.farmApp.farmRitualPhase3Done()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-widest transition-all">
+            FIJAR RIEGO INICIAL
+        </button>
+    </div>
+</div>
+
+<!-- RESULTADO DEL RITUAL -->
+<div id="farm-ritual-result-modal" class="fixed inset-0 z-[400] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center border border-gray-100">
+        <h3 class="text-2xl font-black text-cg_navy mb-4">Análisis de Siembra</h3>
+        <div class="w-24 h-24 mx-auto bg-gray-50 rounded-full border border-gray-200 flex items-center justify-center mb-4">
+            <img id="farm-ritual-result-img" src="" class="w-16 h-16 object-contain">
+        </div>
+        <p id="farm-ritual-result-pct" class="text-5xl font-black mb-2">0%</p>
+        <p id="farm-ritual-result-msg" class="text-sm font-bold text-gray-500 mb-6">Mensaje descriptivo</p>
+        <button onclick="window.farmApp.closeRitualResult()" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest transition-all">
+            CONTINUAR A LA GRANJA
+        </button>
+    </div>
+</div>
+
+<!-- MODAL DE ALERTA RÁPIDA DEL MINIJUEGO -->
+<div id="farm-alert-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4 pointer-events-none">
+    <div class="bg-white rounded-2xl shadow-2xl w-64 p-4 text-center border-2 border-cg_navy transform transition-transform">
+        <div id="farm-alert-icon" class="text-4xl mb-2">🎯</div>
+        <h4 id="farm-alert-title" class="text-sm font-black text-cg_navy mb-1">Título</h4>
+        <p id="farm-alert-msg" class="text-xs text-gray-500 font-bold">Mensaje</p>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 <script>
 // ==============================================================
 // SOLUCIÓN ROBUSTA: PREVENCIÓN DE RACE CONDITION Y LAG DE ESTADO
@@ -1155,7 +1260,6 @@ if (typeof window.farmApp === 'undefined') {
                     
                     const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                     
-                    // CORRECCIÓN EXACTA DE LOS PARÉNTESIS AQUÍ (9 Paréntesis de cierre):
                     const currentPlantImg = plot.plant && plot.plant.id === 'flower_wheat' ? this.state.images.plant_wheat : 
                                            (plot.plant && plot.plant.id === 'flower_bamboo' ? this.state.images.plant_bamboo :
                                            (plot.plant && plot.plant.id === 'flower_cactus' ? this.state.images.plant_cactus :
@@ -1234,7 +1338,7 @@ if (typeof window.farmApp === 'undefined') {
                                         <button onclick="window.farmApp.shooCrowGrace(${plot.id}); event.stopPropagation();" class="z-50 bg-orange-400 hover:bg-orange-500 border-2 border-orange-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(251,146,60,0.8)] animate-pulse cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
                                             <span class="text-[10px] sm:text-xs">🦅</span>
                                             <span class="text-[7px] font-black text-white leading-none">${mins}:${secs.toString().padStart(2, '0')}</span>
-                                            <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR GRATIS!</div>
+                                            <div class="absolute right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR GRATIS!</div>
                                         </button>
                                     `;
                                 } else {

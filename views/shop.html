@@ -360,6 +360,80 @@ window.shopApp = {
         }
     },
 
+
+
+
+
+
+
+    // Agregar esta función dentro de window.shopApp en shop.html
+    async buyPremiumSeed(itemId, priceCop) {
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return alert("Debes iniciar sesión para realizar compras.");
+        
+        try {
+            // Nota: El backend en server.py deberá ser actualizado para aceptar 'flower_solar' y 'flower_neon' 
+            // en la ruta '/api/store/buy_seeds' o usar una ruta nueva. 
+            // Esta función envía la estructura correcta que la vista necesita.
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, package_id: itemId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    
+                    // Si el inventario no tiene la semilla aún, la creamos
+                    if (!window.farmApp.state.inventory[itemId]) {
+                        let catItem = this.catalog.flowers.find(i => i.id === itemId);
+                        window.farmApp.state.inventory[itemId] = { 
+                            name: catItem.name, 
+                            type: 'seed', 
+                            reqSize: itemId.includes('solar') ? 'small' : 'big', 
+                            qty: 0, 
+                            image: catItem.image 
+                        };
+                    }
+                    window.farmApp.state.inventory[itemId].qty += 1;
+                    window.farmApp.saveState();
+                }
+                
+                const copEl = document.getElementById('global-balance');
+                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
+
+                if(window.syncUserData) window.syncUserData(); 
+
+                let catItem = this.catalog.flowers.find(i => i.id === itemId);
+                this.showPurchaseModal(catItem.image, catItem.name, 1, `-$${priceCop.toLocaleString()} COP`, 'Debitado:');
+                
+                this.renderShopItems('flowers');
+            } else {
+                const errorModal = document.getElementById('purchase-error-modal');
+                if (errorModal) {
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente.";
+                    errorModal.classList.remove('hidden');
+                    errorModal.classList.add('flex');
+                } else {
+                    alert("Error: " + data.error);
+                }
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar la compra premium.");
+        }
+    },
+
+
+
+
+
+
+
+
+
     showPurchaseModal(imgUrl, itemName, qty, pricePaidStr, labelStr) {
         const modal = document.getElementById('purchase-success-modal');
         const bg = document.getElementById('purchase-modal-bg');
