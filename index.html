@@ -151,7 +151,10 @@
                                 <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
                                     <span class="text-lg">🏦</span> Billetera Wompi
                                 </button>
-                                <!-- NUEVO BOTÓN DE CÓDIGOS -->
+                                <!-- BOTÓN NUEVO DE TELEGRAM -->
+                                <button onclick="openTelegramModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-blue-500 transition-colors flex items-center gap-3">
+                                    <span class="text-lg">✈️</span> Alertas Telegram
+                                </button>
                                 <button onclick="openCodesModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
                                     <span class="text-lg">🎟️</span> Códigos
                                 </button>
@@ -227,6 +230,29 @@
             </button>
         </div>
     </div>
+
+
+    <!-- MODAL DE TELEGRAM -->
+    <div id="telegram-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeTelegramModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-blue-400">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl md:text-4xl">✈️</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Alertas de Cultivo</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-4">Ingresa tu Chat ID de Telegram para que tus plantas te avisen cuando tengan sed o estén en peligro.</p>
+            
+            <a href="https://t.me/userinfobot" target="_blank" class="text-[10px] font-bold text-blue-500 hover:underline mb-4 block">¿No sabes tu Chat ID? Habla con @userinfobot aquí.</a>
+
+            <input type="text" id="telegram-id-input" placeholder="Ej: 123456789" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 outline-none font-black text-center text-cg_navy tracking-widest text-base mb-4">
+            
+            <button onclick="submitTelegramLink()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
+                Vincular
+            </button>
+        </div>
+    </div>
+
+
 
     <script>
         let isLoginMode = true;
@@ -479,6 +505,46 @@
 
         setInterval(syncUserData, 10000);
         window.addEventListener('focus', syncUserData);
+
+
+
+        function openTelegramModal() {
+            document.getElementById('telegram-id-input').value = '';
+            document.getElementById('telegram-modal').classList.remove('hidden');
+            document.getElementById('telegram-modal').classList.add('flex');
+        }
+
+        function closeTelegramModal() {
+            document.getElementById('telegram-modal').classList.add('hidden');
+            document.getElementById('telegram-modal').classList.remove('flex');
+        }
+
+        async function submitTelegramLink() {
+            const chatId = document.getElementById('telegram-id-input').value.trim();
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            
+            if (!chatId || !username || !token) return;
+
+            try {
+                const response = await fetch('/api/telegram/link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, session_token: token, telegram_chat_id: chatId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert("Telegram vinculado exitosamente. Tus plantitas te hablarán pronto.");
+                    closeTelegramModal();
+                } else {
+                    alert(data.error || "Error al vincular Telegram.");
+                }
+            } catch (err) {
+                alert("Error de conexión con el servidor.");
+            }
+        }
 
 
 

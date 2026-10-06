@@ -3,6 +3,7 @@ import time
 import json
 import hashlib
 import uuid
+import requests # NUEVO: Para enviar mensajes a Telegram
 from datetime import datetime, timezone
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -13,17 +14,16 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 
 DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
-EVAPORATION_RATE = 40.0 
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "AQUI_TU_TOKEN_DE_TELEGRAM") # NUEVO
 
-def get_db_connection():
-    # Sistema de reintento para evitar que el servidor se caiga por el límite estricto de Aiven
-    for _ in range(6):
-        try:
-            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
-        except psycopg2.OperationalError:
-            time.sleep(0.5)
-    # Último intento
-    return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
+# Función helper para Telegram
+def send_telegram_msg(chat_id, text):
+    if not TELEGRAM_BOT_TOKEN or not chat_id: return
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=3)
+    except Exception as e:
+        print("Telegram error:", e)
 
 def init_db():
     conn = get_db_connection()
@@ -36,10 +36,13 @@ def init_db():
             balance NUMERIC(12, 2) DEFAULT 0.00,
             phone_nequi VARCHAR(15),
             game_state TEXT,
-            session_token VARCHAR(120)
+            session_token VARCHAR(120),
+            telegram_chat_id VARCHAR(50)
         );
     ''')
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token VARCHAR(120);")
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(50);") # NUEVO
+    # ... (Resto de la función init_db intacta)
     
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournaments (
@@ -104,6 +107,18 @@ def init_db():
     cur.close()
     conn.close()
 
+
+def get_db_connection():
+    # Sistema de reintento para evitar que el servidor se caiga por el límite estricto de Aiven
+    for _ in range(6):
+        try:
+            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
+        except psycopg2.OperationalError:
+            time.sleep(0.5)
+    # Último intento
+    return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
+
+
 init_db()
 
 # ==========================================================
@@ -118,7 +133,7 @@ def get_season_multiplier(now_ms):
     elif 20 <= day <= 26: return 1.0 
     else: return 2.0                 
 
-def process_server_tick(game_state_str):
+def process_server_tick(game_state_str, chat_id=None):
     if not game_state_str: return game_state_str
     try:
         state = json.loads(game_state_str)
@@ -142,6 +157,11 @@ def process_server_tick(game_state_str):
             )
 
             for plot in state.get('plots', []):
+                # Inicialización de banderas para evitar spam de notificaciones en Telegram
+                if 'notifyFlags' not in plot: 
+                    plot['notifyFlags'] = {}
+                flags = plot['notifyFlags']
+
                 # Omitir daño a la planta del torneo si aún está "en espera" (waiting)
                 if plot.get('status') in ['tournament_waiting']:
                     continue
@@ -163,6 +183,10 @@ def process_server_tick(game_state_str):
                     elif plant_id == 'flower_small': min_safe, max_safe = 30, 90
                     elif plant_id == 'flower_big': min_safe, max_safe = 50, 70
                     elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
+                    elif plant_id == 'flower_crystal': min_safe, max_safe = 40, 80
+                    elif plant_id == 'flower_moon': min_safe, max_safe = 40, 90
+                    elif plant_id == 'flower_solar': min_safe, max_safe = 30, 70
+                    elif plant_id == 'flower_neon': min_safe, max_safe = 40, 60
 
                     if not plot.get('isReady'):
                         if is_auto_watering:
@@ -216,6 +240,10 @@ def process_server_tick(game_state_str):
                             elif plant_id == 'flower_cactus': reward = 3200
                             elif plant_id == 'flower_small': reward = 4500
                             elif plant_id == 'flower_big': reward = 26000
+                            elif plant_id == 'flower_crystal': reward = 10000
+                            elif plant_id == 'flower_moon': reward = 55000
+                            elif plant_id == 'flower_solar': reward = 5000
+                            elif plant_id == 'flower_neon': reward = 12000
                             
                             state['seedsBalance'] = state.get('seedsBalance', 0) + reward
                             plot['potUses'] = plot.get('potUses', 0) + 1
@@ -242,6 +270,30 @@ def process_server_tick(game_state_str):
                             if growth_time > 0 and now >= (plot.get('harvestAt', now) + growth_time):
                                 plot['isSpoiled'] = True
                                 plot['hasCrow'] = True
+                    
+                    # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
+                    if chat_id and plot.get('status') == 'planted':
+                        plant_name = plot.get('plant', {}).get('name', 'tu plantita')
+                        p_id = plot['id'] + 1
+                        
+                        if plot.get('hasCrow') and not flags.get('crow'):
+                            send_telegram_msg(chat_id, f"🦅 ¡AYUDAAA! Un cuervo horrible me está picoteando en el terreno {p_id}. ¡Ven a espantarlo o me voy a morir! 😭")
+                            flags['crow'] = True
+                        elif plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
+                            send_telegram_msg(chat_id, f"✨ ¡Yupi! Ya crecí y soy un hermoso {plant_name} en el terreno {p_id}. ¡Ven a cosecharme prontito! 🥰🌻")
+                            flags['ready'] = True
+                        elif plot.get('water', 100) < min_safe and not plot.get('isReady') and not plot.get('hasCrow') and not flags.get('water'):
+                            send_telegram_msg(chat_id, f"💧 ¡Agh, tengo sed! Soy tu {plant_name} en el terreno {p_id}. Me estoy secando... ¿Me regalas un poquito de agua? 🥺")
+                            flags['water'] = True
+                        elif plot.get('isSpoiled') and not flags.get('spoiled'):
+                            send_telegram_msg(chat_id, f"🦠 Cof, cof... Me siento muy enfermita en el terreno {p_id}. Me pudrí... ¡Límpiame por favor! 🤒")
+                            flags['spoiled'] = True
+
+                        # Reseteo de banderas si la planta se recuperó o se regó
+                        if not plot.get('hasCrow'): flags['crow'] = False
+                        if not plot.get('isReady'): flags['ready'] = False
+                        if plot.get('water', 100) >= min_safe: flags['water'] = False
+                        if not plot.get('isSpoiled'): flags['spoiled'] = False
 
             state['lastTick'] = now
             return json.dumps(state)
@@ -368,7 +420,43 @@ def save_state():
     
     cur.close(); conn.close()
     return jsonify({"message": "Progreso guardado y validado"})
+
+
+@app.route('/api/telegram/link', methods=['POST'])
+def link_telegram():
+    data = request.json
+    username = data.get('username')
+    token = data.get('session_token')
+    chat_id = data.get('telegram_chat_id')
     
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET telegram_chat_id = %s WHERE username = %s AND session_token = %s RETURNING id", (chat_id, username, token))
+    if cur.fetchone():
+        conn.commit(); cur.close(); conn.close()
+        send_telegram_msg(chat_id, "🌱 ¡Hola! Soy el asistente de CashGarden. A partir de ahora te avisaré si tus plantitas te necesitan. ¡Nos vemos en el invernadero! 👩‍🌾")
+        return jsonify({"message": "Telegram vinculado con éxito."})
+    cur.close(); conn.close()
+    return jsonify({"error": "No autorizado"}), 401
+
+@app.route('/api/cron/check_plants', methods=['GET'])
+def cron_check_plants():
+    # Este endpoint simula el paso del tiempo para usuarios offline y dispara las alertas
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, game_state, telegram_chat_id FROM users WHERE telegram_chat_id IS NOT NULL")
+    users = cur.fetchall()
+    
+    for u in users:
+        new_state = process_server_tick(u['game_state'], u['telegram_chat_id'])
+        if new_state != u['game_state']:
+            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (new_state, u['id']))
+            
+    conn.commit()
+    cur.close(); conn.close()
+    return jsonify({"message": "Cron procesado. Alertas enviadas si era necesario."})
+
+
 @app.route('/api/store/buy_practice', methods=['POST'])
 def buy_practice():
     data = request.json
