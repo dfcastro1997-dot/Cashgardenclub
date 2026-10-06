@@ -166,6 +166,9 @@ def process_server_tick(game_state_str, chat_id=None):
                 for p in state.get('plots', [])
             )
 
+            # NUEVO: Bandera para procesar el contagio del Cuervo Carroñero
+            contagion_triggered = False
+
             for plot in state.get('plots', []):
                 # Inicialización de banderas para evitar spam de notificaciones en Telegram
                 if 'notifyFlags' not in plot: 
@@ -243,7 +246,11 @@ def process_server_tick(game_state_str, chat_id=None):
                         else:
                             plot['crowArrivedAt'] = 0
 
-                        if plot.get('water', 0) <= 0 or plot.get('hasCrow'):
+                        # Periodo de gracia de 10 minutos (600,000 ms) antes de pausar el crecimiento
+                        time_with_crow = now - plot.get('crowArrivedAt', now)
+                        is_crow_landed = plot.get('hasCrow') and time_with_crow > 600000
+                        
+                        if plot.get('water', 0) <= 0 or is_crow_landed:
                             plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
 
                     if now >= plot.get('harvestAt', now):
@@ -281,10 +288,42 @@ def process_server_tick(game_state_str, chat_id=None):
                             plot['isReady'] = False
                             plot['isSpoiled'] = False
                         else:
+                            # --- SISTEMA CUERVO CARROÑERO ---
                             growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
-                            if growth_time > 0 and now >= (plot.get('harvestAt', now) + growth_time):
+                            grace_period = growth_time / 2.0  # 50% del tiempo de vida
+                            time_overdue = now - (plot.get('harvestAt', now) + grace_period)
+                            
+                            if time_overdue > 0:
                                 plot['isSpoiled'] = True
                                 plot['hasCrow'] = True
+                                
+                                # Tramos de 15 minutos = 900,000 ms
+                                if time_overdue > 2700000: # 45 mins: 3 cuervos + Colapso
+                                    plot['crowsCount'] = 3
+                                    plot['rewardMultiplier'] = 0.0 # Pierde el 100% de la ganancia
+                                    
+                                    # Contagio al siguiente terreno (se procesa fuera del for)
+                                    if not plot.get('contagionTriggered'):
+                                        plot['contagionTriggered'] = True
+                                        contagion_triggered = True
+                                        
+                                elif time_overdue > 1800000: # 30 mins: 3 cuervos (-5%/min extra)
+                                    plot['crowsCount'] = 3
+                                    mins_w_three = (time_overdue - 1800000) / 60000.0
+                                    penalty = 0.30 + 0.45 + (mins_w_three * 0.05)
+                                    plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                    
+                                elif time_overdue > 900000: # 15 mins: 2 cuervos (-3%/min extra)
+                                    plot['crowsCount'] = 2
+                                    mins_w_two = (time_overdue - 900000) / 60000.0
+                                    penalty = 0.30 + (mins_w_two * 0.03)
+                                    plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                    
+                                else: # 0 a 15 mins: 1 cuervo (-1%/min)
+                                    plot['crowsCount'] = 1
+                                    mins_w_one = time_overdue / 60000.0
+                                    penalty = mins_w_one * 0.01
+                                    plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
                     
                     # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
                     if chat_id and plot.get('status') == 'planted':
@@ -337,6 +376,15 @@ def process_server_tick(game_state_str, chat_id=None):
                         if not plot.get('isReady'): flags['ready'] = False
                         if plot.get('water', 100) >= min_safe: flags['water'] = False
                         if not plot.get('isSpoiled'): flags['spoiled'] = False
+
+            # --- PROCESAR CONTAGIO DEL ÉXODO ---
+            # Si una planta colapsó (pasaron 45 min extra), contagia a la siguiente parcela viva.
+            if contagion_triggered:
+                for p in state.get('plots', []):
+                    if p.get('status') == 'planted' and not p.get('hasCrow') and not p.get('isSpoiled'):
+                        p['hasCrow'] = True
+                        p['crowArrivedAt'] = now
+                        break # Solo propaga a 1 planta sana a la vez
 
             state['lastTick'] = now
             return json.dumps(state)

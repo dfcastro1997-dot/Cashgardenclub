@@ -962,20 +962,44 @@ if (typeof window.farmApp === 'undefined') {
                         
                         // --- RENDERIZADO VISUAL DEL CUERVO ---
                         let crowHtml = '';
-                        if (plot.hasCrow) {
-                            if (plot.crowLeavingAt > now) {
-                                const minsLeft = Math.ceil((plot.crowLeavingAt - now) / 60000);
+                        if (plot.hasCrow && plot.isReady) {
+                            const crowsCount = plot.crowsCount || 1;
+                            const currentMult = plot.rewardMultiplier !== undefined ? plot.rewardMultiplier : 1.0;
+                            const lostPct = Math.round((1.0 - currentMult) * 100);
+                            
+                            // Genera visualmente 1, 2 o 3 cuervos saltando sobre la cosecha
+                            let crowsIcons = Array(crowsCount).fill('<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-md animate-bounce">').join('');
+                            
+                            crowHtml = `
+                                <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-2xl px-2 py-1 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
+                                    <div class="flex gap-0.5">${crowsIcons}</div>
+                                    <span class="text-[9px] font-black text-white mt-0.5">-${lostPct}% SEMILLAS</span>
+                                    <div class="absolute right-10 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR Y SALVAR RESTO!</div>
+                                </button>
+                            `;
+                        } else if (timeWithCrow < gracePeriod) {
+                                // NUEVO: PERIODO DE GRACIA (10 MINUTOS)
+                                const timeLeftMs = gracePeriod - timeWithCrow;
+                                const mins = Math.floor(timeLeftMs / 60000);
+                                const secs = Math.floor((timeLeftMs % 60000) / 1000);
+                                
                                 crowHtml = `
-                                    <div class="z-50 bg-yellow-500/90 border-2 border-yellow-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex flex-col items-center justify-center shadow-xl cursor-not-allowed pointer-events-auto shrink-0">
-                                        <span class="text-xs sm:text-sm animate-spin">⏳</span>
-                                        <span class="text-[8px] sm:text-[9px] font-black text-white leading-none">${minsLeft}m</span>
-                                    </div>
+                                    <button onclick="window.farmApp.shooCrowGrace(${plot.id}); event.stopPropagation();" class="z-50 bg-orange-400 hover:bg-orange-500 border-2 border-orange-200 rounded-full w-10 h-10 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(251,146,60,0.8)] animate-pulse cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
+                                        <span class="text-[10px] sm:text-xs">🦅</span>
+                                        <span class="text-[7px] font-black text-white leading-none">${mins}:${secs.toString().padStart(2, '0')}</span>
+                                        <div class="absolute right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR GRATIS!</div>
+                                    </button>
                                 `;
                             } else {
+                                // CUERVO ATERRIZADO (Requiere castigo de 15m)
+                                const iconHtml = isRotting 
+                                    ? `<span class="text-lg sm:text-xl">🦠</span>` 
+                                    : `<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">`;
+
                                 crowHtml = `
                                     <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                        <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">
-                                        <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
+                                        ${iconHtml}
+                                        <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡LIMPIAR (15 MIN)!</div>
                                     </button>
                                 `;
                             }
@@ -2023,6 +2047,21 @@ if (typeof window.farmApp === 'undefined') {
             modal.classList.add('flex');
         },
         
+
+
+        shooCrowGrace(plotId) {
+            const plot = this.state.plots[plotId];
+            plot.hasCrow = false;
+            plot.crowArrivedAt = 0;
+            this.showPlotToast(plotId, '💨', '¡Cuervo espantado!');
+            
+            // Forzar el guardado y refrescar
+            this.saveState();
+            this.renderPlots();
+            this.selectPlot(plotId);
+        },
+
+
         closeCrowModal() {
             const modal = document.getElementById('crow-modal');
             if(modal) {
