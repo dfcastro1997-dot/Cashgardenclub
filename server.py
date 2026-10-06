@@ -184,6 +184,11 @@ def process_server_tick(game_state_str, chat_id=None):
                         plot['hasCrow'] = False
                         plot['crowLeavingAt'] = 0
 
+                elif plot.get('status') in ['empty', 'pot']:
+                    if plot.get('water', 0) > 0:
+                        accelerated_evap = 40.0 * 4.0 * season_multiplier # 4 veces más rápido sin planta
+                        plot['water'] = max(0, plot['water'] - (accelerated_evap * delta_hours))
+
                 elif plot.get('status') == 'planted':
                     plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
                     
@@ -267,7 +272,7 @@ def process_server_tick(game_state_str, chat_id=None):
                                 plot['status'] = 'pot'
                                 
                             plot['plant'] = None
-                            plot['water'] = 0
+                            # El agua se conserva en la tierra para que se evapore al sol
                             plot['hasCrow'] = False
                             plot['crowLeavingAt'] = 0
                             plot['scarecrowEndTime'] = 0

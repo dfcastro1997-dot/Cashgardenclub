@@ -1057,6 +1057,8 @@ if (typeof window.farmApp === 'undefined') {
                     el.onclick = () => this.buyPlotPrompt(plot.id);
 
                 } else if (plot.status === 'empty') {
+                    const displayWater = Math.floor(plot.water || 0);
+                    const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                     el.className = `bg-white rounded-2xl border-2 border-dashed border-gray-200 h-56 sm:h-64 relative cursor-pointer hover:border-cg_blue transition-all ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm'}`;
                     
                     // INYECCIÓN DE ICONOS DE PROTECCIÓN PARA TERRENO VACÍO
@@ -1071,18 +1073,20 @@ if (typeof window.farmApp === 'undefined') {
                     }
 
                     el.innerHTML = `
-                        ${localToastHTML}
-                        ${protectionHtml}
+                        ${localToastHTML}${protectionHtml}
                         <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
-                            <img src="${this.state.images.terrain_empty}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno Vacío">
+                            <img src="${currentTerrain}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno Vacío">
                         </div>
-                        <div class="absolute bottom-3 sm:bottom-4 left-0 w-full text-center z-20">
+                        <div class="absolute bottom-3 sm:bottom-4 left-0 w-full text-center z-20 flex flex-col items-center gap-1">
                             <span class="bg-gray-100 px-2 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-200 shadow-sm">Terreno Vacío</span>
+                            ${displayWater > 0 ? `<span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full text-[9px] font-black shadow-sm border border-blue-200 animate-pulse">💧 Suelo: ${displayWater}% (Secando)</span>` : ''}
                         </div>
                     `;
                     el.onclick = () => this.selectPlot(plot.id, true);
 
                 } else if (plot.status === 'pot') {
+                    const displayWater = Math.floor(plot.water || 0);
+                    const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                     el.className = `bg-white rounded-2xl border-2 border-gray-200 h-56 sm:h-64 relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm hover:shadow-md'}`;
                     const potImg = plot.pot === 'small' ? this.state.inventory.tool_pot_small.image : this.state.inventory.tool_pot_big.image;
                     const potName = plot.pot === 'small' ? 'MACETA PEQ.' : 'MACETA GDE.';
@@ -1100,8 +1104,20 @@ if (typeof window.farmApp === 'undefined') {
 
                     el.innerHTML = `
                         ${localToastHTML}
-                        <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white px-1.5 sm:px-2 py-1 rounded-lg text-[8px] sm:text-[9px] font-bold text-gray-500 border border-gray-200 flex items-center gap-1 uppercase shadow-sm z-20 pointer-events-none">
-                            <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName} (Uso ${plot.potUses}/${plot.pot === 'small' ? 5 : 10})
+                        <div class="absolute top-2 sm:top-3 left-2 sm:left-3 flex flex-col gap-1 z-20 pointer-events-none">
+                            <div class="bg-white px-1.5 sm:px-2 py-1 rounded-lg text-[8px] sm:text-[9px] font-bold text-gray-500 border border-gray-200 flex items-center gap-1 uppercase shadow-sm">
+                                <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName} (Uso ${plot.potUses}/${plot.pot === 'small' ? 5 : 10})
+                            </div>
+                            ${displayWater > 0 ? `<div class="bg-blue-50 text-blue-600 px-1.5 sm:px-2 py-0.5 rounded-lg text-[8px] sm:text-[9px] font-black border border-blue-200 shadow-sm w-fit animate-pulse">💧 Suelo: ${displayWater}%</div>` : ''}
+                        </div>
+                        
+                        ${protectionHtml}
+
+                        <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
+                            <div class="relative w-full h-32 sm:h-40 flex items-center justify-center">
+                                <img src="${currentTerrain}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
+                                <img src="${potImg}" class="absolute w-10 sm:w-12 h-10 sm:h-12 object-contain z-10 drop-shadow-md" style="transform: translateY(-20%);">
+                            </div>
                         </div>
                         
                         ${protectionHtml}
@@ -1335,16 +1351,17 @@ if (typeof window.farmApp === 'undefined') {
                 if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
                     plot.hasCrow = false;
                     plot.crowLeavingAt = 0;
-                    
-                    if (plot.plant) {
-                        if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
-                        else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
-                        else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
-                        else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
-                    }
-                    
+                    // ...
                     changesMade = true;
                     if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Plaga/Pudrición curada');
+                }
+
+                if (plot.status === 'empty' || plot.status === 'pot') {
+                    if (plot.water > 0) {
+                        let acceleratedEvap = 40.0 * 4.0 * seasonMultiplier; // 4x de evaporación al sol
+                        plot.water = Math.max(0, plot.water - (acceleratedEvap * deltaHours));
+                        changesMade = true;
+                    }
                 }
 
                 if (plot.status === 'planted') {
@@ -1425,7 +1442,9 @@ if (typeof window.farmApp === 'undefined') {
                                     plot.status = 'pot';
                                 }
                                 
-                                plot.plant = null; plot.water = 0; plot.hasCrow = false;
+                                plot.plant = null; 
+                                // El agua se conserva en el terreno para secarse al sol
+                                plot.hasCrow = false;
                                 plot.crowLeavingAt = 0; plot.scarecrowEndTime = 0;
                                 plot.plantedAt = 0; plot.harvestAt = 0; plot.isReady = false; plot.isSpoiled = false;
                                 
@@ -1815,7 +1834,7 @@ if (typeof window.farmApp === 'undefined') {
             plot.pot = null;
             plot.potUses = 0;
             plot.plant = null;
-            plot.water = 0;
+            // El agua se conserva en el terreno
             plot.hasCrow = false;
             plot.crowLeavingAt = 0;
             plot.scarecrowEndTime = 0;
@@ -1924,7 +1943,7 @@ if (typeof window.farmApp === 'undefined') {
             }
             
             plot.plant = null;
-            plot.water = 0;
+            // El agua se conserva en el terreno
             plot.hasCrow = false;
             plot.crowLeavingAt = 0;
             plot.scarecrowEndTime = 0;
@@ -2488,18 +2507,6 @@ if (typeof window.farmApp === 'undefined') {
                 const plot = this.state.plots[this.state.selectedPlotId];
                 
                 plot.status = 'planted';
-                
-                // --- CORRECCIÓN: AGUA INICIAL DINÁMICA ---
-                // Se asigna el agua en un punto intermedio seguro según la planta
-                if (seedId === 'flower_wheat') plot.water = 80;
-                else if (seedId === 'flower_small') plot.water = 60;
-                else if (seedId === 'flower_big') plot.water = 60;
-                else if (seedId === 'flower_cactus') plot.water = 50;
-                else if (seedId === 'flower_crystal') plot.water = 60;
-                else if (seedId === 'flower_moon') plot.water = 65;
-                else if (seedId === 'flower_solar') plot.water = 50;
-                else if (seedId === 'flower_neon') plot.water = 50;
-                else plot.water = 50; // Fallback
                 
                 plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
                 plot.isReady = false;
