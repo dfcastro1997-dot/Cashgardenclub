@@ -962,22 +962,28 @@ if (typeof window.farmApp === 'undefined') {
                         
                         // --- RENDERIZADO VISUAL DEL CUERVO ---
                         let crowHtml = '';
-                        if (plot.hasCrow && plot.isReady) {
-                            const crowsCount = plot.crowsCount || 1;
-                            const currentMult = plot.rewardMultiplier !== undefined ? plot.rewardMultiplier : 1.0;
-                            const lostPct = Math.round((1.0 - currentMult) * 100);
-                            
-                            // Genera visualmente 1, 2 o 3 cuervos saltando sobre la cosecha
-                            let crowsIcons = Array(crowsCount).fill('<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-md animate-bounce">').join('');
-                            
-                            crowHtml = `
-                                <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-2xl px-2 py-1 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                    <div class="flex gap-0.5">${crowsIcons}</div>
-                                    <span class="text-[9px] font-black text-white mt-0.5">-${lostPct}% SEMILLAS</span>
-                                    <div class="absolute right-10 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR Y SALVAR RESTO!</div>
-                                </button>
-                            `;
-                        } else if (timeWithCrow < gracePeriod) {
+                        if (plot.hasCrow) {
+                            if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
+                            const timeWithCrow = now - plot.crowArrivedAt;
+                            const gracePeriod = 10 * 60000; // 10 minutos
+                            const isRotting = plot.water > conf.maxWater || plot.isSpoiled;
+
+                            if (plot.isReady) {
+                                const crowsCount = plot.crowsCount || 1;
+                                const currentMult = plot.rewardMultiplier !== undefined ? plot.rewardMultiplier : 1.0;
+                                const lostPct = Math.round((1.0 - currentMult) * 100);
+                                
+                                // Genera visualmente 1, 2 o 3 cuervos saltando sobre la cosecha
+                                let crowsIcons = Array(crowsCount).fill('<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-md animate-bounce">').join('');
+                                
+                                crowHtml = `
+                                    <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-2xl px-2 py-1 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
+                                        <div class="flex gap-0.5">${crowsIcons}</div>
+                                        <span class="text-[9px] font-black text-white mt-0.5">-${lostPct}% SEMILLAS</span>
+                                        <div class="absolute right-10 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR Y SALVAR RESTO!</div>
+                                    </button>
+                                `;
+                            } else if (timeWithCrow < gracePeriod) {
                                 // NUEVO: PERIODO DE GRACIA (10 MINUTOS)
                                 const timeLeftMs = gracePeriod - timeWithCrow;
                                 const mins = Math.floor(timeLeftMs / 60000);
@@ -1003,6 +1009,8 @@ if (typeof window.farmApp === 'undefined') {
                                     </button>
                                 `;
                             }
+                        } else {
+                            plot.crowArrivedAt = 0;
                         }
                         // -------------------------------------
 
@@ -1199,15 +1207,52 @@ if (typeof window.farmApp === 'undefined') {
                         }
                     }
 
-                    // --- RENDERIZADO VISUAL DEL CUERVO ---
-                        let crowHtml = '';
-                        if (plot.hasCrow) {
-                            crowHtml = `
-                                <div class="z-50 bg-red-500/95 border-2 border-red-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce relative shrink-0">
-                                    <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">
-                                </div>
-                            `;
+                    let crowHtml = '';
+                    if (plot.hasCrow) {
+                        if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
+                        if (plot.plant && plot.plant.id === 'flower_wheat' && (now - plot.crowArrivedAt) > 900000) {
+                            plot.status = 'empty';
+                            plot.potUses = Math.max(0, plot.potUses - 1);
+                            plot.plant = null;
+                            plot.hasCrow = false;
+                            plot.crowArrivedAt = 0;
+                            plot.crowLeavingAt = 0;
+                            this.showPlotToast(plot.id, '💀', 'Trigo Destruido');
                         } else {
+                            // Reemplazar la asignación de isRotting
+                            const plantId = plot.plant ? plot.plant.id : '';
+                            let isRotting = plot.isSpoiled || false;
+                            if (plantId === 'flower_wheat' && plot.water > 100) isRotting = true;
+                            else if (plantId === 'flower_small' && plot.water > 90) isRotting = true;
+                            else if (plantId === 'flower_big' && plot.water > 70) isRotting = true;
+                            else if (plantId === 'flower_cactus' && plot.water > 80) isRotting = true;
+                            else if (plantId === 'flower_crystal' && plot.water > 80) isRotting = true;
+                            else if (plantId === 'flower_moon' && plot.water > 90) isRotting = true;
+                            else if (plantId === 'flower_solar' && plot.water > 70) isRotting = true;
+                            else if (plantId === 'flower_neon' && plot.water > 60) isRotting = true;
+                            
+                            if (plot.crowLeavingAt > now) {
+                                const minsLeft = Math.ceil((plot.crowLeavingAt - now) / 60000);
+                                crowHtml = `
+                                    <div class="z-50 bg-yellow-500/90 border-2 border-yellow-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex flex-col items-center justify-center shadow-xl cursor-not-allowed pointer-events-auto shrink-0">
+                                        <span class="text-xs sm:text-sm animate-spin">⏳</span>
+                                        <span class="text-[8px] sm:text-[9px] font-black text-white leading-none">${minsLeft}m</span>
+                                    </div>
+                                `;
+                            } else {
+                                const iconHtml = isRotting 
+                                    ? `<span class="text-lg sm:text-xl">🦠</span>` 
+                                    : `<img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">`;
+
+                                crowHtml = `
+                                    <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
+                                        ${iconHtml}
+                                        <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
+                                    </button>
+                                `;
+                            }
+                        }
+                    } else {
                         plot.crowArrivedAt = 0;
                     }
 
