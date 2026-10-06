@@ -1467,22 +1467,16 @@ if (typeof window.farmApp === 'undefined') {
                                         plot.hasCrow = true;
                                         if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Sequía (Plaga)!');
                                         changesMade = true;
-                                    } else {
-                                        if (!plot.hasCrow) {
-                                            if (plot.water < minSafe) {
-                                                plot.hasCrow = true;
-                                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Sequía (Plaga)!');
-                                                changesMade = true;
-                                            } else if (plot.water > maxSafe) {
-                                                plot.hasCrow = true;
-                                                if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Pudrición por exceso!');
-                                                changesMade = true;
-                                            } // <--- ESTA ES LA LLAVE QUE FALTABA
-                                        }
+                                    } else if (plot.water > maxSafe) {
+                                        plot.hasCrow = true;
+                                        if(deltaMS < 60000) this.showPlotToast(plot.id, '🦠', '¡Pudrición por exceso!');
+                                        changesMade = true;
                                     }
                                 }
+                            }
+                        }
 
-                                if (plot.water <= 0 || plot.hasCrow) {
+                        if (plot.water <= 0 || plot.hasCrow) {
                             plot.harvestAt += deltaMS; 
                             changesMade = true;
                         }
