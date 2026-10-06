@@ -1416,7 +1416,8 @@ if (typeof window.farmApp === 'undefined') {
                             plot.crowLeavingAt = 0;
                         } else {
                             if (plot.water > 0) {
-                                let evapRate = (plot.plant && plot.plant.id === 'flower_bamboo') ? 80 : ((plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40); // MODIFICADO
+                                // ESTA ES LA VERSIÓN JAVASCRIPT CORRECTA:
+                                let evapRate = (plot.plant && plot.plant.id === 'flower_bamboo') ? 80 : ((plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40);
                                 evapRate = evapRate * seasonMultiplier;
                                 plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                                 changesMade = true;
@@ -1449,17 +1450,20 @@ if (typeof window.farmApp === 'undefined') {
                             plot.isReady = true;
                             
                             // --- AUTO-COSECHADOR ---
+                            // --- AUTO-COSECHADOR ---
                             if (isAutoHarvesting && !plot.isSpoiled) {
                                 let reward = 0;
-                                if (plant_id === 'flower_wheat') reward = 1500;
-                                else if (plant_id === 'flower_bamboo') reward = 6500; // NUEVO
-                                else if (plant_id === 'flower_cactus') reward = 3200;
-                                else if (plant_id === 'flower_small') reward = 4500;
-                                else if (plant_id === 'flower_big') reward = 26000;
-                                else if (plant_id === 'flower_crystal') reward = 10000;
-                                else if (plant_id === 'flower_moon') reward = 55000;
-                                else if (plant_id === 'flower_solar') reward = 5000;
-                                else if (plant_id === 'flower_neon') reward = 12000;
+                                const currentPlantId = plot.plant ? plot.plant.id : ''; // <-- Variable corregida para JS
+                                
+                                if (currentPlantId === 'flower_wheat') reward = 1500;
+                                else if (currentPlantId === 'flower_bamboo') reward = 6500;
+                                else if (currentPlantId === 'flower_cactus') reward = 3200;
+                                else if (currentPlantId === 'flower_small') reward = 4500;
+                                else if (currentPlantId === 'flower_big') reward = 26000;
+                                else if (currentPlantId === 'flower_crystal') reward = 10000;
+                                else if (currentPlantId === 'flower_moon') reward = 55000;
+                                else if (currentPlantId === 'flower_solar') reward = 5000;
+                                else if (currentPlantId === 'flower_neon') reward = 12000;
                                 
                                 this.state.seedsBalance += reward;
                                 plot.potUses += 1;
