@@ -1271,11 +1271,17 @@ if (typeof window.farmApp === 'undefined') {
                                                 ${plot.hasCrow ? 'disabled' : ''}>
                                             Quitar
                                         </button>
-                                        ${!isAutoWatering && plot.water < 100 && !plot.isReady && !plot.hasCrow ? `
-                                            <button onclick="window.farmApp.openWaterCalibration(${plot.id}); event.stopPropagation();" class="bg-cg_blue hover:bg-cg_navy text-white text-[8px] sm:text-[9px] font-black transition-all uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md shadow-sm">
-                                                Regar
-                                            </button>
-                                        ` : ''}
+                                        ${!isAutoWatering && plot.water < 100 && !plot.isReady && !plot.hasCrow ? (
+                                            (this.state.inventory.tool_water && this.state.inventory.tool_water.qty > 0) ? `
+                                                <button onclick="window.farmApp.selectPlot(${plot.id}); window.farmApp.useTool('water'); event.stopPropagation();" class="bg-cg_blue hover:bg-cg_navy text-white text-[8px] sm:text-[9px] font-black transition-all uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md shadow-sm">
+                                                    Regar
+                                                </button>
+                                            ` : `
+                                                <button disabled class="bg-gray-300 text-gray-500 cursor-not-allowed text-[8px] sm:text-[9px] font-black transition-all uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md shadow-sm border border-gray-400 opacity-70" title="Necesitas comprar agua en el Mercado">
+                                                    Sin Agua
+                                                </button>
+                                            `
+                                        ) : ''}
                                     </div>
                                 `}
                             </div>
