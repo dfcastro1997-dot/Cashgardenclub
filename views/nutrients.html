@@ -531,7 +531,7 @@
         let practiceTokens = 0;
         
         if (window.farmApp && window.farmApp.state) {
-            if (window.farmApp.state.plots) arenaPlot = window.farmApp.state.plots[5];
+            if (window.farmApp.state.plots) arenaPlot = window.farmApp.state.plots[8];
             practiceTokens = window.farmApp.state.practiceTokens || 0;
         }
 
@@ -576,7 +576,7 @@
     }
 
     function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
-        let activePlot = window.farmApp?.state?.plots[5];
+        let activePlot = window.farmApp?.state?.plots[8];
         let isPlaying = activePlot && (activePlot.status === 'tournament' || activePlot.status === 'tournament_waiting');
 
         if (isPlaying) {
@@ -673,8 +673,8 @@
                     window.farmApp.state.balance = data.new_balance_cop;
                     window.farmApp.state.seedsBalance = data.new_game_state.seedsBalance;
                     
-                    if(window.farmApp.state.plots && window.farmApp.state.plots.length > 5) {
-                         const ap = window.farmApp.state.plots[5];
+                    if(window.farmApp.state.plots && window.farmApp.state.plots.length > 8) {
+                         const ap = window.farmApp.state.plots[8];
                          // REEMPLAZA DESDE AQUÍ
                          ap.instanceId = data.instance_id; 
                          ap.tournamentId = t_id;
@@ -1358,7 +1358,7 @@
     }
 
     window.refreshLeaderboard = async function() {
-        let tId = window.currentLeaderboardTid || (window.farmApp?.state?.plots[5]?.tournamentId) || 1;
+        let tId = window.currentLeaderboardTid || (window.farmApp?.state?.plots[8]?.tournamentId) || 1;
         window.currentLeaderboardTid = tId;
 
         try {

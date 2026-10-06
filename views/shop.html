@@ -417,7 +417,7 @@ window.shopApp = {
                             window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
                             
                             window.farmApp.state.plots.forEach(plot => {
-                                if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 5) {
+                                if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 8) {
                                     plot.hasCrow = false;
                                     plot.crowLeavingAt = 0;
                                     if (plot.plant && plot.status === 'planted') {

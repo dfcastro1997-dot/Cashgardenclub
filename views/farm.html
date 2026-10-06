@@ -498,7 +498,7 @@
 if (typeof window.farmApp === 'undefined') {
 
     window.farmApp = {
-        PLOT_COSTS: [0, 0, 0, 75000, 150000, 300000],
+        PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 0], // Arena cuesta 0 porque se paga en Torneos
 
         TOURNAMENT_CONFIGS: {
             1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
@@ -567,7 +567,10 @@ if (typeof window.farmApp === 'undefined') {
                 { id: 2, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 3, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 4, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-                { id: 5, status: 'arena_locked', tournamentId: 1, score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+                { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
+                { id: 8, status: 'arena_locked', tournamentId: 1, score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
             ],
             inventory: {
                 'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' },
@@ -906,7 +909,7 @@ if (typeof window.farmApp === 'undefined') {
                 ` : '';
 
                 // RENDERIZADO EXCLUSIVO PARA LA PARCELA 6 (TORNEO)
-                if (plot.id === 5) {
+                if (plot.id === 8) {
                     if (plot.status === 'arena_locked' || plot.status === 'locked') {
                         el.className = `rounded-2xl border-2 border-dashed border-cg_gold bg-gradient-to-b from-white to-orange-50 h-56 sm:h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-sm`;
                         el.innerHTML = `
@@ -1015,17 +1018,25 @@ if (typeof window.farmApp === 'undefined') {
                     return; 
                 }
 
-                // [Lógica para Parcelas 1 a 5]
                 if (plot.status === 'locked') {
                     const cost = this.PLOT_COSTS[plot.id];
-                    el.className = `rounded-2xl border-2 border-dashed border-gray-300 h-56 sm:h-64 flex flex-col items-center justify-center relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : ''}`;
+                    let borderClass = 'border-gray-300 hover:border-cg_blue';
+                    let textClass = 'text-cg_navy';
+                    if (plot.id === 6) { 
+                        borderClass = 'border-slate-400 hover:border-slate-500 shadow-[0_0_15px_rgba(148,163,184,0.5)]';
+                        textClass = 'text-slate-600';
+                    } else if (plot.id === 7) { 
+                        borderClass = 'border-yellow-400 hover:border-yellow-500 shadow-[0_0_15px_rgba(250,204,21,0.5)]';
+                        textClass = 'text-yellow-600';
+                    }
+                    el.className = `rounded-2xl border-2 border-dashed ${borderClass} h-56 sm:h-64 flex flex-col items-center justify-center relative cursor-pointer transition-all overflow-hidden${isSelected ? 'border-cg_blue shadow-md' : ''}`;
                     el.innerHTML = `
                         ${localToastHTML}
                         <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none opacity-50 grayscale">
                             <img src="${this.state.images.terrain_dry}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno Bloqueado">
                         </div>
                         <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4">
-                            <span class="font-black text-cg_navy uppercase tracking-widest text-[10px] sm:text-[12px] mb-1 bg-white/80 px-2 py-0.5 rounded shadow-sm backdrop-blur">Terreno ${plot.id + 1}</span>
+                            <span class="font-black ${textClass} uppercase tracking-widest text-[10px] sm:text-[12px] mb-1 bg-white/80 px-2 py-0.5 rounded shadow-sm backdrop-blur">Terreno ${plot.id + 1}</span>
                             <span class="font-bold text-gray-600 text-[9px] sm:text-[10px] bg-white px-2 sm:px-3 py-1 rounded-full border border-gray-200 shadow-sm">${cost} 🌱</span>
                         </div>
                     `;
@@ -1268,7 +1279,7 @@ if (typeof window.farmApp === 'undefined') {
             const anyPlantInfected = this.state.plots.some(p => p.status === 'planted' && p.hasCrow);
             
             this.state.plots.forEach(plot => {
-                if (plot.id === 5 && plot.status === 'tournament') {
+                if (plot.id === 8 && plot.status === 'tournament') {
                     const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                     if (plot.water > 0) {
                         plot.water = Math.max(0, plot.water - (conf.evapPerHour * seasonMultiplier * deltaHours)); 
@@ -1448,7 +1459,7 @@ if (typeof window.farmApp === 'undefined') {
             const plot = this.state.plots[plotId];
             let name, img, scoreText, limitText, penaltyText, rulesTitle;
 
-            if (plotId === 5 && plot.status === 'tournament') {
+            if (plotId === 8 && plot.status === 'tournament') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 name = conf.name;
                 img = conf.image;
@@ -1491,7 +1502,7 @@ if (typeof window.farmApp === 'undefined') {
             modal.classList.add('flex');
         },
 
-        openWaterCalibration(plotId = 5) {
+        openWaterCalibration(plotId = 8) {
             this.calibration.currentPlotId = plotId;
             let speed = 1.0; 
             let minSafe = 0;
@@ -1499,7 +1510,7 @@ if (typeof window.farmApp === 'undefined') {
             const plot = this.state.plots[plotId];
             const currentWater = plot.water || 0;
             
-            if (plotId === 5) {
+            if (plotId === 8) {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 speed = conf.speed;
                 minSafe = conf.minWater;
@@ -1555,12 +1566,12 @@ if (typeof window.farmApp === 'undefined') {
             cancelAnimationFrame(this.calibration.reqId);
             
             const waterAdded = Math.round(this.calibration.x);
-            const plotId = this.calibration.currentPlotId !== undefined ? this.calibration.currentPlotId : 5;
+            const plotId = this.calibration.currentPlotId !== undefined ? this.calibration.currentPlotId : 8;
             const plot = this.state.plots[plotId];
             
             plot.water += waterAdded;
             
-            if (plotId === 5) {
+            if (plotId === 8) {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 if (plot.water > conf.maxWater) {
                     // --- NUEVO: CÁLCULO DE PENALIZACIÓN DINÁMICA POR GRAVEDAD ---
@@ -1624,7 +1635,7 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         harvestTournament() {
-            const plot = this.state.plots[5];
+            const plot = this.state.plots[8];
             const score = Math.floor(plot.score);
             
             // Crear y mostrar ventana modal dinámicamente en lugar de 'alert()'
@@ -1837,7 +1848,7 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         executeRemoveBonsai() {
-            const plot = this.state.plots[5];
+            const plot = this.state.plots[8];
             if (plot.status === 'tournament') {
                 plot.status = 'arena_locked';
                 plot.score = 0;
@@ -2026,7 +2037,7 @@ if (typeof window.farmApp === 'undefined') {
 
             // LÓGICA DE INICIO SINCRONIZADO - SEPARADA PARA EJECUTARLA INMEDIATAMENTE
             const checkTournamentStart = async () => {
-                const arena = this.state.plots[5];
+                const arena = this.state.plots[8];
                 
                 if (arena && arena.status === 'tournament_waiting') {
                     try {
@@ -2393,7 +2404,7 @@ if (typeof window.farmApp === 'undefined') {
         closeRitualResult() {
             document.getElementById('farm-ritual-result-modal').classList.replace('flex', 'hidden');
             
-            if (window.farmApp.ritual.plotId === 5) {
+            if (window.farmApp.ritual.plotId === 8) {
                 if(window.finalizeTournamentAPI) window.finalizeTournamentAPI(window.farmApp.ritual.finalWater, window.farmApp.ritual.isStressed, window.farmApp.ritual.p1, window.farmApp.ritual.p2, window.farmApp.ritual.p3);
             } else {
                 window.farmApp.finalizeFarmPlanting(window.farmApp.ritual.finalWater, window.farmApp.ritual.isStressed);

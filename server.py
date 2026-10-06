@@ -441,9 +441,9 @@ def save_state():
                 incoming_state['seedsBalance'] = db_seeds 
                 
             plots = incoming_state.get('plots', [])
-            if len(plots) > 5 and plots[5].get('status') in ['tournament', 'tournament_waiting']:
-                t_score = plots[5].get('score', 10000)
-                t_instance = plots[5].get('instanceId')
+            if len(plots) > 8 and plots[8].get('status') in ['tournament', 'tournament_waiting']:
+                t_score = plots[8].get('score', 10000)
+                t_instance = plots[8].get('instanceId')
                 if t_instance:
                     cur.execute("UPDATE tournament_players SET current_score = %s WHERE user_id = %s AND instance_id = %s", (t_score, user['id'], t_instance))
                 
