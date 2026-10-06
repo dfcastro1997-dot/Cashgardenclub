@@ -468,12 +468,14 @@
                     Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
                     
                     try {
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        if (oldScript.innerHTML) {
+                            newScript.text = oldScript.innerHTML;
+                        }
                         if (oldScript.parentNode) {
                             oldScript.parentNode.replaceChild(newScript, oldScript);
                         }
                     } catch (scriptErr) {
-                        console.error("Error ejecutando script dinámico en la vista:", scriptErr);
+                        console.error("Error evaluando script dinámico en la vista:", scriptErr);
                     }
                 });
 
