@@ -280,8 +280,7 @@ window.shopApp = {
                 targetInventory[itemId] = { 
                     name: catItem.name, 
                     type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                    reqSize: itemId.includes('small') ? 'small' : (itemId.includes('big') ? 'big' : (itemId.includes('wheat') || itemId.includes('cactus') ? 'small' : null)),
-                    qty: 0, 
+                    reqSize: itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') || itemId.includes('solar') ? 'small' : (itemId.includes('big') || itemId.includes('moon') || itemId.includes('neon') ? 'big' : null),                    qty: 0, 
                     image: catItem.image 
                 };
             }

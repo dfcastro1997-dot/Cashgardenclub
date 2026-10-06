@@ -369,8 +369,15 @@
                                         }
                                         window.farmApp.state.plots = state.plots;
                                     }
-                                    if (state.inventory) window.farmApp.state.inventory = state.inventory;
-                                    window.farmApp.state.lastTick = state.lastTick;
+                                    if (state.inventory) {
+                                        Object.keys(state.inventory).forEach(k => {
+                                            if (window.farmApp.state.inventory[k]) {
+                                                window.farmApp.state.inventory[k].qty = state.inventory[k].qty || 0;
+                                            } else {
+                                                window.farmApp.state.inventory[k] = state.inventory[k];
+                                            }
+                                        });
+                                    }                                    window.farmApp.state.lastTick = state.lastTick;
                                     window.farmApp.updateUI();
                                 }
                             }
