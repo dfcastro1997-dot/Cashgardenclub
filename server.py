@@ -213,7 +213,7 @@ def process_server_tick(game_state_str, chat_id=None):
                             plot['hasCrow'] = False
                         else:
                             # -------- AQUÍ VA TU BLOQUE EXACTO --------
-                            evap_rate = 80.0 if plant_id == 'flower_bamboo' else (10.0 if plant_id == 'flower_cactus' else 40.0)
+                            evap_rate = 800.0 if plant_id == 'flower_bamboo' else (10.0 if plant_id == 'flower_cactus' else 40.0)
                             evap_rate = evap_rate * season_multiplier 
                             # ------------------------------------------
                             

@@ -1524,7 +1524,7 @@ if (typeof window.farmApp === 'undefined') {
                         } else {
                             if (plot.water > 0) {
                                 // ESTA ES LA VERSIÓN JAVASCRIPT CORRECTA:
-                                let evapRate = (plot.plant && plot.plant.id === 'flower_bamboo') ? 80 : ((plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40);
+                                let evapRate = (plot.plant && plot.plant.id === 'flower_bamboo') ? 800 : ((plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40);
                                 evapRate = evapRate * seasonMultiplier;
                                 plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                                 changesMade = true;
@@ -2702,8 +2702,10 @@ if (typeof window.farmApp === 'undefined') {
                 plot.plantedAt = Date.now();
 
                 // 2. Calcular el tiempo de cosecha basado en la semilla
+                // 2. Calcular el tiempo de cosecha basado en la semilla
                 let msDuration = 3600000; // 1 Hora por defecto
                 if (seedId === 'flower_wheat') msDuration = 300000;
+                else if (seedId === 'flower_bamboo') msDuration = 600000; // AÑADIDO: 10 Minutos para el Bambú
                 else if (seedId === 'flower_cactus') msDuration = 1800000;
                 else if (seedId === 'flower_small') msDuration = 3600000;
                 else if (seedId === 'flower_crystal') msDuration = 7200000;
