@@ -355,7 +355,7 @@
                                     window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
                                     window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
                                     window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
-                                    iif (state.plots) {
+                                    if (state.plots) {
                                         // MIGRACIÓN AUTOMÁTICA DE 6 A 9 TERRENOS
                                         if (state.plots.length === 6) {
                                             const arenaPlot = state.plots[5];
