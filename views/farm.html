@@ -2126,6 +2126,7 @@ if (typeof window.farmApp === 'undefined') {
             
             const plot = this.state.plots[plotId];
             const currentPot = plot.pot; 
+            const currentWater = Math.floor(plot.water || 0);
 
             const seeds = Object.keys(this.state.inventory)
                 .filter(key => this.state.inventory[key].type === 'seed' && this.state.inventory[key].qty > 0 && this.state.inventory[key].reqSize === currentPot)
@@ -2141,6 +2142,28 @@ if (typeof window.farmApp === 'undefined') {
                     </div>`;
             } else {
                 seeds.forEach(seed => {
+                    // Lógica de compatibilidad de tierra
+                    let minSafe = 20, maxSafe = 100;
+                    if (seed.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+                    else if (seed.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
+                    else if (seed.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
+                    else if (seed.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
+                    else if (seed.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
+                    else if (seed.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
+                    else if (seed.id === 'flower_solar') { minSafe = 30; maxSafe = 70; }
+                    else if (seed.id === 'flower_neon') { minSafe = 40; maxSafe = 60; }
+
+                    let warningHtml = '';
+                    if (currentWater > maxSafe) {
+                        warningHtml = `<span class="text-[9px] sm:text-[10px] bg-red-100 text-red-600 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-red-200">⚠️ Tierra muy húmeda para esta planta</span>`;
+                    } else if (currentWater > 0 && currentWater < minSafe) {
+                        warningHtml = `<span class="text-[9px] sm:text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-orange-200">⚠️ Requerirá riego inmediato al sembrar</span>`;
+                    } else if (currentWater >= minSafe && currentWater <= maxSafe) {
+                        warningHtml = `<span class="text-[9px] sm:text-[10px] bg-green-100 text-green-600 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-green-200">✅ Humedad actual perfecta (${currentWater}%)</span>`;
+                    } else {
+                        warningHtml = `<span class="text-[9px] sm:text-[10px] bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-gray-200">Tierra seca (0%)</span>`;
+                    }
+
                     list.innerHTML += `
                         <div class="p-3 sm:p-5 bg-white border border-gray-200 rounded-2xl hover:border-cg_blue flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-sm transition-colors">
                             <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -2148,18 +2171,18 @@ if (typeof window.farmApp === 'undefined') {
                                     <img src="${seed.image}" class="w-full h-full object-contain">
                                 </div>
                                 <div>
-                                    <h4 class="font-black text-carbon text-sm sm:text-lg">${seed.name}</h4>
-                                    <span class="text-[10px] sm:text-xs font-bold text-cg_blue">Stock: ${seed.qty}</span>
+                                    <h4 class="font-black text-carbon text-sm sm:text-lg leading-tight">${seed.name}</h4>
+                                    <span class="text-[10px] sm:text-xs font-bold text-cg_blue block mt-0.5">Stock: ${seed.qty}</span>
+                                    ${warningHtml}
                                 </div>
                             </div>
-                            <button onclick="window.farmApp.plantSeed('${seed.id}')" class="bg-cg_blue hover:bg-cg_navy text-white w-full sm:w-auto font-black px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-sm transition-colors text-xs sm:text-sm">
+                            <button onclick="window.farmApp.plantSeed('${seed.id}')" class="bg-cg_blue hover:bg-cg_navy text-white w-full sm:w-auto font-black px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-sm transition-colors text-xs sm:text-sm shrink-0">
                                 Plantar
                             </button>
                         </div>
                     `;
                 });
             }
-
             document.getElementById('plant-modal').classList.remove('hidden');
             document.getElementById('plant-modal').classList.add('flex');
         },
