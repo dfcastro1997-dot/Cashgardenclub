@@ -2527,31 +2527,40 @@ if (typeof window.farmApp === 'undefined') {
         plantSeed(seedId) {
             if (this.state.inventory[seedId].qty > 0) {
                 this.state.inventory[seedId].qty -= 1;
-                const plot = this.state.plots[this.state.selectedPlotId];
-                
+                const plotId = this.state.selectedPlotId;
+                const plot = this.state.plots[plotId];
+
+                // 1. Asignar los datos de la planta
                 plot.status = 'planted';
-                
-                plot.plant = { id: seedId, name: this.state.inventory[seedId].name, icon: this.state.inventory[seedId].image };
+                plot.plant = {
+                    id: seedId,
+                    name: this.state.inventory[seedId].name,
+                    icon: this.state.inventory[seedId].image
+                };
                 plot.isReady = false;
                 plot.plantedAt = Date.now();
-                
-                let msDuration = 3600000; 
-                if (seedId === 'flower_wheat') msDuration = 300000; 
-                else if (seedId === 'flower_cactus') msDuration = 1800000; 
-                else if (seedId === 'flower_big') msDuration = 18000000; 
+
+                // 2. Calcular el tiempo de cosecha basado en la semilla
+                let msDuration = 3600000; // 1 Hora por defecto
+                if (seedId === 'flower_wheat') msDuration = 300000;
+                else if (seedId === 'flower_cactus') msDuration = 1800000;
+                else if (seedId === 'flower_small') msDuration = 3600000;
                 else if (seedId === 'flower_crystal') msDuration = 7200000;
-                else if (seedId === 'flower_moon') msDuration = 43200000;
+                else if (seedId === 'flower_big') msDuration = 18000000;
                 else if (seedId === 'flower_solar') msDuration = 14400000;
                 else if (seedId === 'flower_neon') msDuration = 28800000;
-                
-                plot.harvestAt = plot.plantedAt + msDuration;
+                else if (seedId === 'flower_moon') msDuration = 43200000;
 
-                this.updateInventoryUI();
+                plot.harvestAt = plot.plantedAt + msDuration;
+                plot.water = 50; // Nivel de humedad inicial
+
+                // 3. Actualizar la interfaz y guardar el progreso
                 this.closeModals();
-                this.selectPlot(this.state.selectedPlotId);
-                this.showPlotToast(this.state.selectedPlotId, '🌱', '¡Sembrado Exitoso!');
-                
+                this.updateInventoryUI();
+                this.showPlotToast(plotId, '🌱', '¡Sembrado Exitoso!');
+                this.selectPlot(plotId);
                 this.saveState();
+                this.renderPlots();
             }
         },
 
