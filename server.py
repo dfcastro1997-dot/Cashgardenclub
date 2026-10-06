@@ -493,8 +493,9 @@ def save_state():
             
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
             
-            if incoming_seeds > db_seeds + 30000:
-                incoming_state['seedsBalance'] = db_seeds 
+            # MODIFICADO: Aumentamos el límite de 30000 a 80000 para permitir la cosecha del Lirio Lunar (55k)
+            if incoming_seeds > db_seeds + 80000:
+                incoming_state['seedsBalance'] = db_seeds
                 
             plots = incoming_state.get('plots', [])
             if len(plots) > 8 and plots[8].get('status') in ['tournament', 'tournament_waiting']:

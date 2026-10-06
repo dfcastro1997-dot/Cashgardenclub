@@ -2058,6 +2058,7 @@ if (typeof window.farmApp === 'undefined') {
 
             let reward = 0;
             if (plot.plant.id === 'flower_wheat') reward = 1500;
+            else if (plot.plant.id === 'flower_bamboo') reward = 6500; // AÑADIDO: Faltaba la recompensa del Bambú
             else if (plot.plant.id === 'flower_cactus') reward = 3200;
             else if (plot.plant.id === 'flower_small') reward = 4500;
             else if (plot.plant.id === 'flower_big') reward = 26000;
