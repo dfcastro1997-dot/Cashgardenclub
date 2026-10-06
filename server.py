@@ -134,7 +134,7 @@ def get_season_multiplier(now_ms):
     else: return 2.0                 
 
 def process_server_tick(game_state_str, chat_id=None):
-    import random  # Necesario para elegir mensajes carismáticos al azar
+    import random
     
     if not game_state_str: return game_state_str
     try:
@@ -161,7 +161,7 @@ def process_server_tick(game_state_str, chat_id=None):
             for plot in state.get('plots', []):
                 # Inicialización de banderas para evitar spam de notificaciones en Telegram
                 if 'notifyFlags' not in plot: 
-                    plot['notifyFlags'] = {}
+                    plot['notifyFlags'] = {'crow': False, 'ready': False, 'water': False, 'spoiled': False}
                 flags = plot['notifyFlags']
 
                 # Omitir daño a la planta del torneo si aún está "en espera" (waiting)
