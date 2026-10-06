@@ -1884,6 +1884,7 @@ if (typeof window.farmApp === 'undefined') {
             // --- INICIO CORRECCIÓN: BLOQUEO DE UI ---
             // Prevenir doble clic o navegación mientras guarda
             if (this.state.isSaving) return;
+            this.state.isSaving = true; // <-- BLOQUEO ANTI-SPAM INSTANTÁNEO
             
             // Ocultar botones de navegación temporalmente para evitar interrupciones
             const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');

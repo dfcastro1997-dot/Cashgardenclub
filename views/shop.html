@@ -226,6 +226,10 @@ window.shopApp = {
     },
 
     async buyItem(itemId, unitPrice, tab) {
+        if (this.isProcessingBuy) return;
+        this.isProcessingBuy = true;
+        setTimeout(() => { this.isProcessingBuy = false; }, 600); // Bloqueo de 600ms para evitar doble compra accidental
+        
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
         
