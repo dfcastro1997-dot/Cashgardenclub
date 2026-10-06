@@ -14,7 +14,7 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 
 DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "AQUI_TU_TOKEN_DE_TELEGRAM") # NUEVO
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA") # NUEVO
 
 # Función helper para Telegram
 def send_telegram_msg(chat_id, text):
@@ -134,6 +134,8 @@ def get_season_multiplier(now_ms):
     else: return 2.0                 
 
 def process_server_tick(game_state_str, chat_id=None):
+    import random  # Necesario para elegir mensajes carismáticos al azar
+    
     if not game_state_str: return game_state_str
     try:
         state = json.loads(game_state_str)
@@ -276,20 +278,52 @@ def process_server_tick(game_state_str, chat_id=None):
                         plant_name = plot.get('plant', {}).get('name', 'tu plantita')
                         p_id = plot['id'] + 1
                         
+                        # MENSAJES VARIADOS PARA CUERVO (Ataque y Pánico)
+                        crow_msgs = [
+                            f"🦅 ¡AYUDA! ¡SÁCAME DE AQUÍ! 😭\nUn cuervo gigante me está atacando en el Terreno {p_id}. Me duele mucho, ¡no dejes que me destruya! Ven rápido a espantarlo o contagiaré a las demás... 🥀",
+                            f"🦅 ¡AHHH! 😱 ¡Me están comiendo viva en el Terreno {p_id}! ¡Ese pajarraco feo no me deja en paz! Haz algo por favor, soy tu {plant_name} favorita... 😭",
+                            f"🦅 ¡ALERTA ROJA! 🚨 Un cuervo me tiene acorralada en la parcela {p_id}. Si no vienes ya mismo, me voy a marchitar y el resto de tus plantas correrán peligro. ¡Sálvame! 🥺",
+                            f"🦅 ¡Pío, pío... digo, ay! 😭 Soy tu {plant_name} del Terreno {p_id}... un cuervo me está picoteando sin piedad. ¡Pensé que me amabas! ¡Ven a espantarlo! 💔"
+                        ]
+                        
+                        # MENSAJES VARIADOS PARA COSECHA LISTA (Alegría y Recompensa)
+                        ready_msgs = [
+                            f"✨ ¡Estoy lista, mírame brillar! 🥰🌻\nHe crecido fuerte y hermosa en el Terreno {p_id}. Soy una {plant_name} orgullosa. ¡Ven a cosecharme antes de que me pase de madura y me eche a perder!",
+                            f"✨ ¡Misión cumplida, jefe! 🫡\nSoy la {plant_name} del Terreno {p_id} y ya estoy en mi punto perfecto. ¡Recógeme ya para que ganes muchas semillas! 💰🌱",
+                            f"✨ ¡Yuuuju! 🥳 Ya florecí por completo en el Terreno {p_id}. Apresúrate a cosecharme, ¡no quiero pasarme de madura y terminar oliendo feo! 🌸✨",
+                            f"✨ ¡Mírame, soy hermosa! 😍 Tu {plant_name} en la parcela {p_id} está lista para dar frutos. ¡Ven rápido, estoy ansiosa por ir a tu inventario! 🧺💖"
+                        ]
+                        
+                        # MENSAJES VARIADOS PARA SEQUÍA PREVENTIVA (Culpa y Necesidad)
+                        water_msgs = [
+                            f"💧 T-tengo mucha sed... 🥺\nSoy tu {plant_name} en el Terreno {p_id}. Mis hojitas se están secando y no tengo fuerza para crecer. ¿Podrías regalarme un poquito de agua por favor? 🥀",
+                            f"💧 Ay... me desmayo... 😵‍💫\nEl calor está terrible en la parcela {p_id} y ni una gotita de agua me has dado. ¡No dejes que tu pobre {plant_name} se convierta en polvo! 🏜️",
+                            f"💧 ¡Agua... por favor... agua! 🥵\nSoy yo, tu {plant_name} del Terreno {p_id}. Si no me riegas prontito voy a dejar de crecer y llamaré a los cuervos... 😭",
+                            f"💧 ¿Te olvidaste de mí? 💔\nAquí en el Terreno {p_id} estoy sufriendo una sequía terrible. Mis raíces ya no sienten humedad. ¡Un chorrito de tu regadera me salvaría la vida! 🚿🥺"
+                        ]
+                        
+                        # MENSAJES VARIADOS PARA PUDRICIÓN (Tristeza y Decepción)
+                        spoiled_msgs = [
+                            f"🦠 Me siento terrible... 🤒\nCof, cof... Me dejaste pudrir sola en el Terreno {p_id}. Apesto y detuve mi crecimiento. Por favor, ven a limpiarme, prometo crecer bien si me cuidas mejor. 💔",
+                            f"🦠 Ay, qué dolor de barriga... 🤢\nMe pasaste de agua o me dejaste abandonada en el Terreno {p_id}. Soy una {plant_name} podrida ahora... ¿Vas a venir a curarme o me dejarás así? 🥀😭",
+                            f"🦠 ¡Achoo! 🤧 Todo me da vueltas en la parcela {p_id}... Agarré una infección horrible. Si no vienes a limpiarme con el espantapájaros, voy a enfermar a todas mis vecinas. ¡Ayuda! 🧟‍♀️",
+                            f"🦠 Te confié mi vida y mírame... 🥺\nSoy un desastre mohoso en el Terreno {p_id}. Por favor límpiame, aguantaré los 15 minutos de castigo, pero no me dejes tirada aquí... 🗑️💔"
+                        ]
+                        
                         if plot.get('hasCrow') and not flags.get('crow'):
-                            send_telegram_msg(chat_id, f"🦅 ¡AYUDAAA! Un cuervo horrible me está picoteando en el terreno {p_id}. ¡Ven a espantarlo o me voy a morir! 😭")
+                            send_telegram_msg(chat_id, random.choice(crow_msgs))
                             flags['crow'] = True
                         elif plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
-                            send_telegram_msg(chat_id, f"✨ ¡Yupi! Ya crecí y soy un hermoso {plant_name} en el terreno {p_id}. ¡Ven a cosecharme prontito! 🥰🌻")
+                            send_telegram_msg(chat_id, random.choice(ready_msgs))
                             flags['ready'] = True
                         elif plot.get('water', 100) < min_safe and not plot.get('isReady') and not plot.get('hasCrow') and not flags.get('water'):
-                            send_telegram_msg(chat_id, f"💧 ¡Agh, tengo sed! Soy tu {plant_name} en el terreno {p_id}. Me estoy secando... ¿Me regalas un poquito de agua? 🥺")
+                            send_telegram_msg(chat_id, random.choice(water_msgs))
                             flags['water'] = True
                         elif plot.get('isSpoiled') and not flags.get('spoiled'):
-                            send_telegram_msg(chat_id, f"🦠 Cof, cof... Me siento muy enfermita en el terreno {p_id}. Me pudrí... ¡Límpiame por favor! 🤒")
+                            send_telegram_msg(chat_id, random.choice(spoiled_msgs))
                             flags['spoiled'] = True
 
-                        # Reseteo de banderas si la planta se recuperó o se regó
+                        # Reseteo de banderas si la planta se recuperó o se regó (Permite que el bot vuelva a avisar en el futuro si recae)
                         if not plot.get('hasCrow'): flags['crow'] = False
                         if not plot.get('isReady'): flags['ready'] = False
                         if plot.get('water', 100) >= min_safe: flags['water'] = False
