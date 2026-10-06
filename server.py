@@ -198,6 +198,7 @@ def process_server_tick(game_state_str, chat_id=None):
                     min_safe = 20
                     max_safe = 100
                     if plant_id == 'flower_wheat': min_safe, max_safe = 60, 100
+                    elif plant_id == 'flower_bamboo': min_safe, max_safe = 50, 90 # NUEVO
                     elif plant_id == 'flower_small': min_safe, max_safe = 30, 90
                     elif plant_id == 'flower_big': min_safe, max_safe = 50, 70
                     elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
@@ -211,8 +212,10 @@ def process_server_tick(game_state_str, chat_id=None):
                             plot['water'] = max_safe 
                             plot['hasCrow'] = False
                         else:
-                            evap_rate = 10.0 if plant_id == 'flower_cactus' else 40.0
+                            # -------- AQUÍ VA TU BLOQUE EXACTO --------
+                            evap_rate = 80.0 if plant_id == 'flower_bamboo' else (10.0 if plant_id == 'flower_cactus' else 40.0)
                             evap_rate = evap_rate * season_multiplier 
+                            # ------------------------------------------
                             
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
@@ -258,6 +261,7 @@ def process_server_tick(game_state_str, chat_id=None):
                         if is_auto_harvesting and not plot.get('isSpoiled'):
                             reward = 0
                             if plant_id == 'flower_wheat': reward = 1500
+                            elif plant_id == 'flower_bamboo': reward = 6500 # NUEVO
                             elif plant_id == 'flower_cactus': reward = 3200
                             elif plant_id == 'flower_small': reward = 4500
                             elif plant_id == 'flower_big': reward = 26000

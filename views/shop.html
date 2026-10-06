@@ -74,6 +74,7 @@ window.shopApp = {
         ],
         flowers: [
             { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Recompensa de 1.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 60% a 100% (Ultra Rápido)<br><strong class="text-red-500">Peligro:</strong> Inundación inmediata y cuervos.', price: 50 },
+            { id: 'flower_bamboo', name: 'Bambú Tryhard', image: 'https://i.ibb.co/S4G2c9qy/Frame-768.png', duration: '10 Minutos', usage: '1', desc: 'Recompensa de 6.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 90% (Extremo)<br><strong class="text-red-500">Peligro:</strong> Evaporación brutal (x2). Requiere atención constante sin apartar la vista.', price: 2000 },
             { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: 'Recompensa de 3.200 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 20% a 80% (Desafiante)<br><strong class="text-red-500">Peligro:</strong> Pudrición instantánea.', price: 800 },
             { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 4.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 30% a 90% (Moderado)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal que detiene el crecimiento.', price: 2000 },
             { id: 'flower_crystal', name: 'Helecho de Cristal', image: 'https://i.ibb.co/5WcdFhL9/Frame-764.png', duration: '2 Horas', usage: '1', desc: 'Recompensa de 10.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 40% a 80% (Estable)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal.', price: 4000 },
@@ -251,6 +252,7 @@ window.shopApp = {
                             
                             if (plot.plant && plot.status === 'planted') {
                                 if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
+                                else if (plot.plant.id === 'flower_bamboo' && plot.water > 90) plot.water = 90; // NUEVO
                                 else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
                                 else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
                                 else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
@@ -426,6 +428,7 @@ window.shopApp = {
                                     plot.crowLeavingAt = 0;
                                     if (plot.plant && plot.status === 'planted') {
                                         if (plot.plant.id === 'flower_wheat') plot.water = 100;
+                                        else if (plot.plant.id === 'flower_bamboo') plot.water = 90; // NUEVO
                                         else if (plot.plant.id === 'flower_small') plot.water = 90;
                                         else if (plot.plant.id === 'flower_big') plot.water = 70;
                                         else if (plot.plant.id === 'flower_cactus') plot.water = 80;
