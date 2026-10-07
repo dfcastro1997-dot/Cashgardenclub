@@ -2295,7 +2295,7 @@ if (typeof window.farmApp === 'undefined') {
             else { pAtk = 40; pDef = 20; pHp = 100; }
 
             this.state.arsenal.push({
-                id: 'ars_' + Date.now(),
+                id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                 plantId: pid,
                 name: plot.plant.name,
                 icon: plot.plant.icon,
@@ -2903,7 +2903,11 @@ if (typeof window.farmApp === 'undefined') {
             list.innerHTML = '';
             
             const allCandidates = [];
-            arsenal.forEach(a => allCandidates.push({ type: 'arsenal', data: a }));
+            // Garantizar ID único para cada elemento del arsenal
+            arsenal.forEach((a, i) => {
+                if (!a.id) a.id = 'ars_' + Date.now() + '_' + i + '_' + Math.random().toString(36).substr(2, 4);
+                allCandidates.push({ type: 'arsenal', data: a });
+            });
             readyPlots.forEach(p => allCandidates.push({ type: 'plot', data: p }));
 
             allCandidates.forEach((c, idx) => {

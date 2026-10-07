@@ -298,13 +298,24 @@ window.combatApp = {
             });
         };
 
+        const usedArsenalIds = new Set();
+        const usedPlotIds = new Set();
+
         selected.forEach(sel => {
             if (sel.type === 'arsenal') {
-                const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag);
-                if (ap) buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id);
+                // Busca una planta del arsenal no utilizada en esta iteración
+                const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag && !usedArsenalIds.has(a.id))
+                        || window.farmApp.state.arsenal.find(a => !usedArsenalIds.has(a.id));
+                if (ap) {
+                    usedArsenalIds.add(ap.id);
+                    buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id);
+                }
             } else if (sel.type === 'plot') {
-                const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag);
-                if (p && p.plant) buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id);
+                const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag && !usedPlotIds.has(plot.id));
+                if (p && p.plant) {
+                    usedPlotIds.add(p.id);
+                    buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id);
+                }
             }
         });
 
