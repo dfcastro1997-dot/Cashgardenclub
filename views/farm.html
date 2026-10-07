@@ -8,21 +8,29 @@
         </div>
         
         <!-- BOTONES CON MISMO TAMAÑO EN MÓVIL (Grid) -->
-        <div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center w-full sm:w-auto mt-1 sm:mt-0">
-            <!-- Botón Herramientas -->
-            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 transition-all active:scale-95 text-sm">
-                <span class="text-lg">🛠</span> Herram.
+        <div class="grid grid-cols-4 gap-3 sm:flex sm:flex-wrap sm:items-center w-full sm:w-auto mt-1 sm:mt-0">
+            <!-- Botón Herramientas (1 Columna en móvil, Oculto en PC) -->
+            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden col-span-1 w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center transition-all active:scale-95 text-xl">
+                🛠
             </button>
 
-            <!-- BOTÓN DUELO (Blanco y Elegante) -->
-            <button onclick="intentarDuelo()" class="w-full sm:w-auto h-full min-h-[48px] bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 transition-all active:scale-95 px-4">
-                <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
-                <span class="text-xs sm:text-sm uppercase tracking-widest">Duelo</span>
-            </button>
+            <!-- Contenedor agrupado para PC (Duelo + Clima) -->
+            <div class="col-span-3 sm:col-span-1 flex gap-3 w-full sm:w-auto">
+                <!-- BOTÓN DUELO (Blanco y Elegante) -->
+                <button onclick="intentarDuelo()" class="flex-1 sm:w-auto h-full min-h-[48px] bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 transition-all active:scale-95 px-4 sm:px-6">
+                    <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
+                    <span class="text-xs sm:text-sm uppercase tracking-widest">Duelo</span>
+                </button>
+                
+                <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL -->
+                <div id="season-widget" class="hidden sm:flex w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm items-center px-4 relative overflow-hidden transition-all">
+                    <!-- Se inyecta por JS -->
+                </div>
+            </div>
             
-            <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL -->
-            <div id="season-widget" class="col-span-2 sm:col-span-1 w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center px-4 relative overflow-hidden transition-all">
-                <!-- Se inyecta por JS -->
+            <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Solo Móvil - Ocupa ancho total abajo) -->
+            <div id="season-widget-mobile" class="col-span-4 sm:hidden w-full h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center px-4 relative overflow-hidden transition-all">
+                <!-- Se inyecta por JS - La misma función de clima llenará ambos -->
             </div>
         </div>
     </div>
@@ -581,12 +589,31 @@
     </div>
 </div>
 
-<!-- MODAL DE ALERTA RÁPIDA DEL MINIJUEGO -->
 <div id="farm-alert-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4 pointer-events-none">
     <div class="bg-white rounded-2xl shadow-2xl w-64 p-4 text-center border-2 border-cg_navy transform transition-transform">
         <div id="farm-alert-icon" class="text-4xl mb-2">🎯</div>
         <h4 id="farm-alert-title" class="text-sm font-black text-cg_navy mb-1">Título</h4>
         <p id="farm-alert-msg" class="text-xs text-gray-500 font-bold">Mensaje</p>
+    </div>
+</div>
+
+<!-- MODAL DE TICKET REQUERIDO -->
+<div id="ticket-required-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('ticket-required-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8">
+        <div class="absolute -top-16 -right-16 w-32 h-32 bg-cg_gold/20 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+        
+        <div class="w-20 h-20 bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-center mx-auto mb-5 shadow-inner relative z-10">
+            <img src="https://i.ibb.co/4nkYz5VM/Frame-769.png" class="w-12 h-12 object-contain drop-shadow-md">
+        </div>
+        
+        <h3 class="text-2xl font-black text-cg_navy mb-2 relative z-10 tracking-tight">Ticket Requerido</h3>
+        <p class="text-sm text-gray-500 mb-6 font-medium relative z-10">Necesitas un Ticket de Duelo para acceder a la Arena. Adquiérelo en el Mercado.</p>
+        
+        <button onclick="document.getElementById('ticket-required-modal').classList.replace('flex', 'hidden'); loadView('shop', document.querySelectorAll('.nav-btn-desktop')[1] || document.querySelectorAll('.nav-btn-mobile')[1]);" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm relative z-10">
+            Ir al Mercado
+        </button>
     </div>
 </div>
 
@@ -602,12 +629,23 @@ if (typeof window.farmApp === 'undefined') {
 
     function intentarDuelo() {
         if (!window.farmApp.state.inventory['tool_duel_ticket'] || window.farmApp.state.inventory['tool_duel_ticket'].qty <= 0) {
-            window.farmApp.showFarmAlert('Ticket Requerido', 'Compra un Ticket de Duelo en el Mercado de Insumos.', '🎫');
+            const ticketModal = document.getElementById('ticket-required-modal');
+            if (ticketModal) {
+                ticketModal.classList.remove('hidden');
+                ticketModal.classList.add('flex');
+                setTimeout(() => {
+                    if (ticketModal.classList.contains('flex')) {
+                        ticketModal.classList.remove('flex');
+                        ticketModal.classList.add('hidden');
+                    }
+                }, 4000);
+            }
             return;
         }
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
         if (readyPlots.length === 0) {
             window.farmApp.showFarmAlert('Sin Escuadrón', 'Debes tener al menos 1 planta al 100% de madurez en tu Invernadero.', '🌱');
+            setTimeout(() => { window.farmApp.closeFarmAlert(); }, 3000);
             return;
         }
         loadView('combat', document.querySelectorAll('.nav-btn-desktop')[0]);
