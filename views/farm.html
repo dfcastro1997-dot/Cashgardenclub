@@ -684,8 +684,10 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         updateSeasonWidget() {
-            const el = document.getElementById('season-widget');
-            if (!el) return;
+            const desktopEl = document.getElementById('season-widget');
+            const mobileEl = document.getElementById('season-widget-mobile');
+            if (!desktopEl && !mobileEl) return;
+            
             const now = Date.now();
             const season = this.getSeasonData(now);
             const d = new Date(now);
@@ -699,7 +701,7 @@ if (typeof window.farmApp === 'undefined') {
             const dateStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-            el.innerHTML = `
+            const htmlContent = `
                 <!-- Gradiente de fondo difuminado en la derecha -->
                 <div class="absolute right-0 top-0 w-32 h-full ${season.bg} [mask-image:linear-gradient(to_left,white,transparent)] pointer-events-none opacity-80"></div>
                 
@@ -714,6 +716,9 @@ if (typeof window.farmApp === 'undefined') {
                     </div>
                 </div>
             `;
+
+            if (desktopEl) desktopEl.innerHTML = htmlContent;
+            if (mobileEl) mobileEl.innerHTML = htmlContent;
         },
 
 
