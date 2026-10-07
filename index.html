@@ -428,24 +428,28 @@
             const token = sessionStorage.getItem('session_token');
             if (username && token) {
                  try {
-                     const response = await fetch(`/api/sync/${username}?token=${token}`);
-                     if (response.status === 401) {
-                         showSessionExpiredModal("Tu sesión es inválida o ha expirado. Por favor, inicia sesión nuevamente.");
-                         return; 
-                     }
-                     if (response.ok) {
-                         const data = await response.json();
-                         updateProfileUI(data.user);
-                         document.getElementById('login-screen').classList.add('hidden');
-                         document.getElementById('dashboard-screen').classList.remove('hidden');
-                         document.getElementById('dashboard-screen').classList.add('flex');
-                         loadView('farm', document.querySelector('.nav-btn-desktop'));
-                     } else {
-                         logout(); 
-                     }
-                 } catch (e) {
-                     console.error("Error validando sesión:", e);
-                 }
+                    const response = await fetch(`/api/sync/${username}?token=${token}`);
+                    if (response.status === 401) {
+                        showSessionExpiredModal("Tu sesión es inválida o ha expirado. Por favor, inicia sesión nuevamente.");
+                        return; 
+                    }
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateProfileUI(data.user);
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-screen').classList.remove('hidden');
+                        document.getElementById('dashboard-screen').classList.add('flex');
+                        loadView('farm', document.querySelector('.nav-btn-desktop'));
+                    } else if (response.status >= 500) {
+                        // Si el servidor se está reiniciando (502, 503), no desloguear. Solo avisar.
+                        showSessionExpiredModal("El servidor se está actualizando. Vuelve a intentar en unos segundos.");
+                    } else {
+                        logout(); 
+                    }
+                } catch (e) {
+                    console.error("Error validando sesión (posible caída temporal):", e);
+                    showSessionExpiredModal("No pudimos conectar con el servidor. Se está aplicando una actualización.");
+                }
             } else if (username) {
                 logout();
             }

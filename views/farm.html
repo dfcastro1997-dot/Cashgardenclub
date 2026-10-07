@@ -1003,11 +1003,17 @@ if (typeof window.farmApp === 'undefined') {
                         }
                     })
                     .catch(e => { 
-                        console.error("Error de sincronización:", e); 
-                        this.updateUI(); 
+                        console.error("Error de sincronización (Servidor actualizándose):", e); 
+                        // IMPORTANTE: NO llamamos a this.updateUI() aquí.
+                        // Si inicializamos la UI sin datos, cargará 35,000 semillas por defecto 
+                        // y el autoguardado borrará el progreso real cuando el servidor regrese.
+                        
+                        if (window.showSessionExpiredModal) {
+                            window.showSessionExpiredModal("El servidor está recibiendo una actualización. Por favor, recarga la página en unos segundos.");
+                        }
                     }); 
-            }
-        },
+                }
+            },
 
         updateUI() {
             const localBalance = document.getElementById('global-seeds-display');
