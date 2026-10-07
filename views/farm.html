@@ -907,13 +907,13 @@ if (typeof window.farmApp === 'undefined') {
                 seedsBalance: this.state.seedsBalance,
                 practiceTokens: this.state.practiceTokens || 0, 
                 autoWaterEndTime: this.state.autoWaterEndTime,
-                autoHarvestEndTime: this.state.autoHarvestEndTime || 0, // <-- AÑADIDO
                 plots: this.state.plots,
                 inventory: this.state.inventory,
+                arsenal: this.state.arsenal || [],
                 lastTick: this.state.lastTick
             });
 
-            const username = sessionStorage.getItem('username'); 
+            const username = sessionStorage.getItem('username');
             const token = sessionStorage.getItem('session_token'); // <-- LEER TOKEN
             
             if (username && token) {
@@ -978,6 +978,7 @@ if (typeof window.farmApp === 'undefined') {
                                 this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
                                 this.state.autoHarvestEndTime = s.autoHarvestEndTime ?? 0;
                                 this.state.plots = s.plots ?? this.state.plots;
+                                this.state.arsenal = s.arsenal ?? (this.state.arsenal || []);
                                 
                                 // MIGRACIÓN AUTOMÁTICA DE 6 A 9 TERRENOS EN LA CARGA
                                 if (this.state.plots.length === 6) {
@@ -1461,9 +1462,20 @@ if (typeof window.farmApp === 'undefined') {
                                 </div>
                                 
                                 ${plot.isReady ? `
-                                    <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[9px] sm:text-[10px] ${plot.isSpoiled ? 'bg-orange-600 hover:bg-orange-700' : 'bg-[#2E7D32] hover:bg-green-700'} text-white font-bold transition-colors uppercase tracking-widest px-2 sm:px-3 py-1 rounded shadow-sm animate-pulse">
-                                        ${plot.isSpoiled ? 'Cosecha Dañada' : 'Cosechar'}
-                                    </button>
+                                    ${plot.isSpoiled ? `
+                                        <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[9px] sm:text-[10px] bg-orange-600 hover:bg-orange-700 text-white font-bold transition-colors uppercase tracking-widest px-2 sm:px-3 py-1 rounded shadow-sm animate-pulse">
+                                            Cosecha Dañada
+                                        </button>
+                                    ` : `
+                                        <div class="flex gap-1">
+                                            <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="text-[8px] sm:text-[9px] bg-[#2E7D32] hover:bg-green-700 text-white font-bold transition-colors uppercase tracking-widest px-2 py-1 rounded shadow-sm animate-pulse">
+                                                Cosechar
+                                            </button>
+                                            <button onclick="window.farmApp.storePlantForCombat(${plot.id}); event.stopPropagation();" class="text-[8px] sm:text-[9px] bg-gray-700 hover:bg-gray-800 text-white font-bold transition-colors uppercase tracking-widest px-2 py-1 rounded shadow-sm">
+                                                Almacenar
+                                            </button>
+                                        </div>
+                                    `}
                                 ` : `
                                     <div class="flex items-center gap-1.5 sm:gap-2">
                                         <span class="text-[8px] sm:text-[10px] font-bold ${isAlert ? 'text-red-500' : 'text-gray-500'} pointer-events-none">⏳ ${isAlert ? 'Pausado' : timeLeftText}</span>
@@ -2180,8 +2192,10 @@ if (typeof window.farmApp === 'undefined') {
                 seedsBalance: this.state.seedsBalance,
                 practiceTokens: this.state.practiceTokens || 0, 
                 autoWaterEndTime: this.state.autoWaterEndTime,
+                autoHarvestEndTime: this.state.autoHarvestEndTime || 0,
                 plots: this.state.plots,
                 inventory: this.state.inventory,
+                arsenal: this.state.arsenal || [],
                 lastTick: this.state.lastTick
             });
 
@@ -2215,6 +2229,93 @@ if (typeof window.farmApp === 'undefined') {
             }
             // --- FIN CORRECCIÓN ---
         },
+
+        storePlantForCombat(plotId) {
+            const plot = this.state.plots[plotId];
+            if (!plot.isReady || plot.isSpoiled) return;
+
+            if (this.state.isHarvestingAction) return;
+            this.state.isHarvestingAction = true;
+
+            const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
+            navButtons.forEach(btn => btn.style.pointerEvents = 'none');
+            this.showPlotToast(plotId, '⏳', 'Almacenando...');
+
+            if (!this.state.arsenal) this.state.arsenal = [];
+
+            let pAtk = 34, pDef = 20, pHp = 100;
+            const pid = plot.plant.id;
+            if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
+            else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
+            else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
+            else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
+            else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
+            else { pAtk = 40; pDef = 20; pHp = 100; }
+
+            this.state.arsenal.push({
+                id: 'ars_' + Date.now(),
+                plantId: pid,
+                name: plot.plant.name,
+                icon: plot.plant.icon,
+                hp: pHp,
+                maxHp: pHp,
+                atk: pAtk,
+                def: pDef
+            });
+
+            plot.potUses += 1;
+            const maxUses = plot.pot === 'small' ? 5 : 10;
+            if (plot.potUses >= maxUses) {
+                plot.status = 'empty'; plot.pot = null; plot.potUses = 0;
+            } else {
+                plot.status = 'pot';
+            }
+            
+            plot.plant = null; 
+            plot.hasCrow = false; plot.crowLeavingAt = 0; plot.scarecrowEndTime = 0;
+            plot.plantedAt = 0; plot.harvestAt = 0; plot.isReady = false; plot.isSpoiled = false;
+
+            if (this.state.selectedPlotId === plotId) {
+                this.selectPlot(plotId);
+            } else {
+                this.renderPlots();
+            }
+
+            this.state.lastTick = Date.now();
+            this.state.isSaving = true; 
+            
+            const stateToSave = JSON.stringify({
+                seedsBalance: this.state.seedsBalance,
+                practiceTokens: this.state.practiceTokens || 0, 
+                autoWaterEndTime: this.state.autoWaterEndTime,
+                plots: this.state.plots,
+                inventory: this.state.inventory,
+                arsenal: this.state.arsenal,
+                lastTick: this.state.lastTick
+            });
+
+            const username = sessionStorage.getItem('username'); 
+            const token = sessionStorage.getItem('session_token');
+            
+            if (username && token) {
+                if (this.saveTimeout) clearTimeout(this.saveTimeout);
+                fetch('/api/save_state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
+                }).then(res => {
+                    this.state.isHarvestingAction = false; 
+                    navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
+                    if (res.ok) {
+                        this.showPlotToast(plotId, '🛡️', '¡Almacenada!');
+                    }
+                }).catch(e => {
+                    this.state.isHarvestingAction = false; 
+                    navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
+                    this.showPlotToast(plotId, '⚠️', 'Error al guardar');
+                });
+            }
+        }
 
         openCrowModal(plotId) {
             if (this.state.plots[plotId] && this.state.plots[plotId].isSpoiled) {

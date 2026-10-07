@@ -1,0 +1,63 @@
+<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                <span class="text-[10px] font-extrabold text-green-600 uppercase tracking-widest">Almacén Estratégico</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Mi Arsenal de Combate</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Aquí descansan tus plantas listas para la Arena. Revisa sus estadísticas de Vida, Ataque y Defensa.</p>
+        </div>
+    </div>
+
+    <div id="arsenal-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- Rellenado por JS -->
+    </div>
+</div>
+
+<script>
+    function renderArsenal() {
+        const grid = document.getElementById('arsenal-grid');
+        grid.innerHTML = '';
+        
+        const arsenal = (window.farmApp && window.farmApp.state.arsenal) ? window.farmApp.state.arsenal : [];
+        
+        if (arsenal.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <span class="text-5xl mb-4 block">🥀</span>
+                    <h3 class="text-xl font-black text-cg_navy mb-2">Arsenal Vacío</h3>
+                    <p class="text-sm text-gray-500">Aún no has almacenado ninguna planta para el combate. Ve a tu Invernadero y al cosechar elige "Almacenar".</p>
+                </div>
+            `;
+            return;
+        }
+        
+        arsenal.forEach(plant => {
+            grid.innerHTML += `
+                <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full opacity-50 z-0"></div>
+                    <div class="flex items-center justify-center w-full h-32 mb-4 relative z-10">
+                        <img src="${plant.icon}" class="w-20 h-20 object-contain drop-shadow-md group-hover:scale-110 transition-transform">
+                    </div>
+                    <h4 class="font-black text-cg_navy text-lg text-center mb-3 relative z-10">${plant.name}</h4>
+                    <div class="grid grid-cols-3 gap-2 text-center relative z-10">
+                        <div class="bg-red-50 rounded-lg p-2 border border-red-100">
+                            <span class="block text-[10px] font-bold text-red-400 uppercase">HP</span>
+                            <span class="font-black text-red-600">${plant.hp}</span>
+                        </div>
+                        <div class="bg-orange-50 rounded-lg p-2 border border-orange-100">
+                            <span class="block text-[10px] font-bold text-orange-400 uppercase">ATK</span>
+                            <span class="font-black text-orange-600">${plant.atk}</span>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-2 border border-blue-100">
+                            <span class="block text-[10px] font-bold text-blue-400 uppercase">DEF</span>
+                            <span class="font-black text-blue-600">${plant.def}%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    renderArsenal();
+</script>
