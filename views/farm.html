@@ -14,6 +14,12 @@
                 <span class="text-base sm:text-lg">🛠</span> 
                 <span class="text-xs sm:text-sm">Herramientas</span>
             </button>
+
+            <!-- NUEVO: BOTÓN ARENA 3VS3 -->
+            <button onclick="window.farmApp.combat.init()" class="col-span-2 sm:col-span-1 w-full sm:w-auto h-full min-h-[48px] bg-red-500 hover:bg-red-600 text-white border-2 border-red-700 rounded-xl shadow-lg font-black flex items-center justify-center gap-2 transition-all active:scale-95 px-4 animate-pulse">
+                <span class="text-base sm:text-lg">⚔️</span> 
+                <span class="text-xs sm:text-sm uppercase tracking-widest">Duelo 3vs3</span>
+            </button>
             
             <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL -->
             <div id="season-widget" class="col-span-2 sm:col-span-1 w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center px-4 relative overflow-hidden transition-all">
@@ -588,6 +594,67 @@
 
 
 
+
+<!-- MODAL DE COMBATE 3VS3 -->
+<div id="combat-arena-modal" class="fixed inset-0 z-[600] hidden flex-col bg-amber-50">
+    <!-- Escenario de Fondo -->
+    <div class="absolute inset-0 bg-[url('https://i.ibb.co/TqPpc87z/Frame-745.png')] bg-cover bg-center opacity-30 pointer-events-none"></div>
+    
+    <!-- Header: Barras Globales y Turno -->
+    <div class="relative z-10 flex justify-between items-start p-4 md:p-6 bg-white/90 backdrop-blur shadow-md border-b-4 border-amber-200">
+        <!-- Jugador Global HP -->
+        <div class="flex-1 max-w-[200px] md:max-w-xs">
+            <div class="flex justify-between text-[10px] md:text-xs font-black text-green-700 mb-1 uppercase tracking-widest"><span>Tu Equipo</span> <span id="cb-p-global-hp">0/0</span></div>
+            <div class="h-3 md:h-4 w-full bg-gray-200 rounded-full overflow-hidden border border-green-300 shadow-inner"><div id="cb-p-global-bar" class="h-full bg-green-500 transition-all"></div></div>
+        </div>
+        
+        <!-- Indicador de Turno -->
+        <div class="mx-2 md:mx-4 flex flex-col items-center justify-center bg-cg_navy text-white px-4 md:px-8 py-2 md:py-3 rounded-2xl shadow-xl border-4 border-cg_gold transform -translate-y-2">
+            <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-cg_gold mb-0.5">Ronda</span>
+            <span id="cb-turn-counter" class="text-xl md:text-3xl font-black leading-none">1</span>
+        </div>
+        
+        <!-- Enemigo Global HP -->
+        <div class="flex-1 max-w-[200px] md:max-w-xs text-right">
+            <div class="flex justify-between text-[10px] md:text-xs font-black text-red-700 mb-1 uppercase tracking-widest"><span id="cb-e-global-hp">0/0</span> <span>La Bandada</span></div>
+            <div class="h-3 md:h-4 w-full bg-gray-200 rounded-full overflow-hidden border border-red-300 shadow-inner flex justify-end"><div id="cb-e-global-bar" class="h-full bg-red-600 transition-all"></div></div>
+        </div>
+    </div>
+
+    <!-- Arena de Combate -->
+    <div class="flex-1 relative z-10 flex justify-between items-center px-2 md:px-16 mt-4">
+        <!-- Izquierda: Plantas (Jugador) -->
+        <div id="cb-player-team" class="flex flex-col gap-4 md:gap-6 w-1/3 max-w-[140px] md:max-w-[180px]"></div>
+        
+        <!-- Centro: Feed de Acción -->
+        <div class="flex-1 flex flex-col items-center justify-center pointer-events-none z-50">
+            <div id="cb-fx-msg" class="text-3xl md:text-6xl font-black text-white drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] opacity-0 transition-opacity duration-300 text-center uppercase tracking-widest" style="-webkit-text-stroke: 2px black;"></div>
+        </div>
+
+        <!-- Derecha: Cuervos (Enemigos) -->
+        <div id="cb-enemy-team" class="flex flex-col gap-4 md:gap-6 w-1/3 max-w-[140px] md:max-w-[180px] items-end"></div>
+    </div>
+
+    <!-- Panel Inferior: Minijuego y Controles -->
+    <div class="relative z-20 bg-white border-t-8 border-cg_navy p-6 md:p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col items-center">
+        <h3 id="cb-action-text" class="text-sm md:text-lg font-black text-cg_navy mb-4 uppercase tracking-widest text-center">Toca tu planta atacante</h3>
+        
+        <!-- Barra de Habilidad (Oscilante) -->
+        <div id="cb-minigame-zone" class="w-full max-w-2xl relative h-12 md:h-14 bg-gray-800 rounded-full overflow-hidden border-4 border-gray-900 shadow-inner hidden">
+            <!-- Franja Azul Dinámica -->
+            <div id="cb-safe-zone" class="absolute top-0 h-full bg-blue-500 transition-all border-x-4 border-blue-300 flex items-center justify-center">
+                <!-- Núcleo Dorado (Crítico x2) -->
+                <div class="absolute h-full w-2 bg-yellow-400 shadow-[0_0_15px_yellow]"></div>
+            </div>
+            <!-- Flecha a velocidad constante -->
+            <div id="cb-pointer" class="absolute top-0 h-full w-2 bg-white shadow-[0_0_15px_white] transform -translate-x-1/2 z-20"></div>
+        </div>
+        
+        <button id="cb-action-btn" onclick="window.farmApp.combat.stopMinigame()" class="mt-6 w-full max-w-md bg-cg_gold hover:bg-orange-500 text-white font-black py-4 md:py-5 rounded-xl text-xl shadow-[0_5px_0_#c27818] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest hidden">
+            ¡EJECUTAR!
+        </button>
+    </div>
+</div>
 
 
 
@@ -1428,6 +1495,9 @@ if (typeof window.farmApp === 'undefined') {
         }, // <--- ¡AGREGA ESTA COMA AQUÍ!
 
         processTick() {
+            // NUEVO: ESCUDO DE COMBATE (Si estás peleando, la granja se congela en el tiempo)
+            if (this.state.combatLock) return; 
+
             const now = Date.now();
             const deltaMS = now - this.state.lastTick;
             this.state.lastTick = now;
@@ -2345,6 +2415,269 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('plant-modal').classList.remove('hidden');
             document.getElementById('plant-modal').classList.add('flex');
         },
+
+
+
+        combat: {
+            active: false,
+            phase: 'SETUP', // SETUP, P_SELECT, P_MINIGAME, E_TURN, E_MINIGAME
+            playerTeam: [],
+            enemyTeam: [],
+            turn: 1,
+            attacker: null,
+            target: null,
+            bar: { req: null, x: 0, dir: 1, speed: 1.5, safeStart: 0, safeWidth: 0 },
+
+            init() {
+                // Validación Estricta: Ticket de Duelo
+                if (!window.farmApp.state.inventory['tool_duel_ticket'] || window.farmApp.state.inventory['tool_duel_ticket'].qty <= 0) {
+                    window.farmApp.showFarmAlert('Acceso Restringido', 'Debes adquirir un Ticket de Duelo en el Mercado de Insumos para entrar a la Arena 3vs3.', '🎫');
+                    return;
+                }
+
+                // Extraer Plantas Cosechadas (El Stake/Apuesta)
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                if (readyPlots.length === 0) {
+                    window.farmApp.showFarmAlert('Escuadrón Vacío', 'Requiere al menos 1 planta al 100% de madurez en tu granja para apostarla en combate.', '🌱');
+                    return;
+                }
+
+                // Consumir Ticket
+                window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
+                window.farmApp.updateInventoryUI();
+
+                // Construir Equipo Jugador con Stats Estrictos
+                this.playerTeam = [];
+                readyPlots.slice(0, 3).forEach(p => {
+                    let pAtk = 34, pDef = 20, pHp = 100; // Base
+                    if(p.plant.id === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
+                    else if(p.plant.id === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } // Tanque
+                    else if(p.plant.id === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
+                    else if(p.plant.id === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } // Cañón Cristal
+                    else if(p.plant.id === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } // Élite
+
+                    this.playerTeam.push({ plotId: p.id, name: p.plant.name, icon: p.plant.icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef });
+                });
+
+                // Construir Bandada Enemiga
+                this.enemyTeam = [
+                    { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 100, maxHp: 100, atk: 30 },
+                    { name: 'Cuervo Alfa', icon: window.farmApp.state.images.crow, hp: 180, maxHp: 180, atk: 45 },
+                    { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 100, maxHp: 100, atk: 30 }
+                ];
+
+                window.farmApp.state.combatLock = true; // Activar Escudo del Servidor
+                this.active = true;
+                this.turn = 1;
+                this.phase = 'P_SELECT';
+                this.attacker = null;
+                this.target = null;
+
+                document.getElementById('combat-arena-modal').classList.remove('hidden');
+                document.getElementById('combat-arena-modal').classList.add('flex');
+                this.updateUI();
+                this.setInstruction('TU TURNO: Toca tu planta para atacar');
+            },
+
+            selectEntity(team, index) {
+                if (this.phase !== 'P_SELECT') return;
+
+                if (team === 'player' && this.playerTeam[index].hp > 0) {
+                    this.attacker = this.playerTeam[index];
+                    this.setInstruction(`Atacante: ${this.attacker.name} | Selecciona el cuervo objetivo`);
+                } else if (team === 'enemy' && this.enemyTeam[index].hp > 0 && this.attacker) {
+                    this.target = this.enemyTeam[index];
+                    this.phase = 'P_MINIGAME';
+                    this.startMinigame(this.attacker.def, "¡ATACAR!");
+                }
+                this.updateUI();
+            },
+
+            startMinigame(safeWidthPct, btnText) {
+                this.setInstruction('¡PREPARA TU GOLPE!');
+                const mgZone = document.getElementById('cb-minigame-zone');
+                const safeZone = document.getElementById('cb-safe-zone');
+                const btn = document.getElementById('cb-action-btn');
+                
+                mgZone.classList.remove('hidden');
+                btn.classList.remove('hidden');
+                btn.innerText = btnText;
+
+                // Dinámica de Dificultad Determinista: Ubicación Aleatoria pero Tamaño Fijo según Stats
+                this.bar.safeWidth = safeWidthPct;
+                this.bar.safeStart = Math.random() * (100 - safeWidthPct);
+                
+                safeZone.style.width = `${this.bar.safeWidth}%`;
+                safeZone.style.left = `${this.bar.safeStart}%`;
+
+                this.bar.x = 0;
+                this.bar.dir = 1;
+
+                const tick = () => {
+                    this.bar.x += this.bar.dir * this.bar.speed; // Velocidad Constante y justa
+                    if(this.bar.x >= 100) { this.bar.x = 100; this.bar.dir = -1; }
+                    if(this.bar.x <= 0) { this.bar.x = 0; this.bar.dir = 1; }
+                    document.getElementById('cb-pointer').style.left = `${this.bar.x}%`;
+                    this.bar.req = requestAnimationFrame(tick);
+                };
+                this.bar.req = requestAnimationFrame(tick);
+            },
+
+            stopMinigame() {
+                cancelAnimationFrame(this.bar.req);
+                document.getElementById('cb-minigame-zone').classList.add('hidden');
+                document.getElementById('cb-action-btn').classList.add('hidden');
+
+                const hitX = this.bar.x;
+                const center = this.bar.safeStart + (this.bar.safeWidth / 2);
+                
+                const isHit = hitX >= this.bar.safeStart && hitX <= (this.bar.safeStart + this.bar.safeWidth);
+                const isCrit = Math.abs(hitX - center) <= 2.0; // Núcleo Dorado: Tolerancia estricta
+
+                if (this.phase === 'P_MINIGAME') {
+                    if (isCrit) {
+                        this.showFx("¡CRÍTICO X2!", "text-yellow-400");
+                        this.target.hp -= (this.attacker.atk * 2);
+                    } else if (isHit) {
+                        this.showFx("¡ACIERTO NORMAL!", "text-green-400");
+                        this.target.hp -= this.attacker.atk;
+                    } else {
+                        this.showFx("¡FALLASTE!", "text-gray-400");
+                    }
+                    setTimeout(() => this.checkWinLoss('ENEMY'), 1500);
+                } 
+                else if (this.phase === 'E_MINIGAME') {
+                    if (isCrit || isHit) {
+                        this.showFx("¡DEFENSA PERFECTA!", "text-blue-400");
+                    } else {
+                        this.showFx("¡IMPACTO RECIBIDO!", "text-red-500");
+                        this.target.hp -= this.attacker.atk;
+                    }
+                    setTimeout(() => this.checkWinLoss('PLAYER'), 1500);
+                }
+                this.updateUI();
+            },
+
+            checkWinLoss(nextTurn) {
+                const pAlive = this.playerTeam.filter(p => p.hp > 0);
+                const eAlive = this.enemyTeam.filter(e => e.hp > 0);
+
+                if (eAlive.length === 0) {
+                    this.endCombat(true); // Ganas
+                } else if (pAlive.length === 0) {
+                    this.endCombat(false); // Pierdes a tus 3 plantas
+                } else {
+                    if (nextTurn === 'ENEMY') {
+                        this.executeEnemyTurn(pAlive, eAlive);
+                    } else {
+                        this.turn++;
+                        this.phase = 'P_SELECT';
+                        this.attacker = null;
+                        this.target = null;
+                        this.setInstruction('TU TURNO: Selecciona tu planta');
+                        this.updateUI();
+                    }
+                }
+            },
+
+            executeEnemyTurn(pAlive, eAlive) {
+                this.phase = 'E_TURN';
+                this.setInstruction('TURNO ENEMIGO...');
+                
+                // IA Determinista: El cuervo ataca a la planta con menos HP
+                this.attacker = eAlive[0]; 
+                this.target = pAlive.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
+                
+                this.updateUI();
+                
+                setTimeout(() => {
+                    this.phase = 'E_MINIGAME';
+                    // Usas la defensa de tu planta objetivo para defenderte
+                    this.startMinigame(this.target.def, "¡DEFENDER!");
+                }, 1500);
+            },
+
+            endCombat(victory) {
+                this.active = false;
+                window.farmApp.state.combatLock = false; // Desactiva Escudo
+                document.getElementById('combat-arena-modal').classList.add('hidden');
+                document.getElementById('combat-arena-modal').classList.remove('flex');
+
+                if (victory) {
+                    window.farmApp.showFarmAlert('¡VICTORIA ÉPICA!', 'La bandada fue destruida. Ganas 25,000 🌱 de botín y tus plantas regresan a sus macetas a salvo.', '🏆');
+                    window.farmApp.state.seedsBalance += 25000;
+                    document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                } else {
+                    window.farmApp.showFarmAlert('MASACRE', 'Tu escuadrón fue exterminado en combate. Las 3 plantas apostadas se perdieron para siempre.', '💀');
+                    this.playerTeam.forEach(pt => {
+                        let plot = window.farmApp.state.plots[pt.plotId];
+                        plot.status = 'empty'; plot.plant = null; plot.isReady = false; plot.potUses = Math.max(0, plot.potUses - 1);
+                    });
+                }
+                
+                window.farmApp.saveState();
+                window.farmApp.renderPlots();
+            },
+
+            updateUI() {
+                let pGlobalHp = this.playerTeam.reduce((acc, p) => acc + Math.max(0, p.hp), 0);
+                let pGlobalMax = this.playerTeam.reduce((acc, p) => acc + p.maxHp, 0);
+                let eGlobalHp = this.enemyTeam.reduce((acc, e) => acc + Math.max(0, e.hp), 0);
+                let eGlobalMax = this.enemyTeam.reduce((acc, e) => acc + e.maxHp, 0);
+                
+                document.getElementById('cb-p-global-hp').innerText = `${Math.round(pGlobalHp)}/${pGlobalMax}`;
+                document.getElementById('cb-p-global-bar').style.width = `${(pGlobalHp/pGlobalMax)*100}%`;
+                document.getElementById('cb-e-global-hp').innerText = `${Math.round(eGlobalHp)}/${eGlobalMax}`;
+                document.getElementById('cb-e-global-bar').style.width = `${(eGlobalHp/eGlobalMax)*100}%`;
+                document.getElementById('cb-turn-counter').innerText = this.turn;
+
+                const renderTeam = (teamArr, containerId, align, side) => {
+                    const c = document.getElementById(containerId);
+                    c.innerHTML = '';
+                    teamArr.forEach((ent, idx) => {
+                        if (ent.hp <= 0) return;
+                        let isActing = (this.attacker === ent) || (this.target === ent);
+                        let highlight = isActing ? (side === 'P' ? 'scale-110 drop-shadow-[0_0_15px_#22c55e]' : 'scale-110 drop-shadow-[0_0_15px_#ef4444]') : 'hover:scale-105';
+                        
+                        let statsHtml = side === 'P' ? `<span class="text-red-600">⚔️ ${ent.atk}</span> | <span class="text-blue-600">🛡️ ${ent.def}%</span>` : `<span class="text-red-600">⚔️ ${ent.atk}</span>`;
+                        let barColor = side === 'P' ? 'bg-green-500' : 'bg-red-500';
+
+                        c.innerHTML += `
+                            <div class="relative cursor-pointer transition-all duration-300 ${highlight}" onclick="window.farmApp.combat.selectEntity('${side === 'P' ? 'player' : 'enemy'}', ${idx})">
+                                <div class="w-full bg-gray-800 h-2 md:h-3 rounded-full overflow-hidden border border-gray-900 mb-1 flex ${side === 'E' ? 'justify-end' : ''}">
+                                     <div class="${barColor} h-full transition-all" style="width: ${(ent.hp/ent.maxHp)*100}%"></div>
+                                </div>
+                                <div class="flex gap-1 md:gap-2 text-[8px] md:text-[10px] font-black uppercase bg-white/90 px-1 rounded shadow mb-1 justify-center border border-gray-300">
+                                     ${statsHtml}
+                                </div>
+                                <div class="flex justify-center">
+                                    <img src="${ent.icon}" class="w-14 h-14 md:w-24 md:h-24 object-contain drop-shadow-xl ${isActing ? 'animate-pulse' : ''}" ${side === 'E' ? 'style="transform: scaleX(-1);"' : ''}>
+                                </div>
+                            </div>`;
+                    });
+                };
+
+                renderTeam(this.playerTeam, 'cb-player-team', 'start', 'P');
+                renderTeam(this.enemyTeam, 'cb-enemy-team', 'end', 'E');
+            },
+
+            setInstruction(text) {
+                document.getElementById('cb-action-text').innerText = text;
+            },
+
+            showFx(msg, colorClass) {
+                const fx = document.getElementById('cb-fx-msg');
+                fx.innerText = msg;
+                fx.className = `text-3xl md:text-5xl font-black ${colorClass} drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] transition-all duration-300 text-center uppercase tracking-widest`;
+                fx.style.opacity = '1';
+                fx.style.transform = 'scale(1.2)';
+                setTimeout(() => { fx.style.opacity = '0'; fx.style.transform = 'scale(1)'; }, 1200);
+            }
+        },
+
+
+
+
 
         ritual: {
             plotId: null, seedId: null, 
