@@ -597,6 +597,8 @@
     </div>
 </div>
 
+<<<<
+<!-- MODAL DE SELECCIÓN DE EQUIPO DE COMBATE -->
 <div id="team-selection-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in p-6 md:p-8 max-h-[85vh]">
@@ -616,6 +618,31 @@
         </div>
     </div>
 </div>
+====
+<!-- MODAL DE SELECCIÓN DE EQUIPO DE COMBATE -->
+<div id="team-selection-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in p-6 md:p-8 max-h-[85vh]">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy tracking-tight flex items-center gap-2"><span class="text-2xl">⚔️</span> Escuadrón</h3>
+            <div class="flex flex-col items-end">
+                <span class="bg-blue-50 text-blue-600 font-bold px-3 py-1 rounded-full text-xs" id="team-count-badge">0 / 3</span>
+                <span class="text-[10px] font-black text-green-600 mt-1 transition-colors" id="team-reward-preview">Premio: +0 🌱</span>
+            </div>
+        </div>
+        <p class="text-xs text-gray-500 mb-4 leading-relaxed">Selecciona hasta 3 plantas para combatir. <strong class="text-cg_navy">Las plantas más débiles multiplicarán tu recompensa, mientras que las fuertes reducirán las ganancias.</strong></p>
+        
+        <div class="flex-1 overflow-y-auto space-y-3 pr-2 hide-scrollbar" id="team-selection-list">
+            <!-- Inyectado por JS -->
+        </div>
+        
+        <div class="mt-6 flex gap-3 shrink-0">
+            <button onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3.5 rounded-xl hover:bg-gray-50 transition-colors uppercase tracking-widest text-xs">Cancelar</button>
+            <button onclick="window.farmApp.startCombatWithTeam()" id="btn-confirm-team" class="flex-1 bg-gray-300 text-gray-500 font-black py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-xs cursor-not-allowed" disabled>A la Arena</button>
+        </div>
+    </div>
+</div>
+>>>>
 
 <!-- MODAL DE TICKET REQUERIDO -->
 <div id="ticket-required-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
@@ -2964,6 +2991,45 @@ if (typeof window.farmApp === 'undefined') {
         updateTeamBtn() {
             const count = this.state.selectedCombatants.length;
             document.getElementById('team-count-badge').innerText = `${count} / 3 Seleccionadas`;
+            
+            // CÁLCULO DE RECOMPENSA POR RIESGO (Risk-to-Reward Ratio)
+            let totalReward = 0;
+            const REWARDS = {
+                'flower_crystal': 15000, // Riesgo Alto (HP bajo) -> Gran Premio
+                'flower_wheat': 12000,   // Riesgo Medio
+                'flower_bamboo': 10000,  // Riesgo Medio
+                'flower_small': 10000,   // Estándar
+                'flower_neon': 10000,    // Premium Estándar
+                'flower_solar': 9000,    // Premium Estándar
+                'flower_cactus': 7000,   // Tanque Defensivo -> Premio Menor
+                'flower_big': 6000,      // Tanque HP Alto -> Premio Menor
+                'flower_moon': 5000,     // Tanque Extremo -> Recompensa Mínima
+                'default': 8000
+            };
+
+            this.state.selectedCombatants.forEach(c => {
+                let pid = 'default';
+                if (c.type === 'arsenal') {
+                    const ap = this.state.arsenal.find(a => a.id === c.idTag);
+                    if (ap) pid = ap.plantId;
+                } else if (c.type === 'plot') {
+                    const p = this.state.plots.find(plot => plot.id == c.idTag);
+                    if (p && p.plant) pid = p.plant.id;
+                }
+                totalReward += (REWARDS[pid] || REWARDS['default']);
+            });
+
+            // Guardamos la recompensa potencial para que combat.html la reclame si gana
+            this.state.pendingCombatReward = totalReward;
+            
+            // Actualizamos la UI visualmente para indicar la dificultad
+            const rewardPreview = document.getElementById('team-reward-preview');
+            if (rewardPreview) {
+                rewardPreview.innerText = `Premio: +${totalReward.toLocaleString()} 🌱`;
+                if (totalReward >= 35000) rewardPreview.className = "text-[10px] font-black mt-1 text-red-500 animate-pulse";
+                else if (totalReward >= 25000) rewardPreview.className = "text-[10px] font-black mt-1 text-orange-500";
+                else rewardPreview.className = "text-[10px] font-black mt-1 text-green-600";
+            }
             
             const btn = document.getElementById('btn-confirm-team');
             if (count > 0) {

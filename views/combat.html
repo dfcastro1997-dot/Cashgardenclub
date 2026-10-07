@@ -158,7 +158,6 @@
             <button onclick="window.combatApp.closeCardModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors shrink-0">✕</button>
         </div>
         
-        <!-- Grid actualizado a 2 columnas en móvil, 3 en PC, para soportar 5 cartas -->
         <div id="cm-cards-container" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar">
             <!-- Cartas inyectadas por JS -->
         </div>
@@ -177,11 +176,12 @@
         </div>
         
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Victoria Épica</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">La bandada ha sido exterminada. Tu escuadrón botánico regresa a casa a salvo.</p>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">La bandada ha sido exterminada. Tu escuadrón botánico regresa a casa a salvo y se reembolsó tu ticket de entrada.</p>
         
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 sm:mb-8 relative z-10 shadow-inner">
             <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Botín Obtenido</p>
-            <p class="text-2xl sm:text-3xl font-black text-green-600">+25,000 🌱</p>
+            <!-- RECOMPENSA DINÁMICA -->
+            <p class="text-2xl sm:text-3xl font-black text-green-600" id="combat-victory-reward-text">+0 🌱</p>
         </div>
 
         <button onclick="loadView('farm')" class="w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
@@ -201,7 +201,7 @@
         </div>
         
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas se han perdido para siempre.</p>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas y el ticket de entrada se perdieron.</p>
         
         <button onclick="loadView('farm')" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Aceptar Destino
@@ -212,18 +212,17 @@
 <script>
 window.combatApp = {
     active: false,
-    phase: 'SETUP', // SETUP, P_SELECT, P_TARGETING, EXECUTION
+    phase: 'SETUP', 
     playerTeam: [],
     enemyTeam: [],
     turn: 1,
-    energy: 5,         // Energía inicial aumentada para soportar 5 cartas
-    maxEnergy: 15,     // Límite de energía subido
+    energy: 5,         
+    maxEnergy: 15,     
     actionQueue: [], 
     
     currentAttackerIdx: null,
     pendingSkill: null,
 
-    // Diccionario de Cartas Ampliado (5 por planta)
     SKILLS_DICT: {
         'flower_wheat': [
             {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque veloz básico.', icon: '🌿'}, 
@@ -272,16 +271,18 @@ window.combatApp = {
     init() {
         if (!window.farmApp) { loadView('farm'); return; }
 
+        // COBRO DEL TICKET
         if (window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
             window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
             window.farmApp.updateInventoryUI();
+            // Guardamos que entró a combate. Si cierra aquí, perdió el ticket.
+            window.farmApp.saveState(); 
         }
 
         this.playerTeam = [];
         const selected = window.farmApp.state.selectedCombatants || [];
         
         const buildPlant = (pid, name, icon, isArsenal, idTag) => {
-            // HP Escala a niveles de RPG (250 - 450)
             let pDef = 20, pHp = 250, pAtk = 34; 
             if(pid === 'flower_wheat') { pDef = 15; pHp = 250; }
             else if(pid === 'flower_cactus') { pDef = 35; pHp = 350; } 
@@ -310,13 +311,11 @@ window.combatApp = {
             }
         });
 
-        // Fallback
         if (this.playerTeam.length === 0) {
             let storedArsenal = window.farmApp.state.arsenal || [];
             storedArsenal.slice(0, 3).forEach(ap => buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id));
         }
 
-        // Armar Enemigos (HP Aumentado)
         this.enemyTeam = [
             { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 250, maxHp: 250, atk: 45 },
             { name: 'Cuervo Alfa', icon: window.farmApp.state.images.crow, hp: 450, maxHp: 450, atk: 75 },
@@ -325,7 +324,7 @@ window.combatApp = {
 
         window.farmApp.state.combatLock = true;
         
-        // PUNITIVO: Retirar plantas inmediatamente para evitar trampas al recargar
+        // PUNITIVO INMEDIATO: Remueve del inventario a las plantas antes de pelear.
         this.playerTeam.forEach(pt => {
             if (pt.fromArsenal) {
                 window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId);
@@ -354,7 +353,6 @@ window.combatApp = {
         const box = document.getElementById('energy-box');
         counter.innerText = `${this.energy} / ${this.maxEnergy}`;
         
-        // Efecto visual si me quedo sin energía
         if (this.energy === 0) {
             box.classList.replace('bg-blue-50', 'bg-gray-100');
             box.classList.replace('border-blue-200', 'border-gray-200');
@@ -445,7 +443,6 @@ window.combatApp = {
                 ? 'bg-white border border-gray-200 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-md skill-card' 
                 : 'bg-gray-100 border border-gray-200 opacity-50 cursor-not-allowed grayscale';
             
-            // Si es un Ultimate (4 o 5 de costo), lo hacemos destacar un poco
             const isUltimate = skill.cost >= 4;
             const ultBg = isUltimate && canAfford ? 'bg-gradient-to-br from-yellow-50 to-white border-yellow-200' : '';
             
@@ -514,10 +511,9 @@ window.combatApp = {
     lungeAttacker(elementId, side) {
         const el = document.getElementById(elementId);
         if (el) {
-            // Embestida frontal
             el.style.transform = side === 'P' ? 'translateY(-20px) scale(1.15)' : 'translateY(20px) scale(1.15)';
             setTimeout(() => {
-                el.style.transform = ''; // Vuelve a su lugar
+                el.style.transform = ''; 
             }, 300);
         }
     },
@@ -549,14 +545,12 @@ window.combatApp = {
             this.showFx(action.skill.name, "text-blue-500");
             await this.sleep(400);
 
-            // ANIMACIÓN EMBESTIDA
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
             await this.sleep(150);
 
-            // IMPACTO
             target.hp -= action.skill.dmg;
             this.shakeElement(`enemy-${this.targetIdx}`);
-            this.shakeScreen(); // Temblor global
+            this.shakeScreen(); 
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
             
@@ -583,7 +577,6 @@ window.combatApp = {
             let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
             if (alivePlayers.length === 0) break;
 
-            // IA Determinista: Ataca a la planta con MENOS VIDA
             let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
             
             this.currentAttackerIdx = i;
@@ -593,17 +586,15 @@ window.combatApp = {
             this.showFx("PICOTAZO", "text-gray-600");
             await this.sleep(400);
 
-            // ANIMACIÓN EMBESTIDA ENEMIGA
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
             await this.sleep(150);
 
-            // IMPACTO ENEMIGO Y DEFENSA PASIVA
             const mitigation = target.def / 100; 
             const actualDamage = Math.max(1, Math.floor(enemy.atk * (1 - mitigation)));
             
             target.hp -= actualDamage;
             this.shakeElement(`player-${this.targetIdx}`);
-            this.shakeScreen(); // Temblor global
+            this.shakeScreen(); 
             this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
@@ -650,13 +641,24 @@ window.combatApp = {
         window.farmApp.state.combatLock = false; 
 
         if (victory) {
-            window.farmApp.state.seedsBalance += 25000;
+            // Reclamamos el premio dinámico calculado en farm.html
+            const reward = window.farmApp.state.pendingCombatReward || 25000;
+            window.farmApp.state.seedsBalance += reward;
+            
+            // REEMBOLSAR EL TICKET POR HABER GANADO
+            if (window.farmApp.state.inventory['tool_duel_ticket']) {
+                window.farmApp.state.inventory['tool_duel_ticket'].qty += 1;
+                window.farmApp.updateInventoryUI();
+            }
+
+            document.getElementById('combat-victory-reward-text').innerText = `+${reward.toLocaleString()} 🌱`;
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
             window.farmApp.saveState();
         } else {
             document.getElementById('combat-defeat-modal').classList.remove('hidden');
             document.getElementById('combat-defeat-modal').classList.add('flex');
+            // Las plantas ya se borraron en el init(), y el ticket ya se cobró.
             window.farmApp.saveState(); 
         }
     },
