@@ -7,7 +7,7 @@
     }
     @keyframes float {
         0% { transform: translateY(0px); }
-        50% { transform: translateY(-8px); }
+        50% { transform: translateY(-6px); }
         100% { transform: translateY(0px); }
     }
     .animate-float {
@@ -15,9 +15,9 @@
     }
     @keyframes shake-hit {
         0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px) rotate(-2deg); }
-        50% { transform: translateX(5px) rotate(2deg); }
-        75% { transform: translateX(-5px) rotate(-2deg); }
+        25% { transform: translateX(-4px) rotate(-2deg); }
+        50% { transform: translateX(4px) rotate(2deg); }
+        75% { transform: translateX(-4px) rotate(-2deg); }
     }
     .shake-hit {
         animation: shake-hit 0.3s ease-in-out;
@@ -27,168 +27,171 @@
         background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
         background-size: 24px 24px;
     }
-    /* Estilos Premium para las Cartas */
+    
+    /* Estilos Premium Claros para las Cartas */
     .skill-card {
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        background: linear-gradient(145deg, #1C2634 0%, #0f172a 100%);
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        background: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
     .skill-card:hover:not(:disabled) {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgba(41, 150, 218, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-        border-color: #64D7FF;
+        transform: translateY(-4px);
+        box-shadow: 0 15px 25px -5px rgba(41, 150, 218, 0.15), 0 8px 10px -6px rgba(41, 150, 218, 0.1);
+        border-color: #2996DA;
     }
     .skill-card:active:not(:disabled) {
         transform: translateY(2px);
     }
     .skill-card:disabled {
         filter: grayscale(100%);
-        opacity: 0.5;
+        opacity: 0.6;
         cursor: not-allowed;
     }
 </style>
 
-<div class="max-w-[1200px] mx-auto flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-100px)] animate-fade-in relative pb-10 px-4 md:px-0">
+<div class="max-w-[1200px] mx-auto flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-100px)] animate-fade-in relative pb-6 px-4 md:px-0">
     
     <!-- HEADER MODERNO -->
-    <div class="flex justify-between items-center bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-gray-100 shrink-0 z-10 relative mt-4 md:mt-0">
-        <button onclick="loadView('farm')" class="bg-gray-50 hover:bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold border border-gray-200 flex items-center gap-2 transition-colors">
-            <span class="text-lg leading-none">&larr;</span> <span class="hidden md:inline uppercase tracking-wider">Huir</span>
+    <div class="flex justify-between items-center bg-white p-3 sm:p-4 md:p-6 rounded-3xl shadow-sm border border-gray-100 shrink-0 z-10 relative mt-4 md:mt-0">
+        <button onclick="loadView('farm')" class="bg-gray-50 hover:bg-gray-100 text-gray-600 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-bold border border-gray-200 flex items-center gap-1.5 transition-colors">
+            <span class="text-base sm:text-lg leading-none">&larr;</span> <span class="hidden sm:inline uppercase tracking-wider">Huir</span>
         </button>
-        <div class="text-center absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-            <div class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-100 mb-1 flex items-center gap-1.5 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Muerte Súbita
+        <div class="text-center absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full max-w-[150px] sm:max-w-[200px]">
+            <div class="bg-red-50 text-red-600 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border border-red-100 mb-0.5 sm:mb-1 flex items-center gap-1.5 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span> <span class="truncate">Muerte Súbita</span>
             </div>
-            <h2 class="text-xl md:text-3xl font-black text-cg_navy tracking-tight flex items-center gap-2">
+            <h2 class="text-lg sm:text-xl md:text-3xl font-black text-cg_navy tracking-tight flex items-center gap-1.5 sm:gap-2">
                 Arena 3v3
             </h2>
         </div>
-        <div class="bg-cg_navy text-white px-5 md:px-8 py-2 rounded-xl flex flex-col items-center shadow-md border-2 border-gray-800">
-            <span class="text-[9px] md:text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Ronda</span>
-            <span id="cb-turn-counter" class="text-xl md:text-3xl font-black leading-none text-cg_gold">1</span>
+        <div class="bg-cg_navy text-white px-4 sm:px-6 md:px-8 py-1.5 sm:py-2 rounded-xl flex flex-col items-center shadow-md border-2 border-gray-800 shrink-0">
+            <span class="text-[7px] sm:text-[9px] md:text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Ronda</span>
+            <span id="cb-turn-counter" class="text-lg sm:text-xl md:text-3xl font-black leading-none text-cg_gold">1</span>
         </div>
     </div>
 
     <!-- BATTLEFIELD (Layout Hexagonal RPG) -->
-    <div class="flex-1 relative flex flex-col justify-between mt-4 rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-4 sm:p-6 md:p-10 combat-bg-pattern min-h-[300px]">
+    <div class="flex-1 relative flex flex-col justify-between mt-3 sm:mt-4 rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-2 sm:p-4 md:p-10 combat-bg-pattern min-h-[280px] sm:min-h-[300px]">
         
         <!-- Centro VS Marca de agua -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.10]">
-            <span class="text-[120px] md:text-[200px] font-black text-gray-400 italic tracking-tighter select-none">VS</span>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.08]">
+            <span class="text-[80px] sm:text-[120px] md:text-[200px] font-black text-gray-400 italic tracking-tighter select-none">VS</span>
         </div>
 
         <!-- Fila Enemiga (Arriba) -->
-        <div id="cb-enemy-team" class="flex justify-center items-end gap-3 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pb-4 md:pb-8"></div>
+        <div id="cb-enemy-team" class="flex justify-center items-end gap-2 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pb-2 sm:pb-4 md:pb-8"></div>
         
         <!-- Separador Visual Central -->
         <div class="absolute left-0 top-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent transform -translate-y-1/2 z-0"></div>
 
         <!-- Fila Jugador (Abajo) -->
-        <div id="cb-player-team" class="flex justify-center items-start gap-3 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pt-4 md:pt-8"></div>
+        <div id="cb-player-team" class="flex justify-center items-start gap-2 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pt-2 sm:pt-4 md:pt-8"></div>
 
         <!-- Feed Central de Acción (Efectos visuales de daño) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-            <div id="cb-fx-msg" class="text-4xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 2px rgba(0,0,0,0.8);"></div>
+            <div id="cb-fx-msg" class="text-3xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 1.5px rgba(0,0,0,0.8);"></div>
         </div>
     </div>
 
     <!-- CONTROL PANEL (Interfaz Táctica) -->
-    <div class="shrink-0 bg-white border border-gray-200 p-5 md:p-8 rounded-3xl shadow-sm mt-4 z-20 relative flex flex-col items-center">
+    <div class="shrink-0 bg-white border border-gray-200 p-4 sm:p-5 md:p-8 rounded-3xl shadow-sm mt-3 sm:mt-4 z-20 relative flex flex-col items-center">
         
         <!-- Contenedor Superior: Energía y Mensajes -->
-        <div class="w-full max-w-3xl flex justify-between items-center mb-5 gap-3">
-            <div class="bg-blue-50 border border-blue-200 px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
+        <div class="w-full max-w-3xl flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+            <div class="bg-blue-50 border border-blue-200 px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 shadow-sm shrink-0 w-full sm:w-auto justify-center sm:justify-start">
                 <span class="text-xl md:text-2xl drop-shadow-sm">⚡</span>
-                <div class="flex flex-col">
-                    <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">Energía</span>
-                    <span class="font-black text-blue-700 text-lg md:text-xl leading-none mt-0.5" id="cb-energy-counter">3 / 10</span>
+                <div class="flex flex-col items-start">
+                    <span class="text-[8px] sm:text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">Energía</span>
+                    <span class="font-black text-blue-700 text-base sm:text-lg md:text-xl leading-none mt-0.5" id="cb-energy-counter">3 / 10</span>
                 </div>
             </div>
             
-            <div class="flex-1 flex justify-end">
-                <h3 id="cb-action-text" class="text-[10px] sm:text-xs md:text-sm font-black text-gray-500 uppercase tracking-widest bg-gray-50 px-5 py-3 rounded-full border border-gray-200 shadow-inner truncate">
+            <div class="flex-1 flex justify-center sm:justify-end w-full">
+                <h3 id="cb-action-text" class="text-[9px] sm:text-[10px] md:text-sm font-black text-gray-500 uppercase tracking-widest bg-gray-50 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full border border-gray-200 shadow-inner w-full sm:w-auto text-center truncate">
                     Toca una planta para elegir ataques
                 </h3>
             </div>
         </div>
         
         <!-- Controles Inferiores: Limpiar y Finalizar -->
-        <div class="w-full max-w-3xl flex gap-3">
-            <button onclick="window.combatApp.clearQueue()" class="flex-1 max-w-[120px] bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black py-4 rounded-2xl transition-all uppercase tracking-widest text-xs shadow-sm">
+        <div class="w-full max-w-3xl flex gap-2 sm:gap-3">
+            <button onclick="window.combatApp.clearQueue()" class="flex-[0.8] sm:flex-1 max-w-[100px] sm:max-w-[120px] bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm">
                 Limpiar
             </button>
-            <button id="cb-action-btn" onclick="window.combatApp.endTurn()" class="flex-1 bg-cg_gold hover:bg-orange-500 text-white font-black py-4 md:py-5 rounded-2xl text-base md:text-lg shadow-[0_5px_0_#c27818] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2">
+            <button id="cb-action-btn" onclick="window.combatApp.endTurn()" class="flex-[2] sm:flex-1 bg-cg_gold hover:bg-orange-500 text-white font-black py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl text-sm sm:text-base md:text-lg shadow-[0_4px_0_#c27818] sm:shadow-[0_5px_0_#c27818] active:translate-y-[4px] sm:active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-1.5 sm:gap-2">
                 FINALIZAR TURNO ⚔️
             </button>
         </div>
     </div>
 </div>
 
-<!-- MODAL DE CARTAS (HABILIDADES DE PLANTA) -->
-<div id="card-modal" class="fixed inset-0 z-[700] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-md" onclick="window.combatApp.closeCardModal()"></div>
-    <div class="bg-white rounded-3xl w-[95%] max-w-lg p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in overflow-hidden">
-        <!-- Decoración de fondo -->
-        <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+<!-- MODAL DE CARTAS (HABILIDADES DE PLANTA - CLEAR/LIGHT THEME) -->
+<div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity" onclick="window.combatApp.closeCardModal()"></div>
+    <!-- Bottom sheet en celulares, modal centrado en PC -->
+    <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-lg p-5 sm:p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
+        
+        <!-- Decoración sutil -->
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
 
-        <div class="flex justify-between items-center mb-6 relative z-10 border-b border-gray-100 pb-4">
+        <div class="flex justify-between items-center mb-5 relative z-10 border-b border-gray-100 pb-4">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gray-50 rounded-xl border border-gray-200 p-1 flex items-center justify-center shadow-inner">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gray-50 rounded-xl border border-gray-200 p-1.5 flex items-center justify-center shadow-inner shrink-0">
                     <img id="cm-plant-icon" src="" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h3 class="text-xl font-black text-cg_navy tracking-tight leading-none" id="cm-plant-name">Planta</h3>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Mazo de Habilidades</p>
+                    <h3 class="text-lg sm:text-xl font-black text-cg_navy tracking-tight leading-none" id="cm-plant-name">Planta</h3>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Selecciona una habilidad</p>
                 </div>
             </div>
-            <button onclick="window.combatApp.closeCardModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors">✕</button>
+            <button onclick="window.combatApp.closeCardModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors shrink-0">✕</button>
         </div>
         
-        <div id="cm-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+        <div id="cm-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar">
             <!-- Cartas inyectadas por JS -->
         </div>
     </div>
 </div>
 
-<!-- MODAL VICTORIA -->
+<!-- MODAL VICTORIA (CLARO) -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/95 backdrop-blur-md" onclick="loadView('farm')"></div>
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="loadView('farm')"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
-        <div class="absolute -top-20 -right-20 w-48 h-48 bg-cg_cyan/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-cg_gold/20 rounded-full blur-3xl"></div>
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-yellow-100/50 rounded-full blur-3xl"></div>
         
-        <div class="w-24 h-24 bg-gradient-to-br from-cg_gold to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(237,153,37,0.5)] relative z-10 border-4 border-white">
-            <span class="text-5xl drop-shadow-md">🏆</span>
+        <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cg_gold to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(237,153,37,0.3)] relative z-10 border-4 border-white">
+            <span class="text-4xl sm:text-5xl drop-shadow-md">🏆</span>
         </div>
         
-        <h3 class="text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Victoria Épica</h3>
-        <p class="text-sm text-gray-500 mb-8 font-medium leading-relaxed relative z-10">La bandada ha sido exterminada. Tu escuadrón botánico regresa a casa a salvo.</p>
+        <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Victoria Épica</h3>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">La bandada ha sido exterminada. Tu escuadrón botánico regresa a casa a salvo.</p>
         
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-8 relative z-10 shadow-inner">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Botín Obtenido</p>
-            <p class="text-3xl font-black text-green-600">+25,000 🌱</p>
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 sm:mb-8 relative z-10 shadow-inner">
+            <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Botín Obtenido</p>
+            <p class="text-2xl sm:text-3xl font-black text-green-600">+25,000 🌱</p>
         </div>
 
-        <button onclick="loadView('farm')" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-2xl transition-all shadow-md uppercase tracking-widest text-sm relative z-10">
+        <button onclick="loadView('farm')" class="w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Cobrar y Salir
         </button>
     </div>
 </div>
 
-<!-- MODAL DERROTA -->
+<!-- MODAL DERROTA (CLARO) -->
 <div id="combat-defeat-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="loadView('farm')"></div>
-    <div class="bg-gray-900 rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-800 overflow-hidden animate-fade-in text-center p-8 md:p-10">
-        <div class="absolute -top-20 -right-20 w-48 h-48 bg-red-500/20 rounded-full blur-3xl"></div>
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="loadView('farm')"></div>
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-red-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-red-100/50 rounded-full blur-3xl"></div>
         
-        <div class="w-24 h-24 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(220,38,38,0.5)] relative z-10 border-4 border-gray-900">
-            <span class="text-5xl drop-shadow-md">💀</span>
+        <div class="w-20 h-20 sm:w-24 sm:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(239,68,68,0.2)] relative z-10 border-4 border-red-100">
+            <span class="text-4xl sm:text-5xl drop-shadow-md">💀</span>
         </div>
         
-        <h3 class="text-3xl font-black text-white mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
-        <p class="text-sm text-gray-400 mb-8 font-medium leading-relaxed relative z-10">La bandada arrasó con todo. Las plantas apostadas se han perdido para siempre.</p>
+        <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">La bandada arrasó con todo. Las plantas apostadas se han perdido para siempre.</p>
         
-        <button onclick="loadView('farm')" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl transition-all shadow-md uppercase tracking-widest text-sm relative z-10">
+        <button onclick="loadView('farm')" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Aceptar Destino
         </button>
     </div>
@@ -205,35 +208,34 @@ window.combatApp = {
     maxEnergy: 10,
     actionQueue: [], // Guarda { attackerIdx, targetIdx, skill }
     
-    // Variables temporales de UI
     currentAttackerIdx: null,
     pendingSkill: null,
 
     // Diccionario de Cartas/Habilidades Fijas (Cero Azar - 100% Estrategia)
     SKILLS_DICT: {
         'flower_wheat': [
-            {name: 'Latigazo Rápido', cost: 1, dmg: 40, desc: 'Ataque veloz de bajo costo.', icon: '🌿'}, 
-            {name: 'Tormenta de Trigo', cost: 2, dmg: 85, desc: 'Lluvia de espigas afiladas.', icon: '🌪️'}
+            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque veloz de bajo costo.', icon: '🌿'}, 
+            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Lluvia de espigas afiladas.', icon: '🌪️'}
         ],
         'flower_cactus': [
-            {name: 'Disparo Espina', cost: 1, dmg: 35, desc: 'Lanza una púa perforante.', icon: '🌵'}, 
-            {name: 'Golpe Pesado', cost: 2, dmg: 75, desc: 'Impacto masivo con el cuerpo.', icon: '💥'}
+            {name: 'Espina', cost: 1, dmg: 35, desc: 'Lanza una púa perforante.', icon: '🌵'}, 
+            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto masivo con el cuerpo.', icon: '💥'}
         ],
         'flower_bamboo': [
-            {name: 'Corte Ágil', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso.', icon: '🎋'}, 
-            {name: 'Estocada Feroz', cost: 3, dmg: 130, desc: 'Ataque devastador de alto costo.', icon: '⚔️'}
+            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso.', icon: '🎋'}, 
+            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque devastador de alto costo.', icon: '⚔️'}
         ],
         'flower_crystal': [
-            {name: 'Reflejo Solar', cost: 1, dmg: 50, desc: 'Rayo de luz concentrado.', icon: '💎'}, 
-            {name: 'Rayo Prismático', cost: 3, dmg: 140, desc: 'Destrucción luminosa total.', icon: '✨'}
+            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Rayo de luz concentrado.', icon: '💎'}, 
+            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Destrucción luminosa total.', icon: '✨'}
         ],
         'flower_moon': [
-            {name: 'Polvo Estelar', cost: 1, dmg: 40, desc: 'Polvo cósmico corrosivo.', icon: '🌙'}, 
-            {name: 'Eclipse Total', cost: 2, dmg: 90, desc: 'Oscuridad aplastante.', icon: '🌑'}
+            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico corrosivo.', icon: '🌙'}, 
+            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Oscuridad aplastante.', icon: '🌑'}
         ],
         'default': [
             {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe estándar básico.', icon: '🍃'}, 
-            {name: 'Golpe Mayor', cost: 2, dmg: 65, desc: 'Golpe potente cargado.', icon: '🔥'}
+            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Golpe potente cargado.', icon: '🔥'}
         ]
     },
 
@@ -278,6 +280,7 @@ window.combatApp = {
             }
         });
 
+        // Fallback
         if (this.playerTeam.length === 0) {
             let storedArsenal = window.farmApp.state.arsenal || [];
             storedArsenal.slice(0, 3).forEach(ap => buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id));
@@ -322,7 +325,7 @@ window.combatApp = {
         this.currentAttackerIdx = null;
         this.pendingSkill = null;
         this.updateUI();
-        this.setInstruction('Se han limpiado todas las acciones. Comienza de nuevo.');
+        this.setInstruction('Acciones limpiadas. Comienza de nuevo.');
     },
 
     // ================= INTERACCIÓN DEL JUGADOR ================= //
@@ -339,17 +342,15 @@ window.combatApp = {
         
         if (this.phase === 'P_TARGETING' && team === 'enemy' && this.pendingSkill) {
             if (this.enemyTeam[index].hp > 0) {
-                // Agregar acción a la cola
+                // Encolar
                 this.actionQueue.push({
                     attackerIdx: this.currentAttackerIdx,
                     targetIdx: index,
                     skill: this.pendingSkill
                 });
                 
-                // Descontar energía
                 this.energy -= this.pendingSkill.cost;
                 
-                // Resetear estado temporal
                 this.pendingSkill = null;
                 this.currentAttackerIdx = null;
                 this.phase = 'P_SELECT';
@@ -371,21 +372,21 @@ window.combatApp = {
         plant.skills.forEach((skill, sIdx) => {
             const canAfford = this.energy >= skill.cost;
             container.innerHTML += `
-                <button onclick="window.combatApp.selectCard(${plantIdx}, ${sIdx})" ${!canAfford ? 'disabled' : ''} class="skill-card text-left p-5 border border-gray-700 rounded-2xl relative flex flex-col justify-between group h-40">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <button onclick="window.combatApp.selectCard(${plantIdx}, ${sIdx})" ${!canAfford ? 'disabled' : ''} class="skill-card text-left p-4 sm:p-5 border-2 border-gray-100 rounded-2xl relative flex flex-col justify-between group h-36 sm:h-40 overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
                     
                     <div class="flex justify-between items-start w-full relative z-10">
-                        <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-sm shadow-md border-2 border-white/20">
+                        <div class="bg-blue-50 text-blue-600 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-black text-xs sm:text-sm shadow-sm border border-blue-100 shrink-0">
                             ${skill.cost}
                         </div>
-                        <span class="text-3xl drop-shadow-md">${skill.icon}</span>
+                        <span class="text-2xl sm:text-3xl drop-shadow-sm shrink-0">${skill.icon}</span>
                     </div>
                     
                     <div class="w-full relative z-10 mt-auto">
-                        <h4 class="font-black text-white text-lg tracking-tight leading-none mb-1">${skill.name}</h4>
-                        <div class="flex items-center justify-between">
-                            <p class="text-[10px] text-gray-400 font-medium leading-tight line-clamp-1 flex-1 pr-2">${skill.desc}</p>
-                            <span class="bg-red-500/20 text-red-400 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider shrink-0 border border-red-500/30">
+                        <h4 class="font-black text-cg_navy text-sm sm:text-base tracking-tight leading-none mb-1 sm:mb-1.5">${skill.name}</h4>
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight line-clamp-2 flex-1">${skill.desc}</p>
+                            <span class="bg-red-50 text-red-500 font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0 border border-red-100">
                                 ⚔️ ${skill.dmg}
                             </span>
                         </div>
@@ -394,13 +395,15 @@ window.combatApp = {
             `;
         });
 
-        document.getElementById('card-modal').classList.remove('hidden');
-        document.getElementById('card-modal').classList.add('flex');
+        const modal = document.getElementById('card-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     },
 
     closeCardModal() {
-        document.getElementById('card-modal').classList.add('hidden');
-        document.getElementById('card-modal').classList.remove('flex');
+        const modal = document.getElementById('card-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         if (this.phase !== 'P_TARGETING') {
             this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
         }
@@ -421,7 +424,6 @@ window.combatApp = {
 
     // ================= MOTOR AUTOMÁTICO (EXECUTION) ================= //
 
-    // Función auxiliar para pausas (sleep) en animaciones
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
@@ -438,39 +440,34 @@ window.combatApp = {
             let attacker = this.playerTeam[action.attackerIdx];
             let target = this.enemyTeam[action.targetIdx];
             
-            // Si el atacante murió antes de su turno (no aplica en este flujo específico pero es buena práctica)
             if (attacker.hp <= 0) continue; 
             
-            // Si el objetivo ya murió, busca el siguiente enemigo vivo
             if (target.hp <= 0) {
                 const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
-                if (aliveEnemies.length === 0) break; // Todos muertos, ganar
+                if (aliveEnemies.length === 0) break;
                 target = aliveEnemies[0];
             }
 
-            // Animación y Daño Player -> Enemy
-            this.currentAttackerIdx = action.attackerIdx; // Para focus visual
+            this.currentAttackerIdx = action.attackerIdx; 
             this.targetIdx = this.enemyTeam.indexOf(target);
             this.updateUI();
 
-            this.showFx(action.skill.name, "text-blue-400");
-            await this.sleep(800);
+            this.showFx(action.skill.name, "text-blue-500");
+            await this.sleep(700);
 
-            // Fórmula Daño Directo (Cero Azar)
+            // Fórmula Daño Directo Fija
             target.hp -= action.skill.dmg;
             this.shakeElement(`enemy-${this.targetIdx}`);
-            this.showFx(`-${action.skill.dmg}`, "text-white");
+            this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
             
-            await this.sleep(600);
+            await this.sleep(500);
         }
 
-        // Limpiar Focus
         this.currentAttackerIdx = null;
         this.targetIdx = null;
         this.updateUI();
         
-        // Revisar si el jugador ya ganó antes del turno enemigo
         if (this.enemyTeam.filter(e => e.hp > 0).length === 0) {
             this.checkWinLoss();
             return;
@@ -478,35 +475,35 @@ window.combatApp = {
 
         // 2. EJECUTAR ACCIONES DE ENEMIGOS
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(800);
+        await this.sleep(700);
 
         for (let i = 0; i < this.enemyTeam.length; i++) {
             let enemy = this.enemyTeam[i];
             if (enemy.hp <= 0) continue;
 
             let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
-            if (alivePlayers.length === 0) break; // Todos muertos, perder
+            if (alivePlayers.length === 0) break;
 
             // IA Determinista: Ataca a la planta con MENOS VIDA
             let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
             
-            this.currentAttackerIdx = i; // Focus visual enemigo
+            this.currentAttackerIdx = i;
             this.targetIdx = this.playerTeam.indexOf(target);
             this.updateUI();
 
-            this.showFx("PICOTAZO", "text-red-500");
-            await this.sleep(800);
+            this.showFx("PICOTAZO", "text-gray-600");
+            await this.sleep(700);
 
-            // Fórmula Defensa Pasiva (Mitiga un % fijo del daño)
-            const mitigation = target.def / 100; // Ej: 20 def = 0.20
+            // Fórmula Defensa Pasiva
+            const mitigation = target.def / 100; 
             const actualDamage = Math.floor(enemy.atk * (1 - mitigation));
             
             target.hp -= actualDamage;
             this.shakeElement(`player-${this.targetIdx}`);
-            this.showFx(`-${actualDamage}`, "text-red-500");
+            this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
-            await this.sleep(600);
+            await this.sleep(500);
         }
 
         // 3. FIN DE RONDA
@@ -578,7 +575,6 @@ window.combatApp = {
         document.getElementById('cb-turn-counter').innerText = this.turn;
         this.updateEnergyUI();
 
-        // Cuenta cuántas acciones tiene encoladas cada planta para el indicador visual
         const getQueuedActionsCount = (idx) => {
             return this.actionQueue.filter(a => a.attackerIdx === idx).length;
         };
@@ -588,15 +584,13 @@ window.combatApp = {
             c.innerHTML = '';
             
             teamArr.forEach((ent, idx) => {
-                // ID Único para animaciones de shake
                 const elId = `${side === 'P' ? 'player' : 'enemy'}-${idx}`;
 
                 if (ent.hp <= 0) {
-                    c.innerHTML += `<div id="${elId}" class="w-[72px] sm:w-24 md:w-32 opacity-0 shrink-0"></div>`;
+                    c.innerHTML += `<div id="${elId}" class="w-[68px] sm:w-[84px] md:w-28 opacity-0 shrink-0"></div>`;
                     return;
                 }
                 
-                // Lógica de Enfoque Visual
                 let isActing = false;
                 if (this.phase === 'EXECUTION') {
                     isActing = (side === 'P' && this.currentAttackerIdx === idx) || (side === 'E' && this.currentAttackerIdx === idx);
@@ -608,22 +602,21 @@ window.combatApp = {
                                (this.phase === 'EXECUTION' && side === 'P' && this.targetIdx === idx);
 
                 let highlight = isActing 
-                    ? 'scale-110 drop-shadow-[0_0_25px_rgba(41,150,218,0.8)] z-30' // Azul brillante para el atacante activo
+                    ? 'scale-110 drop-shadow-[0_0_20px_rgba(41,150,218,0.6)] z-30'
                     : isTarget 
-                        ? 'scale-105 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] z-20 animate-pulse' // Rojo para el objetivo
+                        ? 'scale-105 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] z-20 animate-pulse'
                         : (side === 'P' && this.phase === 'P_SELECT' 
-                            ? 'hover:scale-105 hover:drop-shadow-xl z-10 cursor-pointer ring-2 ring-transparent hover:ring-cg_blue rounded-full' 
+                            ? 'hover:scale-105 hover:drop-shadow-lg z-10 cursor-pointer ring-2 ring-transparent hover:ring-blue-300 rounded-full' 
                             : (side === 'E' && this.phase === 'P_TARGETING' 
-                                ? 'hover:scale-105 hover:drop-shadow-xl z-10 cursor-pointer ring-2 ring-transparent hover:ring-red-500 rounded-full animate-pulse' 
+                                ? 'hover:scale-105 hover:drop-shadow-lg z-10 cursor-pointer ring-2 ring-transparent hover:ring-red-400 rounded-full animate-pulse' 
                                 : 'opacity-95'));
                 
                 let hpPercent = Math.max(0, (ent.hp / ent.maxHp) * 100);
                 let hpColor = hpPercent > 50 ? 'bg-green-500' : (hpPercent > 20 ? 'bg-yellow-400' : 'bg-red-500');
 
-                // Indicador de acciones encoladas
                 let queuedCount = side === 'P' ? getQueuedActionsCount(idx) : 0;
                 let queuedHtml = queuedCount > 0 
-                    ? `<div class="absolute -top-3 -right-2 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] shadow-md border-2 border-white z-40 animate-bounce">⚔️${queuedCount}</div>` 
+                    ? `<div class="absolute -top-2 -right-1 sm:-top-3 sm:-right-2 bg-blue-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-black text-[9px] sm:text-[10px] shadow-md border-2 border-white z-40 animate-bounce">⚔️${queuedCount}</div>` 
                     : '';
 
                 c.innerHTML += `
@@ -632,22 +625,22 @@ window.combatApp = {
                         ${queuedHtml}
 
                         <!-- Barra de Vida -->
-                        <div class="w-14 sm:w-16 md:w-20 bg-gray-200 h-1.5 md:h-2 rounded-full overflow-hidden mb-2 shadow-inner border border-gray-300">
+                        <div class="w-12 sm:w-16 md:w-20 bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1.5 sm:mb-2 shadow-inner border border-gray-300 shrink-0">
                              <div class="${hpColor} h-full transition-all duration-300" style="width: ${hpPercent}%"></div>
                         </div>
                         
                         <!-- Contenedor Hexagonal CSS -->
-                        <div class="relative w-[72px] h-[84px] sm:w-24 sm:h-28 md:w-32 md:h-36 flex items-center justify-center group animate-float" style="animation-delay: ${idx * 0.2}s">
+                        <div class="relative w-[68px] h-[80px] sm:w-[84px] sm:h-[96px] md:w-28 md:h-32 flex items-center justify-center group animate-float shrink-0" style="animation-delay: ${idx * 0.2}s">
                             <div class="absolute inset-0 ${side === 'P' ? 'bg-green-400' : 'bg-red-400'} hex-shape opacity-20 group-hover:opacity-40 transition-opacity"></div>
                             
                             <div class="absolute inset-[2px] sm:inset-[3px] bg-white hex-inner flex items-center justify-center overflow-hidden border border-white shadow-inner">
                                 <div class="absolute inset-0 bg-gradient-to-b ${side === 'P' ? 'from-green-50 to-white' : 'from-red-50 to-white'} opacity-80"></div>
-                                <img src="${ent.icon}" class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain relative z-10 drop-shadow-md ${isActing ? 'animate-pulse' : ''} ${side==='E' ? 'transform scale-x-[-1]' : ''}">
+                                <img src="${ent.icon}" class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 object-contain relative z-10 drop-shadow-md ${isActing ? 'animate-pulse' : ''} ${side==='E' ? 'transform scale-x-[-1]' : ''}">
                             </div>
                         </div>
                         
                         <!-- Stats Flotantes -->
-                        <div class="absolute -bottom-2 sm:-bottom-3 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-md border border-gray-200 flex gap-1 sm:gap-2 text-[8px] sm:text-[9px] md:text-[10px] font-black uppercase whitespace-nowrap z-30">
+                        <div class="absolute -bottom-2 sm:-bottom-3 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 flex gap-1 sm:gap-2 text-[7px] sm:text-[9px] md:text-[10px] font-black uppercase whitespace-nowrap z-30 shrink-0">
                              <span class="text-orange-500 flex items-center gap-0.5" title="Ataque Base">⚔️ ${ent.atk}</span>
                              ${side === 'P' ? `<span class="text-blue-500 flex items-center gap-0.5" title="Defensa Pasiva">🛡️ ${ent.def}%</span>` : ''}
                         </div>
@@ -662,7 +655,7 @@ window.combatApp = {
     showFx(msg, colorClass) {
         const fx = document.getElementById('cb-fx-msg');
         fx.innerText = msg;
-        fx.className = `text-4xl sm:text-5xl md:text-7xl font-black ${colorClass} drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-all duration-200 text-center uppercase tracking-widest transform scale-110 z-[100]`;
+        fx.className = `text-3xl sm:text-5xl md:text-7xl font-black ${colorClass} drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] transition-all duration-200 text-center uppercase tracking-widest transform scale-110 z-[100]`;
         fx.style.opacity = '1';
         
         setTimeout(() => { 
