@@ -14,8 +14,20 @@
         animation: float 4s ease-in-out infinite;
     }
     .combat-bg-pattern {
-        background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-        background-size: 20px 20px;
+        background-color: #ffffff;
+        background-image: radial-gradient(#e5e7eb 1.5px, transparent 1.5px);
+        background-size: 24px 24px;
+    }
+    .skill-card {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .skill-card:hover:not(:disabled) {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(41, 150, 218, 0.2), 0 4px 6px -2px rgba(41, 150, 218, 0.1);
+        border-color: #2996DA;
+    }
+    .skill-card:active:not(:disabled) {
+        transform: translateY(2px);
     }
 </style>
 
@@ -41,53 +53,63 @@
     </div>
 
     <!-- BATTLEFIELD (Layout Hexagonal - Fondo Blanco) -->
-    <div class="flex-1 relative flex flex-col justify-between mt-4 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-6 md:p-10 combat-bg-pattern">
+    <div class="flex-1 relative flex flex-col justify-between mt-4 rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-4 sm:p-6 md:p-10 combat-bg-pattern min-h-[300px]">
         
         <!-- Centro VS Marca de agua -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-40">
-            <span class="text-[120px] md:text-[200px] font-black text-gray-50 italic tracking-tighter select-none">VS</span>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.15]">
+            <span class="text-[120px] md:text-[200px] font-black text-gray-400 italic tracking-tighter select-none">VS</span>
         </div>
 
         <!-- Fila Enemiga (Arriba) -->
-        <div id="cb-enemy-team" class="flex justify-center items-end gap-6 md:gap-12 w-full h-1/2 relative z-10 pb-4 md:pb-8"></div>
+        <div id="cb-enemy-team" class="flex justify-center items-end gap-3 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pb-4 md:pb-8"></div>
         
         <!-- Separador Visual Central -->
-        <div class="absolute left-0 top-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent transform -translate-y-1/2 z-0"></div>
+        <div class="absolute left-0 top-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent transform -translate-y-1/2 z-0"></div>
 
         <!-- Fila Jugador (Abajo) -->
-        <div id="cb-player-team" class="flex justify-center items-start gap-6 md:gap-12 w-full h-1/2 relative z-10 pt-4 md:pt-8"></div>
+        <div id="cb-player-team" class="flex justify-center items-start gap-3 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pt-4 md:pt-8"></div>
 
         <!-- Feed Central de Acción (Efectos visuales de daño) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-            <div id="cb-fx-msg" class="text-5xl md:text-7xl font-black text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 2px rgba(0,0,0,0.8);"></div>
+            <div id="cb-fx-msg" class="text-4xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 2px rgba(0,0,0,0.8);"></div>
         </div>
     </div>
 
-    <!-- CONTROL PANEL (Minijuego Inferior) -->
-    <div class="shrink-0 bg-white border border-gray-200 p-6 md:p-8 rounded-3xl shadow-sm mt-4 z-20 relative flex flex-col items-center">
-        <h3 id="cb-action-text" class="text-xs md:text-sm font-black text-gray-500 mb-6 uppercase tracking-widest text-center bg-gray-50 px-6 py-2 rounded-full border border-gray-200 shadow-inner">
-            Conectando con la Arena...
-        </h3>
+    <!-- CONTROL PANEL (Interfaz Táctica y Minijuego) -->
+    <div class="shrink-0 bg-white border border-gray-200 p-5 md:p-8 rounded-3xl shadow-sm mt-4 z-20 relative flex flex-col items-center min-h-[160px]">
         
-        <!-- Barra de Habilidad (Oscilante) -->
-        <div id="cb-minigame-zone" class="w-full max-w-3xl relative h-12 md:h-14 bg-gray-100 rounded-full overflow-hidden border border-gray-300 shadow-inner hidden">
-            <!-- Relleno rojo base -->
+        <!-- Contenedor Superior: Energía y Mensajes -->
+        <div class="w-full max-w-3xl flex justify-between items-center mb-4 gap-3">
+            <div class="bg-blue-50 border border-blue-200 px-3 md:px-4 py-2 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
+                <span class="text-lg md:text-xl">⚡</span>
+                <span class="font-black text-blue-700 text-base md:text-lg" id="cb-energy-counter">3 / 10</span>
+            </div>
+            <h3 id="cb-action-text" class="text-[10px] sm:text-xs md:text-sm font-black text-gray-500 uppercase tracking-widest text-right bg-gray-50 px-4 py-2.5 rounded-full border border-gray-200 shadow-inner w-full truncate">
+                Conectando...
+            </h3>
+        </div>
+
+        <!-- Panel de Habilidades (Mazo de Cartas Fijas) -->
+        <div id="cb-skills-panel" class="w-full max-w-2xl grid grid-cols-2 gap-3 sm:gap-4 mb-2 hidden animate-fade-in">
+            <!-- Botones/Cartas inyectados por JS -->
+        </div>
+        
+        <!-- Barra de Habilidad FÍSICA (Minijuego Determinista) -->
+        <div id="cb-minigame-zone" class="w-full max-w-3xl relative h-12 md:h-14 bg-gray-100 rounded-full overflow-hidden border border-gray-300 shadow-inner hidden mt-2">
             <div class="absolute inset-0 bg-red-100 opacity-50"></div>
-            <!-- Zona Segura Azul -->
             <div id="cb-safe-zone" class="absolute top-0 h-full bg-blue-400 border-x-4 border-blue-500 transition-all flex items-center justify-center shadow-[inset_0_0_15px_rgba(255,255,255,0.4)]">
                 <div class="absolute h-full w-1 bg-white/50"></div>
             </div>
-            <!-- Puntero Móvil -->
             <div id="cb-pointer" class="absolute top-0 h-full w-2.5 bg-cg_navy shadow-[0_0_15px_rgba(0,0,0,0.5)] transform -translate-x-1/2 z-20 rounded-full border border-gray-600"></div>
         </div>
         
-        <button id="cb-action-btn" onclick="window.combatApp.stopMinigame()" class="mt-6 w-full max-w-md bg-cg_navy hover:bg-black text-white font-black py-4 md:py-5 rounded-2xl text-lg md:text-xl shadow-[0_6px_0_#0f172a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest hidden">
+        <button id="cb-action-btn" onclick="window.combatApp.stopMinigame()" class="mt-4 w-full max-w-md bg-cg_navy hover:bg-black text-white font-black py-4 md:py-5 rounded-2xl text-lg md:text-xl shadow-[0_6px_0_#0f172a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest hidden">
             GOLPEAR
         </button>
     </div>
 </div>
 
-<!-- MODAL VICTORIA MODERNO -->
+<!-- MODAL VICTORIA -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-md" onclick="loadView('farm')"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
@@ -112,7 +134,7 @@
     </div>
 </div>
 
-<!-- MODAL DERROTA MODERNO -->
+<!-- MODAL DERROTA -->
 <div id="combat-defeat-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="loadView('farm')"></div>
     <div class="bg-gray-900 rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-800 overflow-hidden animate-fade-in text-center p-8 md:p-10">
@@ -138,102 +160,174 @@ window.combatApp = {
     playerTeam: [],
     enemyTeam: [],
     turn: 1,
+    energy: 3,        // Inicia con 3 de Energía
+    maxEnergy: 10,
+    selectedSkill: null, // Habilidad encolada como carta
     attacker: null,
     target: null,
-    bar: { req: null, x: 0, dir: 1, speed: 1.8, safeStart: 0, safeWidth: 0 }, // Un poco más rápido para mayor reto
+    bar: { req: null, x: 0, dir: 1, speed: 1.8, safeStart: 0, safeWidth: 0 },
+
+    // Diccionario de Cartas/Habilidades Fijas (Cero Azar)
+    SKILLS_DICT: {
+        'flower_wheat': [
+            {name: 'Latigazo Rápido', cost: 1, dmg: 40, diff: 40, icon: '🌿'}, 
+            {name: 'Tormenta de Trigo', cost: 2, dmg: 80, diff: 25, icon: '🌪️'}
+        ],
+        'flower_cactus': [
+            {name: 'Disparo Espina', cost: 1, dmg: 35, diff: 40, icon: '🌵'}, 
+            {name: 'Golpe Pesado', cost: 2, dmg: 75, diff: 25, icon: '💥'}
+        ],
+        'flower_bamboo': [
+            {name: 'Corte Ágil', cost: 1, dmg: 45, diff: 35, icon: '🎋'}, 
+            {name: 'Estocada Feroz', cost: 3, dmg: 120, diff: 15, icon: '⚔️'}
+        ],
+        'flower_crystal': [
+            {name: 'Reflejo Solar', cost: 1, dmg: 50, diff: 35, icon: '💎'}, 
+            {name: 'Rayo Prismático', cost: 3, dmg: 130, diff: 15, icon: '✨'}
+        ],
+        'flower_moon': [
+            {name: 'Polvo Estelar', cost: 1, dmg: 40, diff: 40, icon: '🌙'}, 
+            {name: 'Eclipse Total', cost: 2, dmg: 85, diff: 20, icon: '🌑'}
+        ],
+        'default': [
+            {name: 'Embestida', cost: 1, dmg: 30, diff: 40, icon: '🍃'}, 
+            {name: 'Golpe Mayor', cost: 2, dmg: 65, diff: 25, icon: '🔥'}
+        ]
+    },
 
     init() {
         if (!window.farmApp) { loadView('farm'); return; }
 
         // 1. Cobrar Ticket de Ingreso
-        window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
-        window.farmApp.updateInventoryUI();
+        if (window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
+            window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
+            window.farmApp.updateInventoryUI();
+        }
 
         this.playerTeam = [];
         const selected = window.farmApp.state.selectedCombatants || [];
         
+        const buildPlant = (pid, name, icon, isArsenal, idTag) => {
+            let pDef = 20, pHp = 100;
+            if(pid === 'flower_wheat') { pDef = 15; pHp = 100; }
+            else if(pid === 'flower_cactus') { pDef = 35; pHp = 150; } 
+            else if(pid === 'flower_bamboo') { pDef = 20; pHp = 100; }
+            else if(pid === 'flower_crystal') { pDef = 8; pHp = 60; } 
+            else if(pid === 'flower_moon') { pDef = 25; pHp = 200; } 
+
+            const skills = this.SKILLS_DICT[pid] || this.SKILLS_DICT['default'];
+
+            this.playerTeam.push({ 
+                fromArsenal: isArsenal, 
+                arsId: isArsenal ? idTag : null,
+                plotId: !isArsenal ? idTag : null,
+                name: name, icon: icon, hp: pHp, maxHp: pHp, def: pDef,
+                skills: skills // Vinculamos las habilidades (cartas)
+            });
+        };
+
+        // 2. Procesar selección de Granja/Arsenal
         selected.forEach(sel => {
             if (sel.type === 'arsenal') {
                 const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag);
-                if (ap) {
-                    this.playerTeam.push({ 
-                        fromArsenal: true, 
-                        arsId: ap.id, 
-                        name: ap.name, 
-                        icon: ap.icon, 
-                        hp: ap.hp, 
-                        maxHp: ap.maxHp, 
-                        atk: ap.atk, 
-                        def: ap.def 
-                    });
-                }
+                if (ap) buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id);
             } else if (sel.type === 'plot') {
                 const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag);
-                if (p && p.plant) {
-                    let pAtk = 34, pDef = 20, pHp = 100;
-                    const pid = p.plant.id;
-                    if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
-                    else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
-                    else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
-                    else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
-                    else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
-
-                    this.playerTeam.push({ 
-                        fromArsenal: false, 
-                        plotId: p.id, 
-                        name: p.plant.name, 
-                        icon: p.plant.icon, 
-                        hp: pHp, 
-                        maxHp: pHp, 
-                        atk: pAtk, 
-                        def: pDef 
-                    });
-                }
+                if (p && p.plant) buildPlant(p.plant.id, p.plant.name, p.plant.icon, false, p.id);
             }
         });
 
-        // 3. Sistema Fallback (En caso de recargar página forzada o perder estado temporal)
+        // 3. Fallback en caso de recargar forzada
         if (this.playerTeam.length === 0) {
             let storedArsenal = window.farmApp.state.arsenal || [];
-            storedArsenal.slice(0, 3).forEach(ap => {
-                this.playerTeam.push({ fromArsenal: true, arsId: ap.id, name: ap.name, icon: ap.icon, hp: ap.hp, maxHp: ap.maxHp, atk: ap.atk, def: ap.def });
-            });
+            storedArsenal.slice(0, 3).forEach(ap => buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id));
         }
 
-        // 4. Armar Enemigos (Cuervos)
+        // 4. Armar Enemigos (Cuervos de Coljuegos - Cero Azar)
         this.enemyTeam = [
             { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 100, maxHp: 100, atk: 30 },
             { name: 'Cuervo Alfa', icon: window.farmApp.state.images.crow, hp: 180, maxHp: 180, atk: 45 },
             { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 100, maxHp: 100, atk: 30 }
         ];
 
-        window.farmApp.state.combatLock = true; // Activar Escudo del Servidor para congelar el Invernadero
+        window.farmApp.state.combatLock = true; // Activar Escudo para la Granja
         this.active = true;
         this.turn = 1;
+        this.energy = 3;
         this.phase = 'P_SELECT';
         this.updateUI();
-        this.setInstruction('TU TURNO: Elige con qué planta atacar');
+        this.updateEnergyUI();
+        this.setInstruction('TU TURNO: Elige con qué planta atacar 👇');
+    },
+
+    updateEnergyUI() {
+        document.getElementById('cb-energy-counter').innerText = `${this.energy} / ${this.maxEnergy}`;
     },
 
     selectEntity(team, index) {
-        if (this.phase !== 'P_SELECT') return;
-
-        if (team === 'player' && this.playerTeam[index].hp > 0) {
-            this.attacker = this.playerTeam[index];
-            this.setInstruction(`Has seleccionado: ${this.attacker.name} | Ahora elige tu objetivo`);
-        } else if (team === 'enemy' && this.enemyTeam[index].hp > 0 && this.attacker) {
-            this.target = this.enemyTeam[index];
-            this.phase = 'P_MINIGAME';
-            
-            // La dificultad visual del minijuego depende de la defensa del objetivo
-            const safeZoneWidth = this.attacker.def * 1.5; // Ajuste visual de la dificultad
-            this.startMinigame(safeZoneWidth, "GOLPEAR");
+        if (this.phase === 'P_SELECT') {
+            if (team === 'player' && this.playerTeam[index].hp > 0) {
+                this.attacker = this.playerTeam[index];
+                this.setInstruction(`Planta lista: ${this.attacker.name} | Elige una Carta de Acción 👇`);
+                this.showSkillsPanel();
+            }
+        } else if (this.phase === 'P_TARGETING') {
+            if (team === 'enemy' && this.enemyTeam[index].hp > 0) {
+                this.target = this.enemyTeam[index];
+                this.phase = 'P_MINIGAME';
+                
+                // Consumir energía y ocultar cartas
+                this.energy -= this.selectedSkill.cost;
+                this.updateEnergyUI();
+                document.getElementById('cb-skills-panel').classList.add('hidden');
+                
+                // La dificultad (ancho de la zona azul) es fija por cada carta
+                this.startMinigame(this.selectedSkill.diff, `EJECUTAR ${this.selectedSkill.name.toUpperCase()}`);
+            }
         }
         this.updateUI();
     },
 
+    showSkillsPanel() {
+        const panel = document.getElementById('cb-skills-panel');
+        panel.innerHTML = '';
+        
+        this.attacker.skills.forEach((skill, idx) => {
+            const canAfford = this.energy >= skill.cost;
+            const btnClass = canAfford 
+                ? 'bg-white border border-gray-200 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-md skill-card' 
+                : 'bg-gray-100 border border-gray-200 opacity-50 cursor-not-allowed grayscale';
+            
+            panel.innerHTML += `
+                <button ${canAfford ? `onclick="window.combatApp.selectSkill(${idx})"` : 'disabled'} class="w-full text-left p-3 sm:p-4 rounded-2xl flex flex-col justify-between ${btnClass}">
+                    <div class="flex justify-between items-start mb-2 w-full">
+                        <span class="text-[10px] md:text-xs font-black uppercase bg-blue-50 text-blue-600 px-2 py-1 rounded-lg tracking-widest border border-blue-100 flex items-center gap-1 shrink-0">
+                            ⚡ ${skill.cost}
+                        </span>
+                        <span class="text-xl md:text-2xl shrink-0 opacity-80">${skill.icon}</span>
+                    </div>
+                    <div class="w-full">
+                        <span class="font-black text-cg_navy text-sm md:text-base leading-tight block truncate">${skill.name}</span>
+                        <span class="text-[11px] md:text-xs font-bold text-red-500 mt-0.5 block">Daño Fijo: ${skill.dmg}</span>
+                    </div>
+                </button>
+            `;
+        });
+        panel.classList.remove('hidden');
+    },
+
+    selectSkill(skillIdx) {
+        const skill = this.attacker.skills[skillIdx];
+        if (this.energy >= skill.cost) {
+            this.selectedSkill = skill;
+            this.phase = 'P_TARGETING';
+            this.setInstruction(`Carta Jugada: ${skill.name} | Toca a un Cuervo Objetivo 🎯`);
+            this.updateUI();
+        }
+    },
+
     startMinigame(safeWidthPct, btnText) {
-        this.setInstruction('¡CALIBRA TU ATAQUE!');
+        this.setInstruction('¡PREPARA TU REFLEJO!');
         const mgZone = document.getElementById('cb-minigame-zone');
         const safeZone = document.getElementById('cb-safe-zone');
         const btn = document.getElementById('cb-action-btn');
@@ -242,9 +336,11 @@ window.combatApp = {
         btn.classList.remove('hidden');
         btn.innerText = btnText;
 
-        // Dificultad Dinámica: Ubicación aleatoria de la zona azul
-        this.bar.safeWidth = Math.max(15, Math.min(60, safeWidthPct)); // Límites lógicos del 15% al 60%
-        this.bar.safeStart = Math.random() * (100 - this.bar.safeWidth);
+        // FÓRMULA DETERMINISTA (Coljuegos Safe - Cero Azar)
+        // Posición calculada basada en el turno, vida del enemigo y energía. Jamás usa Math.random().
+        let pseudoRandomSeed = (this.turn * 13 + this.energy * 7 + (this.target ? Math.floor(this.target.hp) : 100)) % 100;
+        this.bar.safeWidth = Math.max(15, Math.min(60, safeWidthPct)); // Limites de la carta
+        this.bar.safeStart = (pseudoRandomSeed / 100) * (100 - this.bar.safeWidth);
         
         safeZone.style.width = `${this.bar.safeWidth}%`;
         safeZone.style.left = `${this.bar.safeStart}%`;
@@ -271,27 +367,34 @@ window.combatApp = {
         const center = this.bar.safeStart + (this.bar.safeWidth / 2);
         
         const isHit = hitX >= this.bar.safeStart && hitX <= (this.bar.safeStart + this.bar.safeWidth);
-        const isCrit = Math.abs(hitX - center) <= (this.bar.safeWidth * 0.15); // Crítico si da en el 15% central de la zona azul
+        const isCrit = Math.abs(hitX - center) <= (this.bar.safeWidth * 0.15); // Crítico central estricto (15% del centro de la zona azul)
 
         if (this.phase === 'P_MINIGAME') {
+            const baseDmg = this.selectedSkill.dmg;
             if (isCrit) {
-                this.showFx("¡CRÍTICO X2!", "text-yellow-400");
-                this.target.hp -= (this.attacker.atk * 2);
+                this.showFx("¡PERFECTO!", "text-yellow-400");
+                this.target.hp -= baseDmg; 
             } else if (isHit) {
-                this.showFx("¡ACIERTO NORMAL!", "text-green-500");
-                this.target.hp -= this.attacker.atk;
+                this.showFx("¡GOLPE DEBIL!", "text-green-500");
+                this.target.hp -= Math.floor(baseDmg * 0.6); // 60% de daño si no dio en el centro exacto
             } else {
                 this.showFx("¡FALLASTE!", "text-gray-400");
             }
+            this.bar.speed = 1.8; // Resetear velocidad
             setTimeout(() => this.checkWinLoss('ENEMY'), 1200);
         } 
         else if (this.phase === 'E_MINIGAME') {
-            if (isCrit || isHit) {
-                this.showFx("¡DEFENSA PERFECTA!", "text-blue-500");
+            if (isCrit) {
+                this.showFx("¡BLOQUEO TOTAL!", "text-blue-500");
+                // 100% de daño evadido
+            } else if (isHit) {
+                this.showFx("¡DEFENSA PARCIAL!", "text-orange-500");
+                this.target.hp -= Math.floor(this.attacker.atk * 0.5); // Mitiga el 50%
             } else {
-                this.showFx("¡IMPACTO RECIBIDO!", "text-red-600");
-                this.target.hp -= this.attacker.atk;
+                this.showFx("¡IMPACTO DIRECTO!", "text-red-600");
+                this.target.hp -= Math.floor(this.attacker.atk * 1.2); // Castigo: Recibe 20% más
             }
+            this.bar.speed = 1.8; // Resetear velocidad
             setTimeout(() => this.checkWinLoss('PLAYER'), 1200);
         }
         this.updateUI();
@@ -310,10 +413,13 @@ window.combatApp = {
                 this.executeEnemyTurn(pAlive, eAlive);
             } else {
                 this.turn++;
+                this.energy = Math.min(this.maxEnergy, this.energy + 2); // Restaurar 2 de Energía
+                this.updateEnergyUI();
                 this.phase = 'P_SELECT';
                 this.attacker = null;
                 this.target = null;
-                this.setInstruction('TU TURNO: Selecciona tu planta atacante');
+                this.selectedSkill = null;
+                this.setInstruction('TU TURNO: Elige con qué planta atacar 👇');
                 this.updateUI();
             }
         }
@@ -323,30 +429,30 @@ window.combatApp = {
         this.phase = 'E_TURN';
         this.setInstruction('TURNO ENEMIGO...');
         
-        // IA Determinista: El enemigo ataca a tu planta con menos vida
-        this.attacker = eAlive[0]; 
+        // IA Determinista Fija: Ataca cíclicamente al jugador con menos vida
+        this.attacker = eAlive[this.turn % eAlive.length] || eAlive[0]; 
         this.target = pAlive.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
         
         this.updateUI();
         
         setTimeout(() => {
             this.phase = 'E_MINIGAME';
-            const defZone = this.target.def * 1.5;
-            this.startMinigame(defZone, "DEFENDER"); 
+            const defZone = this.target.def; // La zona es ESTRICTAMENTE el % de defensa
+            this.bar.speed = 2.5; // El enemigo ataca más rápido (Tensión)
+            this.startMinigame(defZone, "¡DEFENDER!"); 
         }, 1200);
     },
 
     endCombat(victory) {
         this.active = false;
-        window.farmApp.state.combatLock = false; // Desactivamos el escudo temporal
+        window.farmApp.state.combatLock = false; 
 
         if (victory) {
             window.farmApp.state.seedsBalance += 25000;
-            // Las plantas del Arsenal se conservan si ganan (no las borramos).
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
         } else {
-            // Eliminar penalización: Limpiamos las plantas apostadas que murieron
+            // Eliminar penalización: Limpiamos solo las plantas que se usaron en combate
             this.playerTeam.forEach(pt => {
                 if (pt.fromArsenal) {
                     window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId);
@@ -373,46 +479,45 @@ window.combatApp = {
             c.innerHTML = '';
             
             teamArr.forEach((ent, idx) => {
-                // Mantener el espacio en blanco si la entidad murió para no romper el flexbox
+                // Espacio transparente si está muerto
                 if (ent.hp <= 0) {
-                    c.innerHTML += `<div class="w-24 md:w-32 opacity-0 shrink-0"></div>`;
+                    c.innerHTML += `<div class="w-[72px] sm:w-24 md:w-32 opacity-0 shrink-0"></div>`;
                     return;
                 }
                 
                 let isActing = (this.attacker === ent) || (this.target === ent);
                 
-                // Estilo dinámico de enfoque
+                // Efectos de Selección
                 let highlight = isActing 
-                    ? (side === 'P' ? 'scale-110 drop-shadow-[0_0_20px_rgba(34,197,94,0.6)] z-20' : 'scale-110 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] z-20') 
-                    : 'hover:scale-105 hover:drop-shadow-xl z-10 opacity-95 hover:opacity-100';
+                    ? (side === 'P' ? 'scale-110 drop-shadow-[0_0_20px_rgba(34,197,94,0.8)] z-20' : 'scale-110 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] z-20') 
+                    : (side === 'P' && this.phase === 'P_SELECT' ? 'hover:scale-105 hover:drop-shadow-xl z-10 cursor-pointer ring-2 ring-transparent hover:ring-cg_blue rounded-full' : (side === 'E' && this.phase === 'P_TARGETING' ? 'hover:scale-105 hover:drop-shadow-xl z-10 cursor-pointer ring-2 ring-transparent hover:ring-red-500 rounded-full animate-pulse' : 'opacity-95'));
                 
-                // Color dinámico de la barra de vida
+                // Color de Barra de Vida
                 let hpPercent = Math.max(0, (ent.hp / ent.maxHp) * 100);
                 let hpColor = hpPercent > 50 ? 'bg-green-500' : (hpPercent > 20 ? 'bg-yellow-400' : 'bg-red-500');
 
-                // Renderizado Hexagonal vía CSS Clip-Path
                 c.innerHTML += `
-                    <div class="cursor-pointer flex flex-col items-center relative transition-all duration-300 ${highlight}" onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}', ${idx})">
+                    <div class="flex flex-col items-center relative transition-all duration-300 ${highlight}" ${((side === 'P' && this.phase === 'P_SELECT') || (side === 'E' && this.phase === 'P_TARGETING')) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
                         
                         <!-- Barra de Vida -->
-                        <div class="w-16 md:w-20 bg-gray-200 h-1.5 md:h-2 rounded-full overflow-hidden mb-3 shadow-inner border border-gray-300">
+                        <div class="w-14 sm:w-16 md:w-20 bg-gray-200 h-1.5 md:h-2 rounded-full overflow-hidden mb-2 shadow-inner border border-gray-300">
                              <div class="${hpColor} h-full transition-all duration-300" style="width: ${hpPercent}%"></div>
                         </div>
                         
-                        <!-- Contenedor Hexagonal -->
-                        <div class="relative w-24 h-28 md:w-32 md:h-36 flex items-center justify-center group animate-float" style="animation-delay: ${idx * 0.2}s">
-                            <!-- Borde simulado con fondo más grande -->
+                        <!-- Contenedor Hexagonal CSS -->
+                        <div class="relative w-[72px] h-[84px] sm:w-24 sm:h-28 md:w-32 md:h-36 flex items-center justify-center group animate-float" style="animation-delay: ${idx * 0.2}s">
+                            <!-- Sombra base / Borde simulado -->
                             <div class="absolute inset-0 ${side === 'P' ? 'bg-green-400' : 'bg-red-400'} hex-shape opacity-20 group-hover:opacity-40 transition-opacity"></div>
                             
-                            <!-- Contenido Interior Hexagonal -->
-                            <div class="absolute inset-[3px] bg-white hex-inner flex items-center justify-center overflow-hidden border border-white shadow-inner">
+                            <!-- Hexágono Interior Blanco -->
+                            <div class="absolute inset-[2px] sm:inset-[3px] bg-white hex-inner flex items-center justify-center overflow-hidden border border-white shadow-inner">
                                 <div class="absolute inset-0 bg-gradient-to-b ${side === 'P' ? 'from-green-50 to-white' : 'from-red-50 to-white'} opacity-80"></div>
-                                <img src="${ent.icon}" class="w-16 h-16 md:w-20 md:h-20 object-contain relative z-10 drop-shadow-md ${isActing ? 'animate-pulse' : ''} ${side==='E' ? 'transform scale-x-[-1]' : ''}">
+                                <img src="${ent.icon}" class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain relative z-10 drop-shadow-md ${isActing ? 'animate-pulse' : ''} ${side==='E' ? 'transform scale-x-[-1]' : ''}">
                             </div>
                         </div>
                         
                         <!-- Stats Flotantes -->
-                        <div class="absolute -bottom-3 bg-white px-3 py-1.5 rounded-xl shadow-md border border-gray-200 flex gap-2 text-[9px] md:text-[10px] font-black uppercase whitespace-nowrap z-30 transition-transform group-hover:-translate-y-1">
+                        <div class="absolute -bottom-2 sm:-bottom-3 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-md border border-gray-200 flex gap-1 sm:gap-2 text-[8px] sm:text-[9px] md:text-[10px] font-black uppercase whitespace-nowrap z-30">
                              <span class="text-orange-500 flex items-center gap-0.5" title="Ataque">⚔️ ${ent.atk}</span>
                              ${side === 'P' ? `<span class="text-blue-500 flex items-center gap-0.5" title="Defensa">🛡️ ${ent.def}%</span>` : ''}
                         </div>
@@ -431,7 +536,7 @@ window.combatApp = {
     showFx(msg, colorClass) {
         const fx = document.getElementById('cb-fx-msg');
         fx.innerText = msg;
-        fx.className = `text-4xl md:text-6xl font-black ${colorClass} drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-all duration-300 text-center uppercase tracking-widest transform scale-110`;
+        fx.className = `text-4xl sm:text-5xl md:text-7xl font-black ${colorClass} drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-all duration-300 text-center uppercase tracking-widest transform scale-110`;
         fx.style.opacity = '1';
         
         setTimeout(() => { 
@@ -441,7 +546,6 @@ window.combatApp = {
     }
 };
 
-// Iniciar automáticamente con un ligero delay para la animación
 setTimeout(() => window.combatApp.init(), 150);
 </script>
 </div>

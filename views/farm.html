@@ -768,6 +768,7 @@ if (typeof window.farmApp === 'undefined') {
                 'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
                 'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
                 'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
+                'tool_duel_ticket': { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png' },
                 'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/szXSZjs/Frame-753.png' },
                 'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/S4G2c9qy/Frame-768.png' }, // NUEVO
                 'flower_cactus': { name: 'Cactus de Cuarzo', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/5gvFssT4/Frame-758.png' },
@@ -838,6 +839,7 @@ if (typeof window.farmApp === 'undefined') {
                     'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
                     'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
                     'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
+                    'tool_duel_ticket': { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png' },
                     'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
                     'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png' }
                 };
@@ -1019,6 +1021,8 @@ if (typeof window.farmApp === 'undefined') {
                                     Object.keys(s.inventory).forEach(k => {
                                         if (this.state.inventory[k]) {
                                             this.state.inventory[k].qty = s.inventory[k].qty || 0;
+                                        } else {
+                                            this.state.inventory[k] = s.inventory[k];
                                         }
                                     });
                                 }
