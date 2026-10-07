@@ -22,13 +22,13 @@
     .shake-hit {
         animation: shake-hit 0.3s ease-in-out;
     }
+    /* Nuevo Fondo Verde Elegante */
     .combat-bg-pattern {
-        background-color: #f8fafc;
-        background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+        background-color: #f0fdf4; /* green-50 */
+        background-image: radial-gradient(#bbf7d0 1.5px, transparent 1.5px); /* green-200 */
         background-size: 24px 24px;
     }
-    
-    /* Estilos Premium Claros para las Cartas */
+    /* Estilos Premium para las Cartas */
     .skill-card {
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         background: #ffffff;
@@ -49,90 +49,85 @@
     }
 </style>
 
-<div class="max-w-[1200px] mx-auto flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-100px)] animate-fade-in relative pb-6 px-4 md:px-0">
+<!-- CONTENEDOR PRINCIPAL A PANTALLA COMPLETA -->
+<div class="fixed inset-0 z-[200] bg-[#f0fdf4] flex flex-col overflow-hidden pb-safe animate-fade-in">
     
-    <!-- HEADER MODERNO -->
-    <div class="flex justify-between items-center bg-white p-3 sm:p-4 md:p-6 rounded-3xl shadow-sm border border-gray-100 shrink-0 z-10 relative mt-4 md:mt-0">
-        <button onclick="loadView('farm')" class="bg-gray-50 hover:bg-gray-100 text-gray-600 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs md:text-sm font-bold border border-gray-200 flex items-center gap-1.5 transition-colors">
-            <span class="text-base sm:text-lg leading-none">&larr;</span> <span class="hidden sm:inline uppercase tracking-wider">Huir</span>
+    <!-- ENCABEZADO SUPERIOR (Reemplaza el navbar del juego) -->
+    <header class="bg-white border-b border-green-200 px-4 py-3 flex justify-between items-center shrink-0 shadow-sm z-20">
+        <button onclick="window.combatApp.confirmFlee()" class="text-red-600 font-black text-[10px] sm:text-xs flex items-center gap-1.5 bg-red-50 hover:bg-red-100 px-3 sm:px-4 py-2 rounded-xl border border-red-100 transition-colors">
+            <span class="text-base leading-none">🚪</span> <span class="uppercase tracking-wider">Huir</span>
         </button>
-        <div class="text-center absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full max-w-[150px] sm:max-w-[200px]">
-            <div class="bg-red-50 text-red-600 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border border-red-100 mb-0.5 sm:mb-1 flex items-center gap-1.5 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span> <span class="truncate">Muerte Súbita</span>
-            </div>
-            <h2 class="text-lg sm:text-xl md:text-3xl font-black text-cg_navy tracking-tight flex items-center gap-1.5 sm:gap-2">
-                Arena 3v3
-            </h2>
+        
+        <div class="flex flex-col items-center">
+            <span class="text-[8px] sm:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-2.5 py-0.5 rounded border border-red-100 mb-0.5 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span> Muerte Súbita
+            </span>
+            <h2 class="text-lg sm:text-xl font-black text-cg_navy tracking-tight">Arena 3v3</h2>
         </div>
-        <div class="bg-cg_navy text-white px-4 sm:px-6 md:px-8 py-1.5 sm:py-2 rounded-xl flex flex-col items-center shadow-md border-2 border-gray-800 shrink-0">
-            <span class="text-[7px] sm:text-[9px] md:text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Ronda</span>
-            <span id="cb-turn-counter" class="text-lg sm:text-xl md:text-3xl font-black leading-none text-cg_gold">1</span>
+        
+        <div class="bg-cg_navy text-white px-4 py-1.5 rounded-xl flex flex-col items-center shadow-md border border-gray-800 shrink-0">
+            <span class="text-[7px] sm:text-[8px] uppercase tracking-widest text-gray-400">Ronda</span>
+            <span id="cb-turn-counter" class="text-sm sm:text-base font-black text-cg_gold leading-none mt-0.5">1</span>
         </div>
-    </div>
+    </header>
 
-    <!-- BATTLEFIELD (Layout Hexagonal RPG) -->
-    <div class="flex-1 relative flex flex-col justify-between mt-3 sm:mt-4 rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-2 sm:p-4 md:p-10 combat-bg-pattern min-h-[280px] sm:min-h-[300px]">
+    <!-- BATTLEFIELD (Layout Hexagonal RPG con Formación Delta) -->
+    <div class="flex-1 relative combat-bg-pattern flex flex-col justify-between p-4 z-10 overflow-hidden">
         
         <!-- Centro VS Marca de agua -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.08]">
-            <span class="text-[80px] sm:text-[120px] md:text-[200px] font-black text-gray-400 italic tracking-tighter select-none">VS</span>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.06]">
+            <span class="text-[150px] sm:text-[200px] font-black text-green-900 italic tracking-tighter select-none">VS</span>
         </div>
 
         <!-- Fila Enemiga (Arriba) -->
-        <div id="cb-enemy-team" class="flex justify-center items-end gap-2 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pb-2 sm:pb-4 md:pb-8"></div>
+        <div id="cb-enemy-team" class="relative w-full h-1/2 z-10"></div>
         
-        <!-- Separador Visual Central -->
-        <div class="absolute left-0 top-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent transform -translate-y-1/2 z-0"></div>
-
         <!-- Fila Jugador (Abajo) -->
-        <div id="cb-player-team" class="flex justify-center items-start gap-2 sm:gap-6 md:gap-12 w-full h-1/2 relative z-10 pt-2 sm:pt-4 md:pt-8"></div>
+        <div id="cb-player-team" class="relative w-full h-1/2 z-10"></div>
 
         <!-- Feed Central de Acción (Efectos visuales de daño) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-            <div id="cb-fx-msg" class="text-3xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 1.5px rgba(0,0,0,0.8);"></div>
+            <div id="cb-fx-msg" class="text-4xl sm:text-6xl font-black text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 1.5px rgba(0,0,0,0.8);"></div>
         </div>
     </div>
 
-    <!-- CONTROL PANEL (Interfaz Táctica) -->
-    <div class="shrink-0 bg-white border border-gray-200 p-4 sm:p-5 md:p-8 rounded-3xl shadow-sm mt-3 sm:mt-4 z-20 relative flex flex-col items-center">
-        
-        <!-- Contenedor Superior: Energía y Mensajes -->
-        <div class="w-full max-w-3xl flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
-            <div class="bg-blue-50 border border-blue-200 px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 shadow-sm shrink-0 w-full sm:w-auto justify-center sm:justify-start">
-                <span class="text-xl md:text-2xl drop-shadow-sm">⚡</span>
-                <div class="flex flex-col items-start">
-                    <span class="text-[8px] sm:text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">Energía</span>
-                    <span class="font-black text-blue-700 text-base sm:text-lg md:text-xl leading-none mt-0.5" id="cb-energy-counter">3 / 10</span>
-                </div>
-            </div>
+    <!-- MENÚ INFERIOR DE COMBATE (Reemplaza el menú principal) -->
+    <div class="shrink-0 bg-white border-t border-green-200 p-4 sm:p-6 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] z-20 pb-safe relative">
+        <div class="max-w-[800px] mx-auto">
             
-            <div class="flex-1 flex justify-center sm:justify-end w-full">
-                <h3 id="cb-action-text" class="text-[9px] sm:text-[10px] md:text-sm font-black text-gray-500 uppercase tracking-widest bg-gray-50 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full border border-gray-200 shadow-inner w-full sm:w-auto text-center truncate">
+            <div class="flex justify-between items-center mb-4 gap-3">
+                <div class="bg-blue-50 border border-blue-200 px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
+                    <span class="text-xl md:text-2xl drop-shadow-sm">⚡</span>
+                    <div class="flex flex-col items-start">
+                        <span class="text-[8px] sm:text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">Energía</span>
+                        <span class="font-black text-blue-700 text-base sm:text-xl leading-none mt-0.5" id="cb-energy-counter">3 / 10</span>
+                    </div>
+                </div>
+                
+                <h3 id="cb-action-text" class="text-[9px] sm:text-xs font-black text-gray-500 uppercase tracking-widest bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 shadow-inner flex-1 text-center truncate">
                     Toca una planta para elegir ataques
                 </h3>
             </div>
-        </div>
-        
-        <!-- Controles Inferiores: Limpiar y Finalizar -->
-        <div class="w-full max-w-3xl flex gap-2 sm:gap-3">
-            <button onclick="window.combatApp.clearQueue()" class="flex-[0.8] sm:flex-1 max-w-[100px] sm:max-w-[120px] bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm">
-                Limpiar
-            </button>
-            <button id="cb-action-btn" onclick="window.combatApp.endTurn()" class="flex-[2] sm:flex-1 bg-cg_gold hover:bg-orange-500 text-white font-black py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl text-sm sm:text-base md:text-lg shadow-[0_4px_0_#c27818] sm:shadow-[0_5px_0_#c27818] active:translate-y-[4px] sm:active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-1.5 sm:gap-2">
-                FINALIZAR TURNO ⚔️
-            </button>
+            
+            <div class="flex gap-2 sm:gap-3">
+                <button onclick="window.combatApp.clearQueue()" class="bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black px-4 py-3.5 sm:py-4 rounded-xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm flex items-center justify-center">
+                    Limpiar
+                </button>
+                <button id="cb-action-btn" onclick="window.combatApp.endTurn()" class="flex-1 bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 sm:py-4 rounded-xl text-sm sm:text-base shadow-[0_4px_0_#c27818] active:translate-y-[4px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2">
+                    FINALIZAR TURNO ⚔️
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
 
-<!-- MODAL DE CARTAS (HABILIDADES DE PLANTA - CLEAR/LIGHT THEME) -->
+<!-- MODAL DE CARTAS (HABILIDADES DE PLANTA - CLEAR THEME) -->
 <div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity" onclick="window.combatApp.closeCardModal()"></div>
-    <!-- Bottom sheet en celulares, modal centrado en PC -->
     <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-lg p-5 sm:p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
         
-        <!-- Decoración sutil -->
-        <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-green-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
 
         <div class="flex justify-between items-center mb-5 relative z-10 border-b border-gray-100 pb-4">
             <div class="flex items-center gap-3">
@@ -155,7 +150,7 @@
 
 <!-- MODAL VICTORIA (CLARO) -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="loadView('farm')"></div>
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
         <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-yellow-100/50 rounded-full blur-3xl"></div>
@@ -180,16 +175,16 @@
 
 <!-- MODAL DERROTA (CLARO) -->
 <div id="combat-defeat-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="loadView('farm')"></div>
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-red-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
-        <div class="absolute -top-20 -right-20 w-48 h-48 bg-red-100/50 rounded-full blur-3xl"></div>
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-red-50 rounded-full blur-3xl"></div>
         
         <div class="w-20 h-20 sm:w-24 sm:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(239,68,68,0.2)] relative z-10 border-4 border-red-100">
             <span class="text-4xl sm:text-5xl drop-shadow-md">💀</span>
         </div>
         
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">La bandada arrasó con todo. Las plantas apostadas se han perdido para siempre.</p>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas se han perdido para siempre.</p>
         
         <button onclick="loadView('farm')" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Aceptar Destino
@@ -206,12 +201,12 @@ window.combatApp = {
     turn: 1,
     energy: 3,
     maxEnergy: 10,
-    actionQueue: [], // Guarda { attackerIdx, targetIdx, skill }
+    actionQueue: [], 
     
     currentAttackerIdx: null,
     pendingSkill: null,
 
-    // Diccionario de Cartas/Habilidades Fijas (Cero Azar - 100% Estrategia)
+    // Diccionario de Cartas/Habilidades Fijas (Cero Azar)
     SKILLS_DICT: {
         'flower_wheat': [
             {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque veloz de bajo costo.', icon: '🌿'}, 
@@ -242,7 +237,7 @@ window.combatApp = {
     init() {
         if (!window.farmApp) { loadView('farm'); return; }
 
-        // Cobrar Ticket
+        // Cobrar Ticket de Ingreso
         if (window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
             window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
             window.farmApp.updateInventoryUI();
@@ -252,12 +247,12 @@ window.combatApp = {
         const selected = window.farmApp.state.selectedCombatants || [];
         
         const buildPlant = (pid, name, icon, isArsenal, idTag) => {
-            let pDef = 20, pHp = 100;
-            if(pid === 'flower_wheat') { pDef = 15; pHp = 100; }
-            else if(pid === 'flower_cactus') { pDef = 35; pHp = 150; } 
-            else if(pid === 'flower_bamboo') { pDef = 20; pHp = 100; }
-            else if(pid === 'flower_crystal') { pDef = 8; pHp = 60; } 
-            else if(pid === 'flower_moon') { pDef = 25; pHp = 200; } 
+            let pDef = 20, pHp = 100, pAtk = 34; // Corrección: Se agregó pAtk para evitar UNDEFINED
+            if(pid === 'flower_wheat') { pAtk = 40; pDef = 15; pHp = 100; }
+            else if(pid === 'flower_cactus') { pAtk = 35; pDef = 35; pHp = 150; } 
+            else if(pid === 'flower_bamboo') { pAtk = 45; pDef = 20; pHp = 100; }
+            else if(pid === 'flower_crystal') { pAtk = 50; pDef = 8; pHp = 60; } 
+            else if(pid === 'flower_moon') { pAtk = 40; pDef = 25; pHp = 200; } 
 
             const skills = this.SKILLS_DICT[pid] || this.SKILLS_DICT['default'];
 
@@ -265,7 +260,7 @@ window.combatApp = {
                 fromArsenal: isArsenal, 
                 arsId: isArsenal ? idTag : null,
                 plotId: !isArsenal ? idTag : null,
-                name: name, icon: icon, hp: pHp, maxHp: pHp, def: pDef,
+                name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef,
                 skills: skills
             });
         };
@@ -294,6 +289,22 @@ window.combatApp = {
         ];
 
         window.farmApp.state.combatLock = true;
+        
+        // PUNITIVO: Retirar plantas del inventario INMEDIATAMENTE y guardar
+        // Si recarga la página o se sale, las pierde.
+        this.playerTeam.forEach(pt => {
+            if (pt.fromArsenal) {
+                window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId);
+            } else if (pt.plotId !== undefined) {
+                let plot = window.farmApp.state.plots[pt.plotId];
+                plot.status = 'empty'; 
+                plot.plant = null; 
+                plot.isReady = false; 
+                plot.potUses = Math.max(0, plot.potUses - 1);
+            }
+        });
+        window.farmApp.saveState();
+
         this.active = true;
         this.turn = 1;
         this.energy = 3;
@@ -312,6 +323,12 @@ window.combatApp = {
         document.getElementById('cb-action-text').innerText = text;
     },
 
+    confirmFlee() {
+        if (confirm('¡Peligro! Si huyes de la Arena ahora, perderás a las plantas de tu escuadrón definitivamente. ¿Huir de todas formas?')) {
+            this.endCombat(false);
+        }
+    },
+
     clearQueue() {
         if (this.phase === 'EXECUTION') return;
         
@@ -325,7 +342,7 @@ window.combatApp = {
         this.currentAttackerIdx = null;
         this.pendingSkill = null;
         this.updateUI();
-        this.setInstruction('Acciones limpiadas. Comienza de nuevo.');
+        this.setInstruction('Acciones limpiadas. Toca una planta para iniciar.');
     },
 
     // ================= INTERACCIÓN DEL JUGADOR ================= //
@@ -371,8 +388,12 @@ window.combatApp = {
         
         plant.skills.forEach((skill, sIdx) => {
             const canAfford = this.energy >= skill.cost;
+            const btnClass = canAfford 
+                ? 'bg-white border border-gray-200 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-md skill-card' 
+                : 'bg-gray-100 border border-gray-200 opacity-50 cursor-not-allowed grayscale';
+            
             container.innerHTML += `
-                <button onclick="window.combatApp.selectCard(${plantIdx}, ${sIdx})" ${!canAfford ? 'disabled' : ''} class="skill-card text-left p-4 sm:p-5 border-2 border-gray-100 rounded-2xl relative flex flex-col justify-between group h-36 sm:h-40 overflow-hidden">
+                <button ${canAfford ? `onclick="window.combatApp.selectCard(${plantIdx},${sIdx})"` : 'disabled'} class="w-full text-left p-3 sm:p-4 rounded-2xl flex flex-col justify-between h-36 sm:h-40 overflow-hidden ${btnClass}">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
                     
                     <div class="flex justify-between items-start w-full relative z-10">
@@ -550,23 +571,14 @@ window.combatApp = {
             window.farmApp.state.seedsBalance += 25000;
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
+            window.farmApp.saveState();
         } else {
-            this.playerTeam.forEach(pt => {
-                if (pt.fromArsenal) {
-                    window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId);
-                } else if (pt.plotId !== undefined) {
-                    let plot = window.farmApp.state.plots[pt.plotId];
-                    plot.status = 'empty'; 
-                    plot.plant = null; 
-                    plot.isReady = false; 
-                    plot.potUses = Math.max(0, plot.potUses - 1);
-                }
-            });
+            // Como las plantas ya fueron removidas en Init(), solo mostramos la derrota
             document.getElementById('combat-defeat-modal').classList.remove('hidden');
             document.getElementById('combat-defeat-modal').classList.add('flex');
+            // No es estrictamente necesario volver a guardar porque se guardó al entrar, pero por si acaso.
+            window.farmApp.saveState(); 
         }
-        
-        window.farmApp.saveState();
     },
 
     // ================= RENDERIZADO VISUAL ================= //
@@ -587,7 +599,8 @@ window.combatApp = {
                 const elId = `${side === 'P' ? 'player' : 'enemy'}-${idx}`;
 
                 if (ent.hp <= 0) {
-                    c.innerHTML += `<div id="${elId}" class="w-[68px] sm:w-[84px] md:w-28 opacity-0 shrink-0"></div>`;
+                    // Mantiene el espacio sin romper la formación delta
+                    c.innerHTML += `<div id="${elId}" class="absolute w-[68px] sm:w-[84px] md:w-28 opacity-0 pointer-events-none"></div>`;
                     return;
                 }
                 
@@ -602,35 +615,52 @@ window.combatApp = {
                                (this.phase === 'EXECUTION' && side === 'P' && this.targetIdx === idx);
 
                 let highlight = isActing 
-                    ? 'scale-110 drop-shadow-[0_0_20px_rgba(41,150,218,0.6)] z-30'
+                    ? 'scale-110 drop-shadow-[0_0_20px_rgba(41,150,218,0.8)] z-40'
                     : isTarget 
-                        ? 'scale-105 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] z-20 animate-pulse'
+                        ? 'scale-105 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] z-30 animate-pulse'
                         : (side === 'P' && this.phase === 'P_SELECT' 
-                            ? 'hover:scale-105 hover:drop-shadow-lg z-10 cursor-pointer ring-2 ring-transparent hover:ring-blue-300 rounded-full' 
+                            ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer' 
                             : (side === 'E' && this.phase === 'P_TARGETING' 
-                                ? 'hover:scale-105 hover:drop-shadow-lg z-10 cursor-pointer ring-2 ring-transparent hover:ring-red-400 rounded-full animate-pulse' 
-                                : 'opacity-95'));
+                                ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer' 
+                                : 'opacity-95 z-10'));
                 
                 let hpPercent = Math.max(0, (ent.hp / ent.maxHp) * 100);
                 let hpColor = hpPercent > 50 ? 'bg-green-500' : (hpPercent > 20 ? 'bg-yellow-400' : 'bg-red-500');
 
                 let queuedCount = side === 'P' ? getQueuedActionsCount(idx) : 0;
                 let queuedHtml = queuedCount > 0 
-                    ? `<div class="absolute -top-2 -right-1 sm:-top-3 sm:-right-2 bg-blue-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-black text-[9px] sm:text-[10px] shadow-md border-2 border-white z-40 animate-bounce">⚔️${queuedCount}</div>` 
+                    ? `<div class="absolute -top-2 -right-1 sm:-top-3 sm:-right-2 bg-blue-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-black text-[9px] sm:text-[10px] shadow-md border-2 border-white z-50 animate-bounce">⚔️${queuedCount}</div>` 
                     : '';
 
+                // === LÓGICA DE FORMACIÓN DELTA ABSOLUTA ===
+                let positionClasses = "";
+                if (side === 'P') {
+                    if (idx === 0) positionClasses = "absolute top-[10%] left-1/2 -translate-x-1/2"; // Frente
+                    else if (idx === 1) positionClasses = "absolute bottom-[10%] left-[20%] sm:left-[30%] -translate-x-1/2 scale-90"; // Atrás Izq
+                    else if (idx === 2) positionClasses = "absolute bottom-[10%] left-[80%] sm:left-[70%] -translate-x-1/2 scale-90"; // Atrás Der
+                } else {
+                    if (idx === 0) positionClasses = "absolute bottom-[10%] left-1/2 -translate-x-1/2"; // Frente (apuntando al jugador)
+                    else if (idx === 1) positionClasses = "absolute top-[10%] left-[20%] sm:left-[30%] -translate-x-1/2 scale-90"; // Atrás Izq
+                    else if (idx === 2) positionClasses = "absolute top-[10%] left-[80%] sm:left-[70%] -translate-x-1/2 scale-90"; // Atrás Der
+                }
+
+                // Efectos de borde según estado del juego
+                let ringStyle = "";
+                if (side === 'P' && this.phase === 'P_SELECT') ringStyle = "group-hover:ring-4 ring-cg_blue ring-offset-2 rounded-full";
+                else if (side === 'E' && this.phase === 'P_TARGETING') ringStyle = "group-hover:ring-4 ring-red-500 ring-offset-2 rounded-full animate-pulse";
+
                 c.innerHTML += `
-                    <div id="${elId}" class="flex flex-col items-center relative transition-all duration-300 ${highlight}" ${((side === 'P' && this.phase === 'P_SELECT') || (side === 'E' && this.phase === 'P_TARGETING')) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
+                    <div id="${elId}" class="${positionClasses} flex flex-col items-center transition-all duration-300 ${highlight}" ${((side === 'P' && this.phase === 'P_SELECT') || (side === 'E' && this.phase === 'P_TARGETING')) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
                         
                         ${queuedHtml}
 
                         <!-- Barra de Vida -->
-                        <div class="w-12 sm:w-16 md:w-20 bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1.5 sm:mb-2 shadow-inner border border-gray-300 shrink-0">
+                        <div class="w-14 sm:w-16 md:w-20 bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1.5 sm:mb-2 shadow-inner border border-gray-300 shrink-0">
                              <div class="${hpColor} h-full transition-all duration-300" style="width: ${hpPercent}%"></div>
                         </div>
                         
                         <!-- Contenedor Hexagonal CSS -->
-                        <div class="relative w-[68px] h-[80px] sm:w-[84px] sm:h-[96px] md:w-28 md:h-32 flex items-center justify-center group animate-float shrink-0" style="animation-delay: ${idx * 0.2}s">
+                        <div class="relative w-[68px] h-[80px] sm:w-[84px] sm:h-[96px] md:w-28 md:h-32 flex items-center justify-center group animate-float shrink-0 ${ringStyle}" style="animation-delay: ${idx * 0.2}s">
                             <div class="absolute inset-0 ${side === 'P' ? 'bg-green-400' : 'bg-red-400'} hex-shape opacity-20 group-hover:opacity-40 transition-opacity"></div>
                             
                             <div class="absolute inset-[2px] sm:inset-[3px] bg-white hex-inner flex items-center justify-center overflow-hidden border border-white shadow-inner">
@@ -639,10 +669,13 @@ window.combatApp = {
                             </div>
                         </div>
                         
-                        <!-- Stats Flotantes -->
-                        <div class="absolute -bottom-2 sm:-bottom-3 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 flex gap-1 sm:gap-2 text-[7px] sm:text-[9px] md:text-[10px] font-black uppercase whitespace-nowrap z-30 shrink-0">
-                             <span class="text-orange-500 flex items-center gap-0.5" title="Ataque Base">⚔️ ${ent.atk}</span>
-                             ${side === 'P' ? `<span class="text-blue-500 flex items-center gap-0.5" title="Defensa Pasiva">🛡️ ${ent.def}%</span>` : ''}
+                        <!-- Panel Inferior (Nombre y Stats) -->
+                        <div class="absolute -bottom-4 sm:-bottom-5 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center z-30 shrink-0 min-w-[70px] sm:min-w-[80px]">
+                            <span class="text-[8px] sm:text-[9px] font-black text-cg_navy uppercase w-full text-center truncate px-1">${ent.name}</span>
+                            <div class="flex gap-1.5 text-[7px] sm:text-[8px] font-bold mt-0.5">
+                                <span class="text-orange-500" title="Ataque Base">⚔️ ${ent.atk}</span>
+                                ${side === 'P' ? `<span class="text-blue-500" title="Defensa Pasiva">🛡️ ${ent.def}%</span>` : ''}
+                            </div>
                         </div>
                     </div>`;
             });
