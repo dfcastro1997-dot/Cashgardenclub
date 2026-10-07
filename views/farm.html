@@ -2044,10 +2044,8 @@ if (typeof window.farmApp === 'undefined') {
             const plot = this.state.plots[plotId];
             if (!plot.isReady) return;
             
-            // --- INICIO CORRECCIÓN: BLOQUEO DE UI ---
-            // Prevenir doble clic o navegación mientras guarda
-            if (this.state.isSaving) return;
-            this.state.isSaving = true; // <-- BLOQUEO ANTI-SPAM INSTANTÁNEO
+            if (this.state.isHarvestingAction) return;
+            this.state.isHarvestingAction = true;
             
             // Ocultar botones de navegación temporalmente para evitar interrupciones
             const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
@@ -2129,7 +2127,7 @@ if (typeof window.farmApp === 'undefined') {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                 }).then(res => {
-                    this.state.isSaving = false; 
+                    this.state.isHarvestingAction = false; // <-- Nueva variable
                     navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
                     
                     if (res.status === 401) {
@@ -2138,7 +2136,7 @@ if (typeof window.farmApp === 'undefined') {
                         this.showPlotToast(plotId, plot.isSpoiled ? '🦠' : '✨', msg);
                     }
                 }).catch(e => {
-                    this.state.isSaving = false; 
+                    this.state.isHarvestingAction = false; // <-- Nueva variable
                     navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
                     console.error("Error guardando progreso:", e);
                     this.showPlotToast(plotId, '⚠️', 'Error al guardar');

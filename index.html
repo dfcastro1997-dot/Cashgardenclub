@@ -327,13 +327,21 @@
             const token = sessionStorage.getItem('session_token');
             if (!username || !token) return;
             
-            // <-- VERIFICACIÓN DE CANDADO PARA IGNORAR SYNC SI EL CLIENTE ESTÁ GUARDANDO
+            // <-- VERIFICACIÓN INICIAL: Ignorar sync si ya está guardando
             if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
                 return;
             }
             
             try {
                 const response = await fetch(`/api/sync/${username}?token=${token}`);
+                
+                // --- INICIO DE LA CORRECCIÓN ---
+                // Abortar si el usuario hizo un cambio/compra MIENTRAS la petición del fetch iba en camino.
+                // Esto previene que una respuesta vieja del servidor sobreescriba un inventario recién comprado.
+                if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
+                    return;
+                }
+                // --- FIN DE LA CORRECCIÓN ---
                 
                 if (response.status === 401) {
                     showSessionExpiredModal("Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión local ha sido desconectada.");
@@ -377,7 +385,8 @@
                                                 window.farmApp.state.inventory[k] = state.inventory[k];
                                             }
                                         });
-                                    }                                    window.farmApp.state.lastTick = state.lastTick;
+                                    }                                    
+                                    window.farmApp.state.lastTick = state.lastTick;
                                     window.farmApp.updateUI();
                                 }
                             }
