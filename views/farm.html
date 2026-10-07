@@ -17,8 +17,8 @@
             <!-- Contenedor agrupado para PC (Duelo + Clima) -->
             <div class="col-span-3 sm:col-span-1 flex gap-3 w-full sm:w-auto">
                 <!-- BOTÓN DUELO (Blanco y Elegante) -->
-                <button onclick="intentarDuelo()" class="flex-1 sm:w-auto h-full min-h-[48px] bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 transition-all active:scale-95 px-4 sm:px-6">
-                    <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
+                <button onclick="intentarDuelo()" class="flex-1 sm:w-auto sm:min-w-[150px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 transition-all active:scale-95 px-5 sm:px-7">
+                    <span class="text-lg sm:text-xl text-red-500 drop-shadow-sm">⚔️</span> 
                     <span class="text-xs sm:text-sm uppercase tracking-widest">Duelo</span>
                 </button>
                 
@@ -612,11 +612,10 @@
             <!-- Inyectado por JS -->
         </div>
         
-        <!-- CAJA DE RECOMPENSA Y ESTADÍSTICAS -->
         <div id="team-stats-box" class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center transition-all opacity-50 grayscale shrink-0">
             <div>
-                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Probabilidad</p>
-                <p id="team-prob-text" class="text-lg font-black text-gray-500">0%</p>
+                <p class="text-[10px] font-black text-cg_navy uppercase tracking-widest">Escuadrón Listo</p>
+                <p class="text-xs text-gray-400 font-medium">Premios basados en el riesgo</p>
             </div>
             <div class="text-right">
                 <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Premio Potencial</p>
@@ -2981,7 +2980,6 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('team-count-badge').innerText = `${count} / 3 Seleccionadas`;
             
             let totalReward = 0;
-            let totalPower = 0;
 
             const REWARDS = {
                 'flower_crystal': 15000, 
@@ -2996,19 +2994,6 @@ if (typeof window.farmApp === 'undefined') {
                 'default': 8000
             };
 
-            const POWER_RATING = {
-                'flower_crystal': 1, 
-                'flower_wheat': 2,   
-                'flower_bamboo': 2.5,  
-                'flower_small': 2,   
-                'flower_neon': 2.5,    
-                'flower_solar': 3,    
-                'flower_cactus': 4,   
-                'flower_big': 4,      
-                'flower_moon': 5,     
-                'default': 2
-            };
-
             this.state.selectedCombatants.forEach(c => {
                 let pid = 'default';
                 if (c.type === 'arsenal') {
@@ -3019,26 +3004,17 @@ if (typeof window.farmApp === 'undefined') {
                     if (p && p.plant) pid = p.plant.id;
                 }
                 totalReward += (REWARDS[pid] || REWARDS['default']);
-                totalPower += (POWER_RATING[pid] || POWER_RATING['default']);
             });
 
             this.state.pendingCombatReward = totalReward;
-            
-            let winProb = count > 0 ? Math.min(95, Math.max(10, Math.floor((totalPower / 15) * 100))) : 0;
 
             const statsBox = document.getElementById('team-stats-box');
-            const probText = document.getElementById('team-prob-text');
             const rewardText = document.getElementById('team-reward-text');
             const btn = document.getElementById('btn-confirm-team');
             
             if (count > 0) {
                 statsBox.classList.remove('opacity-50', 'grayscale');
-                
-                let probColor = winProb >= 70 ? 'text-green-500' : (winProb >= 40 ? 'text-orange-500' : 'text-red-500');
-                let rewardColor = totalReward >= 35000 ? 'text-red-500' : (totalReward >= 25000 ? 'text-orange-500' : 'text-green-600');
-                
-                probText.className = `text-lg font-black ${probColor}`;
-                probText.innerText = `~${winProb}%`;
+                let rewardColor = totalReward >= 30000 ? 'text-red-500' : (totalReward >= 20000 ? 'text-orange-500' : 'text-green-600');
                 
                 rewardText.className = `text-xl md:text-2xl font-black ${rewardColor}`;
                 rewardText.innerText = `+${totalReward.toLocaleString()} 🌱`;
@@ -3047,8 +3023,6 @@ if (typeof window.farmApp === 'undefined') {
                 btn.className = "flex-[2] bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 sm:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-[10px] sm:text-xs";
             } else {
                 statsBox.classList.add('opacity-50', 'grayscale');
-                probText.className = "text-lg font-black text-gray-500";
-                probText.innerText = "0%";
                 rewardText.className = "text-xl md:text-2xl font-black text-gray-500";
                 rewardText.innerText = "+0 🌱";
                 
