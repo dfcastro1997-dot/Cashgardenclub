@@ -732,16 +732,64 @@ def process_tournament_lifecycle(inst, conn, cur):
             inst['status'] = 'running'
             inst['end_time'] = end_time
         else:
-            # Reprogramar con el desfase correcto si no hay quorum
             new_start = get_next_schedule_ms(t_id)
             cur.execute("UPDATE tournament_instances SET start_time = %s WHERE id = %s", (new_start, inst['id']))
             inst['start_time'] = new_start
         conn.commit()
         
-    # MOTOR DE CIERRE (Bloquea inscripciones, define ganador)
+    # MOTOR DE CIERRE Y PAGOS (Top 3 gana COP, resto Semillas)
     if inst['status'] == 'running' and now >= inst['end_time']:
-        cur.execute("UPDATE tournament_instances SET status = 'completed' WHERE id = %s", (inst['id'],))
-        conn.commit()
+        # Bloqueo atómico: solo el primer request que detecte el fin ejecutará los pagos
+        cur.execute("UPDATE tournament_instances SET status = 'completed' WHERE id = %s AND status = 'running' RETURNING id", (inst['id'],))
+        updated = cur.fetchone()
+        
+        if updated:
+            prize_pool = float(inst['prize_pool_cop'] or 0)
+            if t_id == 1 and prize_pool < 10000: prize_pool = 10000.0
+            
+            cur.execute('''
+                SELECT user_id, username FROM tournament_players 
+                WHERE instance_id = %s 
+                ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC
+            ''', (inst['id'],))
+            players = cur.fetchall()
+            
+            # Distribución Dinero Real (Top 3)
+            prizes_cop = [prize_pool * 0.50, prize_pool * 0.30, prize_pool * 0.20]
+            
+            # Compensación Semillas (Posiciones indexadas: 0 a 9)
+            seeds_compensation = {
+                1: [0, 0, 0, 3000, 3000, 2000, 2000, 2000, 1000, 1000],
+                3: [0, 0, 0, 12000, 12000, 8000, 8000, 8000, 4000, 4000],
+                4: [0, 0, 0, 25000, 25000, 15000, 15000, 15000, 8000, 8000],
+                5: [0, 0, 0, 40000, 40000, 25000, 25000, 25000, 12000, 12000]
+            }
+            comp_array = seeds_compensation.get(t_id, [0] * 10)
+            
+            for i, p in enumerate(players):
+                uid = p['user_id']
+                
+                # Pago COP
+                if i < 3 and prizes_cop[i] > 0:
+                    amt = prizes_cop[i]
+                    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (amt, uid))
+                    cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_prize', %s, %s, 'completed')", (uid, amt, f"PRIZE-{inst['id']}-{uid}"))
+                    
+                # Pago Semillas
+                seed_amt = comp_array[i] if i < len(comp_array) else comp_array[-1]
+                if seed_amt > 0:
+                    cur.execute("SELECT game_state FROM users WHERE id = %s FOR UPDATE", (uid,))
+                    u_state = cur.fetchone()
+                    if u_state and u_state['game_state']:
+                        import json
+                        try:
+                            st = json.loads(u_state['game_state'])
+                            st['seedsBalance'] = st.get('seedsBalance', 0) + seed_amt
+                            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), uid))
+                        except Exception:
+                            pass
+                            
+            conn.commit()
         inst['status'] = 'completed'
         
     return inst
@@ -832,18 +880,17 @@ def global_leaderboard(t_id):
     if inst:
         inst = process_tournament_lifecycle(inst, conn, cur)
         
-    # Si se completó o no hay activos, buscamos al campeón histórico reciente
+    # Si se completó o no hay activos, buscamos los resultados del campeón reciente
     if not inst or inst['status'] == 'completed':
         cur.execute("SELECT * FROM tournament_instances WHERE template_id = %s AND status = 'completed' ORDER BY id DESC LIMIT 1", (t_id,))
         last_inst = cur.fetchone()
         if last_inst:
-            cur.execute('''SELECT username, current_score FROM tournament_players WHERE instance_id = %s ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 1''', (last_inst['id'],))
-            winner = cur.fetchone()
+            cur.execute('''SELECT username, current_score, alchemy_precision, alchemy_time FROM tournament_players WHERE instance_id = %s ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10''', (last_inst['id'],))
+            players = cur.fetchall()
             cur.close(); conn.close()
             return jsonify({
                 "status": "completed",
-                "winner": winner['username'] if winner else "Nadie",
-                "winning_score": float(winner['current_score']) if winner else 0,
+                "leaderboard": players,
                 "start_time": last_inst['start_time'],
                 "end_time": last_inst['end_time'],
                 "prize_pool": last_inst['prize_pool_cop']
@@ -869,6 +916,8 @@ def global_leaderboard(t_id):
         "max_players": inst['max_players'],
         "leaderboard": players
     })
+
+
 
 @app.route('/api/tournaments/status/<int:instance_id>', methods=['GET'])
 def check_tournament_status(instance_id):
