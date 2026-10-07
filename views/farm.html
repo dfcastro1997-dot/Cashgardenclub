@@ -597,6 +597,26 @@
     </div>
 </div>
 
+<div id="team-selection-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in p-6 md:p-8 max-h-[85vh]">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy tracking-tight flex items-center gap-2"><span class="text-2xl">⚔️</span> Escuadrón</h3>
+            <span class="bg-blue-50 text-blue-600 font-bold px-3 py-1 rounded-full text-xs" id="team-count-badge">0 / 3 Seleccionadas</span>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Selecciona hasta 3 plantas de tu Arsenal o Granja para combatir.</p>
+        
+        <div class="flex-1 overflow-y-auto space-y-3 pr-2" id="team-selection-list">
+            <!-- Inyectado por JS -->
+        </div>
+        
+        <div class="mt-6 flex gap-3">
+            <button onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3.5 rounded-xl hover:bg-gray-50 transition-colors uppercase tracking-widest text-xs">Cancelar</button>
+            <button onclick="window.farmApp.startCombatWithTeam()" id="btn-confirm-team" class="flex-1 bg-gray-300 text-gray-500 font-black py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-xs cursor-not-allowed" disabled>A la Arena</button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL DE TICKET REQUERIDO -->
 <div id="ticket-required-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('ticket-required-modal').classList.replace('flex', 'hidden')"></div>
@@ -642,13 +662,17 @@ if (typeof window.farmApp === 'undefined') {
             }
             return;
         }
+
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-        if (readyPlots.length === 0) {
-            window.farmApp.showFarmAlert('Sin Escuadrón', 'Debes tener al menos 1 planta al 100% de madurez en tu Invernadero.', '🌱');
+        let arsenal = window.farmApp.state.arsenal || [];
+
+        if (readyPlots.length === 0 && arsenal.length === 0) {
+            window.farmApp.showFarmAlert('Sin Escuadrón', 'Debes tener al menos 1 planta lista en la Granja o almacenada en tu Arsenal.', '🌱');
             setTimeout(() => { window.farmApp.closeFarmAlert(); }, 3000);
             return;
         }
-        loadView('combat', document.querySelectorAll('.nav-btn-desktop')[0]);
+        
+        window.farmApp.openTeamSelection(readyPlots, arsenal);
     }
 
 
@@ -2853,6 +2877,103 @@ if (typeof window.farmApp === 'undefined') {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }
+        },
+
+        openTeamSelection(readyPlots, arsenal) {
+            this.state.selectedCombatants = [];
+            const list = document.getElementById('team-selection-list');
+            list.innerHTML = '';
+            
+            const allCandidates = [];
+            arsenal.forEach(a => allCandidates.push({ type: 'arsenal', data: a }));
+            readyPlots.forEach(p => allCandidates.push({ type: 'plot', data: p }));
+
+            allCandidates.forEach((c, idx) => {
+                const isArsenal = c.type === 'arsenal';
+                const name = isArsenal ? c.data.name : c.data.plant.name;
+                const icon = isArsenal ? c.data.icon : c.data.plant.icon;
+                const idTag = isArsenal ? c.data.id : c.data.id; 
+                
+                let pAtk = 34, pDef = 20, pHp = 100;
+                if (isArsenal) {
+                    pAtk = c.data.atk; pDef = c.data.def; pHp = c.data.hp;
+                } else {
+                    const pid = c.data.plant.id;
+                    if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
+                    else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
+                    else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
+                    else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
+                    else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
+                    else { pAtk = 40; pDef = 20; pHp = 100; }
+                }
+
+                list.innerHTML += `
+                    <div id="candidate-${idx}" onclick="window.farmApp.toggleCombatant(${idx}, '${c.type}', '${idTag}')" class="p-3 bg-white border-2 border-gray-100 rounded-2xl flex items-center justify-between gap-3 cursor-pointer transition-all hover:border-blue-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-200 p-1 shrink-0">
+                                <img src="${icon}" class="w-full h-full object-contain">
+                            </div>
+                            <div>
+                                <h4 class="font-black text-cg_navy text-sm leading-tight flex items-center gap-1">${name} ${isArsenal ? '<span class="text-[8px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded uppercase">Arsenal</span>' : '<span class="text-[8px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase">Granja</span>'}</h4>
+                                <div class="flex gap-2 mt-1 text-[9px] font-bold text-gray-500 uppercase">
+                                    <span class="text-red-500">❤️ ${pHp}</span>
+                                    <span class="text-orange-500">⚔️ ${pAtk}</span>
+                                    <span class="text-blue-500">🛡️ ${pDef}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="check-${idx}" class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 transition-colors"></div>
+                    </div>
+                `;
+            });
+            
+            this.updateTeamBtn();
+            document.getElementById('team-selection-modal').classList.remove('hidden');
+            document.getElementById('team-selection-modal').classList.add('flex');
+        },
+
+        toggleCombatant(idx, type, idTag) {
+            const existingIndex = this.state.selectedCombatants.findIndex(c => c.idx === idx);
+            const el = document.getElementById(`candidate-${idx}`);
+            const check = document.getElementById(`check-${idx}`);
+
+            if (existingIndex > -1) {
+                this.state.selectedCombatants.splice(existingIndex, 1);
+                el.classList.remove('border-blue-500', 'bg-blue-50/30');
+                el.classList.add('border-gray-100', 'bg-white');
+                check.classList.remove('bg-blue-500', 'border-blue-500');
+                check.classList.add('border-gray-300');
+                check.innerHTML = '';
+            } else {
+                if (this.state.selectedCombatants.length >= 3) return; // Limite de 3
+                this.state.selectedCombatants.push({ idx, type, idTag });
+                el.classList.remove('border-gray-100', 'bg-white');
+                el.classList.add('border-blue-500', 'bg-blue-50/30');
+                check.classList.remove('border-gray-300');
+                check.classList.add('bg-blue-500', 'border-blue-500');
+                check.innerHTML = '<span class="text-white text-xs font-black">✓</span>';
+            }
+            
+            this.updateTeamBtn();
+        },
+
+        updateTeamBtn() {
+            const count = this.state.selectedCombatants.length;
+            document.getElementById('team-count-badge').innerText = `${count} / 3 Seleccionadas`;
+            
+            const btn = document.getElementById('btn-confirm-team');
+            if (count > 0) {
+                btn.disabled = false;
+                btn.className = "flex-1 bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs";
+            } else {
+                btn.disabled = true;
+                btn.className = "flex-1 bg-gray-300 text-gray-500 font-black py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-xs cursor-not-allowed";
+            }
+        },
+
+        startCombatWithTeam() {
+            document.getElementById('team-selection-modal').classList.replace('flex', 'hidden');
+            loadView('combat', document.querySelectorAll('.nav-btn-desktop')[0]);
         },
 
 

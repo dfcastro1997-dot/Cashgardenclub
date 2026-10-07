@@ -149,46 +149,54 @@ window.combatApp = {
         window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
         window.farmApp.updateInventoryUI();
 
-        // 2. Armar Equipo de Jugador (Priorizando el ARSENAL)
         this.playerTeam = [];
-        let storedArsenal = window.farmApp.state.arsenal || [];
+        const selected = window.farmApp.state.selectedCombatants || [];
         
-        // Agregar las plantas guardadas en el Arsenal (hasta 3)
-        storedArsenal.slice(0, 3).forEach(ap => {
-            this.playerTeam.push({ 
-                fromArsenal: true, 
-                arsId: ap.id, 
-                name: ap.name, 
-                icon: ap.icon, 
-                hp: ap.hp, 
-                maxHp: ap.maxHp, 
-                atk: ap.atk, 
-                def: ap.def 
-            });
+        selected.forEach(sel => {
+            if (sel.type === 'arsenal') {
+                const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag);
+                if (ap) {
+                    this.playerTeam.push({ 
+                        fromArsenal: true, 
+                        arsId: ap.id, 
+                        name: ap.name, 
+                        icon: ap.icon, 
+                        hp: ap.hp, 
+                        maxHp: ap.maxHp, 
+                        atk: ap.atk, 
+                        def: ap.def 
+                    });
+                }
+            } else if (sel.type === 'plot') {
+                const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag);
+                if (p && p.plant) {
+                    let pAtk = 34, pDef = 20, pHp = 100;
+                    const pid = p.plant.id;
+                    if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
+                    else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
+                    else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
+                    else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
+                    else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
+
+                    this.playerTeam.push({ 
+                        fromArsenal: false, 
+                        plotId: p.id, 
+                        name: p.plant.name, 
+                        icon: p.plant.icon, 
+                        hp: pHp, 
+                        maxHp: pHp, 
+                        atk: pAtk, 
+                        def: pDef 
+                    });
+                }
+            }
         });
 
-        // 3. Si el Arsenal no llega a 3, rellenar jalando directamente de la Granja
-        if (this.playerTeam.length < 3) {
-            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-            readyPlots.slice(0, 3 - this.playerTeam.length).forEach(p => {
-                let pAtk = 34, pDef = 20, pHp = 100;
-                const pid = p.plant.id;
-                if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
-                else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
-                else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
-                else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
-                else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
-
-                this.playerTeam.push({ 
-                    fromArsenal: false, 
-                    plotId: p.id, 
-                    name: p.plant.name, 
-                    icon: p.plant.icon, 
-                    hp: pHp, 
-                    maxHp: pHp, 
-                    atk: pAtk, 
-                    def: pDef 
-                });
+        // 3. Sistema Fallback (En caso de recargar página forzada o perder estado temporal)
+        if (this.playerTeam.length === 0) {
+            let storedArsenal = window.farmApp.state.arsenal || [];
+            storedArsenal.slice(0, 3).forEach(ap => {
+                this.playerTeam.push({ fromArsenal: true, arsId: ap.id, name: ap.name, icon: ap.icon, hp: ap.hp, maxHp: ap.maxHp, atk: ap.atk, def: ap.def });
             });
         }
 
