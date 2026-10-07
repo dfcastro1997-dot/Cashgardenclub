@@ -8,21 +8,20 @@
         </div>
         
         <!-- BOTONES CON MISMO TAMAÑO EN MÓVIL (Grid) -->
-        <div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center w-full sm:w-auto mt-1 sm:mt-0">
-            <!-- Botón Herramientas -->
-            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden col-span-2 w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-2 transition-all active:scale-95">
-                <span class="text-base sm:text-lg">🛠</span> 
-                <span class="text-xs sm:text-sm">Herramientas</span>
+        <div class="grid grid-cols-4 gap-3 sm:flex sm:flex-wrap sm:items-center w-full sm:w-auto mt-1 sm:mt-0">
+            <!-- Botón Herramientas (1 Columna en móvil) -->
+            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden col-span-1 w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center transition-all active:scale-95 text-xl">
+                🛠
             </button>
 
-            <!-- NUEVO: BOTÓN ARENA 3VS3 -->
-            <button onclick="window.farmApp.combat.init()" class="col-span-2 sm:col-span-1 w-full sm:w-auto h-full min-h-[48px] bg-red-500 hover:bg-red-600 text-white border-2 border-red-700 rounded-xl shadow-lg font-black flex items-center justify-center gap-2 transition-all active:scale-95 px-4 animate-pulse">
+            <!-- BOTÓN ARENA 3VS3 (3 Columnas en móvil, colores suaves y elegantes) -->
+            <button onclick="window.farmApp.combat.init()" class="col-span-3 sm:col-span-1 w-full sm:w-auto h-full min-h-[48px] bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 hover:border-amber-400 text-amber-800 rounded-xl shadow-sm font-black flex items-center justify-center gap-2 transition-all active:scale-95 px-4">
                 <span class="text-base sm:text-lg">⚔️</span> 
                 <span class="text-xs sm:text-sm uppercase tracking-widest">Duelo 3vs3</span>
             </button>
             
             <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL -->
-            <div id="season-widget" class="col-span-2 sm:col-span-1 w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center px-4 relative overflow-hidden transition-all">
+            <div id="season-widget" class="col-span-4 sm:col-span-1 w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center px-4 relative overflow-hidden transition-all">
                 <!-- Se inyecta por JS -->
             </div>
         </div>
@@ -591,6 +590,23 @@
     </div>
 </div>
 
+
+
+<!-- MODAL DE ALERTA DUELO 3VS3 (Auto-ocultable) -->
+<div id="duel-alert-modal" class="fixed inset-0 z-[700] hidden items-center justify-center p-4 pointer-events-none">
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col items-center text-center p-6 md:p-8 border border-orange-200 animate-fade-in">
+        <div class="w-16 h-16 bg-orange-50 rounded-full border-2 border-orange-100 flex items-center justify-center mb-3 shadow-inner relative overflow-hidden">
+            <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-10 h-10 object-contain drop-shadow-md animate-bounce relative z-10">
+        </div>
+        <h3 class="text-lg md:text-xl font-black text-cg_navy mb-1 leading-tight" id="duel-alert-title">Aviso</h3>
+        <p class="text-xs text-gray-500 mb-4" id="duel-alert-msg">Mensaje.</p>
+        
+        <!-- Barra de progreso para el cierre automático -->
+        <div class="w-full bg-gray-100 h-1 rounded-full overflow-hidden">
+            <div id="duel-alert-bar" class="h-full bg-orange-400 w-full"></div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -2427,18 +2443,45 @@ if (typeof window.farmApp === 'undefined') {
             attacker: null,
             target: null,
             bar: { req: null, x: 0, dir: 1, speed: 1.5, safeStart: 0, safeWidth: 0 },
+            alertTimeout: null, // Control de la alerta
+
+            // Nueva función para alertas bonitas y auto-ocultables
+            showDuelAlert(title, msg) {
+                const modal = document.getElementById('duel-alert-modal');
+                document.getElementById('duel-alert-title').innerText = title;
+                document.getElementById('duel-alert-msg').innerText = msg;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                // Animación de la barra vaciándose (3 segundos)
+                const bar = document.getElementById('duel-alert-bar');
+                bar.style.transition = 'none';
+                bar.style.width = '100%';
+                
+                setTimeout(() => {
+                    bar.style.transition = 'width 3s linear';
+                    bar.style.width = '0%';
+                }, 50);
+
+                // Auto-cierre
+                if (this.alertTimeout) clearTimeout(this.alertTimeout);
+                this.alertTimeout = setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }, 3000);
+            },
 
             init() {
-                // Validación Estricta: Ticket de Duelo
+                // Usando la nueva alerta visual
                 if (!window.farmApp.state.inventory['tool_duel_ticket'] || window.farmApp.state.inventory['tool_duel_ticket'].qty <= 0) {
-                    window.farmApp.showFarmAlert('Acceso Restringido', 'Debes adquirir un Ticket de Duelo en el Mercado de Insumos para entrar a la Arena 3vs3.', '🎫');
+                    this.showDuelAlert('Falta Ticket de Duelo', 'Adquiere un Ticket de Duelo en el Mercado de Insumos para entrar a la Arena.');
                     return;
                 }
 
-                // Extraer Plantas Cosechadas (El Stake/Apuesta)
+                // Extraer Plantas Cosechadas
                 let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
                 if (readyPlots.length === 0) {
-                    window.farmApp.showFarmAlert('Escuadrón Vacío', 'Requiere al menos 1 planta al 100% de madurez en tu granja para apostarla en combate.', '🌱');
+                    this.showDuelAlert('Escuadrón Vacío', 'Requiere al menos 1 planta madura (Lista para cosechar) para usarla en combate.');
                     return;
                 }
 
@@ -2451,10 +2494,10 @@ if (typeof window.farmApp === 'undefined') {
                 readyPlots.slice(0, 3).forEach(p => {
                     let pAtk = 34, pDef = 20, pHp = 100; // Base
                     if(p.plant.id === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
-                    else if(p.plant.id === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } // Tanque
+                    else if(p.plant.id === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
                     else if(p.plant.id === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
-                    else if(p.plant.id === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } // Cañón Cristal
-                    else if(p.plant.id === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } // Élite
+                    else if(p.plant.id === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
+                    else if(p.plant.id === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
 
                     this.playerTeam.push({ plotId: p.id, name: p.plant.name, icon: p.plant.icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef });
                 });
