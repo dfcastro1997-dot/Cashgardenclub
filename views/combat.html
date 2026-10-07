@@ -293,6 +293,7 @@ window.combatApp = {
                 fromArsenal: isArsenal, 
                 arsId: isArsenal ? idTag : null,
                 plotId: !isArsenal ? idTag : null,
+                plantId: pid, // <-- AÑADIDO: Guardar el ID de la especie para poder recuperarla
                 name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef,
                 skills: skills
             });
@@ -324,11 +325,69 @@ window.combatApp = {
             storedArsenal.slice(0, 3).forEach(ap => buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id));
         }
 
-        this.enemyTeam = [
-            { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 250, maxHp: 250, atk: 45 },
-            { name: 'Cuervo Alfa', icon: window.farmApp.state.images.crow, hp: 450, maxHp: 450, atk: 75 },
-            { name: 'Cuervo Rastrero', icon: window.farmApp.state.images.crow, hp: 250, maxHp: 250, atk: 45 }
-        ];
+        // --- 1. CÁLCULO DEL SQUAD VALUE (MATCHMAKING MATEMÁTICO) ---
+        let squadValue = 0;
+        this.playerTeam.forEach(p => {
+            squadValue += (p.maxHp + p.atk + p.def);
+        });
+
+        // --- 2. CONDICIONES DE ENTORNO (RELOJ Y CALENDARIO REAL) ---
+        const d = new Date();
+        const hour = d.getHours();
+        const day = d.getDate();
+        
+        // Noche: 6:00 PM (18) a 6:00 AM (6)
+        const isNight = hour >= 18 || hour < 6;
+        // Invierno: Días 1 al 9
+        const isWinter = day >= 1 && day <= 9;
+        // Verano: Días 27 en adelante (Guardado para ignorar Defensa en el turno)
+        this.isSummer = day >= 27; 
+
+        // Modificadores matemáticos
+        let envAtkMult = isNight ? 1.3 : 1.0;  // +30% Ataque en la noche
+        let envHpMult = isNight ? 0.8 : 1.0;   // -20% Vida en la noche
+        let envHpFlat = isWinter ? 50 : 0;     // +50 Vida fija en invierno
+        let namePrefix = isNight ? ' Nocturno' : '';
+
+        // Función para crear cuervos aplicando el entorno
+        const createCrow = (baseName, baseHp, baseAtk) => {
+            let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
+            let finalAtk = Math.floor(baseAtk * envAtkMult);
+            return {
+                name: baseName + namePrefix,
+                icon: window.farmApp.state.images.crow,
+                hp: finalHp,
+                maxHp: finalHp,
+                atk: finalAtk
+            };
+        };
+
+        // --- 3. GENERACIÓN DEL ESCUADRÓN ---
+        if (squadValue < 500) {
+            // Escuadrón Rastrero (Equipos débiles, ej: 3 Trigos)
+            this.enemyTeam = [
+                createCrow('C. Rastrero', 200, 35),
+                createCrow('C. Rastrero', 200, 35),
+                createCrow('C. Rastrero', 200, 35)
+            ];
+            window.farmApp.state.pendingCombatReward = 15000;
+        } else if (squadValue >= 1000) {
+            // Escuadrón de Élite (Equipos pesados)
+            this.enemyTeam = [
+                createCrow('Cuervo Alfa', 600, 85),
+                createCrow('Cuervo Alfa', 600, 85),
+                createCrow('Cuervo Alfa', 600, 85)
+            ];
+            window.farmApp.state.pendingCombatReward = 60000;
+        } else {
+            // Escuadrón Táctico (Equipos balanceados, Default)
+            this.enemyTeam = [
+                createCrow('C. Rastrero', 250, 45),
+                createCrow('Cuervo Alfa', 450, 75),
+                createCrow('C. Rastrero', 250, 45)
+            ];
+            window.farmApp.state.pendingCombatReward = 30000;
+        }
 
         window.farmApp.state.combatLock = true;
         
@@ -574,6 +633,15 @@ window.combatApp = {
         this.setInstruction('🦅 TURNO ENEMIGO...');
         await this.sleep(700);
 
+        // --- MECÁNICA: GRITO DE GUERRA (CADA 3 TURNOS) ---
+        // Sincronía determinista: Los turnos 3, 6, 9, etc., los cuervos hacen doble daño
+        const isBattleCryTurn = (this.turn % 3 === 0);
+        if (isBattleCryTurn) {
+            this.showFx("¡GRITO DE GUERRA!", "text-red-600");
+            this.shakeScreen();
+            await this.sleep(800);
+        }
+
         for (let i = 0; i < this.enemyTeam.length; i++) {
             let enemy = this.enemyTeam[i];
             if (enemy.hp <= 0) continue;
@@ -581,20 +649,30 @@ window.combatApp = {
             let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
             if (alivePlayers.length === 0) break;
 
+            // La IA sigue siendo predecible, ataca al de menor vida
             let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
             
             this.currentAttackerIdx = i;
             this.targetIdx = this.playerTeam.indexOf(target);
             this.updateUI();
 
-            this.showFx("PICOTAZO", "text-gray-600");
+            this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
             await this.sleep(400);
 
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
             await this.sleep(150);
 
-            const mitigation = target.def / 100; 
-            const actualDamage = Math.max(1, Math.floor(enemy.atk * (1 - mitigation)));
+            // --- MECÁNICA: VERANO (IGNORAR DEFENSA) ---
+            // Si es Verano, la mitigación es 0. Si no, usa la defensa de la planta.
+            const mitigation = this.isSummer ? 0 : (target.def / 100); 
+            
+            let baseDamage = enemy.atk;
+            // Aplicar el Grito de Guerra si corresponde
+            if (isBattleCryTurn) {
+                baseDamage *= 2; 
+            }
+
+            const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
             
             target.hp -= actualDamage;
             this.shakeElement(`player-${this.targetIdx}`);
@@ -655,6 +733,24 @@ window.combatApp = {
             }
             window.farmApp.state.inventory['tool_duel_ticket'].qty += 1;
             window.farmApp.updateInventoryUI();
+
+            // <-- NUEVO: RECUPERAR PLANTAS SOBREVIVIENTES AL ARSENAL -->
+            if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
+            this.playerTeam.forEach(pt => {
+                if (pt.hp > 0) {
+                    window.farmApp.state.arsenal.push({
+                        id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                        plantId: pt.plantId,
+                        name: pt.name,
+                        icon: pt.icon,
+                        hp: pt.maxHp, // Se restauran con salud completa al volver al arsenal
+                        maxHp: pt.maxHp,
+                        atk: pt.atk,
+                        def: pt.def
+                    });
+                }
+            });
+            // <-- FIN DEL NUEVO BLOQUE -->
 
             document.getElementById('combat-victory-reward-text').innerText = `+${reward.toLocaleString()} 🌱`;
             document.getElementById('combat-victory-modal').classList.remove('hidden');
