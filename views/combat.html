@@ -13,7 +13,6 @@
     .animate-float {
         animation: float 4s ease-in-out infinite;
     }
-    
     @keyframes shake-hit {
         0%, 100% { transform: translateX(0); filter: brightness(1); }
         25% { transform: translateX(-6px) rotate(-3deg); filter: brightness(2) drop-shadow(0 0 10px red); }
@@ -23,7 +22,6 @@
     .shake-hit {
         animation: shake-hit 0.35s ease-in-out;
     }
-    
     @keyframes screen-shake {
         0%, 100% { transform: translate(0, 0); }
         10% { transform: translate(-10px, -10px); }
@@ -36,12 +34,14 @@
         animation: screen-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
     }
 
+    /* Patrón de fondo moderno Verde */
     .combat-bg-pattern {
         background-color: #f0fdf4; 
         background-image: radial-gradient(#bbf7d0 1.5px, transparent 1.5px);
         background-size: 24px 24px;
     }
     
+    /* Estilos Premium Claros para las Cartas */
     .skill-card {
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         background: #ffffff;
@@ -62,8 +62,10 @@
     }
 </style>
 
+<!-- CONTENEDOR PRINCIPAL A PANTALLA COMPLETA -->
 <div class="fixed inset-0 z-[200] bg-[#f0fdf4] flex flex-col overflow-hidden pb-safe animate-fade-in">
     
+    <!-- ENCABEZADO SUPERIOR -->
     <header class="bg-white border-b border-green-200 px-4 py-3 flex justify-between items-center shrink-0 shadow-sm z-20">
         <button onclick="window.combatApp.confirmFlee()" class="text-red-600 font-black text-[10px] sm:text-xs flex items-center gap-1.5 bg-red-50 hover:bg-red-100 px-3 sm:px-4 py-2 rounded-xl border border-red-100 transition-colors">
             <span class="text-base leading-none">🚪</span> <span class="hidden sm:inline uppercase tracking-wider">Huir</span>
@@ -82,20 +84,27 @@
         </div>
     </header>
 
+    <!-- BATTLEFIELD (Layout Hexagonal RPG con Formación Delta) -->
     <div id="battlefield-container" class="flex-1 relative combat-bg-pattern flex flex-col justify-between p-4 z-10 overflow-hidden transition-transform duration-75">
         
+        <!-- Centro VS Marca de agua -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.06]">
             <span class="text-[150px] sm:text-[200px] font-black text-green-900 italic tracking-tighter select-none">VS</span>
         </div>
 
+        <!-- Fila Enemiga (Arriba) -->
         <div id="cb-enemy-team" class="relative w-full h-1/2 z-10"></div>
+        
+        <!-- Fila Jugador (Abajo) -->
         <div id="cb-player-team" class="relative w-full h-1/2 z-10"></div>
 
+        <!-- Feed Central de Acción (Efectos visuales de daño) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
             <div id="cb-fx-msg" class="text-4xl sm:text-6xl font-black text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 1.5px rgba(0,0,0,0.8);"></div>
         </div>
     </div>
 
+    <!-- MENÚ INFERIOR DE COMBATE -->
     <div class="shrink-0 bg-white border-t border-green-200 p-4 sm:p-6 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] z-20 pb-safe relative">
         <div class="max-w-[800px] mx-auto">
             
@@ -126,6 +135,7 @@
     </div>
 </div>
 
+<!-- MODAL DE CARTAS (5 HABILIDADES) -->
 <div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity" onclick="window.combatApp.closeCardModal()"></div>
     <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-2xl p-5 sm:p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
@@ -151,6 +161,7 @@
     </div>
 </div>
 
+<!-- MODAL VICTORIA -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
@@ -175,6 +186,7 @@
     </div>
 </div>
 
+<!-- MODAL DERROTA -->
 <div id="combat-defeat-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-red-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
@@ -196,7 +208,7 @@
 <script>
 window.combatApp = {
     active: false,
-    phase: 'SETUP', 
+    phase: 'SETUP', // SETUP, P_SELECT, P_TARGETING, EXECUTION
     playerTeam: [],
     enemyTeam: [],
     turn: 1,
@@ -207,6 +219,7 @@ window.combatApp = {
     currentAttackerIdx: null,
     pendingSkill: null,
 
+    // Diccionario de Cartas Ampliado (5 por planta)
     SKILLS_DICT: {
         'flower_wheat': [
             {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque veloz básico.', icon: '🌿'}, 
@@ -259,6 +272,7 @@ window.combatApp = {
         if (window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
             window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
             window.farmApp.updateInventoryUI();
+            // Guardamos que entró a combate. Si cierra aquí, perdió el ticket.
             window.farmApp.saveState(); 
         }
 
@@ -474,8 +488,6 @@ window.combatApp = {
             this.updateUI();
         }
     },
-
-    // ================= MOTOR AUTOMÁTICO Y ANIMACIONES ================= //
 
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
