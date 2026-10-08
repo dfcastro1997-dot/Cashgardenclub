@@ -771,12 +771,20 @@ if (typeof window.farmApp === 'undefined') {
                     window.farmApp.state.seedsBalance -= betAmount;
                     window.farmApp.saveState();
                     
-                    // --- NUEVO ---
                     sessionStorage.setItem('pvp_match_id', data.match_id);
                     sessionStorage.setItem('pvp_bet_amount', betAmount);
                     
-                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                    window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+                    const openSelection = () => {
+                        let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                        window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+                    };
+
+                    if (!document.getElementById('team-selection-list')) {
+                        await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                        setTimeout(openSelection, 200);
+                    } else {
+                        openSelection();
+                    }
                 } else if (sData.status === 'rejected') {
                     clearInterval(poll);
                     alert("El jugador ha rechazado tu reto.");
@@ -803,12 +811,20 @@ if (typeof window.farmApp === 'undefined') {
             window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
             window.farmApp.saveState();
             
-            // --- NUEVO ---
             sessionStorage.setItem('pvp_match_id', window.currentChallenge.match_id);
             sessionStorage.setItem('pvp_bet_amount', window.currentChallenge.bet_seeds);
             
-            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-            window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+            const openSelection = () => {
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+            };
+
+            if (!document.getElementById('team-selection-list')) {
+                await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                setTimeout(openSelection, 200);
+            } else {
+                openSelection();
+            }
         }
     };
 

@@ -624,13 +624,25 @@
             });
 
             if (action === 'accepted') {
-                // Cobrar semillas al que acepta y pasar a selección de escuadrón
                 window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
                 window.farmApp.saveState();
                 
-                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                let arsenal = window.farmApp.state.arsenal || [];
-                window.farmApp.openTeamSelection(readyPlots, arsenal);
+                sessionStorage.setItem('pvp_match_id', window.currentChallenge.match_id);
+                sessionStorage.setItem('pvp_bet_amount', window.currentChallenge.bet_seeds);
+                
+                const openSelection = () => {
+                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                    let arsenal = window.farmApp.state.arsenal || [];
+                    window.farmApp.openTeamSelection(readyPlots, arsenal);
+                };
+
+                // Si el modal no existe, forzamos la carga de la Granja primero
+                if (!document.getElementById('team-selection-list')) {
+                    await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                    setTimeout(openSelection, 200); // Pequeño retraso para asegurar que el DOM cargó
+                } else {
+                    openSelection();
+                }
             }
         };
 
