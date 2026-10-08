@@ -8,6 +8,7 @@
         </div>
         
         <!-- BOTONES CON MISMO TAMAÑO EN MÓVIL (Grid) -->
+        <!-- BOTONES CON MISMO TAMAÑO EN MÓVIL (Grid) -->
         <div class="grid grid-cols-4 gap-3 sm:flex sm:flex-wrap sm:items-center w-full sm:w-auto mt-1 sm:mt-0">
             <!-- Botón Herramientas (1 Columna en móvil, Oculto en PC) -->
             <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden col-span-1 w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center transition-all active:scale-95 text-xl">
@@ -23,13 +24,13 @@
                 </button>
                 
                 <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL -->
-                <div id="season-widget" class="hidden sm:flex w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm items-center px-4 relative overflow-hidden transition-all">
+                <div id="season-widget" onclick="loadView('calendar')" class="hidden sm:flex w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-cg_blue cursor-pointer items-center px-4 relative overflow-hidden transition-all">
                     <!-- Se inyecta por JS -->
                 </div>
             </div>
             
             <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Solo Móvil - Ocupa ancho total abajo) -->
-            <div id="season-widget-mobile" class="col-span-4 sm:hidden w-full h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center px-4 relative overflow-hidden transition-all">
+            <div id="season-widget-mobile" onclick="loadView('calendar')" class="col-span-4 sm:hidden w-full h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-cg_blue cursor-pointer flex items-center px-4 relative overflow-hidden transition-all">
                 <!-- Se inyecta por JS - La misma función de clima llenará ambos -->
             </div>
         </div>
