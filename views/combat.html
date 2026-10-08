@@ -353,6 +353,7 @@ window.combatApp = {
     },
 
 
+
     resolveRPS(myChoice, oppChoice) {
         if(this.rpsResolving) return;
         this.rpsResolving = true;
@@ -390,7 +391,7 @@ window.combatApp = {
         resText.innerText = result;
         resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
         
-        // TIEMPO REDUCIDO DE 1500ms A 300ms PARA RESULTADOS CASI INMEDIATOS
+        // RESULTADO DEL PIEDRA PAPEL O TIJERA INMEDIATO (10ms)
         setTimeout(() => {
             if (result === 'EMPATE') {
                 this.myRpsChoice = null;
@@ -415,14 +416,10 @@ window.combatApp = {
                     this.checkPvPTurnLogic();
                 }
             }
-        }, 300); 
+        }, 10); 
     },
 
-
-
-
     async syncPvPState(updateData = null) {
-        // DETENER BUCLE SI EL JUGADOR HUYÓ O SALIÓ DE LA ARENA
         if (!document.getElementById('battlefield-container')) {
             if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
             return;
@@ -471,9 +468,9 @@ window.combatApp = {
             }
         } catch(e) {}
         
-        // REEMPLAZAMOS SETINTERVAL POR SETTIMEOUT SECUENCIAL ULTRA RÁPIDO (100ms)
+        // POLLING EXTREMO: El juego consultará al servidor cada 50ms para una respuesta instantánea
         if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
-        this.pvpTimeout = setTimeout(() => this.syncPvPState(), 100);
+        this.pvpTimeout = setTimeout(() => this.syncPvPState(), 50);
     },
 
     async animateOpponentActions(actions) {
@@ -498,8 +495,8 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-600");
             this.updateUI();
             
-            // REDUCIDO: 100ms por golpe para velocidad extrema sin romper el ojo
-            await this.sleep(100); 
+            // ELIMINADAS LAS PAUSAS DE ANIMACIÓN (0 retraso)
+            await this.sleep(10); 
         }
         
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -517,7 +514,8 @@ window.combatApp = {
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         }
 
-        // ENVÍO INSTANTÁNEO ANTES DE QUE TÚ VEAS TUS ANIMACIONES
+        // ENVÍO INSTANTÁNEO ANTES DE QUE TÚ VEAS TUS PROPIAS ANIMACIONES
+        // El rival las verá al mismo tiempo que tú.
         if (this.isPvP) {
             fetch('/api/pvp/combat_sync', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -525,7 +523,7 @@ window.combatApp = {
             });
         }
 
-        // 1. EJECUTAR ACCIONES DEL JUGADOR LOCALMENTE (VELOCIDAD EXTREMA)
+        // 1. EJECUTAR ACCIONES DEL JUGADOR LOCALMENTE
         for (let action of this.actionQueue) {
             let attacker = this.playerTeam[action.attackerIdx];
             let target = this.enemyTeam[action.targetIdx];
@@ -552,14 +550,15 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
             
-            await this.sleep(100); // Tiempos mínimos
+            // ELIMINADAS LAS PAUSAS DE ANIMACIÓN
+            await this.sleep(10); 
         }
 
         this.currentAttackerIdx = null;
         this.targetIdx = null;
         this.updateUI();
 
-        // 2. VERIFICACIÓN PVP (INMEDIATA)
+        // 2. VERIFICACIÓN PVP
         if (this.isPvP) {
             let pAlive = this.playerTeam.filter(p => p.hp > 0);
             let eAlive = this.enemyTeam.filter(e => e.hp > 0);
@@ -585,13 +584,13 @@ window.combatApp = {
 
         // 3. EJECUTAR ACCIONES DE ENEMIGOS PVE
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(100);
+        await this.sleep(50); // Pausa casi imperceptible
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
             this.showFx("¡GRITO DE GUERRA!", "text-red-600");
             this.shakeScreen();
-            await this.sleep(100);
+            await this.sleep(50);
         }
 
         for (let i = 0; i < this.enemyTeam.length; i++) {
@@ -621,7 +620,7 @@ window.combatApp = {
             this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
-            await this.sleep(100);
+            await this.sleep(10);
         }
 
         this.actionQueue = [];

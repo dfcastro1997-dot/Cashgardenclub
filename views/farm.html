@@ -761,7 +761,7 @@ if (typeof window.farmApp === 'undefined') {
         if (res.ok) {
             document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
             
-            // TIEMPO REDUCIDO: De 3000ms a 400ms para conexión casi inmediata
+            // POLLING DE INVITACIÓN ULTRA RÁPIDO: Consulta cada 150ms
             const poll = setInterval(async () => {
                 const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
                 const sData = await sRes.json();
@@ -781,7 +781,7 @@ if (typeof window.farmApp === 'undefined') {
 
                     if (!document.getElementById('team-selection-list')) {
                         await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                        setTimeout(openSelection, 50); // Transición ultra rápida (50ms)
+                        setTimeout(openSelection, 10); // Transición inmediata (10ms)
                     } else {
                         openSelection();
                     }
@@ -792,7 +792,7 @@ if (typeof window.farmApp === 'undefined') {
                     document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
                     document.getElementById('pvp-input-btn').disabled = false;
                 }
-            }, 400); 
+            }, 150); 
         } else {
             alert(data.error);
             document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
