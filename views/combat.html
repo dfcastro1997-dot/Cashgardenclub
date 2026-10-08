@@ -14,23 +14,29 @@
     .skill-card:disabled { filter: grayscale(100%); opacity: 0.6; cursor: not-allowed; }
 </style>
 
+<!-- CONTENEDOR PRINCIPAL A PANTALLA COMPLETA -->
 <div class="fixed inset-0 z-[200] bg-[#f0fdf4] flex flex-col overflow-hidden pb-safe animate-fade-in">
+    
+    <!-- ENCABEZADO SUPERIOR -->
     <header class="bg-white border-b border-green-200 px-4 py-3 flex justify-between items-center shrink-0 shadow-sm z-20">
         <button onclick="window.combatApp.confirmFlee()" class="text-red-600 font-black text-[10px] sm:text-xs flex items-center gap-1.5 bg-red-50 hover:bg-red-100 px-3 sm:px-4 py-2 rounded-xl border border-red-100 transition-colors">
             <span class="text-base leading-none">🚪</span> <span class="hidden sm:inline uppercase tracking-wider">Huir</span>
         </button>
+        
         <div class="flex flex-col items-center">
             <span class="text-[8px] sm:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-2.5 py-0.5 rounded border border-red-100 mb-0.5 flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span> Muerte Súbita
             </span>
             <h2 class="text-lg sm:text-xl font-black text-cg_navy tracking-tight">Arena 3v3</h2>
         </div>
+        
         <div class="bg-cg_navy text-white px-4 py-1.5 rounded-xl flex flex-col items-center shadow-md border border-gray-800 shrink-0">
             <span class="text-[7px] sm:text-[8px] uppercase tracking-widest text-gray-400">Ronda</span>
             <span id="cb-turn-counter" class="text-sm sm:text-base font-black text-cg_gold leading-none mt-0.5">1</span>
         </div>
     </header>
 
+    <!-- BATTLEFIELD (Layout Hexagonal RPG con Formación Delta) -->
     <div id="battlefield-container" class="flex-1 relative combat-bg-pattern flex flex-col justify-between p-4 z-10 overflow-hidden transition-transform duration-75">
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.06]">
             <span class="text-[150px] sm:text-[200px] font-black text-green-900 italic tracking-tighter select-none">VS</span>
@@ -42,6 +48,7 @@
         </div>
     </div>
 
+    <!-- MENÚ INFERIOR DE COMBATE -->
     <div class="shrink-0 bg-white border-t border-green-200 p-4 sm:p-6 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] z-20 pb-safe relative">
         <div class="max-w-[800px] mx-auto">
             <div class="flex justify-between items-center mb-4 gap-3">
@@ -86,9 +93,9 @@
             </button>
         </div>
 
-        <div id="rps-waiting" class="hidden flex-col items-center mb-4">
-            <div class="w-10 h-10 border-4 border-gray-200 border-t-cg_blue rounded-full animate-spin mb-3"></div>
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Esperando al rival...</p>
+        <div id="rps-waiting" class="hidden flex-col items-center justify-center w-full mb-4">
+            <div class="w-12 h-12 border-4 border-gray-200 border-t-cg_blue rounded-full animate-spin mb-4 mx-auto"></div>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest text-center w-full">Esperando al rival...</p>
         </div>
 
         <div id="rps-result" class="hidden flex-col items-center mb-4">
@@ -108,8 +115,25 @@
     </div>
 </div>
 
+<!-- MODAL DE HUIDA -->
+<div id="flee-modal" class="fixed inset-0 z-[950] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.combatApp.cancelFlee()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border-4 border-red-500 animate-fade-in overflow-hidden">
+        <div class="absolute -top-20 -right-20 w-40 h-40 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div class="w-16 h-16 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner relative z-10">
+            <span class="text-3xl">🚪</span>
+        </div>
+        <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 relative z-10">¿Huir de la Arena?</h3>
+        <p class="text-xs md:text-sm text-gray-500 mb-6 leading-relaxed relative z-10">¡Peligro! Si huyes ahora, perderás a las plantas de tu escuadrón y tu apuesta definitivamente.</p>
+        <div class="flex gap-3 relative z-10">
+            <button onclick="window.combatApp.cancelFlee()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 rounded-xl transition-all uppercase tracking-widest text-xs shadow-sm">Cancelar</button>
+            <button onclick="window.combatApp.executeFlee()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Sí, Huir</button>
+        </div>
+    </div>
+</div>
+
 <div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity" onclick="window.combatApp.closeCardModal()"></div>
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.combatApp.closeCardModal()"></div>
     <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-2xl p-5 sm:p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
         <div class="absolute -top-20 -right-20 w-48 h-48 bg-green-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
         <div class="flex justify-between items-center mb-5 relative z-10 border-b border-gray-100 pb-4">
@@ -328,6 +352,7 @@ window.combatApp = {
         this.syncPvPState({ rps_choice: choice });
     },
 
+
     resolveRPS(myChoice, oppChoice) {
         if(this.rpsResolving) return;
         this.rpsResolving = true;
@@ -365,6 +390,7 @@ window.combatApp = {
         resText.innerText = result;
         resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
         
+        // TIEMPO REDUCIDO DE 1500ms A 300ms PARA RESULTADOS CASI INMEDIATOS
         setTimeout(() => {
             if (result === 'EMPATE') {
                 this.myRpsChoice = null;
@@ -389,7 +415,7 @@ window.combatApp = {
                     this.checkPvPTurnLogic();
                 }
             }
-        }, 1500);
+        }, 300); 
     },
 
     async syncPvPState(updateData = null) {
@@ -435,9 +461,11 @@ window.combatApp = {
                 }
             }
             
-            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 800);
+            // POLLING ULTRA RÁPIDO PARA COMBATE FLUIDO (300ms en lugar de 800ms)
+            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 300);
         } catch(e) {}
     },
+
 
     checkPvPTurnLogic() {
         if (this.currentPvPTurn === this.role) {
@@ -458,36 +486,7 @@ window.combatApp = {
         document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
     },
 
-    async animateOpponentActions(actions) {
-        this.phase = 'EXECUTION';
-        this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
-        
-        for (let action of actions) {
-            let attacker = this.enemyTeam[action.attackerIdx];
-            let target = this.playerTeam[action.targetIdx];
-            if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
-            
-            this.currentAttackerIdx = action.attackerIdx;
-            this.targetIdx = action.targetIdx;
-            this.updateUI();
-            
-            this.showFx(action.skill.name, "text-red-500");
-            await this.sleep(200);
-            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(100);
-            
-            target.hp -= action.skill.dmg;
-            this.shakeElement(`player-${this.targetIdx}`);
-            this.shakeScreen();
-            this.showFx(`-${action.skill.dmg}`, "text-red-600");
-            this.updateUI();
-            await this.sleep(300);
-        }
-        
-        this.currentAttackerIdx = null; this.targetIdx = null;
-        this.updateUI();
-        this.checkWinLoss();
-    },
+
 
     updateEnergyUI() {
         const counter = document.getElementById('cb-energy-counter');
@@ -518,13 +517,23 @@ window.combatApp = {
     },
 
     confirmFlee() {
-        if (confirm('¡Peligro! Si huyes de la Arena ahora, perderás a las plantas de tu escuadrón definitivamente. ¿Huir de todas formas?')) {
-            if (this.isPvP) {
-                this.playerTeam.forEach(p => p.hp = 0);
-                this.syncPvPState({ actionQueue: [] });
-            }
-            this.endCombat(false);
+        document.getElementById('flee-modal').classList.remove('hidden');
+        document.getElementById('flee-modal').classList.add('flex');
+    },
+
+    cancelFlee() {
+        document.getElementById('flee-modal').classList.add('hidden');
+        document.getElementById('flee-modal').classList.remove('flex');
+    },
+
+    executeFlee() {
+        document.getElementById('flee-modal').classList.add('hidden');
+        document.getElementById('flee-modal').classList.remove('flex');
+        if (this.isPvP) {
+            this.playerTeam.forEach(p => p.hp = 0);
+            this.syncPvPState({ actionQueue: [] });
         }
+        this.endCombat(false);
     },
 
     clearQueue() {
@@ -624,6 +633,39 @@ window.combatApp = {
         if (el) { el.style.transform = side === 'P' ? 'translateY(-20px) scale(1.15)' : 'translateY(20px) scale(1.15)'; setTimeout(() => { el.style.transform = ''; }, 300); }
     },
 
+
+
+    async animateOpponentActions(actions) {
+        this.phase = 'EXECUTION';
+        this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
+        
+        for (let action of actions) {
+            let attacker = this.enemyTeam[action.attackerIdx];
+            let target = this.playerTeam[action.targetIdx];
+            if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
+            
+            this.currentAttackerIdx = action.attackerIdx;
+            this.targetIdx = action.targetIdx;
+            this.updateUI();
+            
+            this.showFx(action.skill.name, "text-red-500");
+            await this.sleep(40); // Súper rápido (antes 200)
+            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+            await this.sleep(40); // Súper rápido (antes 100)
+            
+            target.hp -= action.skill.dmg;
+            this.shakeElement(`player-${this.targetIdx}`);
+            this.shakeScreen();
+            this.showFx(`-${action.skill.dmg}`, "text-red-600");
+            this.updateUI();
+            await this.sleep(120); // Súper rápido (antes 300)
+        }
+        
+        this.currentAttackerIdx = null; this.targetIdx = null;
+        this.updateUI();
+        this.checkWinLoss();
+    },
+
     async endTurn() {
         if (this.phase === 'EXECUTION') return;
         this.phase = 'EXECUTION';
@@ -642,7 +684,7 @@ window.combatApp = {
                 const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
                 if (aliveEnemies.length === 0) break;
                 target = aliveEnemies[0];
-                action.targetIdx = this.enemyTeam.indexOf(target); // Fix target for PvP sync
+                action.targetIdx = this.enemyTeam.indexOf(target); 
             }
 
             this.currentAttackerIdx = action.attackerIdx; 
@@ -650,9 +692,9 @@ window.combatApp = {
             this.updateUI();
 
             this.showFx(action.skill.name, "text-blue-500");
-            await this.sleep(200);
+            await this.sleep(40); // Súper rápido
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
-            await this.sleep(100);
+            await this.sleep(40); // Súper rápido
 
             target.hp -= action.skill.dmg;
             this.shakeElement(`enemy-${this.targetIdx}`);
@@ -660,7 +702,7 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
             
-            await this.sleep(300);
+            await this.sleep(120); // Súper rápido
         }
 
         this.currentAttackerIdx = null;
@@ -679,6 +721,7 @@ window.combatApp = {
             } else {
                 this.syncPvPState({ actionQueue: this.actionQueue });
                 this.actionQueue = [];
+                this.turn++;
                 this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
                 this.checkPvPTurnLogic();
             }
@@ -689,13 +732,13 @@ window.combatApp = {
 
         // 3. EJECUTAR ACCIONES DE ENEMIGOS (Solo PvE)
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(700);
+        await this.sleep(200); // Reducido drásticamente (antes 700)
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
             this.showFx("¡GRITO DE GUERRA!", "text-red-600");
             this.shakeScreen();
-            await this.sleep(800);
+            await this.sleep(300); // Reducido
         }
 
         for (let i = 0; i < this.enemyTeam.length; i++) {
@@ -712,9 +755,9 @@ window.combatApp = {
             this.updateUI();
 
             this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
-            await this.sleep(200);
+            await this.sleep(40); // Súper rápido
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(100);
+            await this.sleep(40); // Súper rápido
 
             const mitigation = this.isSummer ? 0 : (target.def / 100); 
             let baseDamage = enemy.atk;
@@ -727,7 +770,7 @@ window.combatApp = {
             this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
-            await this.sleep(300);
+            await this.sleep(120); // Súper rápido
         }
 
         this.actionQueue = [];
@@ -735,6 +778,8 @@ window.combatApp = {
         
         this.checkWinLoss();
     },
+
+
 
     shakeElement(elementId) {
         const el = document.getElementById(elementId);

@@ -330,8 +330,8 @@
             const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
             const shortId = userData.short_id || '0000';
             
-            // Mostrar nombre junto al ID envuelto en un badge gris
-            document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span> <span class="text-[10px] text-gray-400 ml-1">▼</span>`;
+            // Mostrar nombre junto al ID envuelto en un badge gris (sin inyectar flecha extra)
+            document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span>`;
             document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
             document.getElementById('profile-avatar').innerText = name.substring(0, 2).toUpperCase();
             
@@ -569,7 +569,7 @@
             }
         });
 
-        setInterval(syncUserData, 10000);
+        setInterval(syncUserData, 2000);
         window.addEventListener('focus', syncUserData);
 
 

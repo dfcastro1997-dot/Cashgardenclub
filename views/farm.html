@@ -743,6 +743,7 @@ if (typeof window.farmApp === 'undefined') {
         document.getElementById('pvp-input-modal').classList.add('flex');
     };
 
+
     window.sendPvPChallenge = async function() {
         const targetId = document.getElementById('pvp-target-id').value.trim();
         const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
@@ -759,6 +760,8 @@ if (typeof window.farmApp === 'undefined') {
         const data = await res.json();
         if (res.ok) {
             document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+            
+            // TIEMPO REDUCIDO: De 3000ms a 400ms para conexión casi inmediata
             const poll = setInterval(async () => {
                 const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
                 const sData = await sRes.json();
@@ -778,7 +781,7 @@ if (typeof window.farmApp === 'undefined') {
 
                     if (!document.getElementById('team-selection-list')) {
                         await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                        setTimeout(openSelection, 200);
+                        setTimeout(openSelection, 50); // Transición ultra rápida (50ms)
                     } else {
                         openSelection();
                     }
@@ -789,7 +792,7 @@ if (typeof window.farmApp === 'undefined') {
                     document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
                     document.getElementById('pvp-input-btn').disabled = false;
                 }
-            }, 3000);
+            }, 400); 
         } else {
             alert(data.error);
             document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
@@ -800,10 +803,13 @@ if (typeof window.farmApp === 'undefined') {
     window.respondPvP = async function(action) {
         document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
         window.isPvPModalOpen = false;
-        await fetch('/api/pvp/accept', {
+        
+        // No usamos 'await' aquí para que la interfaz cargue de inmediato
+        fetch('/api/pvp/accept', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ match_id: window.currentChallenge.match_id, action: action })
         });
+
         if (action === 'accepted') {
             window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
             window.farmApp.saveState();
@@ -818,12 +824,13 @@ if (typeof window.farmApp === 'undefined') {
 
             if (!document.getElementById('team-selection-list')) {
                 await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                setTimeout(openSelection, 200);
+                setTimeout(openSelection, 50); // Transición ultra rápida
             } else {
                 openSelection();
             }
         }
     };
+
 
     window.farmApp = {
         PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 0], // Arena cuesta 0 porque se paga en Torneosporque se paga en Torneos
@@ -1931,7 +1938,7 @@ if (typeof window.farmApp === 'undefined') {
 
         openWaterCalibration(plotId = 8) {
             this.calibration.currentPlotId = plotId;
-            let speed = 1.0; 
+            let speed = 1.0; // VELOCIDAD ESTANDARIZADA PARA TODAS LAS PLANTAS
             let minSafe = 0;
             let maxSafe = 100;
             const plot = this.state.plots[plotId];
@@ -1939,21 +1946,21 @@ if (typeof window.farmApp === 'undefined') {
             
             if (plotId === 8) {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
-                speed = conf.speed;
+                // Ya no sobreescribimos la velocidad con conf.speed
                 minSafe = conf.minWater;
                 maxSafe = conf.maxWater;
             } else {
-                    if (plot.plant) {
-                        if (plot.plant.id === 'flower_wheat') { speed = 2.0; minSafe = 60; maxSafe = 100; }
-                        else if (plot.plant.id === 'flower_bamboo') { speed = 1.0; minSafe = 50; maxSafe = 90; } // NUEVO
-                        else if (plot.plant.id === 'flower_small') { speed = 1.0; minSafe = 30; maxSafe = 90; }
-                        else if (plot.plant.id === 'flower_cactus') { speed = 1.5; minSafe = 20; maxSafe = 80; }
-                        else if (plot.plant.id === 'flower_big') { speed = 0.7; minSafe = 50; maxSafe = 70; }
-                        else if (plot.plant.id === 'flower_crystal') { speed = 1.2; minSafe = 40; maxSafe = 80; }
-                        else if (plot.plant.id === 'flower_moon') { speed = 0.9; minSafe = 40; maxSafe = 90; }
-                        else if (plot.plant.id === 'flower_solar') { speed = 1.6; minSafe = 30; maxSafe = 70; }
-                        else if (plot.plant.id === 'flower_neon') { speed = 0.8; minSafe = 40; maxSafe = 60; }
-                    }
+                if (plot.plant) {
+                    if (plot.plant.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+                    else if (plot.plant.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; }
+                    else if (plot.plant.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
+                    else if (plot.plant.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
+                    else if (plot.plant.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
+                    else if (plot.plant.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
+                    else if (plot.plant.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
+                    else if (plot.plant.id === 'flower_solar') { minSafe = 30; maxSafe = 70; }
+                    else if (plot.plant.id === 'flower_neon') { minSafe = 40; maxSafe = 60; }
+                }
             }
 
             let targetMin = Math.max(0, minSafe - currentWater);
