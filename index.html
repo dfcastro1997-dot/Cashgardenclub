@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CASHGARDEN CLUB - Arena Competitiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -326,11 +327,12 @@
             }
         }
 
+        window.socket = io(); // Conexión Global Instantánea WebSockets
+
         function updateProfileUI(userData) {
             const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
             const shortId = userData.short_id || '0000';
             
-            // Mostrar nombre junto al ID envuelto en un badge gris (sin inyectar flecha extra)
             document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span>`;
             document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
             document.getElementById('profile-avatar').innerText = name.substring(0, 2).toUpperCase();
@@ -339,7 +341,119 @@
             document.getElementById('global-balance').innerText = "$" + balance.toLocaleString();
             
             if(window.farmApp) window.farmApp.state.balance = balance;
+
+            // REGISTRAR JUGADOR EN WEBSOCKETS PARA RECIBIR RETOS INMEDIATAMENTE
+            sessionStorage.setItem('short_id', shortId);
+            window.socket.emit('register_user', { short_id: shortId });
         }
+
+        // ==========================================
+        // SISTEMA PVP WEBSOCKETS (0 LAG)
+        // ==========================================
+        window.socket.on('incoming_challenge', (data) => {
+            if (!window.isPvPModalOpen) {
+                window.isPvPModalOpen = true;
+                window.currentChallenge = data;
+                document.getElementById('pvp-challenger-name').innerText = data.challenger_name;
+                document.getElementById('pvp-bet-amount').innerText = data.bet + " 🌱";
+                document.getElementById('pvp-incoming-modal').classList.remove('hidden');
+                document.getElementById('pvp-incoming-modal').classList.add('flex');
+            }
+        });
+
+        window.socket.on('challenge_accepted', async (data) => {
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+            window.farmApp.state.seedsBalance -= data.bet;
+            window.farmApp.saveState();
+            
+            sessionStorage.setItem('pvp_match_id', data.match_id);
+            sessionStorage.setItem('pvp_bet_amount', data.bet);
+            
+            const openSelection = () => {
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+            };
+            if (!document.getElementById('team-selection-list')) {
+                await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                setTimeout(openSelection, 10);
+            } else { openSelection(); }
+        });
+
+        window.socket.on('challenge_rejected', () => {
+            alert("El jugador ha rechazado tu reto.");
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+            document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+            document.getElementById('pvp-input-btn').disabled = false;
+        });
+
+        window.sendPvPChallenge = async function() {
+            const targetId = document.getElementById('pvp-target-id').value.trim();
+            const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
+            if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
+            if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
+            
+            document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+            document.getElementById('pvp-input-btn').disabled = true;
+
+            const res = await fetch('/api/pvp/challenge', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                // DISPARAR EVENTO WEBSOCKET INSTANTÁNEO
+                window.socket.emit('pvp_challenge', {
+                    target_short_id: targetId,
+                    challenger_short_id: sessionStorage.getItem('short_id'),
+                    challenger_name: sessionStorage.getItem('username'),
+                    bet: betAmount,
+                    match_id: data.match_id
+                });
+            } else {
+                alert(data.error);
+                document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                document.getElementById('pvp-input-btn').disabled = false;
+            }
+        };
+
+        window.respondPvP = async function(action) {
+            document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
+            window.isPvPModalOpen = false;
+            
+            const matchId = window.currentChallenge.match_id;
+            const challengerId = window.currentChallenge.challenger_short_id;
+            const betAmount = window.currentChallenge.bet;
+            
+            // RESPUESTA WEBSOCKET INSTANTÁNEA
+            if (action === 'accepted') {
+                window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
+            } else {
+                window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
+            }
+
+            // GUARDADO DE BASE DE DATOS EN SEGUNDO PLANO
+            fetch('/api/pvp/accept', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ match_id: matchId, action: action })
+            });
+
+            if (action === 'accepted') {
+                window.farmApp.state.seedsBalance -= betAmount;
+                window.farmApp.saveState();
+                sessionStorage.setItem('pvp_match_id', matchId);
+                sessionStorage.setItem('pvp_bet_amount', betAmount);
+                
+                const openSelection = () => {
+                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                    window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+                };
+                if (!document.getElementById('team-selection-list')) {
+                    await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                    setTimeout(openSelection, 10);
+                } else { openSelection(); }
+            }
+        };
 
         async function syncUserData() {
             const username = sessionStorage.getItem('username');
@@ -701,7 +815,7 @@
                 await syncUserData(); // Espera a que el servidor responda
                 isGlobalSyncing = false;
             }
-            setTimeout(runSyncLoop, 1500); // 1.5s de respiro antes del siguiente ciclo
+            setTimeout(runSyncLoop, 10000); // 1.5s de respiro antes del siguiente ciclo
         }
         setTimeout(runSyncLoop, 1000);
 

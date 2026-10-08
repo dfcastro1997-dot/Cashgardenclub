@@ -3,14 +3,16 @@ import time
 import json
 import hashlib
 import uuid
-import requests # NUEVO: Para enviar mensajes a Telegram
+import requests
 from datetime import datetime, timezone
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_socketio import SocketIO, join_room, emit # <-- NUEVA LIBRERÍA
 
 app = Flask(__name__, static_folder='.', static_url_path='')
+socketio = SocketIO(app, cors_allowed_origins="*") # <-- INICIALIZACIÓN WEBSOCKET
 
 DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
@@ -1232,6 +1234,58 @@ def dev_reset_tournaments():
 
 import threading
 
+
+
+
+
+# ==========================================================
+# WEBSOCKETS (SOCKET.IO) PARA PVP SIN LAG
+# ==========================================================
+@socketio.on('register_user')
+def on_register_user(data):
+    if data.get('short_id'): join_room(f"user_{data['short_id']}")
+
+@socketio.on('join_match')
+def on_join_match(data):
+    if data.get('match_id'): join_room(f"match_{data['match_id']}")
+
+@socketio.on('pvp_challenge')
+def on_pvp_challenge(data):
+    emit('incoming_challenge', data, room=f"user_{data.get('target_short_id')}")
+
+@socketio.on('pvp_accept')
+def on_pvp_accept(data):
+    emit('challenge_accepted', data, room=f"user_{data.get('challenger_short_id')}")
+
+@socketio.on('pvp_reject')
+def on_pvp_reject(data):
+    emit('challenge_rejected', data, room=f"user_{data.get('challenger_short_id')}")
+
+@socketio.on('rps_action')
+def on_rps_action(data):
+    emit('rps_update', data, room=f"match_{data.get('match_id')}", include_self=False)
+
+@socketio.on('combat_action')
+def on_combat_action(data):
+    emit('combat_update', data, room=f"match_{data.get('match_id')}", include_self=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def background_cron_worker():
     while True:
         time.sleep(60) # El servidor revisará las plantas en silencio cada 60 segundos
@@ -1262,4 +1316,5 @@ threading.Thread(target=background_cron_worker, daemon=True).start()
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
-    app.run(host='0.0.0.0', port=port)
+    # REEMPLAZA app.run POR socketio.run
+    socketio.run(app, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)

@@ -310,10 +310,39 @@ window.combatApp = {
         this.phase = 'P_SELECT';
 
         if (this.isPvP) {
-            this.setInstruction('Sincronizando con el oponente...', true);
+            this.setInstruction('Conectando a la Arena (Sockets)...', true);
             this.rpsResolved = false;
             this.rpsResolving = false;
-            this.syncPvPState({ team: this.playerTeam });
+            
+            // 1. Unirse a la sala Socket
+            window.socket.emit('join_match', { match_id: this.matchId });
+            
+            // 2. Escuchar ataques (INMEDIATO)
+            window.socket.off('combat_update');
+            window.socket.on('combat_update', (data) => {
+                if (data.actions) {
+                    this.currentPvPTurn = this.role;
+                    this.animateOpponentActions(data.actions);
+                }
+                if (data.winner) {
+                    if (data.winner === 'opponent_abandoned') {
+                        alert("El oponente ha huido. Ganaste por abandono.");
+                        this.endCombat(true);
+                    } else {
+                        this.endCombat(data.winner === sessionStorage.getItem('username'));
+                    }
+                }
+            });
+            
+            // 3. Escuchar Piedra Papel Tijera (INMEDIATO)
+            window.socket.off('rps_update');
+            window.socket.on('rps_update', (data) => {
+                this.oppRpsChoice = data.choice;
+                if (this.myRpsChoice) this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
+            });
+
+            // Sincronizar equipos mediante Base de Datos UNA VEZ para comenzar
+            this.syncPvPState_DB({ team: this.playerTeam });
             return;
         }
 
@@ -349,62 +378,45 @@ window.combatApp = {
         document.getElementById('rps-choices').classList.add('hidden');
         document.getElementById('rps-waiting').classList.remove('hidden');
         document.getElementById('rps-desc').innerText = "Elección fijada. Esperando rival...";
-        this.syncPvPState({ rps_choice: choice });
+        
+        window.socket.emit('rps_action', { match_id: this.matchId, choice: choice });
+        
+        if (this.oppRpsChoice) this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
     },
-
-
 
     resolveRPS(myChoice, oppChoice) {
         if(this.rpsResolving) return;
         this.rpsResolving = true;
         
         document.getElementById('rps-waiting').classList.add('hidden');
-        document.getElementById('rps-result').classList.remove('hidden');
+        const resModal = document.getElementById('rps-result');
+        if(resModal) resModal.classList.remove('hidden');
         
-        const imgs = {
-            'rock': 'https://i.ibb.co/XZn602PZ/Frame-772.png',
-            'paper': 'https://i.ibb.co/21vq6V8C/Frame-770.png',
-            'scissors': 'https://i.ibb.co/zhMbW6Dn/Frame-771.png'
-        };
+        const imgs = { 'rock': 'https://i.ibb.co/XZn602PZ/Frame-772.png', 'paper': 'https://i.ibb.co/21vq6V8C/Frame-770.png', 'scissors': 'https://i.ibb.co/zhMbW6Dn/Frame-771.png' };
         
         document.getElementById('rps-my-img').src = imgs[myChoice];
         document.getElementById('rps-opp-img').src = imgs[oppChoice];
         
-        let result = '';
-        let iWon = false;
+        let result = ''; let iWon = false;
         
-        if (myChoice === oppChoice) {
-            result = 'EMPATE';
-        } else if (
-            (myChoice === 'rock' && oppChoice === 'scissors') ||
-            (myChoice === 'paper' && oppChoice === 'rock') ||
-            (myChoice === 'scissors' && oppChoice === 'paper')
-        ) {
-            result = '¡GANASTE LA INICIATIVA!';
-            iWon = true;
-        } else {
-            result = 'EL RIVAL ATACA PRIMERO';
-            iWon = false;
-        }
+        if (myChoice === oppChoice) { result = 'EMPATE'; } 
+        else if ((myChoice === 'rock' && oppChoice === 'scissors') || (myChoice === 'paper' && oppChoice === 'rock') || (myChoice === 'scissors' && oppChoice === 'paper')) {
+            result = '¡GANASTE LA INICIATIVA!'; iWon = true;
+        } else { result = 'EL RIVAL ATACA PRIMERO'; iWon = false; }
         
         const resText = document.getElementById('rps-result-text');
         resText.innerText = result;
         resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
         
-        // RESULTADO DEL PIEDRA PAPEL O TIJERA INMEDIATO CON PROTECCIÓN
         setTimeout(() => {
             const rpsModal = document.getElementById('rps-modal');
-            if (!rpsModal) return; // PROTECCIÓN: Evita el error Null si el jugador salió de la vista.
+            if (!rpsModal) return;
 
             if (result === 'EMPATE') {
-                this.myRpsChoice = null;
-                this.rpsResolving = false;
+                this.myRpsChoice = null; this.oppRpsChoice = null; this.rpsResolving = false;
                 document.getElementById('rps-result').classList.add('hidden');
                 document.getElementById('rps-choices').classList.remove('hidden');
                 document.getElementById('rps-desc').innerText = "Empate. Elijan de nuevo.";
-                if (this.role === 'challenger') {
-                    this.syncPvPState({ rps_clear: true });
-                }
             } else {
                 rpsModal.classList.replace('flex', 'hidden');
                 this.phase = 'P_SELECT';
@@ -412,49 +424,28 @@ window.combatApp = {
                 
                 if (iWon) {
                     this.currentPvPTurn = this.role;
-                    this.syncPvPState({ initial_turn: this.role });
+                    this.syncPvPState_DB({ initial_turn: this.role });
                     this.startMyTurn();
                 } else {
                     this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
                     this.checkPvPTurnLogic();
                 }
             }
-        }, 10); 
+        }, 1200); 
     },
 
-    async syncPvPState(updateData = null) {
-        if (!document.getElementById('battlefield-container')) {
-            if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
-            return;
-        }
-
+    // FUNCIÓN SOLO PARA INICIALIZACIÓN (Una vez por partida)
+    async syncPvPState_DB(updateData = null) {
         try {
             const res = await fetch('/api/pvp/combat_sync', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: updateData })
             });
             const data = await res.json();
-            
             const state = data.state;
             this.role = data.role; 
             const oppRole = this.role === 'challenger' ? 'target' : 'challenger';
 
-            if (state && state.last_action && state.last_action.role === oppRole && this.currentPvPTurn !== this.role) {
-                this.currentPvPTurn = this.role;
-                this.animateOpponentActions(state.last_action.actions);
-            }
-            
-            if (data.winner) {
-                if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
-                if (data.winner === 'opponent_abandoned') {
-                    alert("El oponente ha cancelado o abandonado el duelo. Ganaste por abandono.");
-                    this.endCombat(true);
-                } else {
-                    this.endCombat(data.winner === sessionStorage.getItem('username'));
-                }
-                return;
-            }
-            
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
                 this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; });
@@ -464,16 +455,24 @@ window.combatApp = {
                 this.phase = 'RPS';
                 document.getElementById('rps-modal').classList.remove('hidden');
                 document.getElementById('rps-modal').classList.add('flex');
-            } else if (this.active) {
-                if (this.phase === 'RPS' && state[`rps_${this.role}`] && state[`rps_${oppRole}`] && !this.rpsResolved && !this.rpsResolving) {
-                    this.resolveRPS(state[`rps_${this.role}`], state[`rps_${oppRole}`]);
-                }
+            } else if (!this.active) {
+                setTimeout(() => this.syncPvPState_DB(), 1000); // Polling suave solo hasta encontrar equipo
             }
         } catch(e) {}
-        
-        // PUNTO DULCE: 250ms. Rápido para el ojo humano (4 fps), pero estable para el servidor Python.
-        if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
-        this.pvpTimeout = setTimeout(() => this.syncPvPState(), 250);
+    },
+
+    executeFlee() {
+        document.getElementById('flee-modal').classList.add('hidden');
+        document.getElementById('flee-modal').classList.remove('flex');
+        if (this.isPvP) {
+            this.playerTeam.forEach(p => p.hp = 0);
+            window.socket.emit('combat_action', { match_id: this.matchId, winner: 'opponent_abandoned' });
+            fetch('/api/pvp/combat_sync', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { winner: 'opponent_abandoned' } })
+            });
+        }
+        this.endCombat(false);
     },
 
     async animateOpponentActions(actions) {
@@ -488,7 +487,6 @@ window.combatApp = {
             this.currentAttackerIdx = action.attackerIdx;
             this.targetIdx = action.targetIdx;
             
-            // Impacto inmediato sin pausas
             this.showFx(action.skill.name, "text-red-500");
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
             
@@ -498,7 +496,7 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-600");
             this.updateUI();
             
-            await this.sleep(50); // Mínima pausa visual para que no se superpongan los textos de daño
+            await this.sleep(100); 
         }
         
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -511,26 +509,23 @@ window.combatApp = {
         this.phase = 'EXECUTION';
         this.setInstruction('⚔️ RESOLVIENDO TUS ATAQUES ⚔️');
         const btn = document.getElementById('cb-action-btn');
-        if(btn) {
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-        }
+        if(btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
 
-        // ENVÍO AL SERVIDOR INMEDIATO
+        // WEBSOCKET: Enviar ataques al instante sin esperar a BD
         if (this.isPvP) {
+            window.socket.emit('combat_action', { match_id: this.matchId, actions: this.actionQueue });
+            // Guardar en Background sin bloquear
             fetch('/api/pvp/combat_sync', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { actionQueue: this.actionQueue } })
             });
         }
 
-        // EJECUCIÓN LOCAL EN RÁFAGA
+        // Ejecutar localmente
         for (let action of this.actionQueue) {
             let attacker = this.playerTeam[action.attackerIdx];
             let target = this.enemyTeam[action.targetIdx];
-            
             if (attacker.hp <= 0) continue; 
-            
             if (target.hp <= 0) {
                 const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
                 if (aliveEnemies.length === 0) break;
@@ -541,21 +536,17 @@ window.combatApp = {
             this.currentAttackerIdx = action.attackerIdx; 
             this.targetIdx = action.targetIdx;
             
-            // Impacto inmediato sin pausas previas
             this.showFx(action.skill.name, "text-blue-500");
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
-
             target.hp -= action.skill.dmg;
             this.shakeElement(`enemy-${this.targetIdx}`);
             this.shakeScreen(); 
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
-            
-            await this.sleep(50); // Mínima pausa visual
+            await this.sleep(100); 
         }
 
-        this.currentAttackerIdx = null;
-        this.targetIdx = null;
+        this.currentAttackerIdx = null; this.targetIdx = null;
         this.updateUI();
 
         if (this.isPvP) {
@@ -563,9 +554,11 @@ window.combatApp = {
             let eAlive = this.enemyTeam.filter(e => e.hp > 0);
             
             if (eAlive.length === 0) {
+                const winnerName = sessionStorage.getItem('username');
+                window.socket.emit('combat_action', { match_id: this.matchId, winner: winnerName });
                 fetch('/api/pvp/combat_sync', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { winner: sessionStorage.getItem('username') } })
+                    body: JSON.stringify({ match_id: this.matchId, username: winnerName, update_data: { winner: winnerName } })
                 });
                 this.endCombat(true);
             } else if (pAlive.length === 0) {
@@ -579,16 +572,15 @@ window.combatApp = {
             return;
         }
 
-        if (this.enemyTeam.filter(e => e.hp > 0).length === 0) { this.checkWinLoss(); return; }
-
+        // PvE (Campaña normal contra cuervos)
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(50);
+        await this.sleep(100);
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
             this.showFx("¡GRITO DE GUERRA!", "text-red-600");
             this.shakeScreen();
-            await this.sleep(50);
+            await this.sleep(100);
         }
 
         for (let i = 0; i < this.enemyTeam.length; i++) {
@@ -617,7 +609,7 @@ window.combatApp = {
             this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
-            await this.sleep(50);
+            await this.sleep(100);
         }
 
         this.actionQueue = [];
