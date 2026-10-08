@@ -613,7 +613,7 @@
         }
 
 
-        async function respondPvP(action) {
+        window.respondPvP = async function(action) {
             document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
             window.isPvPModalOpen = false;
             
@@ -632,7 +632,7 @@
                 let arsenal = window.farmApp.state.arsenal || [];
                 window.farmApp.openTeamSelection(readyPlots, arsenal);
             }
-        }
+        };
 
 
         function openCodesModal() {

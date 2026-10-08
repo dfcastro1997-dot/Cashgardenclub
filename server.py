@@ -471,13 +471,13 @@ def login():
     cur.close(); conn.close()
     return jsonify({"error": "Usuario o contraseña incorrectos"}), 401
 
+
+
 @app.route('/api/sync/<username>', methods=['GET'])
 def sync_user(username):
     token = request.args.get('token')
     conn = get_db_connection()
     cur = conn.cursor()
-    # MODIFICADO: Extraemos el telegram_chat_id para enviarlo en el objeto 'user'
-    
 
     cur.execute("SELECT id, balance, game_state, session_token, telegram_chat_id, short_id FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
@@ -493,9 +493,8 @@ def sync_user(username):
         if challenge:
             user_data['pending_challenge'] = challenge
 
+        # --- CORRECCIÓN: SE ELIMINÓ LA LÍNEA EXTRA "user_data = cur.fetchone()" QUE CAUSABA EL 404 ---
 
-    user_data = cur.fetchone()
-    if user_data:
         if user_data.get('session_token') and user_data['session_token'] != token:
             cur.close(); conn.close()
             return jsonify({"error": "Sesión expirada"}), 401
@@ -512,6 +511,9 @@ def sync_user(username):
     
     cur.close(); conn.close()
     return jsonify({"error": "Usuario no encontrado"}), 404
+
+
+
 
 @app.route('/api/save_state', methods=['POST'])
 def save_state():

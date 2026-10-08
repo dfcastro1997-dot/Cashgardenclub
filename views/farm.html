@@ -710,13 +710,12 @@ if (typeof window.farmApp === 'undefined') {
 
 
 
-
-    function intentarDuelo() {
+    window.intentarDuelo = function() {
         document.getElementById('duelo-choice-modal').classList.remove('hidden');
         document.getElementById('duelo-choice-modal').classList.add('flex');
-    }
+    };
 
-    function selectHistoria() {
+    window.selectHistoria = function() {
         document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
         
         // Flujo original (PvE)
@@ -738,15 +737,15 @@ if (typeof window.farmApp === 'undefined') {
             return;
         }
         window.farmApp.openTeamSelection(readyPlots, arsenal);
-    }
+    };
 
-    function selectPvP() {
+    window.selectPvP = function() {
         document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
         document.getElementById('pvp-input-modal').classList.remove('hidden');
         document.getElementById('pvp-input-modal').classList.add('flex');
-    }
+    };
 
-    async function sendPvPChallenge() {
+    window.sendPvPChallenge = async function() {
         const targetId = document.getElementById('pvp-target-id').value.trim();
         const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
         
@@ -800,12 +799,7 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
             document.getElementById('pvp-input-btn').disabled = false;
         }
-    }
-
-
-
-
-
+    };
 
 
 
