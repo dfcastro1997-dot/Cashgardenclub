@@ -933,13 +933,22 @@
 
     function confirmJoinTournament() {
         if (!window.pendingTournament) return;
-        
         const fee_cop = window.pendingTournament.fee;
         
-        // VERIFICACIÓN PREVIA DE FONDOS
+        // VERIFICACIÓN Y DESCUENTO INMEDIATO DE FONDOS
         if (window.farmApp && window.farmApp.state) {
             let seedCost = {0: 5000, 10000: 15000, 30000: 30000, 50000: 50000}[fee_cop] || 5000;
             
+            // 1. Verificar si ya está en otro torneo activo (Sin haber aceptado cambiar)
+            let activePlot = window.farmApp.state.plots[8];
+            if (activePlot && (activePlot.status === 'tournament' || activePlot.status === 'tournament_waiting')) {
+                if (activePlot.tournamentId !== window.pendingTournament.id && !window.pendingSwitch) {
+                    showAlertModal('Torneo Activo', 'Ya estás participando en otro torneo. Abandónalo primero.', '⚠️');
+                    return;
+                }
+            }
+
+            // 2. Verificar fondos estrictamente
             if (window.farmApp.state.seedsBalance < seedCost) {
                 showAlertModal('Semillas Insuficientes', `Necesitas ${seedCost.toLocaleString()} 🌱 para entrar a este torneo.`, '❌');
                 return;
@@ -948,9 +957,18 @@
                 showAlertModal('Saldo COP Insuficiente', `Necesitas $${fee_cop.toLocaleString()} COP para la entrada. Recarga o gana torneos Freeroll.`, '❌');
                 return;
             }
+
+            // 3. DESCUENTO VISUAL INMEDIATO (Se cobra ANTES del minijuego)
+            window.farmApp.state.seedsBalance -= seedCost;
+            document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+            
+            if (fee_cop > 0) {
+                window.farmApp.state.balance -= fee_cop;
+                document.getElementById('global-balance').innerText = "$" + window.farmApp.state.balance.toLocaleString();
+            }
+            window.farmApp.saveState();
         }
         
-        // Si hay fondos, procedemos con la configuración del juego de sintonización
         window.ritualState.pendingData = { ...window.pendingTournament };
         closePreTournamentModal();
         
@@ -1003,7 +1021,7 @@
         window.alchemyState.isPractice = false;
         window.alchemyState.isPerfect = false;
         
-        window.alchemyState.startTime = Date.now(); // Inicia cronómetro real
+        window.alchemyState.startTime = Date.now(); 
         
         if(window.alchemyState.interval) clearInterval(window.alchemyState.interval);
         window.alchemyState.interval = setInterval(() => {

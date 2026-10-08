@@ -76,17 +76,15 @@ window.shopApp = {
             { id: 'tool_duel_ticket', name: 'Ticket de Duelo', image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png', duration: '1 Combate', usage: 'Arena 3v3', desc: 'Acceso a la Arena Táctica 3vs3. ¡Apuestas las 3 mejores plantas de tu granja! Riesgo total, recompensa inmensa.', price: 5000 }
         ],
         flowers: [
-            { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: 'Recompensa de 1.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 60% a 100% (Ultra Rápido)<br><strong class="text-red-500">Peligro:</strong> Inundación inmediata y cuervos.', price: 50 },
-            { id: 'flower_bamboo', name: 'Bambú Tryhard', image: 'https://i.ibb.co/S4G2c9qy/Frame-768.png', duration: '10 Minutos', usage: '1', desc: 'Recompensa de 6.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 90% (Extremo)<br><strong class="text-red-500">Peligro:</strong> Evaporación brutal (x2). Requiere atención constante sin apartar la vista.', price: 2000 },
-            { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: 'Recompensa de 3.200 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 20% a 80% (Desafiante)<br><strong class="text-red-500">Peligro:</strong> Pudrición instantánea.', price: 800 },
-            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: 'Recompensa de 4.500 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 30% a 90% (Moderado)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal que detiene el crecimiento.', price: 2000 },
-            { id: 'flower_crystal', name: 'Helecho de Cristal', image: 'https://i.ibb.co/5WcdFhL9/Frame-764.png', duration: '2 Horas', usage: '1', desc: 'Recompensa de 10.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 40% a 80% (Estable)<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal.', price: 4000 },
-            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: 'Recompensa de 26.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 50% a 70% (Lento)<br><strong class="text-red-500">Peligro:</strong> Pudrición con 30m extra de castigo.', price: 10000 },
-            { id: 'flower_moon', name: 'Lirio Lunar', image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png', duration: '12 Horas', usage: '1', desc: 'Recompensa de 55.000 🌱.<br><strong class="text-cg_navy">Rango de riego:</strong> 40% a 90% (Resistente)<br><strong class="text-red-500">Peligro:</strong> Atrae cuervos rápidamente si se seca.', price: 20000 },
-            
-            // Plantas Premium (Dinero Real COP)
-            { id: 'flower_solar', name: 'Girasol Solar', image: 'https://i.ibb.co/JW8C2psK/Frame-766.png', duration: '4 Horas', usage: '1', desc: 'Recompensa de 5.000 🌱.<br><strong class="text-cg_gold">Semilla Premium:</strong> Excelente ratio de conversión.<br><strong class="text-red-500">Peligro:</strong> Sensible a sobrehidratación.', price_cop: 2500 },
-            { id: 'flower_neon', name: 'Orquídea Neón', image: 'https://i.ibb.co/mF6QtPRV/Frame-767.png', duration: '8 Horas', usage: '1', desc: 'Recompensa de 12.000 🌱.<br><strong class="text-cg_gold">Semilla VIP:</strong> Inversión sólida.<br><strong class="text-red-500">Peligro:</strong> Rango exigente.', price_cop: 5000 }
+            { id: 'flower_wheat', name: 'Trigo Rápido', image: 'https://i.ibb.co/szXSZjs/Frame-753.png', duration: '5 Minutos', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 60% a 100%<br><strong class="text-red-500">Peligro:</strong> Inundación y cuervos.', price: 50, hp: 100, atk: 34, def: 15 },
+            { id: 'flower_bamboo', name: 'Bambú Tryhard', image: 'https://i.ibb.co/S4G2c9qy/Frame-768.png', duration: '10 Minutos', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 50% a 90%<br><strong class="text-red-500">Peligro:</strong> Evaporación brutal (x2).', price: 2000, hp: 100, atk: 50, def: 20 },
+            { id: 'flower_cactus', name: 'Cactus de Cuarzo', image: 'https://i.ibb.co/5gvFssT4/Frame-758.png', duration: '30 Minutos', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 20% a 80%<br><strong class="text-red-500">Peligro:</strong> Pudrición instantánea.', price: 800, hp: 150, atk: 34, def: 35 },
+            { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 30% a 90%<br><strong class="text-red-500">Peligro:</strong> Pausa de crecimiento.', price: 2000, hp: 100, atk: 40, def: 20 },
+            { id: 'flower_crystal', name: 'Helecho de Cristal', image: 'https://i.ibb.co/5WcdFhL9/Frame-764.png', duration: '2 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 40% a 80%<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal.', price: 4000, hp: 60, atk: 100, def: 8 },
+            { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 50% a 70%<br><strong class="text-red-500">Peligro:</strong> 30m extra de castigo.', price: 10000, hp: 100, atk: 40, def: 20 },
+            { id: 'flower_moon', name: 'Lirio Lunar', image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png', duration: '12 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 40% a 90%<br><strong class="text-red-500">Peligro:</strong> Atrae cuervos.', price: 20000, hp: 200, atk: 60, def: 25 },
+            { id: 'flower_solar', name: 'Girasol Solar', image: 'https://i.ibb.co/JW8C2psK/Frame-766.png', duration: '4 Horas', usage: '1', desc: '<strong class="text-cg_gold">Semilla Premium</strong><br><strong class="text-red-500">Peligro:</strong> Sensible a sobrehidratación.', price_cop: 2500, hp: 100, atk: 40, def: 20 },
+            { id: 'flower_neon', name: 'Orquídea Neón', image: 'https://i.ibb.co/mF6QtPRV/Frame-767.png', duration: '8 Horas', usage: '1', desc: '<strong class="text-cg_gold">Semilla VIP</strong><br><strong class="text-red-500">Peligro:</strong> Rango exigente.', price_cop: 5000, hp: 100, atk: 40, def: 20 }
         ],
         iap: [
             { id: 'iap_water_24h', name: 'Auto-Riego 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Automatización', desc: 'Riega automáticamente tus plantas al 100% de su rango seguro y ahuyenta plagas por un día entero.', price_cop: 5000 },
@@ -171,7 +169,6 @@ window.shopApp = {
                     `;
                 }
                 
-                // NUEVO CONDICIONAL PARA SEMILLAS PREMIUM EN COP
                 if (item.price_cop) {
                     actionArea = `
                         <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
@@ -197,21 +194,42 @@ window.shopApp = {
             }
 
             let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} COP</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
+            
+            // NUEVO: Renderizado de Estadísticas de Combate si es Flor
+            let statsHtml = '';
+            if (tab === 'flowers' && item.hp) {
+                statsHtml = `
+                <div class="grid grid-cols-3 gap-2 text-center mb-3">
+                    <div class="bg-red-50 rounded-lg p-1.5 border border-red-100">
+                        <span class="block text-[8px] font-bold text-red-400 uppercase leading-none">Vida</span>
+                        <span class="font-black text-red-600 text-xs leading-none">${item.hp}</span>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-1.5 border border-orange-100">
+                        <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none">Ataque</span>
+                        <span class="font-black text-orange-600 text-xs leading-none">${item.atk}</span>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-1.5 border border-blue-100">
+                        <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none">Defensa</span>
+                        <span class="font-black text-blue-600 text-xs leading-none">${item.def}%</span>
+                    </div>
+                </div>`;
+            }
 
             card.innerHTML = `
-                <div class="bg-gradient-to-b from-gray-50 to-white h-48 md:h-56 flex items-center justify-center p-4 md:p-6 relative shrink-0 border-b border-gray-100">
+                <div class="bg-gradient-to-b from-gray-50 to-white h-40 md:h-48 flex items-center justify-center p-4 md:p-6 relative shrink-0 border-b border-gray-100">
                     <span class="absolute top-3 left-3 bg-white text-gray-600 text-[9px] md:text-[10px] font-black px-2 md:px-2.5 py-1 rounded-md shadow-sm border border-gray-200 uppercase tracking-wider z-20">${tag}</span>
                     ${stockBadge}
-                    <img src="${item.image}" class="h-36 md:h-44 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    <img src="${item.image}" class="h-28 md:h-36 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
                 </div>
-                <div class="p-4 md:p-6 flex flex-col flex-1">
-                    <h4 class="font-black text-cg_navy text-base md:text-lg leading-tight mb-3">${item.name}</h4>
-                    <div class="flex justify-between items-center text-[9px] md:text-[10px] font-bold text-gray-500 mb-4 bg-gray-50 p-2 md:p-2.5 rounded-lg border border-gray-100">
+                <div class="p-4 md:p-5 flex flex-col flex-1">
+                    <h4 class="font-black text-cg_navy text-base md:text-lg leading-tight mb-2">${item.name}</h4>
+                    <div class="flex justify-between items-center text-[9px] md:text-[10px] font-bold text-gray-500 mb-3 bg-gray-50 p-2 md:p-2.5 rounded-lg border border-gray-100">
                         ${durationHtml}
                         <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
                     </div>
-                    <p class="text-xs md:text-sm text-gray-500 mb-6 leading-relaxed flex-1">${item.desc}</p>
-                    <div class="mt-auto pt-4 border-t border-gray-100">
+                    ${statsHtml}
+                    <p class="text-[11px] md:text-xs text-gray-500 mb-4 leading-relaxed flex-1">${item.desc}</p>
+                    <div class="mt-auto pt-3 border-t border-gray-100">
                         ${actionArea}
                     </div>
                 </div>
