@@ -562,17 +562,6 @@
             dropdown.classList.toggle('hidden');
         }
 
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('user-dropdown');
-            if (dropdown && !dropdown.classList.contains('hidden')) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        setInterval(syncUserData, 500);
-        window.addEventListener('focus', syncUserData);
-
-
 
         function openTelegramModal() {
             document.getElementById('telegram-id-input').value = '';
@@ -697,8 +686,28 @@
             closeCodesModal();
         }
 
-        setInterval(syncUserData, 10000);
-        window.addEventListener('focus', syncUserData);
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('user-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // BUCLE SEGURO NO ACUMULATIVO PARA EVITAR LAG AL CARGAR PÁGINAS
+        let isGlobalSyncing = false;
+        async function runSyncLoop() {
+            if (!isGlobalSyncing) {
+                isGlobalSyncing = true;
+                await syncUserData(); // Espera a que el servidor responda
+                isGlobalSyncing = false;
+            }
+            setTimeout(runSyncLoop, 1500); // 1.5s de respiro antes del siguiente ciclo
+        }
+        setTimeout(runSyncLoop, 1000);
+
+        window.addEventListener('focus', () => {
+            if (!isGlobalSyncing) syncUserData();
+        });
     </script>
 </body>
 </html>

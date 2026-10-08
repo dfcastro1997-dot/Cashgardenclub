@@ -758,41 +758,52 @@ if (typeof window.farmApp === 'undefined') {
             body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
         });
         const data = await res.json();
+        
         if (res.ok) {
             document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
             
-            // POLLING DE INVITACIÓN ULTRA RÁPIDO: Consulta cada 150ms
-            const poll = setInterval(async () => {
-                const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
-                const sData = await sRes.json();
-                if (sData.status === 'accepted') {
-                    clearInterval(poll);
-                    document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
-                    window.farmApp.state.seedsBalance -= betAmount;
-                    window.farmApp.saveState();
+            // POLLING SEGURO Y ULTRA RÁPIDO (No bloquea la página)
+            const pollStatus = async () => {
+                const modalEl = document.getElementById('pvp-input-modal');
+                if (!modalEl || modalEl.classList.contains('hidden')) return; // Si se cerró la ventana, detener el bucle
+                
+                try {
+                    const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
+                    const sData = await sRes.json();
                     
-                    sessionStorage.setItem('pvp_match_id', data.match_id);
-                    sessionStorage.setItem('pvp_bet_amount', betAmount);
-                    
-                    const openSelection = () => {
-                        let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                        window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
-                    };
+                    if (sData.status === 'accepted') {
+                        document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+                        window.farmApp.state.seedsBalance -= betAmount;
+                        window.farmApp.saveState();
+                        
+                        sessionStorage.setItem('pvp_match_id', data.match_id);
+                        sessionStorage.setItem('pvp_bet_amount', betAmount);
+                        
+                        const openSelection = () => {
+                            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                            window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+                        };
 
-                    if (!document.getElementById('team-selection-list')) {
-                        await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                        setTimeout(openSelection, 10); // Transición inmediata (10ms)
-                    } else {
-                        openSelection();
+                        if (!document.getElementById('team-selection-list')) {
+                            await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                            setTimeout(openSelection, 50); 
+                        } else {
+                            openSelection();
+                        }
+                        return; // Terminar bucle
+                    } else if (sData.status === 'rejected') {
+                        alert("El jugador ha rechazado tu reto.");
+                        document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+                        document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                        document.getElementById('pvp-input-btn').disabled = false;
+                        return; // Terminar bucle
                     }
-                } else if (sData.status === 'rejected') {
-                    clearInterval(poll);
-                    alert("El jugador ha rechazado tu reto.");
-                    document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
-                    document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
-                    document.getElementById('pvp-input-btn').disabled = false;
-                }
-            }, 150); 
+                } catch(e) {}
+                
+                setTimeout(pollStatus, 300); // Reintentar fluidamente
+            };
+            setTimeout(pollStatus, 300);
+            
         } else {
             alert(data.error);
             document.getElementById('pvp-input-btn').innerText = "Enviar Reto";

@@ -391,8 +391,11 @@ window.combatApp = {
         resText.innerText = result;
         resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
         
-        // RESULTADO DEL PIEDRA PAPEL O TIJERA INMEDIATO (10ms)
+        // RESULTADO DEL PIEDRA PAPEL O TIJERA INMEDIATO CON PROTECCIÓN
         setTimeout(() => {
+            const rpsModal = document.getElementById('rps-modal');
+            if (!rpsModal) return; // PROTECCIÓN: Evita el error Null si el jugador salió de la vista.
+
             if (result === 'EMPATE') {
                 this.myRpsChoice = null;
                 this.rpsResolving = false;
@@ -403,7 +406,7 @@ window.combatApp = {
                     this.syncPvPState({ rps_clear: true });
                 }
             } else {
-                document.getElementById('rps-modal').classList.replace('flex', 'hidden');
+                rpsModal.classList.replace('flex', 'hidden');
                 this.phase = 'P_SELECT';
                 this.rpsResolved = true;
                 
