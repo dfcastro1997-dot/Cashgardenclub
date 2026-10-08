@@ -225,27 +225,27 @@
 <!-- MODAL ELECCIÓN DE MODO DE DUELO -->
 <div id="duelo-choice-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden')"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-md relative z-10 p-6 border border-gray-100">
-        <h3 class="text-2xl font-black text-cg_navy mb-1 text-center">Selecciona el Modo</h3>
-        <p class="text-xs text-gray-500 mb-6 text-center">¿Contra quién deseas combatir hoy?</p>
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-4xl relative z-10 p-6 md:p-10 border border-gray-100">
+        <h3 class="text-3xl md:text-4xl font-black text-cg_navy mb-3 text-center tracking-tight">Selecciona el Modo</h3>
+        <p class="text-sm md:text-base text-gray-500 mb-8 text-center font-medium">¿Contra quién deseas combatir hoy? Prepara a tu escuadrón y elige sabiamente.</p>
         
-        <div class="space-y-4">
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8">
             <!-- Botón Historia (Cuervos) -->
-            <button onclick="selectHistoria()" class="w-full bg-gray-50 border border-gray-200 hover:border-cg_blue hover:shadow-md p-4 rounded-2xl flex items-center gap-4 text-left transition-all">
-                <img src="https://i.ibb.co/gLcb71CG/Frame-773.png" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm shrink-0" alt="Campaña PvE">
-                <div>
-                    <h4 class="font-black text-cg_navy text-lg leading-none mb-1">Campaña (PvE)</h4>
-                    <p class="text-[10px] text-gray-500 leading-tight">Enfréntate a la bandada de cuervos gestionada por la IA. Requiere Ticket de Duelo.</p>
-                </div>
+            <button onclick="selectHistoria()" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-2xl p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-start text-center transition-all duration-300 group">
+                <img src="https://i.ibb.co/gLcb71CG/Frame-773.png" class="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-xl mb-6 group-hover:scale-110 transition-transform duration-500" alt="Campaña PvE">
+                <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-none mb-4">Campaña (PvE)</h4>
+                <p class="text-xs md:text-sm text-gray-500 leading-relaxed font-medium">
+                    Enfréntate a la implacable bandada de cuervos gestionada por la Inteligencia Artificial. Pon a prueba la resistencia y sinergia de tu escuadrón botánico en intensos combates. Requiere consumir un Ticket de Duelo. ¡Derrota a la plaga y asegurarás un generoso botín para expandir tu invernadero!
+                </p>
             </button>
 
             <!-- Botón Jugador vs Jugador -->
-            <button onclick="selectPvP()" class="w-full bg-blue-50 border border-blue-200 hover:border-cg_blue hover:shadow-md p-4 rounded-2xl flex items-center gap-4 text-left transition-all">
-                <img src="https://i.ibb.co/cS1bctdT/Frame-774.png" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm shrink-0" alt="Duelo PvP">
-                <div>
-                    <h4 class="font-black text-blue-800 text-lg leading-none mb-1">Duelo PvP (Jugador)</h4>
-                    <p class="text-[10px] text-blue-600 leading-tight">Desafía a un amigo por su ID de 4 dígitos y apuesten semillas. El ganador se lleva el botín.</p>
-                </div>
+            <button onclick="selectPvP()" class="flex-1 bg-blue-50 border-2 border-blue-200 hover:border-cg_blue hover:shadow-2xl p-6 md:p-8 rounded-[2rem] flex flex-col items-center justify-start text-center transition-all duration-300 group">
+                <img src="https://i.ibb.co/cS1bctdT/Frame-774.png" class="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-xl mb-6 group-hover:scale-110 transition-transform duration-500" alt="Duelo PvP">
+                <h4 class="font-black text-blue-800 text-xl md:text-2xl leading-none mb-4">Duelo PvP (Jugador)</h4>
+                <p class="text-xs md:text-sm text-blue-700/80 leading-relaxed font-medium">
+                    ¡Desafía a un rival real ingresando su ID de 4 dígitos! Demuestra quién tiene la mejor estrategia, fijen una apuesta en semillas y luchen en la arena sin piedad. El ganador se lo lleva todo, mientras que el perdedor se queda sin nada. ¡La gloria suprema y la riqueza te esperan!
+                </p>
             </button>
         </div>
     </div>
