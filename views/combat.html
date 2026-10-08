@@ -473,25 +473,33 @@ window.combatApp = {
     async animateOpponentActions(actions) {
         this.phase = 'EXECUTION';
         this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
+        await this.sleep(800); // Pausa inicial para que el jugador se prepare
         
         for (let action of actions) {
             let attacker = this.enemyTeam[action.attackerIdx];
             let target = this.playerTeam[action.targetIdx];
             if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
             
+            // 1. Apuntar (Se resalta el atacante y el objetivo)
             this.currentAttackerIdx = action.attackerIdx;
             this.targetIdx = action.targetIdx;
+            this.updateUI();
+            await this.sleep(500); // Tiempo para visualizar a quién está apuntando
             
+            // 2. Anunciar habilidad y animar salto
             this.showFx(action.skill.name, "text-red-500");
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+            await this.sleep(350); // Tiempo de la animación física
             
+            // 3. Aplicar daño y sacudir
             target.hp -= action.skill.dmg;
             this.shakeElement(`player-${this.targetIdx}`);
             this.shakeScreen();
             this.showFx(`-${action.skill.dmg}`, "text-red-600");
-            this.updateUI();
+            this.updateUI(); // Se actualiza la barra de vida hacia abajo
             
-            await this.sleep(100); 
+            // 4. Pausa de recuperación para leer el daño
+            await this.sleep(1000); 
         }
         
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -516,6 +524,11 @@ window.combatApp = {
             });
         }
 
+        // ==========================================
+        // TURNO DEL JUGADOR
+        // ==========================================
+        await this.sleep(500); // Pausa antes de iniciar
+        
         for (let action of this.actionQueue) {
             let attacker = this.playerTeam[action.attackerIdx];
             let target = this.enemyTeam[action.targetIdx];
@@ -527,17 +540,26 @@ window.combatApp = {
                 action.targetIdx = this.enemyTeam.indexOf(target); 
             }
 
+            // 1. Apuntar
             this.currentAttackerIdx = action.attackerIdx; 
             this.targetIdx = action.targetIdx;
-            
+            this.updateUI(); 
+            await this.sleep(500); 
+
+            // 2. Animar ataque
             this.showFx(action.skill.name, "text-blue-500");
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
+            await this.sleep(350); 
+
+            // 3. Daño
             target.hp -= action.skill.dmg;
             this.shakeElement(`enemy-${this.targetIdx}`);
             this.shakeScreen(); 
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
-            this.updateUI();
-            await this.sleep(100); 
+            this.updateUI(); 
+            
+            // 4. Pausa
+            await this.sleep(1000); 
         }
 
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -566,14 +588,17 @@ window.combatApp = {
             return;
         }
 
+        // ==========================================
+        // TURNO DEL ENEMIGO (PvE - Cuervos)
+        // ==========================================
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(100);
+        await this.sleep(1000); // Pausa dramática para que se note el cambio de turno
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
             this.showFx("¡GRITO DE GUERRA!", "text-red-600");
             this.shakeScreen();
-            await this.sleep(100);
+            await this.sleep(1200); // Pausa extra larga para que asimilen el peligro
         }
 
         for (let i = 0; i < this.enemyTeam.length; i++) {
@@ -585,12 +610,18 @@ window.combatApp = {
 
             let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
             
+            // 1. Apuntar
             this.currentAttackerIdx = i;
             this.targetIdx = this.playerTeam.indexOf(target);
+            this.updateUI(); 
+            await this.sleep(500); 
             
+            // 2. Animar ataque
             this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+            await this.sleep(350); 
 
+            // 3. Calcular y aplicar daño
             const mitigation = this.isSummer ? 0 : (target.def / 100); 
             let baseDamage = enemy.atk;
             if (isBattleCryTurn) { baseDamage *= 2; }
@@ -600,9 +631,10 @@ window.combatApp = {
             this.shakeElement(`player-${this.targetIdx}`);
             this.shakeScreen(); 
             this.showFx(`-${actualDamage}`, "text-red-600");
-            this.updateUI();
+            this.updateUI(); 
 
-            await this.sleep(100);
+            // 4. Pausa de lectura
+            await this.sleep(1000); 
         }
 
         this.actionQueue = [];
