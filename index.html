@@ -64,27 +64,56 @@
                 <h3 id="form-title" class="text-center font-black text-cg_navy text-2xl hidden mb-2">Crear tu Cuenta</h3>
                 
                 <div class="space-y-4">
+                    <!-- Usuario -->
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">👤</span>
                         </div>
-                        <input type="text" id="username" placeholder="Tu usuario" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
+                        <input type="text" id="username" placeholder="Tu usuario o correo" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
                     </div>
                     
+                    <!-- Contraseña -->
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">🔒</span>
                         </div>
                         <input type="password" id="password" placeholder="Tu contraseña secreta" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
                     </div>
+
+                    <!-- Confirmar Contraseña (Oculto en Login) -->
+                    <div id="confirm-password-container" class="relative group hidden">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">🛡️</span>
+                        </div>
+                        <input type="password" id="confirm_password" placeholder="Repite tu contraseña" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400">
+                    </div>
                 </div>
                 
-                <!-- AGE-GATE LEGAL -->
-                <div id="age-gate-container" class="hidden flex items-start gap-3 bg-red-50/90 backdrop-blur-sm p-4 rounded-2xl border border-red-200 shadow-sm mt-2">
-                    <input type="checkbox" id="age-gate" class="mt-1 w-5 h-5 text-red-500 rounded border-red-300 focus:ring-red-500 cursor-pointer">
-                    <label for="age-gate" class="text-[10px] sm:text-xs text-red-800 font-bold leading-relaxed cursor-pointer">
-                        Confirmo que soy <strong>mayor de 18 años</strong> y comprendo que CashGarden es una plataforma de habilidad con tarifas no reembolsables.
+                <!-- CHECKBOXES LEGALES Y CAPTCHA (Ocultos en Login) -->
+                <div id="register-extras-container" class="hidden flex-col gap-3 mt-4">
+                    <!-- Términos y Condiciones -->
+                    <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-gray-50/50 rounded-lg transition-colors border border-transparent hover:border-gray-200/50">
+                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-5 h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
+                        <span class="text-[11px] sm:text-xs text-gray-700 font-medium leading-tight">Acepto los <a href="#" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a> y confirmo ser <strong>mayor de 18 años</strong>.</span>
                     </label>
+                    
+                    <!-- Tratamiento de Datos Personales -->
+                    <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-gray-50/50 rounded-lg transition-colors border border-transparent hover:border-gray-200/50">
+                        <input type="checkbox" id="chk-privacy" class="mt-0.5 w-5 h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
+                        <span class="text-[11px] sm:text-xs text-gray-700 font-medium leading-tight">Autorizo el <a href="#" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
+                    </label>
+
+                    <!-- Simulador Visual de Captcha -->
+                    <div class="bg-gray-50/90 backdrop-blur-sm border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm mt-1">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="chk-captcha" class="w-6 h-6 text-green-500 rounded border-gray-300 focus:ring-green-500 cursor-pointer">
+                            <span class="text-sm font-bold text-gray-700">No soy un robot</span>
+                        </label>
+                        <div class="flex flex-col items-center justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/RecaptchaLogo.svg/1200px-RecaptchaLogo.svg.png" class="h-6 opacity-70" alt="reCAPTCHA">
+                            <span class="text-[8px] text-gray-400 mt-1">Privacidad - Términos</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="auth-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-2xl text-sm font-bold flex items-center gap-3 shadow-sm">
@@ -96,7 +125,7 @@
                     <span>Ingresar a la Granja</span> <span>➔</span>
                 </button>
                 
-                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-lg py-4 rounded-2xl shadow-[0_10px_20px_rgba(237,153,37,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
+                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-lg py-4 rounded-2xl shadow-[0_10px_20px_rgba(237,153,37,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
                     <span>Crear Cuenta</span> <span>➔</span>
                 </button>
                 
@@ -308,6 +337,29 @@
         </div>
     </div>
 
+
+
+    <!-- BANNER DE COOKIES -->
+    <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-[1000] bg-cg_navy/95 backdrop-blur-xl border-t border-gray-700 text-white p-4 sm:p-6 transform translate-y-full transition-transform duration-700 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div class="flex items-start sm:items-center gap-4">
+            <span class="text-3xl sm:text-4xl drop-shadow-md">🍪</span>
+            <p class="text-xs sm:text-sm font-medium leading-relaxed max-w-3xl">
+                Utilizamos cookies propias y de terceros para mejorar tu experiencia táctica en la Granja, analizar el tráfico, y proteger tus transacciones. Al continuar navegando, aceptas nuestra <a href="#" class="text-cg_cyan hover:underline font-bold">Política de Cookies</a>.
+            </p>
+        </div>
+        <div class="flex gap-3 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
+            <button onclick="acceptCookies()" class="flex-1 sm:flex-none bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 sm:py-2.5 px-4 rounded-xl transition-colors uppercase tracking-widest text-[10px] sm:text-xs">Solo Esenciales</button>
+            <button onclick="acceptCookies()" class="flex-1 sm:flex-none bg-cg_blue hover:bg-blue-600 text-white font-black py-3 sm:py-2.5 px-6 rounded-xl transition-colors uppercase tracking-widest text-[10px] sm:text-xs shadow-md">Aceptar Todo</button>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
     <script>
         let isLoginMode = true;
 
@@ -315,22 +367,61 @@
             isLoginMode = !isLoginMode;
             document.getElementById('btn-login').classList.toggle('hidden', !isLoginMode);
             document.getElementById('btn-register').classList.toggle('hidden', isLoginMode);
+            
+            // Ocultar/Mostrar Título y extras de registro
             document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
-            document.getElementById('age-gate-container').classList.toggle('hidden', isLoginMode);
-            document.getElementById('btn-toggle-mode').innerText = isLoginMode ? "¿No tienes cuenta? Crea una aquí" : "¿Ya tienes cuenta? Ingresa aquí";
+            document.getElementById('confirm-password-container').classList.toggle('hidden', isLoginMode);
+            document.getElementById('register-extras-container').classList.toggle('hidden', isLoginMode);
+
+            document.getElementById('btn-toggle-mode').innerHTML = isLoginMode 
+                ? "¿No tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Regístrate gratis</span>" 
+                : "¿Ya tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Ingresa aquí</span>";
+            
             document.getElementById('auth-error').classList.add('hidden');
+            validateRegistrationForm(); // Verificar estado inicial de los checks
+        }
+
+        // Event Listeners para habilitar el botón de registro
+        document.querySelectorAll('#chk-terms, #chk-privacy, #chk-captcha, #password, #confirm_password').forEach(el => {
+            el.addEventListener('input', validateRegistrationForm);
+            el.addEventListener('change', validateRegistrationForm);
+        });
+
+        function validateRegistrationForm() {
+            if (isLoginMode) return;
+            const pass = document.getElementById('password').value;
+            const passConfirm = document.getElementById('confirm_password').value;
+            const chkTerms = document.getElementById('chk-terms').checked;
+            const chkPrivacy = document.getElementById('chk-privacy').checked;
+            const chkCaptcha = document.getElementById('chk-captcha').checked;
+            
+            const btnReg = document.getElementById('btn-register');
+            
+            if (pass.length > 3 && pass === passConfirm && chkTerms && chkPrivacy && chkCaptcha) {
+                btnReg.disabled = false;
+                btnReg.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnReg.disabled = true;
+                btnReg.classList.add('opacity-50', 'cursor-not-allowed');
+            }
         }
 
         async function handleAuth(action) {
-            if (action === 'register' && !document.getElementById('age-gate').checked) {
-                showError("Debes confirmar que eres mayor de edad y aceptar los términos.");
-                return;
-            }
-            
-            const user = document.getElementById('username').value;
+            const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value;
             
-            if (!user || !pass) return;
+            if (!user || !pass) {
+                showError("Por favor completa todos los campos.");
+                return;
+            }
+
+            if (action === 'register') {
+                const passConfirm = document.getElementById('confirm_password').value;
+                if (pass !== passConfirm) {
+                    showError("Las contraseñas no coinciden.");
+                    return;
+                }
+            }
 
             try {
                 const response = await fetch(`/api/${action}`, {
@@ -343,7 +434,7 @@
                 
                 if (response.ok) {
                     sessionStorage.setItem('username', data.user.username);
-                    sessionStorage.setItem('session_token', data.user.session_token); // <-- GUARDAR TOKEN ÚNICO
+                    sessionStorage.setItem('session_token', data.user.session_token); 
                     updateProfileUI(data.user);
                     
                     document.getElementById('login-screen').classList.add('opacity-0');
@@ -360,6 +451,27 @@
                 showError('Error de conexión con el servidor.');
             }
         }
+
+        // LÓGICA DE COOKIES
+        function checkCookies() {
+            if(!localStorage.getItem('cookiesAccepted')) {
+                setTimeout(() => {
+                    document.getElementById('cookie-banner').classList.remove('translate-y-full');
+                }, 1500); // Aparece suavemente después de 1.5s
+            }
+        }
+
+        function acceptCookies() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            document.getElementById('cookie-banner').classList.add('translate-y-full');
+        }
+
+        // Añadir a tu window.onload existente
+        const oldOnload = window.onload;
+        window.onload = async () => {
+            checkCookies(); // Llamar el checkeo de cookies
+            if(oldOnload) await oldOnload();
+        };
 
         window.socket = io(); // Conexión Global Instantánea WebSockets
 
