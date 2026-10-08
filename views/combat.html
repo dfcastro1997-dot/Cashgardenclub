@@ -468,9 +468,9 @@ window.combatApp = {
             }
         } catch(e) {}
         
-        // POLLING EXTREMO: El juego consultará al servidor cada 50ms para una respuesta instantánea
+        // PUNTO DULCE: 250ms. Rápido para el ojo humano (4 fps), pero estable para el servidor Python.
         if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
-        this.pvpTimeout = setTimeout(() => this.syncPvPState(), 50);
+        this.pvpTimeout = setTimeout(() => this.syncPvPState(), 250);
     },
 
     async animateOpponentActions(actions) {
@@ -484,8 +484,8 @@ window.combatApp = {
             
             this.currentAttackerIdx = action.attackerIdx;
             this.targetIdx = action.targetIdx;
-            this.updateUI();
             
+            // Impacto inmediato sin pausas
             this.showFx(action.skill.name, "text-red-500");
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
             
@@ -495,8 +495,7 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-600");
             this.updateUI();
             
-            // ELIMINADAS LAS PAUSAS DE ANIMACIÓN (0 retraso)
-            await this.sleep(10); 
+            await this.sleep(50); // Mínima pausa visual para que no se superpongan los textos de daño
         }
         
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -514,8 +513,7 @@ window.combatApp = {
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         }
 
-        // ENVÍO INSTANTÁNEO ANTES DE QUE TÚ VEAS TUS PROPIAS ANIMACIONES
-        // El rival las verá al mismo tiempo que tú.
+        // ENVÍO AL SERVIDOR INMEDIATO
         if (this.isPvP) {
             fetch('/api/pvp/combat_sync', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -523,7 +521,7 @@ window.combatApp = {
             });
         }
 
-        // 1. EJECUTAR ACCIONES DEL JUGADOR LOCALMENTE
+        // EJECUCIÓN LOCAL EN RÁFAGA
         for (let action of this.actionQueue) {
             let attacker = this.playerTeam[action.attackerIdx];
             let target = this.enemyTeam[action.targetIdx];
@@ -539,8 +537,8 @@ window.combatApp = {
 
             this.currentAttackerIdx = action.attackerIdx; 
             this.targetIdx = action.targetIdx;
-            this.updateUI();
-
+            
+            // Impacto inmediato sin pausas previas
             this.showFx(action.skill.name, "text-blue-500");
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
 
@@ -550,15 +548,13 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
             
-            // ELIMINADAS LAS PAUSAS DE ANIMACIÓN
-            await this.sleep(10); 
+            await this.sleep(50); // Mínima pausa visual
         }
 
         this.currentAttackerIdx = null;
         this.targetIdx = null;
         this.updateUI();
 
-        // 2. VERIFICACIÓN PVP
         if (this.isPvP) {
             let pAlive = this.playerTeam.filter(p => p.hp > 0);
             let eAlive = this.enemyTeam.filter(e => e.hp > 0);
@@ -582,9 +578,8 @@ window.combatApp = {
 
         if (this.enemyTeam.filter(e => e.hp > 0).length === 0) { this.checkWinLoss(); return; }
 
-        // 3. EJECUTAR ACCIONES DE ENEMIGOS PVE
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(50); // Pausa casi imperceptible
+        await this.sleep(50);
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
@@ -604,8 +599,7 @@ window.combatApp = {
             
             this.currentAttackerIdx = i;
             this.targetIdx = this.playerTeam.indexOf(target);
-            this.updateUI();
-
+            
             this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
 
@@ -620,7 +614,7 @@ window.combatApp = {
             this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
-            await this.sleep(10);
+            await this.sleep(50);
         }
 
         this.actionQueue = [];
