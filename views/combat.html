@@ -36,7 +36,7 @@
         </div>
     </header>
 
-    <!-- BATTLEFIELD (Layout Hexagonal RPG con Formación Delta) -->
+    <!-- BATTLEFIELD -->
     <div id="battlefield-container" class="flex-1 relative combat-bg-pattern flex flex-col justify-between p-4 z-10 overflow-hidden transition-transform duration-75">
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.06]">
             <span class="text-[150px] sm:text-[200px] font-black text-green-900 italic tracking-tighter select-none">VS</span>
@@ -75,6 +75,27 @@
     </div>
 </div>
 
+<!-- MODAL DE MAZO DE CARTAS -->
+<div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.combatApp.closeCardModal()"></div>
+    <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-5xl p-5 sm:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-green-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div class="flex justify-between items-center mb-6 relative z-10 border-b border-gray-100 pb-4 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl border border-gray-200 p-2 flex items-center justify-center shadow-inner shrink-0">
+                    <img id="cm-plant-icon" src="" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight leading-none mb-1" id="cm-plant-name">Planta</h3>
+                    <p class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Habilidades y Tácticas</p>
+                </div>
+            </div>
+            <button onclick="window.combatApp.closeCardModal()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors shrink-0 text-lg">✕</button>
+        </div>
+        <div id="cm-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar content-start"></div>
+    </div>
+</div>
+
 <!-- MODAL PIEDRA PAPEL O TIJERA (PvP) -->
 <div id="rps-modal" class="fixed inset-0 z-[900] hidden items-center justify-center p-4 bg-cg_navy/90 backdrop-blur-sm animate-fade-in">
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-4xl relative p-6 md:p-10 border border-gray-100">
@@ -84,23 +105,20 @@
         <div id="rps-choices" class="flex flex-col md:flex-row justify-center gap-4 md:gap-6 mb-4">
             <!-- PIEDRA -->
             <button onclick="window.combatApp.selectRPS('rock')" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-xl p-6 rounded-[2rem] flex flex-col items-center text-center transition-all duration-300 group">
-                <img src="https://i.ibb.co/XZn602PZ/Frame-772.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300" alt="Piedra">
+                <img src="https://i.ibb.co/XZn602PZ/Frame-772.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                 <h4 class="font-black text-cg_navy text-xl md:text-2xl mb-2">Piedra</h4>
-                <p class="text-xs md:text-sm text-gray-500 font-medium leading-relaxed">Fuerte y contundente. Vence a la Tijera aplastándola sin piedad.</p>
             </button>
             
             <!-- PAPEL -->
             <button onclick="window.combatApp.selectRPS('paper')" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-xl p-6 rounded-[2rem] flex flex-col items-center text-center transition-all duration-300 group">
-                <img src="https://i.ibb.co/21vq6V8C/Frame-770.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300" alt="Papel">
+                <img src="https://i.ibb.co/21vq6V8C/Frame-770.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                 <h4 class="font-black text-cg_navy text-xl md:text-2xl mb-2">Papel</h4>
-                <p class="text-xs md:text-sm text-gray-500 font-medium leading-relaxed">Ligero y envolvente. Vence a la Piedra asfixiando su poder.</p>
             </button>
             
             <!-- TIJERA -->
             <button onclick="window.combatApp.selectRPS('scissors')" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-xl p-6 rounded-[2rem] flex flex-col items-center text-center transition-all duration-300 group">
-                <img src="https://i.ibb.co/zhMbW6Dn/Frame-771.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300" alt="Tijera">
+                <img src="https://i.ibb.co/zhMbW6Dn/Frame-771.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                 <h4 class="font-black text-cg_navy text-xl md:text-2xl mb-2">Tijera</h4>
-                <p class="text-xs md:text-sm text-gray-500 font-medium leading-relaxed">Afilada y precisa. Vence al Papel cortándolo en pedazos.</p>
             </button>
         </div>
 
@@ -143,27 +161,6 @@
     </div>
 </div>
 
-<!-- MODAL DE MAZO DE CARTAS -->
-<div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.combatApp.closeCardModal()"></div>
-    <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-5xl p-5 sm:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
-        <div class="absolute -top-20 -right-20 w-48 h-48 bg-green-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-        <div class="flex justify-between items-center mb-6 relative z-10 border-b border-gray-100 pb-4">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl border border-gray-200 p-2 flex items-center justify-center shadow-inner shrink-0">
-                    <img id="cm-plant-icon" src="" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight leading-none mb-1" id="cm-plant-name">Planta</h3>
-                    <p class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Mazo de Habilidades (5 Disponibles)</p>
-                </div>
-            </div>
-            <button onclick="window.combatApp.closeCardModal()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors shrink-0 text-lg">✕</button>
-        </div>
-        <div id="cm-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar"></div>
-    </div>
-</div>
-
 <!-- MODAL DE VICTORIA -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
@@ -191,7 +188,7 @@
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-red-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
         <div class="absolute -top-20 -right-20 w-48 h-48 bg-red-50 rounded-full blur-3xl"></div>
         <div class="w-20 h-20 sm:w-24 sm:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(239,68,68,0.2)] relative z-10 border-4 border-red-100">
-            <span class="text-4xl sm:text-5xl drop-shadow-md">💀</span>
+            <span class="text-4xl sm:text-5xl drop-shadow-md">🥀🌱</span>
         </div>
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
         <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas y la apuesta se perdieron.</p>
@@ -214,49 +211,50 @@ window.combatApp = {
     
     currentAttackerIdx: null,
     pendingSkill: null,
+    combatStats: { potionUsed: false },
 
     SKILLS_DICT: {
         'flower_wheat': [
-            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque con ramas veloces y cortantes.', image: 'https://i.ibb.co/wN1MYB2j/image.png'}, 
-            {name: 'Hoja Afilada', cost: 1, dmg: 45, desc: 'Lanza proyectiles de hojas que perforan.', image: 'https://i.ibb.co/CsVp7tmc/image.png'},
-            {name: 'Drenaje', cost: 2, dmg: 75, desc: 'Absorbe la energía vital del enemigo.', image: 'https://i.ibb.co/SwhbvVh3/image.png'},
-            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Desata una furia de espigas afiladas.', image: 'https://i.ibb.co/6J0zpf4c/image.png'},
-            {name: 'Lluvia Dorada', cost: 4, dmg: 180, desc: 'ULTIMATE: Furia de cosecha inquebrantable.', image: 'https://i.ibb.co/7tpJXGGM/image.png'}
+            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque con ramas veloces y cortantes.', image: 'https://i.ibb.co/wN1MYB2j/image.png', type: 'attack'}, 
+            {name: 'Hoja Afilada', cost: 1, dmg: 45, desc: 'Lanza proyectiles de hojas que perforan.', image: 'https://i.ibb.co/CsVp7tmc/image.png', type: 'attack'},
+            {name: 'Drenaje', cost: 2, dmg: 75, desc: 'Absorbe la energía vital del enemigo.', image: 'https://i.ibb.co/SwhbvVh3/image.png', type: 'attack'},
+            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Desata una furia de espigas afiladas.', image: 'https://i.ibb.co/6J0zpf4c/image.png', type: 'attack'},
+            {name: 'Lluvia Dorada', cost: 4, dmg: 180, desc: 'ULTIMATE: Furia de cosecha inquebrantable.', image: 'https://i.ibb.co/7tpJXGGM/image.png', type: 'attack'}
         ],
         'flower_cactus': [
-            {name: 'Espina', cost: 1, dmg: 35, desc: 'Dispara una dura púa perforante.', image: 'https://i.ibb.co/g5kbrXZ/image.png'}, 
-            {name: 'Contraataque', cost: 1, dmg: 40, desc: 'Reacciona y devuelve el daño al instante.', image: 'https://i.ibb.co/CKWyvxpY/image.png'},
-            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto duro, seco y contundente.', image: 'https://i.ibb.co/xKfw6B74/image.png'},
-            {name: 'Lluvia Púas', cost: 3, dmg: 110, desc: 'Caen múltiples espinas sobre el área.', image: 'https://i.ibb.co/1YLssytP/image.png'},
-            {name: 'Terremoto', cost: 4, dmg: 160, desc: 'ULTIMATE: Sismo arrasador en la arena.', image: 'https://i.ibb.co/JWwfpgXw/image.png'}
+            {name: 'Espina', cost: 1, dmg: 35, desc: 'Dispara una dura púa perforante.', image: 'https://i.ibb.co/g5kbrXZ/image.png', type: 'attack'}, 
+            {name: 'Contraataque', cost: 1, dmg: 40, desc: 'Reacciona y devuelve el daño al instante.', image: 'https://i.ibb.co/CKWyvxpY/image.png', type: 'attack'},
+            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto duro, seco y contundente.', image: 'https://i.ibb.co/xKfw6B74/image.png', type: 'attack'},
+            {name: 'Lluvia Púas', cost: 3, dmg: 110, desc: 'Caen múltiples espinas sobre el área.', image: 'https://i.ibb.co/1YLssytP/image.png', type: 'attack'},
+            {name: 'Terremoto', cost: 4, dmg: 160, desc: 'ULTIMATE: Sismo arrasador en la arena.', image: 'https://i.ibb.co/JWwfpgXw/image.png', type: 'attack'}
         ],
         'flower_bamboo': [
-            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso al enemigo.', image: 'https://i.ibb.co/wh6sWsL4/image.png'}, 
-            {name: 'Empuje', cost: 2, dmg: 70, desc: 'Fuerte golpe de vara que desestabiliza.', image: 'https://i.ibb.co/Zp0dty16/image.png'},
-            {name: 'Hojas Navaja', cost: 2, dmg: 80, desc: 'Doble corte profundo e ineludible.', image: 'https://i.ibb.co/WWyLzpFf/image.png'},
-            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque penetrante directo al núcleo.', image: 'https://i.ibb.co/twkzrsJw/image.png'},
-            {name: 'Furia Verde', cost: 5, dmg: 220, desc: 'ULTIMATE: Golpe de dragón esmeralda.', image: 'https://i.ibb.co/v6kMrLXj/image.png'}
+            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso al enemigo.', image: 'https://i.ibb.co/wh6sWsL4/image.png', type: 'attack'}, 
+            {name: 'Empuje', cost: 2, dmg: 70, desc: 'Fuerte golpe de vara que desestabiliza.', image: 'https://i.ibb.co/Zp0dty16/image.png', type: 'attack'},
+            {name: 'Hojas Navaja', cost: 2, dmg: 80, desc: 'Doble corte profundo e ineludible.', image: 'https://i.ibb.co/WWyLzpFf/image.png', type: 'attack'},
+            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque penetrante directo al núcleo.', image: 'https://i.ibb.co/twkzrsJw/image.png', type: 'attack'},
+            {name: 'Furia Verde', cost: 5, dmg: 220, desc: 'ULTIMATE: Golpe de dragón esmeralda.', image: 'https://i.ibb.co/v6kMrLXj/image.png', type: 'attack'}
         ],
         'flower_crystal': [
-            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Emite un rayo de luz deslumbrante.', image: 'https://i.ibb.co/4wGQ7XbY/image.png'}, 
-            {name: 'Destello', cost: 2, dmg: 85, desc: 'Impacto de luz pura en el objetivo.', image: 'https://i.ibb.co/gZRt0qFY/image.png'},
-            {name: 'Lente', cost: 2, dmg: 90, desc: 'Concentra la energía lumínica letal.', image: 'https://i.ibb.co/XkWNGFT6/image.png'},
-            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Dispara un cañón de rayos de arcoíris.', image: 'https://i.ibb.co/Xfns9mNP/image.png'},
-            {name: 'Supernova', cost: 5, dmg: 250, desc: 'ULTIMATE: Gran explosión estelar.', image: 'https://i.ibb.co/B1m1gRk/image.png'}
+            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Emite un rayo de luz deslumbrante.', image: 'https://i.ibb.co/4wGQ7XbY/image.png', type: 'attack'}, 
+            {name: 'Destello', cost: 2, dmg: 85, desc: 'Impacto de luz pura en el objetivo.', image: 'https://i.ibb.co/gZRt0qFY/image.png', type: 'attack'},
+            {name: 'Lente', cost: 2, dmg: 90, desc: 'Concentra la energía lumínica letal.', image: 'https://i.ibb.co/XkWNGFT6/image.png', type: 'attack'},
+            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Dispara un cañón de rayos de arcoíris.', image: 'https://i.ibb.co/Xfns9mNP/image.png', type: 'attack'},
+            {name: 'Supernova', cost: 5, dmg: 250, desc: 'ULTIMATE: Gran explosión estelar.', image: 'https://i.ibb.co/B1m1gRk/image.png', type: 'attack'}
         ],
         'flower_moon': [
-            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico que corroe la defensa.', image: 'https://i.ibb.co/BhL05jL/image.png'}, 
-            {name: 'Marea', cost: 2, dmg: 80, desc: 'Manipula la fuerza gravitacional.', image: 'https://i.ibb.co/n8Rxgqxc/image.png'},
-            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Sume al oponente en pura oscuridad.', image: 'https://i.ibb.co/35tLtMXg/image.png'},
-            {name: 'Gravedad', cost: 3, dmg: 120, desc: 'Ejerce inmensa presión aplastante.', image: 'https://i.ibb.co/BVRbSyLq/image.png'},
-            {name: 'Caída Lunar', cost: 4, dmg: 170, desc: 'ULTIMATE: Impacto de meteoro lunar.', image: 'https://i.ibb.co/Z1JxZzDs/image.png'}
+            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico que corroe la defensa.', image: 'https://i.ibb.co/BhL05jL/image.png', type: 'attack'}, 
+            {name: 'Marea', cost: 2, dmg: 80, desc: 'Manipula la fuerza gravitacional.', image: 'https://i.ibb.co/n8Rxgqxc/image.png', type: 'attack'},
+            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Sume al oponente en pura oscuridad.', image: 'https://i.ibb.co/35tLtMXg/image.png', type: 'attack'},
+            {name: 'Gravedad', cost: 3, dmg: 120, desc: 'Ejerce inmensa presión aplastante.', image: 'https://i.ibb.co/BVRbSyLq/image.png', type: 'attack'},
+            {name: 'Caída Lunar', cost: 4, dmg: 170, desc: 'ULTIMATE: Impacto de meteoro lunar.', image: 'https://i.ibb.co/Z1JxZzDs/image.png', type: 'attack'}
         ],
         'default': [
-            {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe frontal y veloz básico.', image: 'https://i.ibb.co/CsVp7tmc/image.png'}, 
-            {name: 'Placaje', cost: 1, dmg: 35, desc: 'Fuerte impacto rudo cuerpo a cuerpo.', image: 'https://i.ibb.co/Zp0dty16/image.png'}, 
-            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Ataque pesado cargado de energía.', image: 'https://i.ibb.co/xKfw6B74/image.png'},
-            {name: 'Furia', cost: 3, dmg: 110, desc: 'Secuencia rápida de golpes salvajes.', image: 'https://i.ibb.co/v6kMrLXj/image.png'},
-            {name: 'Golpe Final', cost: 4, dmg: 150, desc: 'ULTIMATE: Remate demoledor y absoluto.', image: 'https://i.ibb.co/B1m1gRk/image.png'}
+            {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe frontal y veloz básico.', image: 'https://i.ibb.co/CsVp7tmc/image.png', type: 'attack'}, 
+            {name: 'Placaje', cost: 1, dmg: 35, desc: 'Fuerte impacto rudo cuerpo a cuerpo.', image: 'https://i.ibb.co/Zp0dty16/image.png', type: 'attack'}, 
+            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Ataque pesado cargado de energía.', image: 'https://i.ibb.co/xKfw6B74/image.png', type: 'attack'},
+            {name: 'Furia', cost: 3, dmg: 110, desc: 'Secuencia rápida de golpes salvajes.', image: 'https://i.ibb.co/v6kMrLXj/image.png', type: 'attack'},
+            {name: 'Golpe Final', cost: 4, dmg: 150, desc: 'ULTIMATE: Remate demoledor y absoluto.', image: 'https://i.ibb.co/B1m1gRk/image.png', type: 'attack'}
         ]
     },
 
@@ -284,7 +282,7 @@ window.combatApp = {
             const skills = this.SKILLS_DICT[pid] || this.SKILLS_DICT['default'];
             this.playerTeam.push({ 
                 fromArsenal: isArsenal, arsId: isArsenal ? idTag : null, plotId: !isArsenal ? idTag : null,
-                plantId: pid, name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef, skills: skills
+                plantId: pid, name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef, originalDef: pDef, skills: skills, hasShield: false, hasBuff: false
             });
         };
 
@@ -321,6 +319,7 @@ window.combatApp = {
         this.turn = 1;
         this.energy = 5;
         this.actionQueue = [];
+        this.combatStats = { potionUsed: false };
         this.phase = 'P_SELECT';
 
         if (this.isPvP) {
@@ -364,7 +363,7 @@ window.combatApp = {
         const createCrow = (baseName, baseHp, baseAtk) => {
             let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
             let finalAtk = Math.floor(baseAtk * envAtkMult);
-            return { name: baseName + namePrefix, icon: window.farmApp.state.images.crow, hp: finalHp, maxHp: finalHp, atk: finalAtk };
+            return { name: baseName + namePrefix, icon: window.farmApp.state.images.crow, hp: finalHp, maxHp: finalHp, atk: finalAtk, def: 10, originalDef: 10, hasShield: false, hasBuff: false, usedHeal: false };
         };
 
         if (squadValue < 500) {
@@ -457,7 +456,7 @@ window.combatApp = {
 
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
-                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; });
+                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; });
                 this.active = true;
                 this.updateUI();
                 
@@ -473,32 +472,54 @@ window.combatApp = {
     async animateOpponentActions(actions) {
         this.phase = 'EXECUTION';
         this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
-        await this.sleep(800); // Pausa inicial para que el jugador se prepare
+        await this.sleep(800); 
         
         for (let action of actions) {
             let attacker = this.enemyTeam[action.attackerIdx];
-            let target = this.playerTeam[action.targetIdx];
-            if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
+            if (!attacker || attacker.hp <= 0) continue;
+            let target = action.skill.isBeneficial ? this.enemyTeam[action.targetIdx] : this.playerTeam[action.targetIdx];
+            if (!target || target.hp <= 0) continue;
             
-            // 1. Apuntar (Se resalta el atacante y el objetivo)
             this.currentAttackerIdx = action.attackerIdx;
             this.targetIdx = action.targetIdx;
             this.updateUI();
-            await this.sleep(500); // Tiempo para visualizar a quién está apuntando
+            await this.sleep(500); 
             
-            // 2. Anunciar habilidad y animar salto
-            this.showFx(action.skill.name, "text-red-500");
-            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(350); // Tiempo de la animación física
-            
-            // 3. Aplicar daño y sacudir
-            target.hp -= action.skill.dmg;
-            this.shakeElement(`player-${this.targetIdx}`);
-            this.shakeScreen();
-            this.showFx(`-${action.skill.dmg}`, "text-red-600");
-            this.updateUI(); // Se actualiza la barra de vida hacia abajo
-            
-            // 4. Pausa de recuperación para leer el daño
+            if (action.skill.type === 'heal') {
+                this.showFx("CURACIÓN", "text-green-500");
+                target.hp = Math.min(target.maxHp, target.hp + Math.floor(target.maxHp * 0.5));
+                this.showFx(`+${Math.floor(target.maxHp * 0.5)}`, "text-green-500");
+            } else if (action.skill.type === 'buff') {
+                this.showFx("FEROCIDAD", "text-orange-500");
+                target.hasBuff = true; target.def = 0;
+            } else if (action.skill.type === 'shield') {
+                this.showFx("ESCUDO", "text-blue-500");
+                target.hasShield = true;
+            } else if (action.skill.type === 'transfer') {
+                this.showFx("TRANSFUSIÓN", "text-purple-500");
+                let drain = Math.floor(attacker.maxHp * 0.3);
+                attacker.hp = Math.max(1, attacker.hp - drain);
+                target.hp = Math.min(target.maxHp, target.hp + drain);
+            } else {
+                this.showFx(action.skill.name, "text-red-500");
+                this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+                await this.sleep(350); 
+                
+                let dmg = action.skill.dmg;
+                if (attacker.hasBuff) { dmg *= 2; attacker.hasBuff = false; attacker.def = attacker.originalDef; }
+
+                if (target.hasShield) {
+                    this.showFx("¡BLOQUEADO!", "text-gray-400");
+                    target.hasShield = false;
+                } else {
+                    let actualDamage = Math.max(1, Math.floor(dmg * (1 - (target.def / 100))));
+                    target.hp -= actualDamage;
+                    this.shakeElement(`player-${this.targetIdx}`);
+                    this.shakeScreen();
+                    this.showFx(`-${actualDamage}`, "text-red-600");
+                }
+            }
+            this.updateUI();
             await this.sleep(1000); 
         }
         
@@ -527,38 +548,73 @@ window.combatApp = {
         // ==========================================
         // TURNO DEL JUGADOR
         // ==========================================
-        await this.sleep(500); // Pausa antes de iniciar
+        await this.sleep(500); 
         
         for (let action of this.actionQueue) {
             let attacker = this.playerTeam[action.attackerIdx];
-            let target = this.enemyTeam[action.targetIdx];
             if (attacker.hp <= 0) continue; 
-            if (target.hp <= 0) {
+            
+            let target = action.skill.isBeneficial ? this.playerTeam[action.targetIdx] : this.enemyTeam[action.targetIdx];
+            
+            if (target.hp <= 0 && !action.skill.isBeneficial) {
                 const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
                 if (aliveEnemies.length === 0) break;
                 target = aliveEnemies[0];
                 action.targetIdx = this.enemyTeam.indexOf(target); 
             }
+            if (!target || (action.skill.isBeneficial && target.hp <= 0)) continue;
 
-            // 1. Apuntar
             this.currentAttackerIdx = action.attackerIdx; 
             this.targetIdx = action.targetIdx;
             this.updateUI(); 
             await this.sleep(500); 
 
-            // 2. Animar ataque
-            this.showFx(action.skill.name, "text-blue-500");
-            this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
-            await this.sleep(350); 
+            if (action.skill.type === 'heal') {
+                this.showFx("CURACIÓN", "text-green-500");
+                target.hp = Math.min(target.maxHp, target.hp + Math.floor(target.maxHp * 0.5));
+                this.showFx(`+${Math.floor(target.maxHp * 0.5)}`, "text-green-500");
+            } else if (action.skill.type === 'buff') {
+                this.showFx("FEROCIDAD", "text-orange-500");
+                target.hasBuff = true; target.def = 0;
+            } else if (action.skill.type === 'shield') {
+                this.showFx("ESCUDO", "text-blue-500");
+                target.hasShield = true;
+            } else if (action.skill.type === 'transfer') {
+                this.showFx("TRANSFUSIÓN", "text-purple-500");
+                let drain = Math.floor(attacker.maxHp * 0.3);
+                attacker.hp = Math.max(1, attacker.hp - drain);
+                target.hp = Math.min(target.maxHp, target.hp + drain);
+            } else {
+                this.showFx(action.skill.name, "text-blue-500");
+                this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
+                await this.sleep(350); 
+                
+                let dmg = action.skill.dmg;
+                if (attacker.hasBuff) { dmg *= 2; attacker.hasBuff = false; attacker.def = attacker.originalDef; }
 
-            // 3. Daño
-            target.hp -= action.skill.dmg;
-            this.shakeElement(`enemy-${this.targetIdx}`);
-            this.shakeScreen(); 
-            this.showFx(`-${action.skill.dmg}`, "text-red-500");
+                if (target.hasShield) {
+                    this.showFx("¡BLOQUEADO!", "text-gray-400");
+                    target.hasShield = false;
+                } else {
+                    let actualDamage = Math.max(1, Math.floor(dmg * (1 - (target.def / 100))));
+                    target.hp -= actualDamage;
+                    this.shakeElement(`enemy-${this.targetIdx}`);
+                    this.shakeScreen(); 
+                    this.showFx(`-${actualDamage}`, "text-red-500");
+                    
+                    // Alianza Aviar (Equidad PvE): Cuando un cuervo recibe daño fatal.
+                    if (target.hp <= 0 && !this.isPvP) {
+                        let bestAlly = this.enemyTeam.filter(e => e.hp > 0).sort((a,b) => b.hp - a.hp)[0];
+                        if(bestAlly) {
+                            this.updateUI(); await this.sleep(600);
+                            this.showFx("¡ALMA CARROÑERA!", "text-purple-500");
+                            bestAlly.hp = Math.min(bestAlly.maxHp, bestAlly.hp + Math.floor(target.maxHp * 0.3));
+                            await this.sleep(600);
+                        }
+                    }
+                }
+            }
             this.updateUI(); 
-            
-            // 4. Pausa
             await this.sleep(1000); 
         }
 
@@ -592,13 +648,13 @@ window.combatApp = {
         // TURNO DEL ENEMIGO (PvE - Cuervos)
         // ==========================================
         this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(1000); // Pausa dramática para que se note el cambio de turno
+        await this.sleep(1000); 
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
             this.showFx("¡GRITO DE GUERRA!", "text-red-600");
             this.shakeScreen();
-            await this.sleep(1200); // Pausa extra larga para que asimilen el peligro
+            await this.sleep(1200); 
         }
 
         for (let i = 0; i < this.enemyTeam.length; i++) {
@@ -610,30 +666,65 @@ window.combatApp = {
 
             let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
             
-            // 1. Apuntar
+            let eAction = 'attack';
+            if (enemy.hp / enemy.maxHp <= 0.20 && !enemy.hasShield) eAction = 'shield';
+            else if (enemy.hp / enemy.maxHp <= 0.30 && !enemy.usedHeal) eAction = 'heal';
+            else if (enemy.name.includes('Alfa') && Math.random() < 0.4 && !enemy.hasBuff) eAction = 'buff';
+
             this.currentAttackerIdx = i;
+
+            if (eAction === 'shield') {
+                this.targetIdx = i;
+                this.updateUI(); await this.sleep(500);
+                this.showFx("EVASIÓN EN BANDADA", "text-blue-400");
+                enemy.hasShield = true;
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            } else if (eAction === 'heal') {
+                this.targetIdx = i;
+                this.updateUI(); await this.sleep(500);
+                this.showFx("CARROÑAR", "text-green-500");
+                enemy.hp = Math.min(enemy.maxHp, enemy.hp + Math.floor(enemy.maxHp * 0.5));
+                enemy.usedHeal = true;
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            } else if (eAction === 'buff') {
+                this.targetIdx = i;
+                this.updateUI(); await this.sleep(500);
+                this.showFx("FRENESÍ AVIAR", "text-orange-500");
+                enemy.hasBuff = true;
+                enemy.def = 0;
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            }
+            
+            // Attack normally
             this.targetIdx = this.playerTeam.indexOf(target);
             this.updateUI(); 
             await this.sleep(500); 
             
-            // 2. Animar ataque
             this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
             await this.sleep(350); 
 
-            // 3. Calcular y aplicar daño
-            const mitigation = this.isSummer ? 0 : (target.def / 100); 
             let baseDamage = enemy.atk;
+            if (enemy.hasBuff) { baseDamage *= 2; enemy.hasBuff = false; enemy.def = enemy.originalDef; }
             if (isBattleCryTurn) { baseDamage *= 2; }
-            const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
             
-            target.hp -= actualDamage;
-            this.shakeElement(`player-${this.targetIdx}`);
-            this.shakeScreen(); 
-            this.showFx(`-${actualDamage}`, "text-red-600");
+            if (target.hasShield) {
+                this.showFx("¡BLOQUEADO!", "text-gray-400");
+                target.hasShield = false;
+            } else {
+                const mitigation = this.isSummer ? 0 : (target.def / 100); 
+                const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
+                
+                target.hp -= actualDamage;
+                this.shakeElement(`player-${this.targetIdx}`);
+                this.shakeScreen(); 
+                this.showFx(`-${actualDamage}`, "text-red-600");
+            }
+            
             this.updateUI(); 
-
-            // 4. Pausa de lectura
             await this.sleep(1000); 
         }
 
@@ -651,7 +742,7 @@ window.combatApp = {
             const clearBtn = document.getElementById('cb-clear-btn');
             if(btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
             if(clearBtn) { clearBtn.disabled = true; clearBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
-            this.updateUI(); // Remueve el destaque de plantas visualmente
+            this.updateUI(); 
         }
     },
 
@@ -734,7 +825,6 @@ window.combatApp = {
     selectEntity(team, index) {
         if (this.phase === 'EXECUTION') return;
 
-        // VALIDADOR PvP: Bloqueo de interacción si no es tu turno.
         if (this.isPvP && this.currentPvPTurn !== this.role) {
             this.setInstruction('No puedes elegir, es turno del rival... ⏳', true);
             return;
@@ -747,14 +837,25 @@ window.combatApp = {
             }
         } 
         
-        if (this.phase === 'P_TARGETING' && team === 'enemy' && this.pendingSkill) {
-            if (this.enemyTeam[index].hp > 0) {
-                this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
-                this.energy -= this.pendingSkill.cost;
-                this.pendingSkill = null; this.currentAttackerIdx = null;
-                this.phase = 'P_SELECT';
-                this.updateUI();
-                this.setInstruction(`¡Encolado! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
+        if (this.phase === 'P_TARGETING' && this.pendingSkill) {
+            if (this.pendingSkill.isBeneficial && team === 'player') {
+                if (this.playerTeam[index].hp > 0) {
+                    this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
+                    this.energy -= this.pendingSkill.cost;
+                    this.pendingSkill = null; this.currentAttackerIdx = null;
+                    this.phase = 'P_SELECT';
+                    this.updateUI();
+                    this.setInstruction(`¡Táctica encolada! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
+                }
+            } else if (!this.pendingSkill.isBeneficial && team === 'enemy') {
+                if (this.enemyTeam[index].hp > 0) {
+                    this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
+                    this.energy -= this.pendingSkill.cost;
+                    this.pendingSkill = null; this.currentAttackerIdx = null;
+                    this.phase = 'P_SELECT';
+                    this.updateUI();
+                    this.setInstruction(`¡Ataque encolado! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
+                }
             }
         }
     },
@@ -767,6 +868,7 @@ window.combatApp = {
         const container = document.getElementById('cm-cards-container');
         container.innerHTML = '';
         
+        // Habilidades Normales
         plant.skills.forEach((skill, sIdx) => {
             const canAfford = this.energy >= skill.cost;
             const btnClass = canAfford ? 'bg-white border-2 border-gray-100 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-xl hover:-translate-y-1 transition-all' : 'bg-gray-50 border-2 border-gray-100 opacity-50 cursor-not-allowed grayscale';
@@ -794,6 +896,41 @@ window.combatApp = {
             `;
         });
 
+        // Separador Consumibles
+        container.innerHTML += `<div class="col-span-full mt-2 mb-2 border-t-2 border-dashed border-gray-200 pt-4 w-full">
+            <h4 class="font-black text-cg_navy text-sm uppercase tracking-widest text-center">🎒 Tácticas & Consumibles</h4>
+        </div>`;
+
+        // Tácticas Globales
+        const tacticas = [
+            { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
+            { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
+            { id: 't_escudo', name: 'Escudo Clorofila', cost: 1, dmg: 0, type: 'shield', isBeneficial: true, desc: 'Bloquea el 100% del próximo ataque. Costo: 500🌱', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
+            { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' }
+        ];
+
+        tacticas.forEach(t => {
+            let disabled = false;
+            let dReason = '';
+            if (this.energy < t.cost) { disabled = true; dReason = 'Sin Energía'; }
+            if (t.id === 't_potion' && this.combatStats.potionUsed) { disabled = true; dReason = 'Agotado'; }
+            if (t.id === 't_escudo' && window.farmApp.state.seedsBalance < 500) { disabled = true; dReason = 'Requiere 500 🌱'; }
+
+            const btnClass = disabled ? 'bg-gray-50 opacity-50 grayscale cursor-not-allowed' : 'bg-orange-50 border-orange-200 hover:border-orange-400 hover:-translate-y-1 shadow-sm cursor-pointer';
+            
+            container.innerHTML += `
+                <button ${disabled ? 'disabled' : `onclick="window.combatApp.selectTactic(${plantIdx}, '${t.id}')"`} class="w-full text-left p-4 rounded-2xl flex flex-col border-2 transition-all ${btnClass}">
+                    <div class="flex justify-between items-center w-full mb-2">
+                        <span class="bg-blue-100 text-blue-700 font-black px-2 py-1 rounded-lg text-xs">${t.cost} ⚡</span>
+                        <img src="${t.image}" class="w-10 h-10 object-contain drop-shadow-md">
+                    </div>
+                    <h4 class="font-black text-cg_navy text-sm leading-tight">${t.name}</h4>
+                    <p class="text-[10px] text-gray-500 font-medium mt-1">${t.desc}</p>
+                    ${disabled ? `<span class="text-red-500 text-[9px] font-black uppercase mt-2 border border-red-200 bg-white px-2 py-1 rounded w-fit">${dReason}</span>` : ''}
+                </button>
+            `;
+        });
+
         const modal = document.getElementById('card-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -815,6 +952,31 @@ window.combatApp = {
             this.setInstruction(`Has preparado: ${skill.name}. Ahora toca a un Enemigo 🎯`, true);
             this.updateUI();
         }
+    },
+
+    selectTactic(plantIdx, tacticId) {
+        const tacticas = [
+            { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
+            { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
+            { id: 't_escudo', name: 'Escudo Clorofila', cost: 1, dmg: 0, type: 'shield', isBeneficial: true, desc: 'Bloquea el 100% del próximo ataque. Costo: 500🌱', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
+            { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' }
+        ];
+        const t = tacticas.find(x => x.id === tacticId);
+        
+        if (t.id === 't_escudo') {
+            window.farmApp.state.seedsBalance -= 500;
+            window.farmApp.saveState();
+            document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+        }
+        if (t.id === 't_potion') {
+            this.combatStats.potionUsed = true;
+        }
+
+        this.pendingSkill = t;
+        this.phase = 'P_TARGETING';
+        this.closeCardModal();
+        this.setInstruction(`Preparaste: ${t.name}. Toca a tu planta objetivo (Aliado) 🎯`, true);
+        this.updateUI();
     },
 
     sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); },
@@ -880,7 +1042,7 @@ window.combatApp = {
                     window.farmApp.state.arsenal.push({
                         id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                         plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                        hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.def
+                        hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef
                     });
                 }
             });
@@ -930,15 +1092,15 @@ window.combatApp = {
                                (this.phase === 'EXECUTION' && side === 'P' && this.targetIdx === idx);
 
                 let isMyTurn = (!this.isPvP || this.currentPvPTurn === this.role);
-                let canInteractP = side === 'P' && this.phase === 'P_SELECT' && isMyTurn;
-                let canInteractE = side === 'E' && this.phase === 'P_TARGETING' && isMyTurn;
+                let canInteractP = side === 'P' && (this.phase === 'P_SELECT' || (this.phase === 'P_TARGETING' && this.pendingSkill && this.pendingSkill.isBeneficial)) && isMyTurn;
+                let canInteractE = side === 'E' && this.phase === 'P_TARGETING' && this.pendingSkill && !this.pendingSkill.isBeneficial && isMyTurn;
 
                 let highlight = isActing 
                     ? 'scale-110 drop-shadow-[0_0_20px_rgba(41,150,218,0.8)] z-40'
                     : isTarget 
                         ? 'scale-105 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] z-30 animate-pulse'
                         : (canInteractP 
-                            ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer' 
+                            ? (this.phase === 'P_TARGETING' ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer ring-4 ring-green-400 rounded-full animate-pulse' : 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer') 
                             : (canInteractE 
                                 ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer ring-4 ring-red-400 rounded-full animate-pulse' 
                                 : 'opacity-95 z-10'));
@@ -950,6 +1112,10 @@ window.combatApp = {
                 let queuedHtml = queuedCount > 0 
                     ? `<div class="absolute -top-2 -right-1 sm:-top-3 sm:-right-2 bg-blue-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-black text-[9px] sm:text-[10px] shadow-md border-2 border-white z-50 animate-bounce">⚔️${queuedCount}</div>` 
                     : '';
+                    
+                let statusBadges = '';
+                if (ent.hasShield) statusBadges += `<span class="absolute -top-4 sm:-top-6 left-0 text-lg sm:text-2xl drop-shadow-md z-50" title="Escudo Activo">🛡️</span>`;
+                if (ent.hasBuff) statusBadges += `<span class="absolute -top-4 sm:-top-6 right-0 text-lg sm:text-2xl drop-shadow-md z-50 animate-bounce" title="Ataque x2">🔥</span>`;
 
                 let positionClasses = "";
                 if (side === 'P') {
@@ -966,6 +1132,7 @@ window.combatApp = {
                     <div id="${elId}" class="${positionClasses} flex flex-col items-center transition-all duration-300 ${highlight}" ${(canInteractP || canInteractE) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
                         
                         ${queuedHtml}
+                        ${statusBadges}
                         <div class="w-14 sm:w-16 md:w-20 bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1.5 sm:mb-2 shadow-inner border border-gray-300 shrink-0">
                              <div class="${hpColor} h-full transition-all duration-300" style="width: ${hpPercent}%"></div>
                         </div>
@@ -982,7 +1149,7 @@ window.combatApp = {
                             <span class="text-[8px] sm:text-[9px] font-black text-cg_navy uppercase w-full text-center truncate px-1">${ent.name}</span>
                             <div class="flex gap-1.5 text-[7px] sm:text-[8px] font-bold mt-0.5">
                                 <span class="text-orange-500" title="Ataque Base">⚔️ ${ent.atk}</span>
-                                ${side === 'P' ? `<span class="text-blue-500" title="Defensa Pasiva">🛡️ ${ent.def}%</span>` : ''}
+                                ${side === 'P' ? `<span class="text-blue-500" title="Defensa">🛡️ ${ent.def}%</span>` : ''}
                             </div>
                         </div>
                     </div>`;

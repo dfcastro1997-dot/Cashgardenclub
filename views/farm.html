@@ -2363,14 +2363,8 @@ if (typeof window.farmApp === 'undefined') {
             const plot = this.state.plots[plotId];
             if (!plot.isReady) return;
             
-            // CAMBIO: Bloqueo por parcela en lugar de bloqueo global
-            if (plot.isProcessing) return;
-            plot.isProcessing = true;
-            
-            // Ocultar botones de navegación temporalmente para evitar interrupciones
-            const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
-            navButtons.forEach(btn => btn.style.pointerEvents = 'none');
-            this.showPlotToast(plotId, '⏳', 'Guardando Cosecha...');
+            // Bloqueo anti doble-clic inmediato
+            plot.isReady = false; 
 
             let reward = 0;
             if (plot.plant.id === 'flower_wheat') reward = 1500;
@@ -2384,10 +2378,12 @@ if (typeof window.farmApp === 'undefined') {
             else if (plot.plant.id === 'flower_neon') reward = 12000;
                           
             let msg = `+${reward} 🌱`;
+            let iconToast = '✨';
             
             if (plot.isSpoiled) {
                 reward = Math.floor(reward / 2);
                 msg = `+${reward} 🌱 (Daño)`;
+                iconToast = '🦠';
             }
 
             this.addBalance(reward);
@@ -2409,8 +2405,9 @@ if (typeof window.farmApp === 'undefined') {
             plot.scarecrowEndTime = 0;
             plot.plantedAt = 0;
             plot.harvestAt = 0;
-            plot.isReady = false;
             plot.isSpoiled = false;
+
+            this.showPlotToast(plotId, iconToast, msg);
 
             if (this.state.selectedPlotId === plotId) {
                 this.selectPlot(plotId);
@@ -2418,61 +2415,16 @@ if (typeof window.farmApp === 'undefined') {
                 this.renderPlots();
             }
             
-            this.state.lastTick = Date.now();
-            this.state.isSaving = true; 
-            
-            const stateToSave = JSON.stringify({
-                seedsBalance: this.state.seedsBalance,
-                practiceTokens: this.state.practiceTokens || 0, 
-                autoWaterEndTime: this.state.autoWaterEndTime,
-                autoHarvestEndTime: this.state.autoHarvestEndTime || 0,
-                plots: this.state.plots,
-                inventory: this.state.inventory,
-                arsenal: this.state.arsenal || [],
-                lastTick: this.state.lastTick
-            });
-
-            const username = sessionStorage.getItem('username'); 
-            const token = sessionStorage.getItem('session_token');
-            
-            if (username && token) {
-                if (this.saveTimeout) clearTimeout(this.saveTimeout);
-                
-                fetch('/api/save_state', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
-                }).then(res => {
-                    plot.isProcessing = false; // <-- Liberar la parcela específica
-                    navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
-                    
-                    if (res.status === 401) {
-                        if (window.showSessionExpiredModal) window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
-                    } else if (res.ok) {
-                        this.showPlotToast(plotId, plot.isSpoiled ? '🦠' : '✨', msg);
-                    }
-                }).catch(e => {
-                    plot.isProcessing = false; // <-- Liberar la parcela en caso de error
-                    navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
-                    console.error("Error guardando progreso:", e);
-                    this.showPlotToast(plotId, '⚠️', 'Error al guardar');
-                });
-            } else {
-                plot.isProcessing = false;
-            }
+            // Usamos el sistema centralizado y robusto (Evita cuelgues del servidor)
+            this.saveState(); 
         },
 
         storePlantForCombat(plotId) {
             const plot = this.state.plots[plotId];
             if (!plot.isReady || plot.isSpoiled) return;
 
-            // CAMBIO: Bloqueo por parcela en lugar de bloqueo global
-            if (plot.isProcessing) return;
-            plot.isProcessing = true;
-
-            const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
-            navButtons.forEach(btn => btn.style.pointerEvents = 'none');
-            this.showPlotToast(plotId, '⏳', 'Almacenando...');
+            // Bloqueo anti doble-clic inmediato
+            plot.isReady = false; 
 
             if (!this.state.arsenal) this.state.arsenal = [];
 
@@ -2506,7 +2458,9 @@ if (typeof window.farmApp === 'undefined') {
             
             plot.plant = null; 
             plot.hasCrow = false; plot.crowLeavingAt = 0; plot.scarecrowEndTime = 0;
-            plot.plantedAt = 0; plot.harvestAt = 0; plot.isReady = false; plot.isSpoiled = false;
+            plot.plantedAt = 0; plot.harvestAt = 0; plot.isSpoiled = false;
+
+            this.showPlotToast(plotId, '🛡️', '¡Almacenada!');
 
             if (this.state.selectedPlotId === plotId) {
                 this.selectPlot(plotId);
@@ -2514,42 +2468,7 @@ if (typeof window.farmApp === 'undefined') {
                 this.renderPlots();
             }
 
-            this.state.lastTick = Date.now();
-            this.state.isSaving = true; 
-            
-            const stateToSave = JSON.stringify({
-                seedsBalance: this.state.seedsBalance,
-                practiceTokens: this.state.practiceTokens || 0, 
-                autoWaterEndTime: this.state.autoWaterEndTime,
-                plots: this.state.plots,
-                inventory: this.state.inventory,
-                arsenal: this.state.arsenal,
-                lastTick: this.state.lastTick
-            });
-
-            const username = sessionStorage.getItem('username'); 
-            const token = sessionStorage.getItem('session_token');
-            
-            if (username && token) {
-                if (this.saveTimeout) clearTimeout(this.saveTimeout);
-                fetch('/api/save_state', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
-                }).then(res => {
-                    plot.isProcessing = false; // <-- Liberar la parcela
-                    navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
-                    if (res.ok) {
-                        this.showPlotToast(plotId, '🛡️', '¡Almacenada!');
-                    }
-                }).catch(e => {
-                    plot.isProcessing = false; // <-- Liberar la parcela en caso de error
-                    navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
-                    this.showPlotToast(plotId, '⚠️', 'Error al guardar');
-                });
-            } else {
-                plot.isProcessing = false;
-            }
+            this.saveState(); 
         },
 
         openCrowModal(plotId) {
