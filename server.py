@@ -1127,7 +1127,14 @@ def pvp_combat_sync():
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM pvp_matches WHERE id = %s FOR UPDATE", (match_id,))
+    
+    # SOLUCIÓN DE VELOCIDAD: Solo bloqueamos la fila (FOR UPDATE) si vamos a GUARDAR un ataque.
+    # Si solo estamos leyendo si el rival atacó, leemos libremente sin bloquear.
+    if update_data:
+        cur.execute("SELECT * FROM pvp_matches WHERE id = %s FOR UPDATE", (match_id,))
+    else:
+        cur.execute("SELECT * FROM pvp_matches WHERE id = %s", (match_id,))
+        
     match = cur.fetchone()
     
     if not match: 
@@ -1147,7 +1154,6 @@ def pvp_combat_sync():
             state['last_action'] = {'role': role, 'actions': update_data['actionQueue']}
             state['turn'] = 'target' if role == 'challenger' else 'challenger'
             
-        # LÓGICA DE PIEDRA PAPEL O TIJERA
         if 'rps_choice' in update_data:
             state['rps_' + role] = update_data['rps_choice']
         if 'rps_clear' in update_data:

@@ -418,10 +418,13 @@ window.combatApp = {
         }, 300); 
     },
 
+
+
+
     async syncPvPState(updateData = null) {
-        // PREVENCIÓN DE ERROR AL SALIR DE LA VISTA:
+        // DETENER BUCLE SI EL JUGADOR HUYÓ O SALIÓ DE LA ARENA
         if (!document.getElementById('battlefield-container')) {
-            if (this.pvpInterval) clearInterval(this.pvpInterval);
+            if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
             return;
         }
 
@@ -438,11 +441,11 @@ window.combatApp = {
 
             if (state && state.last_action && state.last_action.role === oppRole && this.currentPvPTurn !== this.role) {
                 this.currentPvPTurn = this.role;
-                await this.animateOpponentActions(state.last_action.actions);
+                this.animateOpponentActions(state.last_action.actions);
             }
             
             if (data.winner) {
-                if (this.pvpInterval) clearInterval(this.pvpInterval);
+                if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
                 if (data.winner === 'opponent_abandoned') {
                     alert("El oponente ha cancelado o abandonado el duelo. Ganaste por abandono.");
                     this.endCombat(true);
@@ -466,11 +469,168 @@ window.combatApp = {
                     this.resolveRPS(state[`rps_${this.role}`], state[`rps_${oppRole}`]);
                 }
             }
-            
-            // POLLING ULTRA RÁPIDO PARA COMBATE FLUIDO (150ms)
-            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 150);
         } catch(e) {}
+        
+        // REEMPLAZAMOS SETINTERVAL POR SETTIMEOUT SECUENCIAL ULTRA RÁPIDO (100ms)
+        if (this.pvpTimeout) clearTimeout(this.pvpTimeout);
+        this.pvpTimeout = setTimeout(() => this.syncPvPState(), 100);
     },
+
+    async animateOpponentActions(actions) {
+        this.phase = 'EXECUTION';
+        this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
+        
+        for (let action of actions) {
+            let attacker = this.enemyTeam[action.attackerIdx];
+            let target = this.playerTeam[action.targetIdx];
+            if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
+            
+            this.currentAttackerIdx = action.attackerIdx;
+            this.targetIdx = action.targetIdx;
+            this.updateUI();
+            
+            this.showFx(action.skill.name, "text-red-500");
+            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+            
+            target.hp -= action.skill.dmg;
+            this.shakeElement(`player-${this.targetIdx}`);
+            this.shakeScreen();
+            this.showFx(`-${action.skill.dmg}`, "text-red-600");
+            this.updateUI();
+            
+            // REDUCIDO: 100ms por golpe para velocidad extrema sin romper el ojo
+            await this.sleep(100); 
+        }
+        
+        this.currentAttackerIdx = null; this.targetIdx = null;
+        this.updateUI();
+        this.checkWinLoss();
+    },
+
+    async endTurn() {
+        if (this.phase === 'EXECUTION') return;
+        this.phase = 'EXECUTION';
+        this.setInstruction('⚔️ RESOLVIENDO TUS ATAQUES ⚔️');
+        const btn = document.getElementById('cb-action-btn');
+        if(btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // ENVÍO INSTANTÁNEO ANTES DE QUE TÚ VEAS TUS ANIMACIONES
+        if (this.isPvP) {
+            fetch('/api/pvp/combat_sync', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { actionQueue: this.actionQueue } })
+            });
+        }
+
+        // 1. EJECUTAR ACCIONES DEL JUGADOR LOCALMENTE (VELOCIDAD EXTREMA)
+        for (let action of this.actionQueue) {
+            let attacker = this.playerTeam[action.attackerIdx];
+            let target = this.enemyTeam[action.targetIdx];
+            
+            if (attacker.hp <= 0) continue; 
+            
+            if (target.hp <= 0) {
+                const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
+                if (aliveEnemies.length === 0) break;
+                target = aliveEnemies[0];
+                action.targetIdx = this.enemyTeam.indexOf(target); 
+            }
+
+            this.currentAttackerIdx = action.attackerIdx; 
+            this.targetIdx = action.targetIdx;
+            this.updateUI();
+
+            this.showFx(action.skill.name, "text-blue-500");
+            this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
+
+            target.hp -= action.skill.dmg;
+            this.shakeElement(`enemy-${this.targetIdx}`);
+            this.shakeScreen(); 
+            this.showFx(`-${action.skill.dmg}`, "text-red-500");
+            this.updateUI();
+            
+            await this.sleep(100); // Tiempos mínimos
+        }
+
+        this.currentAttackerIdx = null;
+        this.targetIdx = null;
+        this.updateUI();
+
+        // 2. VERIFICACIÓN PVP (INMEDIATA)
+        if (this.isPvP) {
+            let pAlive = this.playerTeam.filter(p => p.hp > 0);
+            let eAlive = this.enemyTeam.filter(e => e.hp > 0);
+            
+            if (eAlive.length === 0) {
+                fetch('/api/pvp/combat_sync', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { winner: sessionStorage.getItem('username') } })
+                });
+                this.endCombat(true);
+            } else if (pAlive.length === 0) {
+                // El oponente enviará la victoria
+            } else {
+                this.actionQueue = [];
+                this.turn++;
+                this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
+                this.checkPvPTurnLogic();
+            }
+            return;
+        }
+
+        if (this.enemyTeam.filter(e => e.hp > 0).length === 0) { this.checkWinLoss(); return; }
+
+        // 3. EJECUTAR ACCIONES DE ENEMIGOS PVE
+        this.setInstruction('🦅 TURNO ENEMIGO...');
+        await this.sleep(100);
+
+        const isBattleCryTurn = (this.turn % 3 === 0);
+        if (isBattleCryTurn) {
+            this.showFx("¡GRITO DE GUERRA!", "text-red-600");
+            this.shakeScreen();
+            await this.sleep(100);
+        }
+
+        for (let i = 0; i < this.enemyTeam.length; i++) {
+            let enemy = this.enemyTeam[i];
+            if (enemy.hp <= 0) continue;
+
+            let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
+            if (alivePlayers.length === 0) break;
+
+            let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
+            
+            this.currentAttackerIdx = i;
+            this.targetIdx = this.playerTeam.indexOf(target);
+            this.updateUI();
+
+            this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
+            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+
+            const mitigation = this.isSummer ? 0 : (target.def / 100); 
+            let baseDamage = enemy.atk;
+            if (isBattleCryTurn) { baseDamage *= 2; }
+            const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
+            
+            target.hp -= actualDamage;
+            this.shakeElement(`player-${this.targetIdx}`);
+            this.shakeScreen(); 
+            this.showFx(`-${actualDamage}`, "text-red-600");
+            this.updateUI();
+
+            await this.sleep(100);
+        }
+
+        this.actionQueue = [];
+        this.currentAttackerIdx = null; this.targetIdx = null;
+        this.checkWinLoss();
+    },
+
+
+
 
     checkPvPTurnLogic() {
         if (this.currentPvPTurn === this.role) {
@@ -502,7 +662,7 @@ window.combatApp = {
     updateEnergyUI() {
         const counter = document.getElementById('cb-energy-counter');
         const box = document.getElementById('energy-box');
-        if (!counter || !box) return; // FIX ERROR NULL
+        if (!counter || !box) return; // PROTECCIÓN: Evita el error Null
         
         counter.innerText = `${this.energy} / ${this.maxEnergy}`;
         
@@ -519,7 +679,7 @@ window.combatApp = {
 
     setInstruction(text, isAlert = false) {
         const el = document.getElementById('cb-action-text');
-        if (!el) return; // FIX ERROR NULL
+        if (!el) return; // PROTECCIÓN: Evita el error Null
         el.innerText = text;
         if (isAlert) {
             el.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
@@ -648,160 +808,6 @@ window.combatApp = {
     },
 
 
-
-    async animateOpponentActions(actions) {
-        this.phase = 'EXECUTION';
-        this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
-        
-        for (let action of actions) {
-            let attacker = this.enemyTeam[action.attackerIdx];
-            let target = this.playerTeam[action.targetIdx];
-            if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
-            
-            this.currentAttackerIdx = action.attackerIdx;
-            this.targetIdx = action.targetIdx;
-            this.updateUI();
-            
-            this.showFx(action.skill.name, "text-red-500");
-            await this.sleep(20); // INSTANTANEO
-            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(20); // INSTANTANEO
-            
-            target.hp -= action.skill.dmg;
-            this.shakeElement(`player-${this.targetIdx}`);
-            this.shakeScreen();
-            this.showFx(`-${action.skill.dmg}`, "text-red-600");
-            this.updateUI();
-            await this.sleep(50); // INSTANTANEO
-        }
-        
-        this.currentAttackerIdx = null; this.targetIdx = null;
-        this.updateUI();
-        this.checkWinLoss();
-    },
-
-    async endTurn() {
-        if (this.phase === 'EXECUTION') return;
-        this.phase = 'EXECUTION';
-        this.setInstruction('⚔️ RESOLVIENDO TUS ATAQUES ⚔️');
-        const btn = document.getElementById('cb-action-btn');
-        if(btn) {
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-        }
-
-        // ENVÍO INMEDIATO AL OPONENTE PARA ELIMINAR EL LAG
-        if (this.isPvP) {
-            fetch('/api/pvp/combat_sync', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { actionQueue: this.actionQueue } })
-            });
-        }
-
-        // 1. EJECUTAR ACCIONES DEL JUGADOR LOCALMENTE
-        for (let action of this.actionQueue) {
-            let attacker = this.playerTeam[action.attackerIdx];
-            let target = this.enemyTeam[action.targetIdx];
-            
-            if (attacker.hp <= 0) continue; 
-            
-            if (target.hp <= 0) {
-                const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
-                if (aliveEnemies.length === 0) break;
-                target = aliveEnemies[0];
-                action.targetIdx = this.enemyTeam.indexOf(target); 
-            }
-
-            this.currentAttackerIdx = action.attackerIdx; 
-            this.targetIdx = action.targetIdx;
-            this.updateUI();
-
-            this.showFx(action.skill.name, "text-blue-500");
-            await this.sleep(20); // INSTANTANEO
-            this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
-            await this.sleep(20); // INSTANTANEO
-
-            target.hp -= action.skill.dmg;
-            this.shakeElement(`enemy-${this.targetIdx}`);
-            this.shakeScreen(); 
-            this.showFx(`-${action.skill.dmg}`, "text-red-500");
-            this.updateUI();
-            
-            await this.sleep(50); // INSTANTANEO
-        }
-
-        this.currentAttackerIdx = null;
-        this.targetIdx = null;
-        this.updateUI();
-
-        // 2. SINCRONIZACIÓN PVP FINAL DE RESULTADOS
-        if (this.isPvP) {
-            let pAlive = this.playerTeam.filter(p => p.hp > 0);
-            let eAlive = this.enemyTeam.filter(e => e.hp > 0);
-            
-            if (eAlive.length === 0) {
-                this.syncPvPState({ winner: sessionStorage.getItem('username') });
-            } else if (pAlive.length === 0) {
-                // El oponente declarará victoria en su cliente
-            } else {
-                this.actionQueue = [];
-                this.turn++;
-                this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
-                this.checkPvPTurnLogic();
-            }
-            return;
-        }
-
-        if (this.enemyTeam.filter(e => e.hp > 0).length === 0) { this.checkWinLoss(); return; }
-
-        // 3. EJECUTAR ACCIONES DE ENEMIGOS (Solo PvE)
-        this.setInstruction('🦅 TURNO ENEMIGO...');
-        await this.sleep(150);
-
-        const isBattleCryTurn = (this.turn % 3 === 0);
-        if (isBattleCryTurn) {
-            this.showFx("¡GRITO DE GUERRA!", "text-red-600");
-            this.shakeScreen();
-            await this.sleep(200);
-        }
-
-        for (let i = 0; i < this.enemyTeam.length; i++) {
-            let enemy = this.enemyTeam[i];
-            if (enemy.hp <= 0) continue;
-
-            let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
-            if (alivePlayers.length === 0) break;
-
-            let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
-            
-            this.currentAttackerIdx = i;
-            this.targetIdx = this.playerTeam.indexOf(target);
-            this.updateUI();
-
-            this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
-            await this.sleep(20);
-            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(20);
-
-            const mitigation = this.isSummer ? 0 : (target.def / 100); 
-            let baseDamage = enemy.atk;
-            if (isBattleCryTurn) { baseDamage *= 2; }
-            const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
-            
-            target.hp -= actualDamage;
-            this.shakeElement(`player-${this.targetIdx}`);
-            this.shakeScreen(); 
-            this.showFx(`-${actualDamage}`, "text-red-600");
-            this.updateUI();
-
-            await this.sleep(50);
-        }
-
-        this.actionQueue = [];
-        this.currentAttackerIdx = null; this.targetIdx = null;
-        
-        this.checkWinLoss();
-    },
 
 
 
