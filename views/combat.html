@@ -272,7 +272,7 @@ window.combatApp = {
         this.playerTeam = [];
         const selected = window.farmApp.state.selectedCombatants || [];
         
-        const buildPlant = (pid, name, icon, isArsenal, idTag) => {
+        const buildPlant = (pid, name, icon, isArsenal, idTag, incomingHp, incomingWins) => {
             let pDef = 20, pHp = 250, pAtk = 34; 
             if(pid === 'flower_wheat') { pDef = 15; pHp = 250; }
             else if(pid === 'flower_cactus') { pDef = 35; pHp = 350; } 
@@ -280,9 +280,14 @@ window.combatApp = {
             else if(pid === 'flower_crystal') { pDef = 8; pHp = 200; } 
             else if(pid === 'flower_moon') { pDef = 25; pHp = 450; } 
             const skills = this.SKILLS_DICT[pid] || this.SKILLS_DICT['default'];
+            
+            // Retención de vida y victorias si viene del Arsenal
+            let finalHp = (isArsenal && incomingHp !== undefined) ? incomingHp : pHp;
+            let finalWins = (isArsenal && incomingWins !== undefined) ? incomingWins : 0;
+            
             this.playerTeam.push({ 
                 fromArsenal: isArsenal, arsId: isArsenal ? idTag : null, plotId: !isArsenal ? idTag : null,
-                plantId: pid, name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef, originalDef: pDef, skills: skills, hasShield: false, hasBuff: false
+                plantId: pid, name: name, icon: icon, hp: finalHp, maxHp: pHp, atk: pAtk, def: pDef, originalDef: pDef, skills: skills, hasShield: false, hasBuff: false, wins: finalWins
             });
         };
 
@@ -292,10 +297,11 @@ window.combatApp = {
         selected.forEach(sel => {
             if (sel.type === 'arsenal') {
                 const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag && !usedArsenalIds.has(a.id)) || window.farmApp.state.arsenal.find(a => !usedArsenalIds.has(a.id));
-                if (ap) { usedArsenalIds.add(ap.id); buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id); }
+                // Pasamos la HP actual y las victorias al armar el escuadrón
+                if (ap) { usedArsenalIds.add(ap.id); buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id, ap.hp, ap.wins); }
             } else if (sel.type === 'plot') {
                 const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag && !usedPlotIds.has(plot.id));
-                if (p && p.plant) { usedPlotIds.add(p.id); buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id); }
+                if (p && p.plant) { usedPlotIds.add(p.id); buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id, undefined, 0); }
             }
         });
 
@@ -664,12 +670,28 @@ window.combatApp = {
             let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
             if (alivePlayers.length === 0) break;
 
-            let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
+            // --- NUEVA INTELIGENCIA ARTIFICIAL DETERMINISTA (CERO AZAR) ---
+            let target;
+            if (isBattleCryTurn) {
+                // TÁCTICA BANDADA: En Grito de Guerra, focusean a la planta con MÁS VIDA (El Tanque).
+                target = alivePlayers.reduce((prev, curr) => (prev.hp > curr.hp ? prev : curr));
+            } else if (enemy.name.includes('Alfa')) {
+                // TÁCTICA ALFA: Busca la mayor amenaza. Ataca a la planta con MÁS ATAQUE.
+                target = alivePlayers.reduce((prev, curr) => (prev.atk > curr.atk ? prev : curr));
+            } else {
+                // TÁCTICA RASTRERO: Busca al más vulnerable. Ataca a la planta con MENOR DEFENSA.
+                // Si tienen la misma defensa, va por el que le quede menos vida actual.
+                target = alivePlayers.reduce((prev, curr) => {
+                    if (prev.def === curr.def) return prev.hp < curr.hp ? prev : curr;
+                    return prev.def < curr.def ? prev : curr;
+                });
+            }
             
+            // LÓGICA DE HABILIDADES DEL ENEMIGO (Determinista)
             let eAction = 'attack';
             if (enemy.hp / enemy.maxHp <= 0.20 && !enemy.hasShield) eAction = 'shield';
-            else if (enemy.hp / enemy.maxHp <= 0.30 && !enemy.usedHeal) eAction = 'heal';
-            else if (enemy.name.includes('Alfa') && Math.random() < 0.4 && !enemy.hasBuff) eAction = 'buff';
+            else if (enemy.hp / enemy.maxHp <= 0.35 && !enemy.usedHeal) eAction = 'heal';
+            else if (enemy.name.includes('Alfa') && !enemy.hasBuff && (enemy.hp / enemy.maxHp > 0.50) && this.turn % 2 !== 0) eAction = 'buff';
 
             this.currentAttackerIdx = i;
 
@@ -698,7 +720,7 @@ window.combatApp = {
                 continue;
             }
             
-            // Attack normally
+            // EJECUCIÓN DEL ATAQUE
             this.targetIdx = this.playerTeam.indexOf(target);
             this.updateUI(); 
             await this.sleep(500); 
@@ -1042,7 +1064,9 @@ window.combatApp = {
                     window.farmApp.state.arsenal.push({
                         id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                         plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                        hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef
+                        hp: pt.hp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                        wins: pt.wins + (victory ? 1 : 0),
+                        lastRecover: Date.now() // Ancla para recuperar vida automáticamente
                     });
                 }
             });

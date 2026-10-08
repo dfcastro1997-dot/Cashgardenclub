@@ -16,7 +16,80 @@
 </div>
 
 <script>
+    function processArsenalRecovery() {
+        if (!window.farmApp || !window.farmApp.state.arsenal) return;
+        const now = Date.now();
+        let updated = false;
+        
+        window.farmApp.state.arsenal.forEach(plant => {
+            if (plant.hp < plant.maxHp && plant.lastRecover) {
+                // Recuperar 1 HP por minuto (60000ms) sin conexión ni coste
+                const elapsedMs = now - plant.lastRecover;
+                const hpToRecover = Math.floor(elapsedMs / 60000);
+                if (hpToRecover > 0) {
+                    plant.hp = Math.min(plant.maxHp, plant.hp + hpToRecover);
+                    plant.lastRecover = now; // Reinicia el ancla
+                    updated = true;
+                }
+            } else if (!plant.lastRecover) {
+                plant.lastRecover = now;
+            }
+        });
+        
+        if (updated) {
+            window.farmApp.saveState();
+        }
+    }
+
+    function sellArsenalPlant(plantId) {
+        if (!window.farmApp || !window.farmApp.state.arsenal) return;
+        
+        const index = window.farmApp.state.arsenal.findIndex(p => p.id === plantId);
+        if (index === -1) return;
+        
+        const plant = window.farmApp.state.arsenal[index];
+        const sellPrice = calculateSellPrice(plant);
+        
+        if (confirm(`¿Estás seguro de vender a ${plant.name} por ${sellPrice.toLocaleString()} 🌱?\nSe retirará de tu Arsenal definitivamente.`)) {
+            window.farmApp.state.seedsBalance += sellPrice;
+            window.farmApp.state.arsenal.splice(index, 1);
+            window.farmApp.saveState();
+            
+            // Efecto de cobro global
+            const balEl = document.getElementById('global-seeds-display');
+            if (balEl) {
+                balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                balEl.classList.add('text-green-500', 'scale-110');
+                setTimeout(() => balEl.classList.remove('text-green-500', 'scale-110'), 300);
+            }
+            
+            renderArsenal();
+        }
+    }
+
+    function calculateSellPrice(plant) {
+        let baseVal = 1000;
+        if (plant.plantId === 'flower_wheat') baseVal = 1500;
+        else if (plant.plantId === 'flower_bamboo') baseVal = 4000;
+        else if (plant.plantId === 'flower_cactus') baseVal = 2500;
+        else if (plant.plantId === 'flower_small') baseVal = 3000;
+        else if (plant.plantId === 'flower_big') baseVal = 8000;
+        else if (plant.plantId === 'flower_crystal') baseVal = 5000;
+        else if (plant.plantId === 'flower_moon') baseVal = 12000;
+        else if (plant.plantId === 'flower_solar') baseVal = 7000;
+        else if (plant.plantId === 'flower_neon') baseVal = 9000;
+        
+        // El precio depende de la salud de la planta. Si está medio muerta, vale la mitad.
+        let hpFactor = plant.hp / plant.maxHp;
+        // Bono heroico: +15% del valor por cada victoria que la planta tenga.
+        let winBonus = 1 + ((plant.wins || 0) * 0.15); 
+        
+        return Math.floor(baseVal * hpFactor * winBonus);
+    }
+
     function renderArsenal() {
+        processArsenalRecovery();
+        
         const grid = document.getElementById('arsenal-grid');
         grid.innerHTML = '';
         
@@ -34,30 +107,57 @@
         }
         
         arsenal.forEach(plant => {
+            const hpPct = Math.max(0, Math.min(100, (plant.hp / plant.maxHp) * 100));
+            const hpColor = hpPct > 50 ? 'bg-green-500' : (hpPct > 20 ? 'bg-yellow-400' : 'bg-red-500');
+            const isInjured = plant.hp < plant.maxHp;
+            const winsBadge = (plant.wins && plant.wins > 0) ? `<div class="absolute top-3 left-3 bg-cg_gold text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm border border-yellow-300 uppercase tracking-widest z-20">🏆 ${plant.wins} Victorias</div>` : '';
+            const sellPrice = calculateSellPrice(plant);
+            
             grid.innerHTML += `
-                <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col group">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full opacity-50 z-0"></div>
-                    <div class="flex items-center justify-center w-full h-32 mb-4 relative z-10">
-                        <img src="${plant.icon}" class="w-20 h-20 object-contain drop-shadow-md group-hover:scale-110 transition-transform">
+                    ${winsBadge}
+                    
+                    <div class="flex items-center justify-center w-full h-28 sm:h-32 mb-3 relative z-10">
+                        <img src="${plant.icon}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md group-hover:scale-110 transition-transform ${isInjured ? 'opacity-80' : ''}">
                     </div>
-                    <h4 class="font-black text-cg_navy text-lg text-center mb-3 relative z-10">${plant.name}</h4>
-                    <div class="grid grid-cols-3 gap-2 text-center relative z-10">
-                        <div class="bg-red-50 rounded-lg p-2 border border-red-100">
-                            <span class="block text-[10px] font-bold text-red-400 uppercase">HP</span>
-                            <span class="font-black text-red-600">${plant.hp}</span>
+                    
+                    <h4 class="font-black text-cg_navy text-base sm:text-lg text-center mb-1 relative z-10">${plant.name}</h4>
+                    
+                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-1 relative z-10 shadow-inner">
+                        <div class="${hpColor} h-full transition-all" style="width: ${hpPct}%"></div>
+                    </div>
+                    <div class="flex justify-between text-[9px] sm:text-[10px] font-bold text-gray-500 mb-3 relative z-10">
+                        <span>HP: ${plant.hp}/${plant.maxHp}</span>
+                        ${isInjured ? '<span class="text-blue-500 animate-pulse">Curando...</span>' : '<span class="text-green-500">Sana</span>'}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-center relative z-10 mb-4">
+                        <div class="bg-orange-50 rounded-lg p-1.5 sm:p-2 border border-orange-100">
+                            <span class="block text-[9px] sm:text-[10px] font-bold text-orange-400 uppercase">ATK</span>
+                            <span class="font-black text-orange-600 text-sm">${plant.atk}</span>
                         </div>
-                        <div class="bg-orange-50 rounded-lg p-2 border border-orange-100">
-                            <span class="block text-[10px] font-bold text-orange-400 uppercase">ATK</span>
-                            <span class="font-black text-orange-600">${plant.atk}</span>
-                        </div>
-                        <div class="bg-blue-50 rounded-lg p-2 border border-blue-100">
-                            <span class="block text-[10px] font-bold text-blue-400 uppercase">DEF</span>
-                            <span class="font-black text-blue-600">${plant.def}%</span>
+                        <div class="bg-blue-50 rounded-lg p-1.5 sm:p-2 border border-blue-100">
+                            <span class="block text-[9px] sm:text-[10px] font-bold text-blue-400 uppercase">DEF</span>
+                            <span class="font-black text-blue-600 text-sm">${plant.def}%</span>
                         </div>
                     </div>
+                    
+                    <button onclick="sellArsenalPlant('${plant.id}')" class="mt-auto w-full bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 border border-gray-200 hover:border-red-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10">
+                        Vender: ${sellPrice.toLocaleString()} 🌱
+                    </button>
                 </div>
             `;
         });
     }
+
+    // Intervalo para regenerar vida visualmente si el usuario se queda viendo el arsenal
+    if(window.arsenalInterval) clearInterval(window.arsenalInterval);
+    window.arsenalInterval = setInterval(() => {
+        if(document.getElementById('arsenal-grid')) {
+            renderArsenal();
+        }
+    }, 60000); // Se actualiza la curación visual cada 1 minuto
+
     renderArsenal();
 </script>
