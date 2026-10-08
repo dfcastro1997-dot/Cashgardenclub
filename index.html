@@ -44,48 +44,64 @@
 </head>
 <body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
 
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.postimg.cc/7h5xp3ZS/Gemini-Generated-Image-ph3x3wph3x3wph3x.jpg');">
-        <!-- Superposición oscura opcional para que la tarjeta blanca resalte más sobre el fondo -->
-        <div class="absolute inset-0 bg-cg_navy/20 backdrop-blur-[2px]"></div>
+        <!-- Capa oscura con desenfoque para ocultar imperfecciones del fondo y darle un toque premium -->
+        <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
         
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] w-full max-w-md p-6 sm:p-10 relative z-10 border border-white/40">
-        <div class="bg-white rounded-3xl shadow-soft w-full max-w-md p-6 sm:p-10 relative z-10 border border-gray-100">
-            <div class="flex flex-col items-center justify-center mb-8 mt-2">
-                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-24 sm:h-32 w-auto mb-4 drop-shadow-lg">
+        <div class="bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md p-8 sm:p-10 relative z-10 border border-white/50 transform transition-all">
+            <div class="flex flex-col items-center justify-center mb-8 relative">
+                <div class="absolute inset-0 bg-white rounded-full blur-2xl opacity-60 w-32 h-32 mx-auto"></div>
+                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-28 sm:h-32 w-auto relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
             </div>
             
-            <form id="auth-form" class="space-y-5 sm:space-y-6">
-                <div class="text-center mb-4">
-                    <p class="text-xs text-gray-500 mt-2 font-medium">Atención: Las plantas requieren gestión constante de tiempo real.</p>
+            <form id="auth-form" class="space-y-6 relative z-10">
+                <div class="text-center mb-6">
+                    <p class="text-[10px] sm:text-xs text-cg_navy font-black bg-white/60 inline-block px-4 py-2 rounded-full border border-gray-200/50 shadow-sm backdrop-blur-md uppercase tracking-widest">🌱 Simulador Skill-Based</p>
                 </div>
-                <h3 id="form-title" class="text-center font-bold text-cg_navy text-lg hidden">Crear Nueva Cuenta</h3>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Usuario</label>
-                    <input type="text" id="username" placeholder="Tu usuario" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-medium text-cg_navy" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Contraseña</label>
-                    <input type="password" id="password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-medium text-cg_navy" required>
+                
+                <h3 id="form-title" class="text-center font-black text-cg_navy text-2xl hidden mb-2">Crear tu Cuenta</h3>
+                
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">👤</span>
+                        </div>
+                        <input type="text" id="username" placeholder="Tu usuario" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
+                    </div>
+                    
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">🔒</span>
+                        </div>
+                        <input type="password" id="password" placeholder="Tu contraseña secreta" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
+                    </div>
                 </div>
                 
                 <!-- AGE-GATE LEGAL -->
-                <div id="age-gate-container" class="hidden flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
-                    <input type="checkbox" id="age-gate" class="mt-1 w-4 h-4 text-cg_blue rounded border-gray-300 focus:ring-cg_blue">
-                    <label for="age-gate" class="text-[10px] text-gray-500 font-medium leading-tight">
-                        Declaro que soy <strong>mayor de 18 años</strong> y comprendo que esta es una plataforma de habilidad donde se pagan tarifas de entrada no reembolsables por servicios de torneos.
+                <div id="age-gate-container" class="hidden flex items-start gap-3 bg-red-50/90 backdrop-blur-sm p-4 rounded-2xl border border-red-200 shadow-sm mt-2">
+                    <input type="checkbox" id="age-gate" class="mt-1 w-5 h-5 text-red-500 rounded border-red-300 focus:ring-red-500 cursor-pointer">
+                    <label for="age-gate" class="text-[10px] sm:text-xs text-red-800 font-bold leading-relaxed cursor-pointer">
+                        Confirmo que soy <strong>mayor de 18 años</strong> y comprendo que CashGarden es una plataforma de habilidad con tarifas no reembolsables.
                     </label>
                 </div>
 
-                <div id="auth-error" class="hidden bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-medium flex items-start gap-3">
+                <div id="auth-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-2xl text-sm font-bold flex items-center gap-3 shadow-sm">
+                    <span class="text-xl">⚠️</span>
                     <span id="auth-error-msg">Error en la autenticación.</span>
                 </div>
                 
-                <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Ingresar</button>
-                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-cg_gold hover:bg-orange-500 text-white font-bold text-lg py-4 rounded-xl shadow-soft transition-all transform hover:-translate-y-0.5">Aceptar y Registrarme</button>
+                <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-gradient-to-r from-cg_blue to-blue-600 hover:from-blue-600 hover:to-blue-800 text-white font-black text-lg py-4 rounded-2xl shadow-[0_10px_20px_rgba(41,150,218,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
+                    <span>Ingresar a la Granja</span> <span>➔</span>
+                </button>
                 
-                <div class="text-center mt-4">
-                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-xs font-bold text-gray-500 hover:text-cg_blue transition-colors">
-                        ¿No tienes cuenta? Crea una aquí
+                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-lg py-4 rounded-2xl shadow-[0_10px_20px_rgba(237,153,37,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
+                    <span>Crear Cuenta</span> <span>➔</span>
+                </button>
+                
+                <div class="text-center mt-6 pt-5 border-t border-gray-200/60">
+                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-xs sm:text-sm font-black text-gray-500 hover:text-cg_blue transition-colors focus:outline-none">
+                        ¿No tienes cuenta? <span class="text-cg_blue underline decoration-2 underline-offset-4">Regístrate gratis</span>
                     </button>
                 </div>
             </form>
@@ -93,10 +109,11 @@
     </div>
 
     <!-- MAIN APP -->
-    <!-- MAIN APP -->
     <div id="dashboard-screen" class="hidden h-screen w-full flex-col bg-bone relative">
         <!-- CAPA DE FONDO TRANSPARENTE DEL DASHBOARD -->
-        <div class="absolute inset-0 z-0 opacity-10 bg-cover bg-center bg-no-repeat pointer-events-none" style="background-image: url('https://i.postimg.cc/fydbV7Q4/Gemini-Generated-Image-edsejoedsejoedse.jpg');"></div>
+        <div class="absolute inset-0 z-0 opacity-10 bg-cover bg-center bg-no-repeat pointer-events-none fixed" style="background-image: url('https://i.postimg.cc/fydbV7Q4/Gemini-Generated-Image-edsejoedsejoedse.jpg');"></div>
+        
+        <!-- TOP NAVBAR -->
         
         <!-- TOP NAVBAR -->
         <!-- TOP NAVBAR -->
@@ -158,18 +175,26 @@
                                 <p class="text-sm font-black text-cg_navy truncate" id="dropdown-username">usuario@cashgarden.com</p>
                             </div>
                             <div class="py-2">
-                                <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
-                                    <span class="text-lg">🏦</span> Billetera Wompi
+                                <!-- Billetera Wompi - BLOQUEADA -->
+                                <button disabled class="w-full text-left px-5 py-3 text-sm font-bold text-gray-400 opacity-60 cursor-not-allowed flex items-center gap-3">
+                                    <span class="text-lg grayscale">🏦</span> Billetera Wompi 
+                                    <span class="text-[9px] bg-red-100 text-red-500 px-1.5 py-0.5 rounded uppercase tracking-wider ml-auto">Cerrado</span>
                                 </button>
+                                
+                                <!-- Mi Arsenal - RENOMBRADO -->
                                 <button onclick="loadView('arsenal'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors flex items-center gap-3">
-                                    <span class="text-lg">🛡️</span> Mi Arsenal (Combate)
+                                    <span class="text-lg">🛡️</span> Mi Arsenal
                                 </button>
-                                <!-- BOTÓN NUEVO DE TELEGRAM -->
+                                
+                                <!-- Alertas Telegram -->
                                 <button onclick="openTelegramModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-blue-500 transition-colors flex items-center gap-3">
                                     <span class="text-lg">✈️</span> Alertas Telegram
                                 </button>
-                                <button onclick="openCodesModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
-                                    <span class="text-lg">🎟️</span> Códigos
+                                
+                                <!-- Códigos - BLOQUEADOS -->
+                                <button disabled class="w-full text-left px-5 py-3 text-sm font-bold text-gray-400 opacity-60 cursor-not-allowed flex items-center gap-3">
+                                    <span class="text-lg grayscale">🎟️</span> Códigos 
+                                    <span class="text-[9px] bg-red-100 text-red-500 px-1.5 py-0.5 rounded uppercase tracking-wider ml-auto">Cerrado</span>
                                 </button>
                             </div>
                             <div class="py-2 border-t border-gray-100">
@@ -466,9 +491,8 @@
         async function syncUserData() {
             const username = sessionStorage.getItem('username');
             const token = sessionStorage.getItem('session_token');
-            if (!username || !token) return;
+            if (!username || !token) return; // Se aborta si no hay token
             
-            // <-- VERIFICACIÓN INICIAL: Ignorar sync si ya está guardando
             if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
                 return;
             }
@@ -476,16 +500,14 @@
             try {
                 const response = await fetch(`/api/sync/${username}?token=${token}`);
                 
-                // --- INICIO DE LA CORRECCIÓN ---
-                // Abortar si el usuario hizo un cambio/compra MIENTRAS la petición del fetch iba en camino.
-                // Esto previene que una respuesta vieja del servidor sobreescriba un inventario recién comprado.
                 if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
                     return;
                 }
-                // --- FIN DE LA CORRECCIÓN ---
                 
                 if (response.status === 401) {
-                    showSessionExpiredModal("Has iniciado sesión en otro dispositivo. Por seguridad, esta sesión local ha sido desconectada.");
+                    // FIX 401: Borramos el token para detener el bucle infinito de errores
+                    sessionStorage.removeItem('session_token');
+                    showSessionExpiredModal("Tu sesión ha expirado por seguridad o iniciaste sesión en otro dispositivo.");
                     return;
                 }
                 
@@ -816,19 +838,21 @@
         });
 
         // BUCLE SEGURO NO ACUMULATIVO PARA EVITAR LAG AL CARGAR PÁGINAS
+        // BUCLE SEGURO NO ACUMULATIVO PARA EVITAR LAG AL CARGAR PÁGINAS Y ERRORES 401
         let isGlobalSyncing = false;
         async function runSyncLoop() {
-            if (!isGlobalSyncing) {
+            // FIX 401: El bucle solo ejecuta si realmente hay un token válido en sessionStorage
+            if (!isGlobalSyncing && sessionStorage.getItem('session_token')) {
                 isGlobalSyncing = true;
                 await syncUserData(); // Espera a que el servidor responda
                 isGlobalSyncing = false;
             }
-            setTimeout(runSyncLoop, 10000); // 1.5s de respiro antes del siguiente ciclo
+            setTimeout(runSyncLoop, 10000); // 10s de respiro antes del siguiente ciclo
         }
         setTimeout(runSyncLoop, 1000);
 
         window.addEventListener('focus', () => {
-            if (!isGlobalSyncing) syncUserData();
+            if (!isGlobalSyncing && sessionStorage.getItem('session_token')) syncUserData();
         });
     </script>
 </body>
