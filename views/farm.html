@@ -716,15 +716,13 @@ if (typeof window.farmApp === 'undefined') {
     };
 
     window.selectHistoria = function() {
+        sessionStorage.removeItem('pvp_match_id');
+        sessionStorage.removeItem('pvp_bet_amount');
         document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
         
-        // Flujo original (PvE)
         if (!window.farmApp.state.inventory['tool_duel_ticket'] || window.farmApp.state.inventory['tool_duel_ticket'].qty <= 0) {
             const ticketModal = document.getElementById('ticket-required-modal');
-            if (ticketModal) {
-                ticketModal.classList.remove('hidden');
-                ticketModal.classList.add('flex');
-            }
+            if (ticketModal) { ticketModal.classList.remove('hidden'); ticketModal.classList.add('flex'); }
             return;
         }
 
@@ -732,60 +730,44 @@ if (typeof window.farmApp === 'undefined') {
         let arsenal = window.farmApp.state.arsenal || [];
 
         if (readyPlots.length === 0 && arsenal.length === 0) {
-            window.farmApp.showFarmAlert('Sin Escuadrón', 'Debes tener al menos 1 planta lista en la Granja o almacenada en tu Arsenal.', '🌱');
+            window.farmApp.showFarmAlert('Sin Escuadrón', 'Debes tener al menos 1 planta lista o en Arsenal.', '🌱');
             setTimeout(() => { window.farmApp.closeFarmAlert(); }, 3000);
             return;
         }
         window.farmApp.openTeamSelection(readyPlots, arsenal);
     };
 
-    window.selectPvP = function() {
-        document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
-        document.getElementById('pvp-input-modal').classList.remove('hidden');
-        document.getElementById('pvp-input-modal').classList.add('flex');
-    };
-
     window.sendPvPChallenge = async function() {
         const targetId = document.getElementById('pvp-target-id').value.trim();
         const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
-        
-        if (targetId.length !== 4) return alert("El ID debe tener exactamente 4 dígitos.");
-        if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas para apostar.");
-
+        if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
+        if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
         document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
         document.getElementById('pvp-input-btn').disabled = true;
 
         const res = await fetch('/api/pvp/challenge', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                username: sessionStorage.getItem('username'), 
-                target_short_id: targetId, 
-                bet: betAmount 
-            })
+            body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
         });
         const data = await res.json();
-        
         if (res.ok) {
             document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
-            
-            // Iniciar Polling para esperar la respuesta del rival
             const poll = setInterval(async () => {
                 const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
                 const sData = await sRes.json();
-                
                 if (sData.status === 'accepted') {
                     clearInterval(poll);
                     document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
-                    
-                    // Cobrar y pasar a la selección de escuadrón
                     window.farmApp.state.seedsBalance -= betAmount;
                     window.farmApp.saveState();
                     
-                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                    let arsenal = window.farmApp.state.arsenal || [];
-                    window.farmApp.openTeamSelection(readyPlots, arsenal);
+                    // --- NUEVO ---
+                    sessionStorage.setItem('pvp_match_id', data.match_id);
+                    sessionStorage.setItem('pvp_bet_amount', betAmount);
                     
+                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                    window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
                 } else if (sData.status === 'rejected') {
                     clearInterval(poll);
                     alert("El jugador ha rechazado tu reto.");
@@ -796,8 +778,27 @@ if (typeof window.farmApp === 'undefined') {
             }, 3000);
         } else {
             alert(data.error);
-            document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
             document.getElementById('pvp-input-btn').disabled = false;
+        }
+    };
+
+    window.respondPvP = async function(action) {
+        document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
+        window.isPvPModalOpen = false;
+        await fetch('/api/pvp/accept', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ match_id: window.currentChallenge.match_id, action: action })
+        });
+        if (action === 'accepted') {
+            window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
+            window.farmApp.saveState();
+            
+            // --- NUEVO ---
+            sessionStorage.setItem('pvp_match_id', window.currentChallenge.match_id);
+            sessionStorage.setItem('pvp_bet_amount', window.currentChallenge.bet_seeds);
+            
+            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+            window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
         }
     };
 

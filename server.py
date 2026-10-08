@@ -65,6 +65,11 @@ def init_db():
         );
     ''')
 
+
+    cur.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS match_data TEXT DEFAULT '{}';")
+    cur.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS winner_username VARCHAR(50);")
+
+
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournaments (
             id SERIAL PRIMARY KEY,
@@ -1074,6 +1079,51 @@ def dev_add_cop():
         cur.close()
         conn.close()
 
+
+@app.route('/api/pvp/combat_sync', methods=['POST'])
+def pvp_combat_sync():
+    data = request.json
+    match_id = data.get('match_id')
+    username = data.get('username')
+    update_data = data.get('update_data')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM pvp_matches WHERE id = %s FOR UPDATE", (match_id,))
+    match = cur.fetchone()
+    
+    if not match: return jsonify({"error": "Match not found"}), 404
+    
+    state = json.loads(match['match_data']) if match['match_data'] else {}
+    
+    cur.execute("SELECT username FROM users WHERE id = %s", (match['challenger_id'],))
+    challenger_name = cur.fetchone()['username']
+    role = 'challenger' if username == challenger_name else 'target'
+    
+    if update_data:
+        if 'team' in update_data:
+            state[role + '_team'] = update_data['team']
+        if 'actionQueue' in update_data:
+            state['last_action'] = {'role': role, 'actions': update_data['actionQueue']}
+            state['turn'] = 'target' if role == 'challenger' else 'challenger'
+        if 'winner' in update_data and not match.get('winner_username'):
+            # Establecer ganador y pagarle el pozo apostado doble (lo suyo + lo del rival)
+            cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (update_data['winner'], match_id))
+            cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (update_data['winner'],))
+            winner_user = cur.fetchone()
+            if winner_user and winner_user['game_state']:
+                w_state = json.loads(winner_user['game_state'])
+                w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + (match['bet_seeds'] * 2)
+                cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), winner_user['id']))
+            conn.commit()
+            cur.close(); conn.close()
+            return jsonify({"status": "game_over", "winner": update_data['winner']})
+            
+        cur.execute("UPDATE pvp_matches SET match_data = %s WHERE id = %s", (json.dumps(state), match_id))
+        conn.commit()
+        
+    cur.close(); conn.close()
+    return jsonify({"state": state, "role": role, "winner": match.get('winner_username')})
 
 @app.route('/api/pvp/challenge', methods=['POST'])
 def pvp_challenge():

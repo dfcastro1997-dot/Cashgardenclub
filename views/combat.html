@@ -268,12 +268,13 @@ window.combatApp = {
     init() {
         if (!window.farmApp) { loadView('farm'); return; }
 
-        // COBRO DEL TICKET
-        if (window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
+        this.matchId = sessionStorage.getItem('pvp_match_id');
+        this.isPvP = !!this.matchId;
+
+        // COBRO DEL TICKET (Solo en modo Historia PvE)
+        if (!this.isPvP && window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
             window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
             window.farmApp.updateInventoryUI();
-            // Guardamos que entró a combate. Si cierra aquí, perdió el ticket.
-            window.farmApp.saveState(); 
         }
 
         this.playerTeam = [];
@@ -286,16 +287,10 @@ window.combatApp = {
             else if(pid === 'flower_bamboo') { pDef = 20; pHp = 250; }
             else if(pid === 'flower_crystal') { pDef = 8; pHp = 200; } 
             else if(pid === 'flower_moon') { pDef = 25; pHp = 450; } 
-
             const skills = this.SKILLS_DICT[pid] || this.SKILLS_DICT['default'];
-
             this.playerTeam.push({ 
-                fromArsenal: isArsenal, 
-                arsId: isArsenal ? idTag : null,
-                plotId: !isArsenal ? idTag : null,
-                plantId: pid, // <-- AÑADIDO: Guardar el ID de la especie para poder recuperarla
-                name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef,
-                skills: skills
+                fromArsenal: isArsenal, arsId: isArsenal ? idTag : null, plotId: !isArsenal ? idTag : null,
+                plantId: pid, name: name, icon: icon, hp: pHp, maxHp: pHp, atk: pAtk, def: pDef, skills: skills
             });
         };
 
@@ -304,19 +299,11 @@ window.combatApp = {
 
         selected.forEach(sel => {
             if (sel.type === 'arsenal') {
-                // Busca una planta del arsenal no utilizada en esta iteración
-                const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag && !usedArsenalIds.has(a.id))
-                        || window.farmApp.state.arsenal.find(a => !usedArsenalIds.has(a.id));
-                if (ap) {
-                    usedArsenalIds.add(ap.id);
-                    buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id);
-                }
+                const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag && !usedArsenalIds.has(a.id)) || window.farmApp.state.arsenal.find(a => !usedArsenalIds.has(a.id));
+                if (ap) { usedArsenalIds.add(ap.id); buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id); }
             } else if (sel.type === 'plot') {
                 const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag && !usedPlotIds.has(plot.id));
-                if (p && p.plant) {
-                    usedPlotIds.add(p.id);
-                    buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id);
-                }
+                if (p && p.plant) { usedPlotIds.add(p.id); buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id); }
             }
         });
 
@@ -325,94 +312,148 @@ window.combatApp = {
             storedArsenal.slice(0, 3).forEach(ap => buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id));
         }
 
-        // --- 1. CÁLCULO DEL SQUAD VALUE (MATCHMAKING MATEMÁTICO) ---
-        let squadValue = 0;
-        this.playerTeam.forEach(p => {
-            squadValue += (p.maxHp + p.atk + p.def);
-        });
-
-        // --- 2. CONDICIONES DE ENTORNO (RELOJ Y CALENDARIO REAL) ---
-        const d = new Date();
-        const hour = d.getHours();
-        const day = d.getDate();
-        
-        // Noche: 6:00 PM (18) a 6:00 AM (6)
-        const isNight = hour >= 18 || hour < 6;
-        // Invierno: Días 1 al 9
-        const isWinter = day >= 1 && day <= 9;
-        // Verano: Días 27 en adelante (Guardado para ignorar Defensa en el turno)
-        this.isSummer = day >= 27; 
-
-        // Modificadores matemáticos
-        let envAtkMult = isNight ? 1.3 : 1.0;  // +30% Ataque en la noche
-        let envHpMult = isNight ? 0.8 : 1.0;   // -20% Vida en la noche
-        let envHpFlat = isWinter ? 50 : 0;     // +50 Vida fija en invierno
-        let namePrefix = isNight ? ' Nocturno' : '';
-
-        // Función para crear cuervos aplicando el entorno
-        const createCrow = (baseName, baseHp, baseAtk) => {
-            let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
-            let finalAtk = Math.floor(baseAtk * envAtkMult);
-            return {
-                name: baseName + namePrefix,
-                icon: window.farmApp.state.images.crow,
-                hp: finalHp,
-                maxHp: finalHp,
-                atk: finalAtk
-            };
-        };
-
-        // --- 3. GENERACIÓN DEL ESCUADRÓN ---
-        if (squadValue < 500) {
-            // Escuadrón Rastrero (Equipos débiles, ej: 3 Trigos)
-            this.enemyTeam = [
-                createCrow('C. Rastrero', 200, 35),
-                createCrow('C. Rastrero', 200, 35),
-                createCrow('C. Rastrero', 200, 35)
-            ];
-            window.farmApp.state.pendingCombatReward = 15000;
-        } else if (squadValue >= 1000) {
-            // Escuadrón de Élite (Equipos pesados)
-            this.enemyTeam = [
-                createCrow('Cuervo Alfa', 600, 85),
-                createCrow('Cuervo Alfa', 600, 85),
-                createCrow('Cuervo Alfa', 600, 85)
-            ];
-            window.farmApp.state.pendingCombatReward = 60000;
-        } else {
-            // Escuadrón Táctico (Equipos balanceados, Default)
-            this.enemyTeam = [
-                createCrow('C. Rastrero', 250, 45),
-                createCrow('Cuervo Alfa', 450, 75),
-                createCrow('C. Rastrero', 250, 45)
-            ];
-            window.farmApp.state.pendingCombatReward = 30000;
-        }
-
         window.farmApp.state.combatLock = true;
         
-        // PUNITIVO INMEDIATO: Remueve del inventario a las plantas antes de pelear.
+        // Remover plantas de la granja/arsenal antes de pelear
         this.playerTeam.forEach(pt => {
-            if (pt.fromArsenal) {
-                window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId);
-            } else if (pt.plotId !== undefined) {
+            if (pt.fromArsenal) { window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId); } 
+            else if (pt.plotId !== undefined) {
                 let plot = window.farmApp.state.plots[pt.plotId];
-                plot.status = 'empty'; 
-                plot.plant = null; 
-                plot.isReady = false; 
-                plot.potUses = Math.max(0, plot.potUses - 1);
+                plot.status = 'empty'; plot.plant = null; plot.isReady = false; plot.potUses = Math.max(0, plot.potUses - 1);
             }
         });
         window.farmApp.saveState();
 
-        this.active = true;
+        this.active = false;
         this.turn = 1;
         this.energy = 5;
         this.actionQueue = [];
         this.phase = 'P_SELECT';
-        
+
+        if (this.isPvP) {
+            this.setInstruction('Conectando con el oponente...', true);
+            this.syncPvPState({ team: this.playerTeam });
+            return;
+        }
+
+        // --- CÓDIGO PvE ORIGINAL (Generación de Cuervos) ---
+        let squadValue = 0;
+        this.playerTeam.forEach(p => squadValue += (p.maxHp + p.atk + p.def));
+
+        const d = new Date(); const hour = d.getHours(); const day = d.getDate();
+        const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
+
+        let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
+        const createCrow = (baseName, baseHp, baseAtk) => {
+            let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
+            let finalAtk = Math.floor(baseAtk * envAtkMult);
+            return { name: baseName + namePrefix, icon: window.farmApp.state.images.crow, hp: finalHp, maxHp: finalHp, atk: finalAtk };
+        };
+
+        if (squadValue < 500) {
+            this.enemyTeam = [ createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35) ];
+            window.farmApp.state.pendingCombatReward = 15000;
+        } else if (squadValue >= 1000) {
+            this.enemyTeam = [ createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85) ];
+            window.farmApp.state.pendingCombatReward = 60000;
+        } else {
+            this.enemyTeam = [ createCrow('C. Rastrero', 250, 45), createCrow('Cuervo Alfa', 450, 75), createCrow('C. Rastrero', 250, 45) ];
+            window.farmApp.state.pendingCombatReward = 30000;
+        }
+
+        this.active = true;
         this.updateUI();
         this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
+    },
+
+    async syncPvPState(updateData = null) {
+        try {
+            const res = await fetch('/api/pvp/combat_sync', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: updateData })
+            });
+            const data = await res.json();
+            
+            if (data.winner) {
+                if (this.pvpInterval) clearInterval(this.pvpInterval);
+                this.endCombat(data.winner === sessionStorage.getItem('username'));
+                return;
+            }
+            
+            const state = data.state;
+            this.role = data.role; 
+            const oppRole = this.role === 'challenger' ? 'target' : 'challenger';
+            
+            if (!this.active && state.challenger_team && state.target_team) {
+                this.enemyTeam = state[oppRole + '_team'];
+                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; });
+                this.active = true;
+                this.currentPvPTurn = state.turn || 'challenger';
+                this.updateUI();
+                this.checkPvPTurnLogic();
+            } else if (this.active) {
+                if (state.turn === this.role && this.currentPvPTurn !== this.role) {
+                    this.currentPvPTurn = this.role;
+                    if (state.last_action && state.last_action.role === oppRole) {
+                        await this.animateOpponentActions(state.last_action.actions);
+                    } else {
+                        this.startMyTurn();
+                    }
+                }
+            }
+            
+            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 2000);
+        } catch(e) {}
+    },
+
+    checkPvPTurnLogic() {
+        if (this.currentPvPTurn === this.role) {
+            this.startMyTurn();
+        } else {
+            this.setInstruction('Turno del oponente. Esperando...', true);
+            document.getElementById('cb-action-btn').disabled = true;
+            document.getElementById('cb-action-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    },
+
+    startMyTurn() {
+        this.energy = Math.min(this.maxEnergy, this.energy + 3);
+        this.phase = 'P_SELECT';
+        this.updateUI();
+        this.setInstruction('TU TURNO: Elige tus ataques ⚔️');
+        document.getElementById('cb-action-btn').disabled = false;
+        document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+    },
+
+    async animateOpponentActions(actions) {
+        this.phase = 'EXECUTION';
+        this.setInstruction('⚔️ EL OPONENTE ATACA ⚔️', true);
+        
+        for (let action of actions) {
+            let attacker = this.enemyTeam[action.attackerIdx];
+            let target = this.playerTeam[action.targetIdx];
+            if (attacker.hp <= 0 || target.hp <= 0) continue;
+            
+            this.currentAttackerIdx = action.attackerIdx;
+            this.targetIdx = action.targetIdx;
+            this.updateUI();
+            
+            this.showFx(action.skill.name, "text-red-500");
+            await this.sleep(400);
+            this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
+            await this.sleep(150);
+            
+            target.hp -= action.skill.dmg;
+            this.shakeElement(`player-${this.targetIdx}`);
+            this.shakeScreen();
+            this.showFx(`-${action.skill.dmg}`, "text-red-600");
+            this.updateUI();
+            await this.sleep(600);
+        }
+        
+        this.currentAttackerIdx = null; this.targetIdx = null;
+        this.updateUI();
+        this.checkWinLoss();
     },
 
     updateEnergyUI() {
@@ -445,21 +486,20 @@ window.combatApp = {
 
     confirmFlee() {
         if (confirm('¡Peligro! Si huyes de la Arena ahora, perderás a las plantas de tu escuadrón definitivamente. ¿Huir de todas formas?')) {
+            if (this.isPvP) {
+                this.playerTeam.forEach(p => p.hp = 0);
+                this.syncPvPState({ actionQueue: [] });
+            }
             this.endCombat(false);
         }
     },
 
     clearQueue() {
         if (this.phase === 'EXECUTION') return;
-        
-        this.actionQueue.forEach(a => {
-            this.energy += a.skill.cost;
-        });
-        
+        this.actionQueue.forEach(a => { this.energy += a.skill.cost; });
         this.actionQueue = [];
         this.phase = 'P_SELECT';
-        this.currentAttackerIdx = null;
-        this.pendingSkill = null;
+        this.currentAttackerIdx = null; this.pendingSkill = null;
         this.updateUI();
         this.setInstruction('Acciones limpiadas. Toca una planta para iniciar.');
     },
@@ -476,18 +516,10 @@ window.combatApp = {
         
         if (this.phase === 'P_TARGETING' && team === 'enemy' && this.pendingSkill) {
             if (this.enemyTeam[index].hp > 0) {
-                this.actionQueue.push({
-                    attackerIdx: this.currentAttackerIdx,
-                    targetIdx: index,
-                    skill: this.pendingSkill
-                });
-                
+                this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
                 this.energy -= this.pendingSkill.cost;
-                
-                this.pendingSkill = null;
-                this.currentAttackerIdx = null;
+                this.pendingSkill = null; this.currentAttackerIdx = null;
                 this.phase = 'P_SELECT';
-                
                 this.updateUI();
                 this.setInstruction(`¡Encolado! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
             }
@@ -504,28 +536,20 @@ window.combatApp = {
         
         plant.skills.forEach((skill, sIdx) => {
             const canAfford = this.energy >= skill.cost;
-            const btnClass = canAfford 
-                ? 'bg-white border border-gray-200 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-md skill-card' 
-                : 'bg-gray-100 border border-gray-200 opacity-50 cursor-not-allowed grayscale';
-            
+            const btnClass = canAfford ? 'bg-white border border-gray-200 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-md skill-card' : 'bg-gray-100 border border-gray-200 opacity-50 cursor-not-allowed grayscale';
             const isUltimate = skill.cost >= 4;
             const ultBg = isUltimate && canAfford ? 'bg-gradient-to-br from-yellow-50 to-white border-yellow-200' : '';
             
             container.innerHTML += `
                 <button ${canAfford ? `onclick="window.combatApp.selectCard(${plantIdx},${sIdx})"` : 'disabled'} class="w-full text-left p-3 sm:p-4 rounded-2xl flex flex-col justify-between h-[100px] sm:h-[120px] overflow-hidden ${btnClass} ${ultBg}">
                     <div class="flex justify-between items-start w-full relative z-10">
-                        <div class="bg-blue-50 text-blue-600 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-black text-xs shadow-sm border border-blue-100 shrink-0">
-                            ${skill.cost}
-                        </div>
+                        <div class="bg-blue-50 text-blue-600 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-black text-xs shadow-sm border border-blue-100 shrink-0">${skill.cost}</div>
                         <span class="text-xl sm:text-2xl drop-shadow-sm shrink-0">${skill.icon}</span>
                     </div>
-                    
                     <div class="w-full relative z-10 mt-auto">
                         <h4 class="font-black text-cg_navy text-[11px] sm:text-xs md:text-sm tracking-tight leading-none mb-1 truncate">${skill.name}</h4>
                         <div class="flex items-center justify-between gap-1">
-                            <span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] uppercase tracking-wider shrink-0 border border-red-100">
-                                ⚔️ ${skill.dmg}
-                            </span>
+                            <span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] uppercase tracking-wider shrink-0 border border-red-100">⚔️ ${skill.dmg}</span>
                         </div>
                     </div>
                 </button>
@@ -539,52 +563,38 @@ window.combatApp = {
 
     closeCardModal() {
         const modal = document.getElementById('card-modal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        if (this.phase !== 'P_TARGETING') {
-            this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
-        }
+        modal.classList.add('hidden'); modal.classList.remove('flex');
+        if (this.phase !== 'P_TARGETING') { this.setInstruction('TU TURNO: Toca una planta para programar sus ataques'); }
     },
 
     selectCard(plantIdx, skillIdx) {
         const plant = this.playerTeam[plantIdx];
         const skill = plant.skills[skillIdx];
-        
         if (this.energy >= skill.cost) {
             this.pendingSkill = skill;
             this.phase = 'P_TARGETING';
             this.closeCardModal();
-            this.setInstruction(`Has preparado: ${skill.name}. Ahora toca a un Cuervo Enemigo 🎯`, true);
+            this.setInstruction(`Has preparado: ${skill.name}. Ahora toca a un Enemigo 🎯`, true);
             this.updateUI();
         }
     },
 
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    },
+    sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); },
 
     shakeScreen() {
         const bf = document.getElementById('battlefield-container');
-        if (bf) {
-            bf.classList.add('screen-shake');
-            setTimeout(() => bf.classList.remove('screen-shake'), 400);
-        }
+        if (bf) { bf.classList.add('screen-shake'); setTimeout(() => bf.classList.remove('screen-shake'), 400); }
     },
 
     lungeAttacker(elementId, side) {
         const el = document.getElementById(elementId);
-        if (el) {
-            el.style.transform = side === 'P' ? 'translateY(-20px) scale(1.15)' : 'translateY(20px) scale(1.15)';
-            setTimeout(() => {
-                el.style.transform = ''; 
-            }, 300);
-        }
+        if (el) { el.style.transform = side === 'P' ? 'translateY(-20px) scale(1.15)' : 'translateY(20px) scale(1.15)'; setTimeout(() => { el.style.transform = ''; }, 300); }
     },
 
     async endTurn() {
         if (this.phase === 'EXECUTION') return;
         this.phase = 'EXECUTION';
-        this.setInstruction('⚔️ RESOLVIENDO COMBATE ⚔️');
+        this.setInstruction('⚔️ RESOLVIENDO TUS ATAQUES ⚔️');
         document.getElementById('cb-action-btn').disabled = true;
         document.getElementById('cb-action-btn').classList.add('opacity-50', 'cursor-not-allowed');
 
@@ -599,15 +609,15 @@ window.combatApp = {
                 const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
                 if (aliveEnemies.length === 0) break;
                 target = aliveEnemies[0];
+                action.targetIdx = this.enemyTeam.indexOf(target); // Fix target for PvP sync
             }
 
             this.currentAttackerIdx = action.attackerIdx; 
-            this.targetIdx = this.enemyTeam.indexOf(target);
+            this.targetIdx = action.targetIdx;
             this.updateUI();
 
             this.showFx(action.skill.name, "text-blue-500");
             await this.sleep(400);
-
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
             await this.sleep(150);
 
@@ -623,18 +633,32 @@ window.combatApp = {
         this.currentAttackerIdx = null;
         this.targetIdx = null;
         this.updateUI();
-        
-        if (this.enemyTeam.filter(e => e.hp > 0).length === 0) {
-            this.checkWinLoss();
+
+        // 2. SINCRONIZACIÓN PVP
+        if (this.isPvP) {
+            let pAlive = this.playerTeam.filter(p => p.hp > 0);
+            let eAlive = this.enemyTeam.filter(e => e.hp > 0);
+            
+            if (eAlive.length === 0) {
+                this.syncPvPState({ winner: sessionStorage.getItem('username'), actionQueue: this.actionQueue });
+            } else if (pAlive.length === 0) {
+                this.syncPvPState({ actionQueue: this.actionQueue });
+            } else {
+                this.syncPvPState({ actionQueue: this.actionQueue });
+                this.actionQueue = [];
+                this.turn++;
+                this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
+                this.checkPvPTurnLogic();
+            }
             return;
         }
 
-        // 2. EJECUTAR ACCIONES DE ENEMIGOS
+        if (this.enemyTeam.filter(e => e.hp > 0).length === 0) { this.checkWinLoss(); return; }
+
+        // 3. EJECUTAR ACCIONES DE ENEMIGOS (Solo PvE)
         this.setInstruction('🦅 TURNO ENEMIGO...');
         await this.sleep(700);
 
-        // --- MECÁNICA: GRITO DE GUERRA (CADA 3 TURNOS) ---
-        // Sincronía determinista: Los turnos 3, 6, 9, etc., los cuervos hacen doble daño
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
             this.showFx("¡GRITO DE GUERRA!", "text-red-600");
@@ -649,7 +673,6 @@ window.combatApp = {
             let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
             if (alivePlayers.length === 0) break;
 
-            // La IA sigue siendo predecible, ataca al de menor vida
             let target = alivePlayers.reduce((prev, curr) => (prev.hp < curr.hp ? prev : curr));
             
             this.currentAttackerIdx = i;
@@ -658,20 +681,12 @@ window.combatApp = {
 
             this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
             await this.sleep(400);
-
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
             await this.sleep(150);
 
-            // --- MECÁNICA: VERANO (IGNORAR DEFENSA) ---
-            // Si es Verano, la mitigación es 0. Si no, usa la defensa de la planta.
             const mitigation = this.isSummer ? 0 : (target.def / 100); 
-            
             let baseDamage = enemy.atk;
-            // Aplicar el Grito de Guerra si corresponde
-            if (isBattleCryTurn) {
-                baseDamage *= 2; 
-            }
-
+            if (isBattleCryTurn) { baseDamage *= 2; }
             const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
             
             target.hp -= actualDamage;
@@ -683,10 +698,8 @@ window.combatApp = {
             await this.sleep(600);
         }
 
-        // 3. FIN DE RONDA
         this.actionQueue = [];
-        this.currentAttackerIdx = null;
-        this.targetIdx = null;
+        this.currentAttackerIdx = null; this.targetIdx = null;
         document.getElementById('cb-action-btn').disabled = false;
         document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
         
@@ -695,21 +708,16 @@ window.combatApp = {
 
     shakeElement(elementId) {
         const el = document.getElementById(elementId);
-        if (el) {
-            el.classList.add('shake-hit');
-            setTimeout(() => el.classList.remove('shake-hit'), 350);
-        }
+        if (el) { el.classList.add('shake-hit'); setTimeout(() => el.classList.remove('shake-hit'), 350); }
     },
 
     checkWinLoss() {
         const pAlive = this.playerTeam.filter(p => p.hp > 0);
         const eAlive = this.enemyTeam.filter(e => e.hp > 0);
 
-        if (eAlive.length === 0) {
-            this.endCombat(true); 
-        } else if (pAlive.length === 0) {
-            this.endCombat(false); 
-        } else {
+        if (eAlive.length === 0) { this.endCombat(true); } 
+        else if (pAlive.length === 0) { this.endCombat(false); } 
+        else {
             this.turn++;
             this.energy = Math.min(this.maxEnergy, this.energy + 3); 
             this.phase = 'P_SELECT';
@@ -721,36 +729,33 @@ window.combatApp = {
     endCombat(victory) {
         this.active = false;
         window.farmApp.state.combatLock = false; 
+        if (this.pvpInterval) clearInterval(this.pvpInterval);
 
         if (victory) {
-            // RECLAMAMOS PREMIO DINÁMICO
-            const reward = window.farmApp.state.pendingCombatReward || 25000;
-            window.farmApp.state.seedsBalance += reward;
+            const reward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
             
-            // REEMBOLSAMOS EL TICKET (Por ganar)
-            if (!window.farmApp.state.inventory['tool_duel_ticket']) {
-                window.farmApp.state.inventory['tool_duel_ticket'] = { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png' };
+            if (!this.isPvP) {
+                window.farmApp.state.seedsBalance += reward;
+                if (!window.farmApp.state.inventory['tool_duel_ticket']) {
+                    window.farmApp.state.inventory['tool_duel_ticket'] = { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png' };
+                }
+                window.farmApp.state.inventory['tool_duel_ticket'].qty += 1;
+                window.farmApp.updateInventoryUI();
+            } else {
+                // En PvP el servidor se encarga de subir las semillas
+                setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
             }
-            window.farmApp.state.inventory['tool_duel_ticket'].qty += 1;
-            window.farmApp.updateInventoryUI();
 
-            // <-- NUEVO: RECUPERAR PLANTAS SOBREVIVIENTES AL ARSENAL -->
             if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
             this.playerTeam.forEach(pt => {
                 if (pt.hp > 0) {
                     window.farmApp.state.arsenal.push({
                         id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                        plantId: pt.plantId,
-                        name: pt.name,
-                        icon: pt.icon,
-                        hp: pt.maxHp, // Se restauran con salud completa al volver al arsenal
-                        maxHp: pt.maxHp,
-                        atk: pt.atk,
-                        def: pt.def
+                        plantId: pt.plantId, name: pt.name, icon: pt.icon,
+                        hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.def
                     });
                 }
             });
-            // <-- FIN DEL NUEVO BLOQUE -->
 
             document.getElementById('combat-victory-reward-text').innerText = `+${reward.toLocaleString()} 🌱`;
             document.getElementById('combat-victory-modal').classList.remove('hidden');
@@ -761,6 +766,9 @@ window.combatApp = {
             document.getElementById('combat-defeat-modal').classList.add('flex');
             window.farmApp.saveState(); 
         }
+        
+        sessionStorage.removeItem('pvp_match_id');
+        sessionStorage.removeItem('pvp_bet_amount');
     },
 
     // ================= RENDERIZADO VISUAL ================= //
