@@ -3,5 +3,6 @@ psycopg2-binary
 Werkzeug
 requests
 Flask-SocketIO
-eventlet
+gevent
+gevent-websocket
 gunicorn
