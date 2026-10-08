@@ -2320,19 +2320,18 @@ if (typeof window.farmApp === 'undefined') {
             const plot = this.state.plots[plotId];
             if (!plot.isReady) return;
             
-            if (this.state.isHarvestingAction) return;
-            this.state.isHarvestingAction = true;
+            // CAMBIO: Bloqueo por parcela en lugar de bloqueo global
+            if (plot.isProcessing) return;
+            plot.isProcessing = true;
             
             // Ocultar botones de navegación temporalmente para evitar interrupciones
             const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
             navButtons.forEach(btn => btn.style.pointerEvents = 'none');
-            // Mostrar modal de carga nativo o indicador
             this.showPlotToast(plotId, '⏳', 'Guardando Cosecha...');
-            // --- FIN CORRECCIÓN ---
 
             let reward = 0;
             if (plot.plant.id === 'flower_wheat') reward = 1500;
-            else if (plot.plant.id === 'flower_bamboo') reward = 6500; // AÑADIDO: Faltaba la recompensa del Bambú
+            else if (plot.plant.id === 'flower_bamboo') reward = 6500;
             else if (plot.plant.id === 'flower_cactus') reward = 3200;
             else if (plot.plant.id === 'flower_small') reward = 4500;
             else if (plot.plant.id === 'flower_big') reward = 26000;
@@ -2362,7 +2361,6 @@ if (typeof window.farmApp === 'undefined') {
             }
             
             plot.plant = null;
-            // El agua se conserva en el terreno
             plot.hasCrow = false;
             plot.crowLeavingAt = 0;
             plot.scarecrowEndTime = 0;
@@ -2377,7 +2375,6 @@ if (typeof window.farmApp === 'undefined') {
                 this.renderPlots();
             }
             
-            // --- INICIO CORRECCIÓN: GUARDADO FORZADO E INMEDIATO ---
             this.state.lastTick = Date.now();
             this.state.isSaving = true; 
             
@@ -2396,16 +2393,14 @@ if (typeof window.farmApp === 'undefined') {
             const token = sessionStorage.getItem('session_token');
             
             if (username && token) {
-                // Se limpia el debounce normal para evitar conflictos
                 if (this.saveTimeout) clearTimeout(this.saveTimeout);
                 
-                // Petición inmediata, no hay setTimeout
                 fetch('/api/save_state', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                 }).then(res => {
-                    this.state.isHarvestingAction = false; // <-- Nueva variable
+                    plot.isProcessing = false; // <-- Liberar la parcela específica
                     navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
                     
                     if (res.status === 401) {
@@ -2414,21 +2409,23 @@ if (typeof window.farmApp === 'undefined') {
                         this.showPlotToast(plotId, plot.isSpoiled ? '🦠' : '✨', msg);
                     }
                 }).catch(e => {
-                    this.state.isHarvestingAction = false; // <-- Nueva variable
+                    plot.isProcessing = false; // <-- Liberar la parcela en caso de error
                     navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
                     console.error("Error guardando progreso:", e);
                     this.showPlotToast(plotId, '⚠️', 'Error al guardar');
                 });
+            } else {
+                plot.isProcessing = false;
             }
-            // --- FIN CORRECCIÓN ---
         },
 
         storePlantForCombat(plotId) {
             const plot = this.state.plots[plotId];
             if (!plot.isReady || plot.isSpoiled) return;
 
-            if (this.state.isHarvestingAction) return;
-            this.state.isHarvestingAction = true;
+            // CAMBIO: Bloqueo por parcela en lugar de bloqueo global
+            if (plot.isProcessing) return;
+            plot.isProcessing = true;
 
             const navButtons = document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile');
             navButtons.forEach(btn => btn.style.pointerEvents = 'none');
@@ -2497,16 +2494,18 @@ if (typeof window.farmApp === 'undefined') {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                 }).then(res => {
-                    this.state.isHarvestingAction = false; 
+                    plot.isProcessing = false; // <-- Liberar la parcela
                     navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
                     if (res.ok) {
                         this.showPlotToast(plotId, '🛡️', '¡Almacenada!');
                     }
                 }).catch(e => {
-                    this.state.isHarvestingAction = false; 
+                    plot.isProcessing = false; // <-- Liberar la parcela en caso de error
                     navButtons.forEach(btn => btn.style.pointerEvents = 'auto');
                     this.showPlotToast(plotId, '⚠️', 'Error al guardar');
                 });
+            } else {
+                plot.isProcessing = false;
             }
         },
 
