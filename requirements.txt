@@ -1,4 +1,7 @@
-Flask 
-requests
+Flask
 psycopg2-binary
-gunicorn 
+Werkzeug
+requests
+Flask-SocketIO
+eventlet
+gunicorn
