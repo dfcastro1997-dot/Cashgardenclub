@@ -12,208 +12,184 @@
         </div>
         
         <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar shrink-0">
-            <button class="px-4 py-2 rounded-xl bg-cg_navy text-white text-xs font-bold shadow-md whitespace-nowrap transition-all">Últimos Cambios</button>
+            <button class="px-4 py-2 rounded-xl bg-cg_navy text-white text-xs font-bold shadow-md whitespace-nowrap transition-all">Todas</button>
             <button class="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue text-xs font-bold transition-all whitespace-nowrap shadow-sm">Mecánicas</button>
             <button class="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue text-xs font-bold transition-all whitespace-nowrap shadow-sm">Economía</button>
         </div>
     </div>
 
-    <!-- HIGHLIGHT (DESTACADO): LA ARENA 3V3 (PvP y PvE) -->
-    <div class="bg-white rounded-[2rem] shadow-lg border border-gray-100 overflow-hidden group cursor-pointer hover:shadow-2xl hover:border-red-400 transition-all duration-500 relative" 
-         onclick="openNewsModal(
-             'El Despertar de la Arena: Combate Táctico 3v3 (PvP y PvE)', 
-             '¡La actualización más grande hasta la fecha ya está aquí!\n\nTu Invernadero ya no es solo para cosechar, ahora es una base militar botánica. Hemos introducido la nueva Arena de Duelos con mecánicas RPG por turnos y cartas de habilidad.\n\n🛡️ MODO CAMPAÑA (PvE):\nEnfréntate a la Inteligencia Artificial (la temible bandada de cuervos). Usa tus Tickets de Duelo comprados en el Mercado para ingresar. Si tu escuadrón sobrevive, ganarás botines inmensos de semillas para expandir tu terreno.\n\n⚔️ MODO DUELO (PvP DIRECTO):\n¿Crees tener la mejor estrategia? Ingresa el ID de 4 dígitos de un rival o amigo, fijen una apuesta en semillas (Ej: 10,000 🌱) y luchen a muerte súbita. El ganador se lleva todo el pozo y el perdedor se queda sin nada.\n\nPrepara a tus 3 mejores plantas, administra tus Puntos de Energía (⚡) sabiamente, y domina el juego de Piedra, Papel o Tijera para asegurar la iniciativa de ataque. ¡La gloria te espera!', 
-             'Última Actualización', 
-             'https://i.ibb.co/cS1bctdT/Frame-774.png', 
-             'GRAN EXPANSIÓN',
-             'bg-gradient-to-r from-red-600 to-red-900'
-         )">
-        <div class="absolute -right-20 -top-20 w-80 h-80 bg-red-100 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700 opacity-60"></div>
-        <div class="grid grid-cols-1 lg:grid-cols-12 relative z-10">
-            <!-- Imagen Hero -->
-            <div class="lg:col-span-5 bg-gradient-to-br from-red-500 to-red-800 p-8 flex flex-col justify-center items-center relative overflow-hidden min-h-[250px] border-r border-red-900/20">
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <div class="flex items-center justify-between w-full absolute top-6 px-6 z-20">
-                    <span class="bg-black/30 border border-white/20 text-white backdrop-blur-md text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">⚔️ Gran Expansión</span>
-                    <span class="text-[10px] font-bold text-white/90 bg-black/20 px-2 py-1 rounded">Lectura 3 min</span>
-                </div>
-                <div class="relative z-10 flex items-center justify-center gap-4 mt-6">
-                    <img src="https://i.ibb.co/gLcb71CG/Frame-773.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500 transform -rotate-6">
-                    <img src="https://i.ibb.co/cS1bctdT/Frame-774.png" class="w-28 h-28 md:w-36 md:h-36 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500 delay-75 transform rotate-6">
-                </div>
-            </div>
+    <!-- CONTENEDOR DE LA TABLA -->
+    <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-x-auto hide-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[900px]">
+            
+            <!-- ENCABEZADOS DE TABLA -->
+            <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-black text-gray-400 uppercase tracking-widest">
+                    <th class="p-4 md:p-5 text-center w-16">ID</th>
+                    <th class="p-4 md:p-5 text-center w-24">Imagen</th>
+                    <th class="p-4 md:p-5">Descripción General</th>
+                    <th class="p-4 md:p-5 text-center">Detalles de Actualización</th>
+                    <th class="p-4 md:p-5 text-center">Fecha de Actualización</th>
+                </tr>
+            </thead>
 
-            <!-- Contenido Texto -->
-            <div class="lg:col-span-7 p-6 md:p-10 flex flex-col justify-center bg-white/90 backdrop-blur-sm">
-                <div class="text-xs font-extrabold text-red-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> En Vivo Ahora
-                </div>
-                <h3 class="text-2xl md:text-3xl font-black text-cg_navy group-hover:text-red-600 transition-colors mb-4 leading-tight tracking-tight">
-                    El Despertar de la Arena: <br>Combate Táctico 3v3 (PvP y PvE)
-                </h3>
-                <p class="text-gray-500 text-sm md:text-base leading-relaxed mb-8 font-medium">
-                    Recluta tu escuadrón, apuesta tus semillas y enfréntate a la IA o a jugadores reales en nuestro nuevo sistema de combate por turnos RPG. Administra tu energía y destruye al rival.
-                </p>
-                <div class="flex items-center gap-3">
-                    <button class="bg-red-50 text-red-600 font-black text-xs px-4 py-2 rounded-xl uppercase tracking-widest border border-red-100 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
-                        Leer Notas del Parche &rarr;
-                    </button>
-                </div>
+            <!-- CUERPO DE LA TABLA -->
+            <div class="divide-y divide-gray-100">
+                <tbody>
+
+                    <!-- V2.0: ARENA 3V3 (MÁS RECIENTE) -->
+                    <tr class="hover:bg-red-50/30 transition-colors group">
+                        <td class="p-4 text-center font-black text-gray-400 text-sm">V2.0</td>
+                        <td class="p-4">
+                            <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-red-300 transition-colors mx-auto relative overflow-hidden">
+                                <div class="absolute inset-0 bg-red-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src="https://i.ibb.co/cS1bctdT/Frame-774.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform relative z-10">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <h4 class="text-base md:text-lg font-black text-cg_navy mb-1 group-hover:text-red-600 transition-colors">El Despertar de la Arena: Combate 3v3</h4>
+                            <p class="text-xs text-gray-500 font-medium leading-relaxed max-w-md">Combate por turnos RPG. Modo Campaña (PvE) y Duelos por apuestas (PvP).</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="openNewsModal(
+                                'El Despertar de la Arena: Combate Táctico 3v3 (PvP y PvE)', 
+                                '¡La actualización más grande hasta la fecha ya está aquí!\n\nTu Invernadero ya no es solo para cosechar, ahora es una base militar botánica. Hemos introducido la nueva Arena de Duelos con mecánicas RPG por turnos y cartas de habilidad.\n\n🛡️ MODO CAMPAÑA (PvE):\nEnfréntate a la Inteligencia Artificial (la temible bandada de cuervos). Usa tus Tickets de Duelo comprados en el Mercado para ingresar. Si tu escuadrón sobrevive, ganarás botines inmensos de semillas para expandir tu terreno.\n\n⚔️ MODO DUELO (PvP DIRECTO):\n¿Crees tener la mejor estrategia? Ingresa el ID de 4 dígitos de un rival o amigo, fijen una apuesta en semillas (Ej: 10,000 🌱) y luchen a muerte súbita. El ganador se lleva todo el pozo y el perdedor se queda sin nada.\n\nPrepara a tus 3 mejores plantas, administra tus Puntos de Energía (⚡) sabiamente, y domina el juego de Piedra, Papel o Tijera para asegurar la iniciativa de ataque. ¡La gloria te espera!', 
+                                '05-10-2026', 
+                                'https://i.ibb.co/cS1bctdT/Frame-774.png', 
+                                'GRAN EXPANSIÓN',
+                                'bg-gradient-to-r from-red-600 to-red-900'
+                            )" class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-red-500 group-hover:text-white group-hover:border-red-500 transition-all shadow-sm">Ver Notas</button>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-lg border border-red-100">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> 05-10-2026
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- V1.8: SEMILLAS PREMIUM -->
+                    <tr class="hover:bg-green-50/50 transition-colors group border-t border-gray-100">
+                        <td class="p-4 text-center font-black text-gray-400 text-sm">V1.8</td>
+                        <td class="p-4">
+                            <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-green-300 transition-colors mx-auto relative overflow-hidden">
+                                <div class="absolute inset-0 bg-green-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src="https://i.ibb.co/mF6QtPRV/Frame-767.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform relative z-10">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-green-600 transition-colors">Expansión del Catálogo: Semillas Premium</h4>
+                            <p class="text-xs text-gray-500 font-medium leading-relaxed max-w-md">Llegan el Girasol Solar, la Orquídea Neón y el Lirio Lunar al mercado.</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="openNewsModal(
+                                'Expansión del Catálogo: Semillas Premium', 
+                                'Hemos añadido nuevas especies botánicas al Mercado para diversificar tu estrategia de inversión:\n\n🌻 Girasol Solar (Premium):\nAdquirible con saldo COP. Tiene una excelente tasa de rentabilidad y un tiempo de crecimiento moderado (4h). Ideal para inversiones sólidas.\n\n🌸 Orquídea Neón (Premium):\nRequiere gran habilidad por su franja estricta de hidratación (40% - 60%), pero sus ganancias recompensan con creces el esfuerzo.\n\n🌙 Lirio Lunar:\nNuestra nueva semilla masiva. Otorga asombrosos +55,000 🌱, pero atrae cuervos salvajemente si llega a descuidarse.\n\n¡Visita el Mercado para explorar el nuevo catálogo y expandir tus cultivos!', 
+                                '12-09-2026', 
+                                'https://i.ibb.co/mF6QtPRV/Frame-767.png', 
+                                'NUEVAS PLANTAS',
+                                'bg-gradient-to-r from-green-500 to-emerald-700'
+                            )" class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-green-500 group-hover:text-white group-hover:border-green-500 transition-all shadow-sm">Ver Notas</button>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-gray-500 text-xs font-bold px-3 py-1 rounded-lg bg-gray-50 border border-gray-200">12-09-2026</span>
+                        </td>
+                    </tr>
+
+                    <!-- V1.6: SISTEMA VIP -->
+                    <tr class="hover:bg-purple-50/50 transition-colors group border-t border-gray-100">
+                        <td class="p-4 text-center font-black text-gray-400 text-sm">V1.6</td>
+                        <td class="p-4">
+                            <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-purple-300 transition-colors mx-auto relative overflow-hidden">
+                                <div class="absolute inset-0 bg-purple-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform relative z-10">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-purple-600 transition-colors">Automatización Total: El Ecosistema VIP</h4>
+                            <p class="text-xs text-gray-500 font-medium leading-relaxed max-w-md">Delega el trabajo con el Asistente Auto-Riego y el Recolector automático.</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="openNewsModal(
+                                'Automatización Total: El Ecosistema VIP', 
+                                'Para los jugadores con poco tiempo, el Mercado ahora ofrece herramientas de delegación total adquiribles con Dinero Real (COP).\n\n🤖 Asistente Auto-Riego:\nRiega tus plantas automáticamente al 100% de su franja segura y ahuyenta plagas instantáneamente durante 24h o 72h.\n\n🧺 El Recolector:\nCosecha tus plantas en el instante preciso en que maduran, depositando las semillas en tu inventario sin riesgo de que los cuervos te roben por abandono.\n\n🎟️ Pase Granjero (Combo Total):\nObtén ambos servicios juntos y permite que tu Invernadero trabaje de forma autónoma al 100% mientras duermes.', 
+                                '22-08-2026', 
+                                'https://i.ibb.co/C5GGQDyy/Frame-763.png', 
+                                'SISTEMA VIP',
+                                'bg-gradient-to-r from-purple-600 to-indigo-800'
+                            )" class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-purple-600 group-hover:text-white group-hover:border-purple-600 transition-all shadow-sm">Ver Notas</button>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-gray-500 text-xs font-bold px-3 py-1 rounded-lg bg-gray-50 border border-gray-200">22-08-2026</span>
+                        </td>
+                    </tr>
+
+                    <!-- V1.4: CASA DE CAMBIO -->
+                    <tr class="hover:bg-yellow-50/50 transition-colors group border-t border-gray-100">
+                        <td class="p-4 text-center font-black text-gray-400 text-sm">V1.4</td>
+                        <td class="p-4">
+                            <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-yellow-400 transition-colors mx-auto relative overflow-hidden">
+                                <div class="absolute inset-0 bg-yellow-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src="https://i.ibb.co/qFdW7j8f/Frame-761.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform relative z-10">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-yellow-600 transition-colors">Inauguración Oficial: La Casa de Cambio</h4>
+                            <p class="text-xs text-gray-500 font-medium leading-relaxed max-w-md">Intercambia tu saldo COP directamente por lotes gigantes de semillas.</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="openNewsModal(
+                                'Inauguración Oficial: La Casa de Cambio', 
+                                'Hemos integrado una nueva sección en el Mercado: La Casa de Cambio. Ahora puedes usar tus Pesos Colombianos (COP) ganados en los torneos para inyectar liquidez masiva a tu granja.\n\n💼 Lotes Disponibles:\nLote N°1: Entregas $10,000 COP a cambio de un fondo rápido de 4,250 🌱 (Aplica 15% de comisión de red).\nLote N°2: Entregas $25,000 COP y recibes 11,000 🌱. Perfecto para pagar entradas de freerolls.\nLote N°3: Entregas $50,000 COP y te llevas 22,500 🌱 (Mejor tasa de conversión, solo 10% de comisión).\n\nEsto te permitirá escalar tus parcelas y comprar macetas sin esperar el tiempo de cosecha natural.', 
+                                '15-07-2026', 
+                                'https://i.ibb.co/qFdW7j8f/Frame-761.png', 
+                                'CASA DE CAMBIO',
+                                'bg-gradient-to-r from-yellow-500 to-orange-500'
+                            )" class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-yellow-500 group-hover:text-white group-hover:border-yellow-500 transition-all shadow-sm">Ver Notas</button>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-gray-500 text-xs font-bold px-3 py-1 rounded-lg bg-gray-50 border border-gray-200">15-07-2026</span>
+                        </td>
+                    </tr>
+
+                    <!-- V1.2: CLIMA -->
+                    <tr class="hover:bg-blue-50/50 transition-colors group border-t border-gray-100">
+                        <td class="p-4 text-center font-black text-gray-400 text-sm">V1.2</td>
+                        <td class="p-4">
+                            <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-blue-300 transition-colors mx-auto relative overflow-hidden">
+                                <div class="absolute inset-0 bg-blue-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src="https://i.ibb.co/TqPpc87z/Frame-745.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform relative z-10">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-blue-600 transition-colors">Sincronización Climática: Temporadas</h4>
+                            <p class="text-xs text-gray-500 font-medium leading-relaxed max-w-md">La evaporación base ahora se multiplica según el clima y el día del mes.</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="openNewsModal(
+                                'Sincronización Climática: Temporadas Dinámicas', 
+                                'El ecosistema de CashGarden ha cobrado vida. A partir de hoy, la evaporación de agua en tus parcelas no es estática, está atada al Sistema Meteorológico global que cambia según el día del mes real.\n\n❄️ Invierno (Días 1-9): Evaporación x0.5. Clima frío, el agua rinde el doble.\n🍂 Otoño (Días 10-19): Evaporación x1.5. Vientos secos, se evapora rápido.\n🌸 Primavera (Días 20-26): Evaporación Normal (x1.0).\n☀️ Verano (Día 27 a Fin de Mes): Evaporación x2.0. ¡Alerta de Sequía Extrema!\n\nRevisa el widget de clima en tu granja o la pestaña Calendario para anticipar el consumo hídrico de tus plantas y evitar deshidrataciones sorpresivas.', 
+                                '05-05-2026', 
+                                'https://i.ibb.co/TqPpc87z/Frame-745.png', 
+                                'TEMPORADAS',
+                                'bg-gradient-to-r from-blue-500 to-cyan-600'
+                            )" class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all shadow-sm">Ver Notas</button>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-gray-500 text-xs font-bold px-3 py-1 rounded-lg bg-gray-50 border border-gray-200">05-05-2026</span>
+                        </td>
+                    </tr>
+
+                </tbody>
             </div>
-        </div>
+        </table>
     </div>
 
-    <div class="mt-10 mb-6 flex items-center justify-between">
-        <h3 class="text-xl font-black text-cg_navy uppercase tracking-widest border-b-4 border-cg_blue pb-1 inline-block">Historial de Actualizaciones</h3>
-    </div>
-
-    <!-- TABLA DE ACTUALIZACIONES (ORGANIZACIÓN ROBUSTA) -->
-    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden">
-        
-        <!-- ENCABEZADO DE TABLA (Solo visible en Desktop) -->
-        <div class="hidden md:grid grid-cols-12 bg-gray-50 border-b border-gray-200 p-4 text-xs font-black text-gray-400 uppercase tracking-widest">
-            <div class="col-span-2 text-center">Tipo / Fecha</div>
-            <div class="col-span-3 text-center">Visual</div>
-            <div class="col-span-5">Detalles del Parche</div>
-            <div class="col-span-2 text-center">Acción</div>
-        </div>
-
-        <div class="flex flex-col divide-y divide-gray-100">
-
-            <!-- FILA 1: NUEVAS PLANTAS -->
-            <div class="grid grid-cols-1 md:grid-cols-12 p-4 md:p-6 items-center gap-4 hover:bg-green-50/30 transition-colors cursor-pointer group"
-                 onclick="openNewsModal(
-                     'Expansión del Catálogo: Semillas Premium', 
-                     'Hemos añadido nuevas especies botánicas al Mercado para diversificar tu estrategia de inversión:\n\n🌻 Girasol Solar (Premium):\nAdquirible con saldo COP. Tiene una excelente tasa de rentabilidad y un tiempo de crecimiento moderado (4h). Ideal para inversiones sólidas.\n\n🌸 Orquídea Neón (Premium):\nRequiere gran habilidad por su franja estricta de hidratación (40% - 60%), pero sus ganancias recompensan con creces el esfuerzo.\n\n🌙 Lirio Lunar:\nNuestra nueva semilla masiva. Otorga asombrosos +55,000 🌱, pero atrae cuervos salvajemente si llega a descuidarse.\n\n¡Visita el Mercado para explorar el nuevo catálogo y expandir tus cultivos!', 
-                     'Parche de Contenido', 
-                     'https://i.ibb.co/mF6QtPRV/Frame-767.png', 
-                     'NUEVAS PLANTAS',
-                     'bg-gradient-to-r from-green-500 to-emerald-700'
-                 )">
-                <div class="md:col-span-2 flex md:flex-col items-center md:justify-center gap-2 text-center">
-                    <span class="bg-green-100 text-green-700 text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest border border-green-200 shadow-sm">Semillas</span>
-                    <span class="text-[10px] font-bold text-gray-400">Reciente</span>
-                </div>
-                <div class="md:col-span-3 flex justify-center gap-3">
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-green-300 transition-colors">
-                        <img src="https://i.ibb.co/mF6QtPRV/Frame-767.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-yellow-300 transition-colors">
-                        <img src="https://i.ibb.co/JW8C2psK/Frame-766.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                </div>
-                <div class="md:col-span-5 text-center md:text-left">
-                    <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-green-600 transition-colors">Expansión del Catálogo: Semillas Premium</h4>
-                    <p class="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">Llegan el Girasol Solar, la Orquídea Neón y el Lirio Lunar. Nuevas mecánicas de inversión y riesgos masivos para granjeros experimentados.</p>
-                </div>
-                <div class="md:col-span-2 flex justify-center">
-                    <button class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2 rounded-lg uppercase tracking-widest group-hover:bg-green-500 group-hover:text-white group-hover:border-green-500 transition-all shadow-sm">Leer Más</button>
-                </div>
-            </div>
-
-            <!-- FILA 2: SISTEMA VIP -->
-            <div class="grid grid-cols-1 md:grid-cols-12 p-4 md:p-6 items-center gap-4 hover:bg-purple-50/30 transition-colors cursor-pointer group"
-                 onclick="openNewsModal(
-                     'Automatización Total: El Ecosistema VIP', 
-                     'Para los jugadores con poco tiempo, el Mercado ahora ofrece herramientas de delegación total adquiribles con Dinero Real (COP).\n\n🤖 Asistente Auto-Riego:\nRiega tus plantas automáticamente al 100% de su franja segura y ahuyenta plagas instantáneamente durante 24h o 72h.\n\n🧺 El Recolector:\nCosecha tus plantas en el instante preciso en que maduran, depositando las semillas en tu inventario sin riesgo de que los cuervos te roben por abandono.\n\n🎟️ Pase Granjero (Combo Total):\nObtén ambos servicios juntos y permite que tu Invernadero trabaje de forma autónoma al 100% mientras duermes.', 
-                     'Parche de Sistemas', 
-                     'https://i.ibb.co/C5GGQDyy/Frame-763.png', 
-                     'SISTEMA VIP',
-                     'bg-gradient-to-r from-purple-600 to-indigo-800'
-                 )">
-                <div class="md:col-span-2 flex md:flex-col items-center md:justify-center gap-2 text-center">
-                    <span class="bg-purple-100 text-purple-700 text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest border border-purple-200 shadow-sm">Automatización</span>
-                    <span class="text-[10px] font-bold text-gray-400">Reciente</span>
-                </div>
-                <div class="md:col-span-3 flex justify-center gap-3">
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-purple-300 transition-colors">
-                        <img src="https://i.ibb.co/6JgfKLBk/Frame-752.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-emerald-300 transition-colors">
-                        <img src="https://i.ibb.co/rKc5bg75/Frame-762.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                </div>
-                <div class="md:col-span-5 text-center md:text-left">
-                    <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-purple-600 transition-colors">Automatización Total: El Ecosistema VIP</h4>
-                    <p class="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">Delega el trabajo con el Auto-Riego y el Recolector. Adquiere el Pase Granjero para protección y cosecha 100% automática.</p>
-                </div>
-                <div class="md:col-span-2 flex justify-center">
-                    <button class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2 rounded-lg uppercase tracking-widest group-hover:bg-purple-600 group-hover:text-white group-hover:border-purple-600 transition-all shadow-sm">Leer Más</button>
-                </div>
-            </div>
-
-            <!-- FILA 3: CASA DE CAMBIO -->
-            <div class="grid grid-cols-1 md:grid-cols-12 p-4 md:p-6 items-center gap-4 hover:bg-yellow-50/50 transition-colors cursor-pointer group"
-                 onclick="openNewsModal(
-                     'Inauguración Oficial: La Casa de Cambio', 
-                     'Hemos integrado una nueva sección en el Mercado: La Casa de Cambio. Ahora puedes usar tus Pesos Colombianos (COP) ganados en los torneos para inyectar liquidez masiva a tu granja.\n\n💼 Lotes Disponibles:\nLote N°1: Entregas $10,000 COP a cambio de un fondo rápido de 4,250 🌱 (Aplica 15% de comisión de red).\nLote N°2: Entregas $25,000 COP y recibes 11,000 🌱. Perfecto para pagar entradas de freerolls.\nLote N°3: Entregas $50,000 COP y te llevas 22,500 🌱 (Mejor tasa de conversión, solo 10% de comisión).\n\nEsto te permitirá escalar tus parcelas y comprar macetas sin esperar el tiempo de cosecha natural.', 
-                     'Parche Económico', 
-                     'https://i.ibb.co/qFdW7j8f/Frame-761.png', 
-                     'CASA DE CAMBIO',
-                     'bg-gradient-to-r from-yellow-500 to-orange-500'
-                 )">
-                <div class="md:col-span-2 flex md:flex-col items-center md:justify-center gap-2 text-center">
-                    <span class="bg-yellow-100 text-yellow-700 text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest border border-yellow-300 shadow-sm">Economía</span>
-                    <span class="text-[10px] font-bold text-gray-400">Reciente</span>
-                </div>
-                <div class="md:col-span-3 flex justify-center gap-3">
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-yellow-400 transition-colors">
-                        <img src="https://i.ibb.co/k6DQJbhW/Frame-760.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-orange-400 transition-colors">
-                        <img src="https://i.ibb.co/qFdW7j8f/Frame-761.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                </div>
-                <div class="md:col-span-5 text-center md:text-left">
-                    <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-yellow-600 transition-colors">Inauguración Oficial: La Casa de Cambio</h4>
-                    <p class="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">Inyecta liquidez inmediata. Intercambia tu saldo COP directamente por lotes gigantes de Semillas y escala tu granja rápidamente.</p>
-                </div>
-                <div class="md:col-span-2 flex justify-center">
-                    <button class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2 rounded-lg uppercase tracking-widest group-hover:bg-yellow-500 group-hover:text-white group-hover:border-yellow-500 transition-all shadow-sm">Leer Más</button>
-                </div>
-            </div>
-
-            <!-- FILA 4: CLIMA Y TEMPORADAS -->
-            <div class="grid grid-cols-1 md:grid-cols-12 p-4 md:p-6 items-center gap-4 hover:bg-blue-50/50 transition-colors cursor-pointer group"
-                 onclick="openNewsModal(
-                     'Sincronización Climática: Temporadas Dinámicas', 
-                     'El ecosistema de CashGarden ha cobrado vida. A partir de hoy, la evaporación de agua en tus parcelas no es estática, está atada al Sistema Meteorológico global que cambia según el día del mes real.\n\n❄️ Invierno (Días 1-9): Evaporación x0.5. Clima frío, el agua rinde el doble.\n🍂 Otoño (Días 10-19): Evaporación x1.5. Vientos secos, se evapora rápido.\n🌸 Primavera (Días 20-26): Evaporación Normal (x1.0).\n☀️ Verano (Día 27 a Fin de Mes): Evaporación x2.0. ¡Alerta de Sequía Extrema!\n\nRevisa el widget de clima en tu granja o la pestaña Calendario para anticipar el consumo hídrico de tus plantas y evitar deshidrataciones sorpresivas.', 
-                     'Parche del Entorno', 
-                     'https://i.ibb.co/TqPpc87z/Frame-745.png', 
-                     'TEMPORADAS',
-                     'bg-gradient-to-r from-blue-500 to-cyan-600'
-                 )">
-                <div class="md:col-span-2 flex md:flex-col items-center md:justify-center gap-2 text-center">
-                    <span class="bg-blue-100 text-blue-700 text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest border border-blue-200 shadow-sm">Clima Global</span>
-                    <span class="text-[10px] font-bold text-gray-400">Archivado</span>
-                </div>
-                <div class="md:col-span-3 flex justify-center gap-3">
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-blue-300 transition-colors">
-                        <img src="https://i.ibb.co/TqPpc87z/Frame-745.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                    <div class="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center shadow-inner p-2 group-hover:border-red-300 transition-colors">
-                        <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-full h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform">
-                    </div>
-                </div>
-                <div class="md:col-span-5 text-center md:text-left">
-                    <h4 class="text-base font-black text-cg_navy mb-1 group-hover:text-blue-600 transition-colors">Sincronización Climática: Temporadas Dinámicas</h4>
-                    <p class="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">Del Invierno al Verano. La evaporación base ahora se multiplica según el día del mes. Prepara tus regaderas para las sequías extremas.</p>
-                </div>
-                <div class="md:col-span-2 flex justify-center">
-                    <button class="bg-white border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2 rounded-lg uppercase tracking-widest group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all shadow-sm">Leer Más</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- VENTANA MODAL PROFESIONAL -->
+    <!-- VENTANA MODAL PROFESIONAL (FUNCIONES ORIGINALES INTACTAS) -->
     <div id="news-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-md transition-opacity duration-300" onclick="closeNewsModal()"></div>
         
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]" id="news-modal-card">
             
-            <!-- Header Modal con Gradiente Dinámico -->
             <div class="p-6 md:p-8 text-white relative flex flex-col sm:flex-row items-center sm:items-start gap-4" id="modal-header-bg">
                 <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                 <button onclick="closeNewsModal()" class="absolute top-4 right-4 w-8 h-8 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center text-white transition-colors z-20">
@@ -237,14 +213,12 @@
                 </div>
             </div>
 
-            <!-- Cuerpo del Modal -->
             <div class="p-5 md:p-8 overflow-y-auto space-y-4 text-carbon font-sans bg-gray-50 flex-1">
                 <div class="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-white p-6 rounded-2xl border border-gray-100 shadow-sm" id="modal-body">
                     Cuerpo del comunicado...
                 </div>
             </div>
 
-            <!-- Pie del Modal -->
             <div class="p-4 md:p-5 bg-white border-t border-gray-200 flex justify-end shrink-0">
                 <button onclick="closeNewsModal()" class="w-full sm:w-auto bg-cg_navy hover:bg-black text-white font-black uppercase tracking-widest px-8 py-3.5 rounded-xl shadow-md text-xs transition-all">
                     Cerrar Comunicado
@@ -266,7 +240,6 @@
         document.getElementById('modal-image').src = imageUrl;
         document.getElementById('modal-category').innerText = category;
 
-        // Limpiar clases anteriores y aplicar el nuevo gradiente proporcionado
         headerBg.className = 'p-6 md:p-8 text-white relative flex flex-col sm:flex-row items-center sm:items-start gap-4 ' + gradientClass;
 
         modal.classList.remove('hidden');
@@ -291,4 +264,3 @@
         }, 300);
     }
 </script>
-</div>

@@ -836,7 +836,22 @@ window.combatApp = {
 
     clearQueue() {
         if (this.phase === 'EXECUTION') return;
-        this.actionQueue.forEach(a => { this.energy += a.skill.cost; });
+        this.actionQueue.forEach(a => { 
+            this.energy += a.skill.cost; 
+            
+            if (a.skill.id === 't_escudo') {
+                window.farmApp.state.seedsBalance += 500;
+                window.farmApp.saveState();
+                const globalSeedsDisplay = document.getElementById('global-seeds-display');
+                if (globalSeedsDisplay) {
+                    globalSeedsDisplay.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                }
+            }
+            if (a.skill.id === 't_potion') {
+                this.combatStats.potionUsed = false;
+            }
+        });
+        
         this.actionQueue = [];
         this.phase = 'P_SELECT';
         this.currentAttackerIdx = null; this.pendingSkill = null;
@@ -852,23 +867,35 @@ window.combatApp = {
             return;
         }
 
-        if (this.phase === 'P_SELECT' || this.phase === 'P_TARGETING') {
-            if (team === 'player' && this.playerTeam[index].hp > 0) {
-                this.currentAttackerIdx = index;
-                this.openCardModal(index);
-            }
-        } 
-        
+        // Si tenemos una habilidad pendiente para usar (estamos apuntando a un objetivo)
         if (this.phase === 'P_TARGETING' && this.pendingSkill) {
+            
+            // Si es beneficiosa (Poción, Escudo, etc) y estamos apuntando a un jugador
             if (this.pendingSkill.isBeneficial && team === 'player') {
                 if (this.playerTeam[index].hp > 0) {
                     this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
                     this.energy -= this.pendingSkill.cost;
+                    
+                    if (this.pendingSkill.id === 't_escudo') {
+                        window.farmApp.state.seedsBalance -= 500;
+                        window.farmApp.saveState();
+                        const globalSeedsDisplay = document.getElementById('global-seeds-display');
+                        if (globalSeedsDisplay) {
+                            globalSeedsDisplay.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                        }
+                    }
+                    if (this.pendingSkill.id === 't_potion') {
+                        this.combatStats.potionUsed = true;
+                    }
+
                     this.pendingSkill = null; this.currentAttackerIdx = null;
                     this.phase = 'P_SELECT';
                     this.updateUI();
                     this.setInstruction(`¡Táctica encolada! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
                 }
+                return; // Cortamos aquí para que no siga evaluando y abra el menú del atacante accidentalmente
+                
+            // Si es un ataque dañino y elegimos a un enemigo
             } else if (!this.pendingSkill.isBeneficial && team === 'enemy') {
                 if (this.enemyTeam[index].hp > 0) {
                     this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
@@ -878,6 +905,21 @@ window.combatApp = {
                     this.updateUI();
                     this.setInstruction(`¡Ataque encolado! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
                 }
+                return; // Cortamos aquí
+            }
+            
+            // Si estábamos apuntando pero el usuario en su lugar tocó a otro de sus personajes (Jugador cancela el objetivo para cambiar de planta)
+            if (team === 'player' && this.playerTeam[index].hp > 0) {
+                this.pendingSkill = null;
+                this.currentAttackerIdx = index;
+                this.openCardModal(index);
+            }
+            
+        // Si no teníamos nada pendiente y simplemente seleccionamos una planta
+        } else if (this.phase === 'P_SELECT') {
+            if (team === 'player' && this.playerTeam[index].hp > 0) {
+                this.currentAttackerIdx = index;
+                this.openCardModal(index);
             }
         }
     },
@@ -984,15 +1026,6 @@ window.combatApp = {
             { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' }
         ];
         const t = tacticas.find(x => x.id === tacticId);
-        
-        if (t.id === 't_escudo') {
-            window.farmApp.state.seedsBalance -= 500;
-            window.farmApp.saveState();
-            document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
-        }
-        if (t.id === 't_potion') {
-            this.combatStats.potionUsed = true;
-        }
 
         this.pendingSkill = t;
         this.phase = 'P_TARGETING';
