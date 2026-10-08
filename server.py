@@ -50,8 +50,21 @@ def init_db():
     ''')
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token VARCHAR(120);")
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(50);") # NUEVO
-    # ... (Resto de la función init_db intacta)
+
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS short_id VARCHAR(4) UNIQUE;")
     
+    # NUEVA TABLA PARA CONEXIONES PVP
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS pvp_matches (
+            id SERIAL PRIMARY KEY,
+            challenger_id INTEGER REFERENCES users(id),
+            target_id INTEGER REFERENCES users(id),
+            status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, rejected, playing
+            bet_seeds INTEGER DEFAULT 0,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+    ''')
+
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournaments (
             id SERIAL PRIMARY KEY,
@@ -402,20 +415,38 @@ def serve_views(path): return send_from_directory('views', path)
 
 @app.route('/api/register', methods=['POST'])
 def register():
+    import random
     data = request.json
     username = data.get('username')
     password = data.get('password')
+    
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    if cur.fetchone(): return jsonify({"error": "El usuario ya existe"}), 400
+    if cur.fetchone(): 
+        cur.close()
+        conn.close()
+        return jsonify({"error": "El usuario ya existe"}), 400
     
     hashed_pw = generate_password_hash(password)
     token = str(uuid.uuid4())
     
-    cur.execute("INSERT INTO users (username, password_hash, balance, session_token) VALUES (%s, %s, 0, %s) RETURNING id, username, balance, session_token", (username, hashed_pw, token))
+    # Generar un ID de 4 dígitos único e irrepetible
+    while True:
+        short_id = str(random.randint(1000, 9999))
+        cur.execute("SELECT id FROM users WHERE short_id = %s", (short_id,))
+        if not cur.fetchone():
+            break
+    
+    cur.execute(
+        "INSERT INTO users (username, password_hash, balance, session_token, short_id) VALUES (%s, %s, 0, %s, %s) RETURNING id, username, balance, session_token, short_id", 
+        (username, hashed_pw, token, short_id)
+    )
     new_user = cur.fetchone()
-    conn.commit(); cur.close(); conn.close()
+    conn.commit()
+    cur.close()
+    conn.close()
+    
     return jsonify({"message": "Registro exitoso", "user": new_user})
 
 @app.route('/api/login', methods=['POST'])
@@ -446,7 +477,23 @@ def sync_user(username):
     conn = get_db_connection()
     cur = conn.cursor()
     # MODIFICADO: Extraemos el telegram_chat_id para enviarlo en el objeto 'user'
-    cur.execute("SELECT balance, game_state, session_token, telegram_chat_id FROM users WHERE username = %s", (username,))
+    
+
+    cur.execute("SELECT id, balance, game_state, session_token, telegram_chat_id, short_id FROM users WHERE username = %s", (username,))
+    user_data = cur.fetchone()
+    
+    if user_data:
+        # Buscar si alguien lo está retando en este momento
+        cur.execute('''
+            SELECT p.id as match_id, u.username as challenger_name, p.bet_seeds 
+            FROM pvp_matches p JOIN users u ON p.challenger_id = u.id 
+            WHERE p.target_id = %s AND p.status = 'pending' LIMIT 1
+        ''', (user_data['id'],))
+        challenge = cur.fetchone()
+        if challenge:
+            user_data['pending_challenge'] = challenge
+
+
     user_data = cur.fetchone()
     if user_data:
         if user_data.get('session_token') and user_data['session_token'] != token:
@@ -1003,6 +1050,45 @@ def dev_add_cop():
     finally:
         cur.close()
         conn.close()
+
+
+@app.route('/api/pvp/challenge', methods=['POST'])
+def pvp_challenge():
+    data = request.json
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM users WHERE short_id = %s", (data['target_short_id'],))
+    target = cur.fetchone()
+    if not target: return jsonify({"error": "ID de oponente no encontrado"}), 404
+    
+    cur.execute("SELECT id FROM users WHERE username = %s", (data['username'],))
+    challenger = cur.fetchone()
+    if challenger['id'] == target['id']: return jsonify({"error": "No puedes retarte a ti mismo"}), 400
+    
+    cur.execute("INSERT INTO pvp_matches (challenger_id, target_id, bet_seeds, status) VALUES (%s, %s, %s, 'pending') RETURNING id", (challenger['id'], target['id'], data['bet']))
+    match_id = cur.fetchone()['id']
+    conn.commit(); cur.close(); conn.close()
+    return jsonify({"message": "Reto enviado", "match_id": match_id})
+
+@app.route('/api/pvp/accept', methods=['POST'])
+def pvp_accept():
+    data = request.json
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE pvp_matches SET status = %s WHERE id = %s", (data['action'], data['match_id']))
+    conn.commit(); cur.close(); conn.close()
+    return jsonify({"message": f"Reto {data['action']}"})
+
+@app.route('/api/pvp/status/<int:match_id>', methods=['GET'])
+def pvp_status(match_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT status FROM pvp_matches WHERE id = %s", (match_id,))
+    match = cur.fetchone()
+    cur.close(); conn.close()
+    return jsonify(match)
+
+
 
 @app.route('/api/dev/reset_tournaments', methods=['POST'])
 def dev_reset_tournaments():

@@ -222,7 +222,57 @@
 </div>
 
 
+<!-- MODAL ELECCIÓN DE MODO DE DUELO -->
+<div id="duelo-choice-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-md relative z-10 p-6 border border-gray-100">
+        <h3 class="text-2xl font-black text-cg_navy mb-1 text-center">Selecciona el Modo</h3>
+        <p class="text-xs text-gray-500 mb-6 text-center">¿Contra quién deseas combatir hoy?</p>
+        
+        <div class="space-y-4">
+            <!-- Botón Historia (Cuervos) -->
+            <button onclick="selectHistoria()" class="w-full bg-gray-50 border border-gray-200 hover:border-cg_blue hover:shadow-md p-4 rounded-2xl flex items-center gap-4 text-left transition-all">
+                <div class="text-4xl">🦅</div>
+                <div>
+                    <h4 class="font-black text-cg_navy text-lg leading-none mb-1">Campaña (PvE)</h4>
+                    <p class="text-[10px] text-gray-500 leading-tight">Enfréntate a la bandada de cuervos gestionada por la IA. Requiere Ticket de Duelo.</p>
+                </div>
+            </button>
 
+            <!-- Botón Jugador vs Jugador -->
+            <button onclick="selectPvP()" class="w-full bg-blue-50 border border-blue-200 hover:border-cg_blue hover:shadow-md p-4 rounded-2xl flex items-center gap-4 text-left transition-all">
+                <div class="text-4xl">⚔️</div>
+                <div>
+                    <h4 class="font-black text-blue-800 text-lg leading-none mb-1">Duelo PvP (Jugador)</h4>
+                    <p class="text-[10px] text-blue-600 leading-tight">Desafía a un amigo por su ID de 4 dígitos y apuesten semillas. El ganador se lleva el botín.</p>
+                </div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL INPUT DE ID PVP -->
+<div id="pvp-input-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border-4 border-cg_blue">
+        <div class="text-4xl mb-2">🔍</div>
+        <h3 class="text-xl font-black text-cg_navy mb-4">Buscar Oponente</h3>
+        
+        <div class="text-left mb-4">
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">ID del Jugador (4 Dígitos)</label>
+            <input type="text" id="pvp-target-id" maxlength="4" placeholder="Ej: 1234" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 font-black text-cg_navy text-center tracking-[0.5em] text-lg outline-none focus:border-cg_blue">
+        </div>
+
+        <div class="text-left mb-6">
+            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-1">Apuesta (Semillas 🌱)</label>
+            <input type="number" id="pvp-bet-input" value="1000" min="100" step="100" class="w-full px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 font-black text-cg_gold text-center text-lg outline-none focus:border-cg_gold">
+        </div>
+
+        <button id="pvp-input-btn" onclick="sendPvPChallenge()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">
+            Enviar Reto
+        </button>
+    </div>
+</div>
 
 
 
@@ -662,17 +712,19 @@ if (typeof window.farmApp === 'undefined') {
 
 
     function intentarDuelo() {
+        document.getElementById('duelo-choice-modal').classList.remove('hidden');
+        document.getElementById('duelo-choice-modal').classList.add('flex');
+    }
+
+    function selectHistoria() {
+        document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
+        
+        // Flujo original (PvE)
         if (!window.farmApp.state.inventory['tool_duel_ticket'] || window.farmApp.state.inventory['tool_duel_ticket'].qty <= 0) {
             const ticketModal = document.getElementById('ticket-required-modal');
             if (ticketModal) {
                 ticketModal.classList.remove('hidden');
                 ticketModal.classList.add('flex');
-                setTimeout(() => {
-                    if (ticketModal.classList.contains('flex')) {
-                        ticketModal.classList.remove('flex');
-                        ticketModal.classList.add('hidden');
-                    }
-                }, 4000);
             }
             return;
         }
@@ -685,8 +737,69 @@ if (typeof window.farmApp === 'undefined') {
             setTimeout(() => { window.farmApp.closeFarmAlert(); }, 3000);
             return;
         }
-        
         window.farmApp.openTeamSelection(readyPlots, arsenal);
+    }
+
+    function selectPvP() {
+        document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
+        document.getElementById('pvp-input-modal').classList.remove('hidden');
+        document.getElementById('pvp-input-modal').classList.add('flex');
+    }
+
+    async function sendPvPChallenge() {
+        const targetId = document.getElementById('pvp-target-id').value.trim();
+        const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
+        
+        if (targetId.length !== 4) return alert("El ID debe tener exactamente 4 dígitos.");
+        if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas para apostar.");
+
+        document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
+        document.getElementById('pvp-input-btn').disabled = true;
+
+        const res = await fetch('/api/pvp/challenge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                username: sessionStorage.getItem('username'), 
+                target_short_id: targetId, 
+                bet: betAmount 
+            })
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+            
+            // Iniciar Polling para esperar la respuesta del rival
+            const poll = setInterval(async () => {
+                const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
+                const sData = await sRes.json();
+                
+                if (sData.status === 'accepted') {
+                    clearInterval(poll);
+                    document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+                    
+                    // Cobrar y pasar a la selección de escuadrón
+                    window.farmApp.state.seedsBalance -= betAmount;
+                    window.farmApp.saveState();
+                    
+                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                    let arsenal = window.farmApp.state.arsenal || [];
+                    window.farmApp.openTeamSelection(readyPlots, arsenal);
+                    
+                } else if (sData.status === 'rejected') {
+                    clearInterval(poll);
+                    alert("El jugador ha rechazado tu reto.");
+                    document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+                    document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                    document.getElementById('pvp-input-btn').disabled = false;
+                }
+            }, 3000);
+        } else {
+            alert(data.error);
+            document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+            document.getElementById('pvp-input-btn').disabled = false;
+        }
     }
 
 
@@ -2148,6 +2261,11 @@ if (typeof window.farmApp === 'undefined') {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         },
+
+
+
+
+
 
         executeRemoveBonsai() {
             const plot = this.state.plots[8];

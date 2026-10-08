@@ -256,7 +256,22 @@
         </div>
     </div>
 
-
+    <div id="pvp-incoming-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border-4 border-cg_gold animate-fade-in">
+            <div class="text-5xl mb-4 animate-bounce">⚔️</div>
+            <h3 class="text-xl font-black text-cg_navy mb-1">¡Te han retado!</h3>
+            <p class="text-sm text-gray-500 mb-4">El jugador <strong id="pvp-challenger-name" class="text-cg_navy">---</strong> quiere luchar contigo en la Arena PvP.</p>
+            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl mb-6">
+                <p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Apuesta del duelo</p>
+                <p class="text-2xl font-black text-cg_gold" id="pvp-bet-amount">0 🌱</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="respondPvP('rejected')" class="flex-1 bg-gray-100 text-gray-500 font-black py-3.5 rounded-xl transition-all hover:bg-red-100 hover:text-red-500 text-xs uppercase tracking-widest">Rechazar</button>
+                <button onclick="respondPvP('accepted')" class="flex-[2] bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Aceptar Duelo</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let isLoginMode = true;
@@ -312,11 +327,12 @@
         }
 
         function updateProfileUI(userData) {
-            // Asegurar un nombre de usuario válido si userData.username es undefined
             const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
+            const shortId = userData.short_id || '0000';
             
-            document.getElementById('profile-name').innerText = name;
-            document.getElementById('dropdown-username').innerText = name;
+            // Mostrar nombre junto al ID envuelto en un badge gris
+            document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span> <span class="text-[10px] text-gray-400 ml-1">▼</span>`;
+            document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
             document.getElementById('profile-avatar').innerText = name.substring(0, 2).toUpperCase();
             
             const balance = userData.balance || 0;
@@ -355,6 +371,18 @@
                     const data = await response.json();
                     const dbBalance = data.user.real_balance_cop || data.user.balance;
                     
+
+                    // --- DETECCIÓN DE RETOS PVP ---
+                    if (data.user.pending_challenge && !window.isPvPModalOpen) {
+                        window.isPvPModalOpen = true;
+                        window.currentChallenge = data.user.pending_challenge;
+                        document.getElementById('pvp-challenger-name').innerText = data.user.pending_challenge.challenger_name;
+                        document.getElementById('pvp-bet-amount').innerText = data.user.pending_challenge.bet_seeds + " 🌱";
+                        document.getElementById('pvp-incoming-modal').classList.remove('hidden');
+                        document.getElementById('pvp-incoming-modal').classList.add('flex');
+                    }
+
+
                     if (data.user.game_state) {
                         try {
                             const state = JSON.parse(data.user.game_state);
@@ -585,6 +613,26 @@
         }
 
 
+        async function respondPvP(action) {
+            document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
+            window.isPvPModalOpen = false;
+            
+            await fetch('/api/pvp/accept', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ match_id: window.currentChallenge.match_id, action: action })
+            });
+
+            if (action === 'accepted') {
+                // Cobrar semillas al que acepta y pasar a selección de escuadrón
+                window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
+                window.farmApp.saveState();
+                
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                let arsenal = window.farmApp.state.arsenal || [];
+                window.farmApp.openTeamSelection(readyPlots, arsenal);
+            }
+        }
 
 
         function openCodesModal() {
