@@ -1111,7 +1111,7 @@ def pvp_challenge():
     t_seeds = t_state.get('seedsBalance', 0)
     if t_seeds < bet:
         cur.close(); conn.close()
-        return jsonify({"error": f"El oponente no tiene suficientes semillas (Máx: {t_seeds} 🌱)"}), 400
+        return jsonify({"error": f"El oponente no tiene suficientes semillas para apostar (Máximo que posee: {t_seeds} 🌱)"}), 400
     
     cur.execute("INSERT INTO pvp_matches (challenger_id, target_id, bet_seeds, status) VALUES (%s, %s, %s, 'pending') RETURNING id", (challenger['id'], target['id'], bet))
     match_id = cur.fetchone()['id']
@@ -1158,12 +1158,13 @@ def pvp_combat_sync():
             
         if 'winner' in update_data and not match.get('winner_username'):
             cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (update_data['winner'], match_id))
-            cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (update_data['winner'],))
-            winner_user = cur.fetchone()
-            if winner_user and winner_user['game_state']:
-                w_state = json.loads(winner_user['game_state'])
-                w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + (match['bet_seeds'] * 2)
-                cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), winner_user['id']))
+            if update_data['winner'] != 'opponent_abandoned':
+                cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (update_data['winner'],))
+                winner_user = cur.fetchone()
+                if winner_user and winner_user['game_state']:
+                    w_state = json.loads(winner_user['game_state'])
+                    w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + (match['bet_seeds'] * 2)
+                    cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), winner_user['id']))
             conn.commit()
             cur.close(); conn.close()
             return jsonify({"status": "game_over", "winner": update_data['winner']})

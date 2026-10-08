@@ -649,7 +649,8 @@
 
 
 <div id="team-selection-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')"></div>
+    <!-- NUEVO: Al hacer clic fuera o en cancelar, ejecutará la nueva función de confirmación -->
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="window.farmApp.closeTeamSelection()"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in p-6 md:p-8 max-h-[85vh]">
         <div class="flex justify-between items-center mb-2">
             <h3 class="text-xl md:text-2xl font-black text-cg_navy tracking-tight flex items-center gap-2"><span class="text-2xl">⚔️</span> Escuadrón</h3>
@@ -657,10 +658,7 @@
         </div>
         <p class="text-xs text-gray-500 mb-4 leading-relaxed">Selecciona hasta 3 plantas para combatir. <strong class="text-cg_navy">A mayor riesgo (plantas frágiles), mayor será tu recompensa.</strong></p>
         
-        <!-- LISTA DE PLANTAS -->
-        <div class="flex-1 overflow-y-auto space-y-3 pr-2 hide-scrollbar" id="team-selection-list">
-            <!-- Inyectado por JS -->
-        </div>
+        <div class="flex-1 overflow-y-auto space-y-3 pr-2 hide-scrollbar" id="team-selection-list"></div>
         
         <div id="team-stats-box" class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center transition-all opacity-50 grayscale shrink-0">
             <div>
@@ -673,9 +671,8 @@
             </div>
         </div>
         
-        <!-- BOTONES -->
         <div class="mt-4 flex gap-3 shrink-0">
-            <button onclick="document.getElementById('team-selection-modal').classList.replace('flex', 'hidden')" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3.5 sm:py-4 rounded-xl hover:bg-gray-50 transition-colors uppercase tracking-widest text-[10px] sm:text-xs">Cancelar</button>
+            <button onclick="window.farmApp.closeTeamSelection()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3.5 sm:py-4 rounded-xl hover:bg-gray-50 transition-colors uppercase tracking-widest text-[10px] sm:text-xs">Cancelar</button>
             <button onclick="window.farmApp.startCombatWithTeam()" id="btn-confirm-team" class="flex-[2] bg-gray-300 text-gray-500 font-black py-3.5 sm:py-4 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] sm:text-xs cursor-not-allowed" disabled>Ir a la Arena</button>
         </div>
     </div>
@@ -3176,6 +3173,41 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('team-selection-modal').classList.replace('flex', 'hidden');
             loadView('combat', document.querySelectorAll('.nav-btn-desktop')[0]);
         },
+
+
+
+        closeTeamSelection() {
+            if (sessionStorage.getItem('pvp_match_id')) {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 z-[700] flex items-center justify-center p-4 animate-fade-in';
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+                    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border-4 border-red-500">
+                        <h3 class="text-xl font-black text-cg_navy mb-4">¿Cancelar Duelo?</h3>
+                        <p class="text-sm text-gray-500 mb-6">Si cancelas ahora, perderás tu apuesta y el duelo terminará.</p>
+                        <div class="flex gap-3">
+                            <button id="btn-pvp-cancel-no" class="flex-1 bg-gray-100 text-gray-600 font-black py-3 rounded-xl uppercase tracking-widest text-xs">No</button>
+                            <button id="btn-pvp-cancel-yes" class="flex-[2] bg-red-500 text-white font-black py-3 rounded-xl uppercase tracking-widest text-xs shadow-md">Sí, Cancelar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.getElementById('btn-pvp-cancel-no').onclick = () => modal.remove();
+                document.getElementById('btn-pvp-cancel-yes').onclick = () => {
+                    fetch('/api/pvp/combat_sync', {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ match_id: sessionStorage.getItem('pvp_match_id'), username: sessionStorage.getItem('username'), update_data: { winner: 'opponent_abandoned' } })
+                    });
+                    sessionStorage.removeItem('pvp_match_id');
+                    sessionStorage.removeItem('pvp_bet_amount');
+                    document.getElementById('team-selection-modal').classList.replace('flex', 'hidden');
+                    modal.remove();
+                };
+            } else {
+                document.getElementById('team-selection-modal').classList.replace('flex', 'hidden');
+            }
+        },
+
 
 
         plantSeed(seedId) {

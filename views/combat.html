@@ -389,7 +389,7 @@ window.combatApp = {
                     this.checkPvPTurnLogic();
                 }
             }
-        }, 3000);
+        }, 1500);
     },
 
     async syncPvPState(updateData = null) {
@@ -400,15 +400,25 @@ window.combatApp = {
             });
             const data = await res.json();
             
-            if (data.winner) {
-                if (this.pvpInterval) clearInterval(this.pvpInterval);
-                this.endCombat(data.winner === sessionStorage.getItem('username'));
-                return;
-            }
-            
             const state = data.state;
             this.role = data.role; 
             const oppRole = this.role === 'challenger' ? 'target' : 'challenger';
+
+            if (state && state.last_action && state.last_action.role === oppRole && this.currentPvPTurn !== this.role) {
+                this.currentPvPTurn = this.role;
+                await this.animateOpponentActions(state.last_action.actions);
+            }
+            
+            if (data.winner) {
+                if (this.pvpInterval) clearInterval(this.pvpInterval);
+                if (data.winner === 'opponent_abandoned') {
+                    alert("El oponente ha cancelado o abandonado el duelo. Ganaste por abandono.");
+                    this.endCombat(true);
+                } else {
+                    this.endCombat(data.winner === sessionStorage.getItem('username'));
+                }
+                return;
+            }
             
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
@@ -423,21 +433,9 @@ window.combatApp = {
                 if (this.phase === 'RPS' && state[`rps_${this.role}`] && state[`rps_${oppRole}`] && !this.rpsResolved && !this.rpsResolving) {
                     this.resolveRPS(state[`rps_${this.role}`], state[`rps_${oppRole}`]);
                 }
-                
-                if (this.rpsResolved) {
-                    if (state.turn === this.role && this.currentPvPTurn !== this.role) {
-                        this.currentPvPTurn = this.role;
-                        if (state.last_action && state.last_action.role === oppRole) {
-                            await this.animateOpponentActions(state.last_action.actions);
-                        } else {
-                            this.startMyTurn();
-                        }
-                    }
-                }
             }
             
-            // POLLING RÁPIDO PARA MAYOR AGILIDAD
-            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 1000);
+            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 800);
         } catch(e) {}
     },
 
@@ -467,7 +465,7 @@ window.combatApp = {
         for (let action of actions) {
             let attacker = this.enemyTeam[action.attackerIdx];
             let target = this.playerTeam[action.targetIdx];
-            if (attacker.hp <= 0 || target.hp <= 0) continue;
+            if (!attacker || !target || attacker.hp <= 0 || target.hp <= 0) continue;
             
             this.currentAttackerIdx = action.attackerIdx;
             this.targetIdx = action.targetIdx;
@@ -681,7 +679,6 @@ window.combatApp = {
             } else {
                 this.syncPvPState({ actionQueue: this.actionQueue });
                 this.actionQueue = [];
-                this.turn++;
                 this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
                 this.checkPvPTurnLogic();
             }
@@ -759,7 +756,6 @@ window.combatApp = {
             this.updateUI();
             this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
             
-            // CORRECCIÓN: Reactivar el botón de Finalizar Turno al pasar la jugada
             document.getElementById('cb-action-btn').disabled = false;
             document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
         }
@@ -781,7 +777,6 @@ window.combatApp = {
                 window.farmApp.state.inventory['tool_duel_ticket'].qty += 1;
                 window.farmApp.updateInventoryUI();
             } else {
-                // En PvP el servidor se encarga de subir las semillas
                 setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
             }
 
@@ -809,8 +804,6 @@ window.combatApp = {
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
     },
-
-    // ================= RENDERIZADO VISUAL ================= //
 
     updateUI() {
         document.getElementById('cb-turn-counter').innerText = this.turn;
@@ -860,7 +853,6 @@ window.combatApp = {
                     ? `<div class="absolute -top-2 -right-1 sm:-top-3 sm:-right-2 bg-blue-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-black text-[9px] sm:text-[10px] shadow-md border-2 border-white z-50 animate-bounce">⚔️${queuedCount}</div>` 
                     : '';
 
-                // === LÓGICA DE FORMACIÓN DELTA ABSOLUTA ===
                 let positionClasses = "";
                 if (side === 'P') {
                     if (idx === 0) positionClasses = "absolute top-[5%] sm:top-[10%] left-1/2 -translate-x-1/2 z-30"; 
@@ -876,23 +868,18 @@ window.combatApp = {
                     <div id="${elId}" class="${positionClasses} flex flex-col items-center transition-all duration-300 ${highlight}" ${((side === 'P' && this.phase === 'P_SELECT') || (side === 'E' && this.phase === 'P_TARGETING')) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
                         
                         ${queuedHtml}
-
-                        <!-- Barra de Vida -->
                         <div class="w-14 sm:w-16 md:w-20 bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1.5 sm:mb-2 shadow-inner border border-gray-300 shrink-0">
                              <div class="${hpColor} h-full transition-all duration-300" style="width: ${hpPercent}%"></div>
                         </div>
                         
-                        <!-- Contenedor Hexagonal CSS -->
                         <div class="relative w-[68px] h-[80px] sm:w-[84px] sm:h-[96px] md:w-28 md:h-32 flex items-center justify-center group animate-float shrink-0" style="animation-delay: ${idx * 0.2}s">
                             <div class="absolute inset-0 ${side === 'P' ? 'bg-green-400' : 'bg-red-400'} hex-shape opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                            
                             <div class="absolute inset-[2px] sm:inset-[3px] bg-white hex-inner flex items-center justify-center overflow-hidden border border-white shadow-inner">
                                 <div class="absolute inset-0 bg-gradient-to-b ${side === 'P' ? 'from-green-50 to-white' : 'from-red-50 to-white'} opacity-80"></div>
                                 <img src="${ent.icon}" class="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 object-contain relative z-10 drop-shadow-md ${isActing ? 'animate-pulse' : ''} ${side==='E' ? 'transform scale-x-[-1]' : ''}">
                             </div>
                         </div>
                         
-                        <!-- Panel Inferior (Nombre y Stats) -->
                         <div class="absolute -bottom-4 sm:-bottom-5 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center z-30 shrink-0 min-w-[70px] sm:min-w-[80px]">
                             <span class="text-[8px] sm:text-[9px] font-black text-cg_navy uppercase w-full text-center truncate px-1">${ent.name}</span>
                             <div class="flex gap-1.5 text-[7px] sm:text-[8px] font-bold mt-0.5">
@@ -913,11 +900,7 @@ window.combatApp = {
         fx.innerText = msg;
         fx.className = `text-3xl sm:text-5xl md:text-7xl font-black ${colorClass} drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] transition-all duration-200 text-center uppercase tracking-widest transform scale-110 z-[100]`;
         fx.style.opacity = '1';
-        
-        setTimeout(() => { 
-            fx.style.opacity = '0'; 
-            fx.classList.replace('scale-110', 'scale-90');
-        }, 500);
+        setTimeout(() => { fx.style.opacity = '0'; fx.classList.replace('scale-110', 'scale-90'); }, 500);
     }
 };
 
