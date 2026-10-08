@@ -706,9 +706,11 @@
 // SOLUCIÓN ROBUSTA: PREVENCIÓN DE RACE CONDITION Y LAG DE ESTADO
 // ==============================================================
 
+// ==============================================================
+// SOLUCIÓN ROBUSTA: PREVENCIÓN DE RACE CONDITION Y LAG DE ESTADO
+// ==============================================================
+
 if (typeof window.farmApp === 'undefined') {
-
-
 
     window.intentarDuelo = function() {
         document.getElementById('duelo-choice-modal').classList.remove('hidden');
@@ -735,6 +737,13 @@ if (typeof window.farmApp === 'undefined') {
             return;
         }
         window.farmApp.openTeamSelection(readyPlots, arsenal);
+    };
+
+    // ESTA ERA LA FUNCIÓN QUE FALTABA
+    window.selectPvP = function() {
+        document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
+        document.getElementById('pvp-input-modal').classList.remove('hidden');
+        document.getElementById('pvp-input-modal').classList.add('flex');
     };
 
     window.sendPvPChallenge = async function() {
@@ -778,6 +787,7 @@ if (typeof window.farmApp === 'undefined') {
             }, 3000);
         } else {
             alert(data.error);
+            document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
             document.getElementById('pvp-input-btn').disabled = false;
         }
     };
@@ -802,11 +812,8 @@ if (typeof window.farmApp === 'undefined') {
         }
     };
 
-
-
-
     window.farmApp = {
-        PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 0], // Arena cuesta 0 porque se paga en Torneos
+        PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 0], // Arena cuesta 0 porque se paga en Torneosporque se paga en Torneos
 
         TOURNAMENT_CONFIGS: {
             1: { name: 'Bonsái del Maestro', image: 'https://i.ibb.co/0yv9F7D6/Frame-754.png', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
