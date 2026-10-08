@@ -417,7 +417,6 @@ window.combatApp = {
     },
 
     startMyTurn() {
-        this.energy = Math.min(this.maxEnergy, this.energy + 3);
         this.phase = 'P_SELECT';
         this.updateUI();
         this.setInstruction('TU TURNO: Elige tus ataques ⚔️');
@@ -715,14 +714,20 @@ window.combatApp = {
         const pAlive = this.playerTeam.filter(p => p.hp > 0);
         const eAlive = this.enemyTeam.filter(e => e.hp > 0);
 
-        if (eAlive.length === 0) { this.endCombat(true); } 
-        else if (pAlive.length === 0) { this.endCombat(false); } 
-        else {
+        if (eAlive.length === 0) { 
+            this.endCombat(true); 
+        } else if (pAlive.length === 0) { 
+            this.endCombat(false); 
+        } else {
             this.turn++;
             this.energy = Math.min(this.maxEnergy, this.energy + 3); 
             this.phase = 'P_SELECT';
             this.updateUI();
             this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
+            
+            // CORRECCIÓN: Reactivar el botón de Finalizar Turno al pasar la jugada
+            document.getElementById('cb-action-btn').disabled = false;
+            document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
         }
     },
 
