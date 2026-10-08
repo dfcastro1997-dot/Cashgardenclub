@@ -1,113 +1,49 @@
 <style>
-    .hex-shape {
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    }
-    .hex-inner {
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    }
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-6px); }
-        100% { transform: translateY(0px); }
-    }
-    .animate-float {
-        animation: float 4s ease-in-out infinite;
-    }
-    @keyframes shake-hit {
-        0%, 100% { transform: translateX(0); filter: brightness(1); }
-        25% { transform: translateX(-6px) rotate(-3deg); filter: brightness(2) drop-shadow(0 0 10px red); }
-        50% { transform: translateX(6px) rotate(3deg); filter: brightness(1.5); }
-        75% { transform: translateX(-6px) rotate(-3deg); filter: brightness(2) drop-shadow(0 0 10px red); }
-    }
-    .shake-hit {
-        animation: shake-hit 0.35s ease-in-out;
-    }
-    @keyframes screen-shake {
-        0%, 100% { transform: translate(0, 0); }
-        10% { transform: translate(-10px, -10px); }
-        30% { transform: translate(10px, 10px); }
-        50% { transform: translate(-10px, 10px); }
-        70% { transform: translate(10px, -10px); }
-        90% { transform: translate(-5px, 5px); }
-    }
-    .screen-shake {
-        animation: screen-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-    }
-
-    /* Patrón de fondo moderno Verde */
-    .combat-bg-pattern {
-        background-color: #f0fdf4; 
-        background-image: radial-gradient(#bbf7d0 1.5px, transparent 1.5px);
-        background-size: 24px 24px;
-    }
-    
-    /* Estilos Premium Claros para las Cartas */
-    .skill-card {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        background: #ffffff;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    }
-    .skill-card:hover:not(:disabled) {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 25px -5px rgba(41, 150, 218, 0.15), 0 8px 10px -6px rgba(41, 150, 218, 0.1);
-        border-color: #2996DA;
-    }
-    .skill-card:active:not(:disabled) {
-        transform: translateY(2px);
-    }
-    .skill-card:disabled {
-        filter: grayscale(100%);
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
+    .hex-shape { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+    .hex-inner { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+    @keyframes shake-hit { 0%, 100% { transform: translateX(0); filter: brightness(1); } 25% { transform: translateX(-6px) rotate(-3deg); filter: brightness(2) drop-shadow(0 0 10px red); } 50% { transform: translateX(6px) rotate(3deg); filter: brightness(1.5); } 75% { transform: translateX(-6px) rotate(-3deg); filter: brightness(2) drop-shadow(0 0 10px red); } }
+    .shake-hit { animation: shake-hit 0.35s ease-in-out; }
+    @keyframes screen-shake { 0%, 100% { transform: translate(0, 0); } 10% { transform: translate(-10px, -10px); } 30% { transform: translate(10px, 10px); } 50% { transform: translate(-10px, 10px); } 70% { transform: translate(10px, -10px); } 90% { transform: translate(-5px, 5px); } }
+    .screen-shake { animation: screen-shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+    .combat-bg-pattern { background-color: #f0fdf4; background-image: radial-gradient(#bbf7d0 1.5px, transparent 1.5px); background-size: 24px 24px; }
+    .skill-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+    .skill-card:hover:not(:disabled) { transform: translateY(-4px); box-shadow: 0 15px 25px -5px rgba(41, 150, 218, 0.15), 0 8px 10px -6px rgba(41, 150, 218, 0.1); border-color: #2996DA; }
+    .skill-card:active:not(:disabled) { transform: translateY(2px); }
+    .skill-card:disabled { filter: grayscale(100%); opacity: 0.6; cursor: not-allowed; }
 </style>
 
-<!-- CONTENEDOR PRINCIPAL A PANTALLA COMPLETA -->
 <div class="fixed inset-0 z-[200] bg-[#f0fdf4] flex flex-col overflow-hidden pb-safe animate-fade-in">
-    
-    <!-- ENCABEZADO SUPERIOR -->
     <header class="bg-white border-b border-green-200 px-4 py-3 flex justify-between items-center shrink-0 shadow-sm z-20">
         <button onclick="window.combatApp.confirmFlee()" class="text-red-600 font-black text-[10px] sm:text-xs flex items-center gap-1.5 bg-red-50 hover:bg-red-100 px-3 sm:px-4 py-2 rounded-xl border border-red-100 transition-colors">
             <span class="text-base leading-none">🚪</span> <span class="hidden sm:inline uppercase tracking-wider">Huir</span>
         </button>
-        
         <div class="flex flex-col items-center">
             <span class="text-[8px] sm:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-2.5 py-0.5 rounded border border-red-100 mb-0.5 flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span> Muerte Súbita
             </span>
             <h2 class="text-lg sm:text-xl font-black text-cg_navy tracking-tight">Arena 3v3</h2>
         </div>
-        
         <div class="bg-cg_navy text-white px-4 py-1.5 rounded-xl flex flex-col items-center shadow-md border border-gray-800 shrink-0">
             <span class="text-[7px] sm:text-[8px] uppercase tracking-widest text-gray-400">Ronda</span>
             <span id="cb-turn-counter" class="text-sm sm:text-base font-black text-cg_gold leading-none mt-0.5">1</span>
         </div>
     </header>
 
-    <!-- BATTLEFIELD (Layout Hexagonal RPG con Formación Delta) -->
     <div id="battlefield-container" class="flex-1 relative combat-bg-pattern flex flex-col justify-between p-4 z-10 overflow-hidden transition-transform duration-75">
-        
-        <!-- Centro VS Marca de agua -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.06]">
             <span class="text-[150px] sm:text-[200px] font-black text-green-900 italic tracking-tighter select-none">VS</span>
         </div>
-
-        <!-- Fila Enemiga (Arriba) -->
         <div id="cb-enemy-team" class="relative w-full h-1/2 z-10"></div>
-        
-        <!-- Fila Jugador (Abajo) -->
         <div id="cb-player-team" class="relative w-full h-1/2 z-10"></div>
-
-        <!-- Feed Central de Acción (Efectos visuales de daño) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
             <div id="cb-fx-msg" class="text-4xl sm:text-6xl font-black text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-300 text-center uppercase tracking-widest transform scale-90" style="-webkit-text-stroke: 1.5px rgba(0,0,0,0.8);"></div>
         </div>
     </div>
 
-    <!-- MENÚ INFERIOR DE COMBATE -->
     <div class="shrink-0 bg-white border-t border-green-200 p-4 sm:p-6 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] z-20 pb-safe relative">
         <div class="max-w-[800px] mx-auto">
-            
             <div class="flex justify-between items-center mb-4 gap-3">
                 <div class="bg-blue-50 border border-blue-200 px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm shrink-0 w-full sm:w-auto justify-center sm:justify-start transition-all" id="energy-box">
                     <span class="text-xl md:text-2xl drop-shadow-sm">⚡</span>
@@ -116,12 +52,10 @@
                         <span class="font-black text-blue-700 text-base sm:text-xl leading-none mt-0.5" id="cb-energy-counter">5 / 15</span>
                     </div>
                 </div>
-                
                 <h3 id="cb-action-text" class="text-[9px] sm:text-xs font-black text-gray-500 uppercase tracking-widest bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 shadow-inner flex-1 text-center truncate transition-colors">
                     Toca una planta para elegir ataques
                 </h3>
             </div>
-            
             <div class="flex gap-2 sm:gap-3">
                 <button onclick="window.combatApp.clearQueue()" class="bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black px-4 py-3.5 sm:py-4 rounded-xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm flex items-center justify-center shrink-0">
                     Limpiar
@@ -130,18 +64,54 @@
                     FINALIZAR TURNO ⚔️
                 </button>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- MODAL DE CARTAS (5 HABILIDADES) -->
+<!-- MODAL PIEDRA PAPEL O TIJERA (PvP) -->
+<div id="rps-modal" class="fixed inset-0 z-[900] hidden items-center justify-center p-4 bg-cg_navy/90 backdrop-blur-sm animate-fade-in">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative p-6 sm:p-8 text-center border-4 border-cg_blue">
+        <h3 class="text-2xl font-black text-cg_navy mb-2" id="rps-title">Piedra, Papel o Tijera</h3>
+        <p class="text-sm text-gray-500 mb-6" id="rps-desc">El ganador decide quién ataca primero.</p>
+        
+        <div id="rps-choices" class="flex justify-center gap-4 mb-4">
+            <button onclick="window.combatApp.selectRPS('rock')" class="w-20 h-20 bg-gray-50 rounded-2xl border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50 hover:scale-110 transition-all flex items-center justify-center shadow-sm">
+                <img src="https://i.ibb.co/XZn602PZ/Frame-772.png" class="w-12 h-12 object-contain drop-shadow-md">
+            </button>
+            <button onclick="window.combatApp.selectRPS('paper')" class="w-20 h-20 bg-gray-50 rounded-2xl border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50 hover:scale-110 transition-all flex items-center justify-center shadow-sm">
+                <img src="https://i.ibb.co/21vq6V8C/Frame-770.png" class="w-12 h-12 object-contain drop-shadow-md">
+            </button>
+            <button onclick="window.combatApp.selectRPS('scissors')" class="w-20 h-20 bg-gray-50 rounded-2xl border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50 hover:scale-110 transition-all flex items-center justify-center shadow-sm">
+                <img src="https://i.ibb.co/zhMbW6Dn/Frame-771.png" class="w-12 h-12 object-contain drop-shadow-md">
+            </button>
+        </div>
+
+        <div id="rps-waiting" class="hidden flex-col items-center mb-4">
+            <div class="w-10 h-10 border-4 border-gray-200 border-t-cg_blue rounded-full animate-spin mb-3"></div>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Esperando al rival...</p>
+        </div>
+
+        <div id="rps-result" class="hidden flex-col items-center mb-4">
+            <div class="flex items-center justify-center gap-6 mb-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 w-full">
+                <div class="text-center">
+                    <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Tú</span>
+                    <img id="rps-my-img" src="" class="w-16 h-16 object-contain mt-1 drop-shadow-lg">
+                </div>
+                <span class="text-2xl font-black text-gray-300 italic">VS</span>
+                <div class="text-center">
+                    <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Rival</span>
+                    <img id="rps-opp-img" src="" class="w-16 h-16 object-contain mt-1 drop-shadow-lg transform -scale-x-100">
+                </div>
+            </div>
+            <p id="rps-result-text" class="text-lg font-black text-cg_navy uppercase tracking-widest leading-tight"></p>
+        </div>
+    </div>
+</div>
+
 <div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity" onclick="window.combatApp.closeCardModal()"></div>
     <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-2xl p-5 sm:p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
-        
         <div class="absolute -top-20 -right-20 w-48 h-48 bg-green-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-
         <div class="flex justify-between items-center mb-5 relative z-10 border-b border-gray-100 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gray-50 rounded-xl border border-gray-200 p-1.5 flex items-center justify-center shadow-inner shrink-0">
@@ -154,51 +124,39 @@
             </div>
             <button onclick="window.combatApp.closeCardModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors shrink-0">✕</button>
         </div>
-        
-        <div id="cm-cards-container" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar">
-            <!-- Cartas inyectadas por JS -->
-        </div>
+        <div id="cm-cards-container" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar"></div>
     </div>
 </div>
 
-<!-- MODAL VICTORIA -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
         <div class="absolute -top-20 -right-20 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-yellow-100/50 rounded-full blur-3xl"></div>
-        
         <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cg_gold to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(237,153,37,0.3)] relative z-10 border-4 border-white">
             <span class="text-4xl sm:text-5xl drop-shadow-md">🏆</span>
         </div>
-        
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Victoria Épica</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">La bandada ha sido exterminada. Tu escuadrón botánico regresa a casa a salvo y se reembolsó tu ticket de entrada.</p>
-        
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">El escuadrón rival ha sido exterminado. Tus plantas regresan al almacén y has reclamado el botín.</p>
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 sm:mb-8 relative z-10 shadow-inner">
             <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Botín Obtenido</p>
             <p class="text-2xl sm:text-3xl font-black text-green-600" id="combat-victory-reward-text">+0 🌱</p>
         </div>
-
         <button onclick="loadView('farm')" class="w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Cobrar y Salir
         </button>
     </div>
 </div>
 
-<!-- MODAL DERROTA -->
 <div id="combat-defeat-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-red-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
         <div class="absolute -top-20 -right-20 w-48 h-48 bg-red-50 rounded-full blur-3xl"></div>
-        
         <div class="w-20 h-20 sm:w-24 sm:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(239,68,68,0.2)] relative z-10 border-4 border-red-100">
             <span class="text-4xl sm:text-5xl drop-shadow-md">💀</span>
         </div>
-        
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas y el ticket de entrada se perdieron.</p>
-        
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas y la apuesta se perdieron.</p>
         <button onclick="loadView('farm')" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Aceptar Destino
         </button>
@@ -208,7 +166,7 @@
 <script>
 window.combatApp = {
     active: false,
-    phase: 'SETUP', // SETUP, P_SELECT, P_TARGETING, EXECUTION
+    phase: 'SETUP', 
     playerTeam: [],
     enemyTeam: [],
     turn: 1,
@@ -219,7 +177,6 @@ window.combatApp = {
     currentAttackerIdx: null,
     pendingSkill: null,
 
-    // Diccionario de Cartas Ampliado (5 por planta)
     SKILLS_DICT: {
         'flower_wheat': [
             {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque veloz básico.', icon: '🌿'}, 
@@ -271,7 +228,6 @@ window.combatApp = {
         this.matchId = sessionStorage.getItem('pvp_match_id');
         this.isPvP = !!this.matchId;
 
-        // COBRO DEL TICKET (Solo en modo Historia PvE)
         if (!this.isPvP && window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
             window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
             window.farmApp.updateInventoryUI();
@@ -314,7 +270,6 @@ window.combatApp = {
 
         window.farmApp.state.combatLock = true;
         
-        // Remover plantas de la granja/arsenal antes de pelear
         this.playerTeam.forEach(pt => {
             if (pt.fromArsenal) { window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId); } 
             else if (pt.plotId !== undefined) {
@@ -331,18 +286,17 @@ window.combatApp = {
         this.phase = 'P_SELECT';
 
         if (this.isPvP) {
-            this.setInstruction('Conectando con el oponente...', true);
+            this.setInstruction('Sincronizando con el oponente...', true);
+            this.rpsResolved = false;
+            this.rpsResolving = false;
             this.syncPvPState({ team: this.playerTeam });
             return;
         }
 
-        // --- CÓDIGO PvE ORIGINAL (Generación de Cuervos) ---
         let squadValue = 0;
         this.playerTeam.forEach(p => squadValue += (p.maxHp + p.atk + p.def));
-
         const d = new Date(); const hour = d.getHours(); const day = d.getDate();
         const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
-
         let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
         const createCrow = (baseName, baseHp, baseAtk) => {
             let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
@@ -364,6 +318,78 @@ window.combatApp = {
         this.active = true;
         this.updateUI();
         this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
+    },
+
+    selectRPS(choice) {
+        this.myRpsChoice = choice;
+        document.getElementById('rps-choices').classList.add('hidden');
+        document.getElementById('rps-waiting').classList.remove('hidden');
+        document.getElementById('rps-desc').innerText = "Elección fijada. Esperando rival...";
+        this.syncPvPState({ rps_choice: choice });
+    },
+
+    resolveRPS(myChoice, oppChoice) {
+        if(this.rpsResolving) return;
+        this.rpsResolving = true;
+        
+        document.getElementById('rps-waiting').classList.add('hidden');
+        document.getElementById('rps-result').classList.remove('hidden');
+        
+        const imgs = {
+            'rock': 'https://i.ibb.co/XZn602PZ/Frame-772.png',
+            'paper': 'https://i.ibb.co/21vq6V8C/Frame-770.png',
+            'scissors': 'https://i.ibb.co/zhMbW6Dn/Frame-771.png'
+        };
+        
+        document.getElementById('rps-my-img').src = imgs[myChoice];
+        document.getElementById('rps-opp-img').src = imgs[oppChoice];
+        
+        let result = '';
+        let iWon = false;
+        
+        if (myChoice === oppChoice) {
+            result = 'EMPATE';
+        } else if (
+            (myChoice === 'rock' && oppChoice === 'scissors') ||
+            (myChoice === 'paper' && oppChoice === 'rock') ||
+            (myChoice === 'scissors' && oppChoice === 'paper')
+        ) {
+            result = '¡GANASTE LA INICIATIVA!';
+            iWon = true;
+        } else {
+            result = 'EL RIVAL ATACA PRIMERO';
+            iWon = false;
+        }
+        
+        const resText = document.getElementById('rps-result-text');
+        resText.innerText = result;
+        resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
+        
+        setTimeout(() => {
+            if (result === 'EMPATE') {
+                this.myRpsChoice = null;
+                this.rpsResolving = false;
+                document.getElementById('rps-result').classList.add('hidden');
+                document.getElementById('rps-choices').classList.remove('hidden');
+                document.getElementById('rps-desc').innerText = "Empate. Elijan de nuevo.";
+                if (this.role === 'challenger') {
+                    this.syncPvPState({ rps_clear: true });
+                }
+            } else {
+                document.getElementById('rps-modal').classList.replace('flex', 'hidden');
+                this.phase = 'P_SELECT';
+                this.rpsResolved = true;
+                
+                if (iWon) {
+                    this.currentPvPTurn = this.role;
+                    this.syncPvPState({ initial_turn: this.role });
+                    this.startMyTurn();
+                } else {
+                    this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
+                    this.checkPvPTurnLogic();
+                }
+            }
+        }, 3000);
     },
 
     async syncPvPState(updateData = null) {
@@ -388,21 +414,30 @@ window.combatApp = {
                 this.enemyTeam = state[oppRole + '_team'];
                 this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; });
                 this.active = true;
-                this.currentPvPTurn = state.turn || 'challenger';
                 this.updateUI();
-                this.checkPvPTurnLogic();
+                
+                this.phase = 'RPS';
+                document.getElementById('rps-modal').classList.remove('hidden');
+                document.getElementById('rps-modal').classList.add('flex');
             } else if (this.active) {
-                if (state.turn === this.role && this.currentPvPTurn !== this.role) {
-                    this.currentPvPTurn = this.role;
-                    if (state.last_action && state.last_action.role === oppRole) {
-                        await this.animateOpponentActions(state.last_action.actions);
-                    } else {
-                        this.startMyTurn();
+                if (this.phase === 'RPS' && state[`rps_${this.role}`] && state[`rps_${oppRole}`] && !this.rpsResolved && !this.rpsResolving) {
+                    this.resolveRPS(state[`rps_${this.role}`], state[`rps_${oppRole}`]);
+                }
+                
+                if (this.rpsResolved) {
+                    if (state.turn === this.role && this.currentPvPTurn !== this.role) {
+                        this.currentPvPTurn = this.role;
+                        if (state.last_action && state.last_action.role === oppRole) {
+                            await this.animateOpponentActions(state.last_action.actions);
+                        } else {
+                            this.startMyTurn();
+                        }
                     }
                 }
             }
             
-            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 2000);
+            // POLLING RÁPIDO PARA MAYOR AGILIDAD
+            if (!this.pvpInterval) this.pvpInterval = setInterval(() => this.syncPvPState(), 1000);
         } catch(e) {}
     },
 
@@ -410,13 +445,14 @@ window.combatApp = {
         if (this.currentPvPTurn === this.role) {
             this.startMyTurn();
         } else {
-            this.setInstruction('Turno del oponente. Esperando...', true);
+            this.setInstruction('Turno del oponente. Esperando... ⏳', true);
             document.getElementById('cb-action-btn').disabled = true;
             document.getElementById('cb-action-btn').classList.add('opacity-50', 'cursor-not-allowed');
         }
     },
 
     startMyTurn() {
+        this.energy = Math.min(this.maxEnergy, this.energy + 3);
         this.phase = 'P_SELECT';
         this.updateUI();
         this.setInstruction('TU TURNO: Elige tus ataques ⚔️');
@@ -438,16 +474,16 @@ window.combatApp = {
             this.updateUI();
             
             this.showFx(action.skill.name, "text-red-500");
-            await this.sleep(400);
+            await this.sleep(200);
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(150);
+            await this.sleep(100);
             
             target.hp -= action.skill.dmg;
             this.shakeElement(`player-${this.targetIdx}`);
             this.shakeScreen();
             this.showFx(`-${action.skill.dmg}`, "text-red-600");
             this.updateUI();
-            await this.sleep(600);
+            await this.sleep(300);
         }
         
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -616,9 +652,9 @@ window.combatApp = {
             this.updateUI();
 
             this.showFx(action.skill.name, "text-blue-500");
-            await this.sleep(400);
+            await this.sleep(200);
             this.lungeAttacker(`player-${this.currentAttackerIdx}`, 'P');
-            await this.sleep(150);
+            await this.sleep(100);
 
             target.hp -= action.skill.dmg;
             this.shakeElement(`enemy-${this.targetIdx}`);
@@ -626,7 +662,7 @@ window.combatApp = {
             this.showFx(`-${action.skill.dmg}`, "text-red-500");
             this.updateUI();
             
-            await this.sleep(600);
+            await this.sleep(300);
         }
 
         this.currentAttackerIdx = null;
@@ -679,9 +715,9 @@ window.combatApp = {
             this.updateUI();
 
             this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
-            await this.sleep(400);
+            await this.sleep(200);
             this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, 'E');
-            await this.sleep(150);
+            await this.sleep(100);
 
             const mitigation = this.isSummer ? 0 : (target.def / 100); 
             let baseDamage = enemy.atk;
@@ -694,13 +730,11 @@ window.combatApp = {
             this.showFx(`-${actualDamage}`, "text-red-600");
             this.updateUI();
 
-            await this.sleep(600);
+            await this.sleep(300);
         }
 
         this.actionQueue = [];
         this.currentAttackerIdx = null; this.targetIdx = null;
-        document.getElementById('cb-action-btn').disabled = false;
-        document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
         
         this.checkWinLoss();
     },
@@ -883,7 +917,7 @@ window.combatApp = {
         setTimeout(() => { 
             fx.style.opacity = '0'; 
             fx.classList.replace('scale-110', 'scale-90');
-        }, 800);
+        }, 500);
     }
 };
 

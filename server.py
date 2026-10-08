@@ -1079,6 +1079,44 @@ def dev_add_cop():
         cur.close()
         conn.close()
 
+@app.route('/api/pvp/challenge', methods=['POST'])
+def pvp_challenge():
+    data = request.json
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("SELECT id, game_state FROM users WHERE short_id = %s", (data['target_short_id'],))
+    target = cur.fetchone()
+    if not target: 
+        cur.close(); conn.close()
+        return jsonify({"error": "ID de oponente no encontrado"}), 404
+    
+    cur.execute("SELECT id, game_state FROM users WHERE username = %s", (data['username'],))
+    challenger = cur.fetchone()
+    
+    if challenger['id'] == target['id']: 
+        cur.close(); conn.close()
+        return jsonify({"error": "No puedes retarte a ti mismo"}), 400
+    
+    bet = int(data['bet'])
+    
+    # Validar saldo del retador
+    c_state = json.loads(challenger['game_state'] or '{}')
+    if c_state.get('seedsBalance', 0) < bet:
+        cur.close(); conn.close()
+        return jsonify({"error": "No tienes suficientes semillas."}), 400
+        
+    # Validar saldo del objetivo (Rival)
+    t_state = json.loads(target['game_state'] or '{}')
+    t_seeds = t_state.get('seedsBalance', 0)
+    if t_seeds < bet:
+        cur.close(); conn.close()
+        return jsonify({"error": f"El oponente no tiene suficientes semillas (Máx: {t_seeds} 🌱)"}), 400
+    
+    cur.execute("INSERT INTO pvp_matches (challenger_id, target_id, bet_seeds, status) VALUES (%s, %s, %s, 'pending') RETURNING id", (challenger['id'], target['id'], bet))
+    match_id = cur.fetchone()['id']
+    conn.commit(); cur.close(); conn.close()
+    return jsonify({"message": "Reto enviado", "match_id": match_id})
 
 @app.route('/api/pvp/combat_sync', methods=['POST'])
 def pvp_combat_sync():
@@ -1092,7 +1130,9 @@ def pvp_combat_sync():
     cur.execute("SELECT * FROM pvp_matches WHERE id = %s FOR UPDATE", (match_id,))
     match = cur.fetchone()
     
-    if not match: return jsonify({"error": "Match not found"}), 404
+    if not match: 
+        cur.close(); conn.close()
+        return jsonify({"error": "Match not found"}), 404
     
     state = json.loads(match['match_data']) if match['match_data'] else {}
     
@@ -1106,8 +1146,17 @@ def pvp_combat_sync():
         if 'actionQueue' in update_data:
             state['last_action'] = {'role': role, 'actions': update_data['actionQueue']}
             state['turn'] = 'target' if role == 'challenger' else 'challenger'
+            
+        # LÓGICA DE PIEDRA PAPEL O TIJERA
+        if 'rps_choice' in update_data:
+            state['rps_' + role] = update_data['rps_choice']
+        if 'rps_clear' in update_data:
+            state.pop('rps_challenger', None)
+            state.pop('rps_target', None)
+        if 'initial_turn' in update_data:
+            state['turn'] = update_data['initial_turn']
+            
         if 'winner' in update_data and not match.get('winner_username'):
-            # Establecer ganador y pagarle el pozo apostado doble (lo suyo + lo del rival)
             cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (update_data['winner'], match_id))
             cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (update_data['winner'],))
             winner_user = cur.fetchone()
@@ -1124,24 +1173,6 @@ def pvp_combat_sync():
         
     cur.close(); conn.close()
     return jsonify({"state": state, "role": role, "winner": match.get('winner_username')})
-
-@app.route('/api/pvp/challenge', methods=['POST'])
-def pvp_challenge():
-    data = request.json
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT id FROM users WHERE short_id = %s", (data['target_short_id'],))
-    target = cur.fetchone()
-    if not target: return jsonify({"error": "ID de oponente no encontrado"}), 404
-    
-    cur.execute("SELECT id FROM users WHERE username = %s", (data['username'],))
-    challenger = cur.fetchone()
-    if challenger['id'] == target['id']: return jsonify({"error": "No puedes retarte a ti mismo"}), 400
-    
-    cur.execute("INSERT INTO pvp_matches (challenger_id, target_id, bet_seeds, status) VALUES (%s, %s, %s, 'pending') RETURNING id", (challenger['id'], target['id'], data['bet']))
-    match_id = cur.fetchone()['id']
-    conn.commit(); cur.close(); conn.close()
-    return jsonify({"message": "Reto enviado", "match_id": match_id})
 
 @app.route('/api/pvp/accept', methods=['POST'])
 def pvp_accept():
