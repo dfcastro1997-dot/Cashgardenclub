@@ -332,9 +332,12 @@
         <div class="p-5 sm:p-6 space-y-4 bg-gray-50 overflow-y-auto max-h-[60vh]">
             <div class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
                 <img id="welcome-plant-img" src="" class="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-md shrink-0" alt="Planta">
-                <div>
+                <div class="w-full">
                     <h4 id="welcome-plant-name" class="font-black text-cg_navy text-base sm:text-lg leading-tight">Nombre Planta</h4>
                     <p id="welcome-plant-desc" class="text-xs text-gray-500 mt-1 leading-relaxed">Inicias con <strong class="text-cg_gold">0 Puntos Perfectos</strong>.</p>
+                    
+                    <!-- NUEVO CONTENEDOR DE ESTADÍSTICAS DE COMBATE -->
+                    <div id="plant-stats-container" class="grid grid-cols-3 gap-2 mt-3 hidden"></div>
                 </div>
             </div>
             
@@ -1908,6 +1911,8 @@ if (typeof window.farmApp === 'undefined') {
         showPlantInfoModal(plotId) {
             const plot = this.state.plots[plotId];
             let name, img, scoreText, limitText, penaltyText, rulesTitle;
+            let pAtk = 0, pDef = 0, pHp = 0;
+            let isCombatPlant = false;
 
             if (plotId === 8 && plot.status === 'tournament') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
@@ -1920,7 +1925,7 @@ if (typeof window.farmApp === 'undefined') {
             } else if (plot.status === 'planted' && plot.plant) {
                 const PLANT_RULES = {
                     'flower_wheat': { range: '60% y 100%', penalty: 'Inundación inmediata (Plaga automática)' },
-                    'flower_bamboo': { range: '50% y 90%', penalty: 'Evaporación brutal y rápida deshidratación' }, // NUEVO
+                    'flower_bamboo': { range: '50% y 90%', penalty: 'Evaporación brutal y rápida deshidratación' },
                     'flower_small': { range: '30% y 90%', penalty: 'Pudrición (Pausa el crecimiento)' },
                     'flower_cactus': { range: '20% y 80%', penalty: 'Pudrición instantánea (Riesgo de contagio)' },
                     'flower_big': { range: '50% y 70%', penalty: 'Pudrición + 30 Minutos de castigo extra' },
@@ -1937,6 +1942,16 @@ if (typeof window.farmApp === 'undefined') {
                 limitText = `Mantén el agua estrictamente entre ${rule.range}.`;
                 penaltyText = `Si excedes el rango, sufrirás: <strong class="text-red-600">${rule.penalty}</strong>.`;
                 rulesTitle = "INFORMACIÓN DE LA PLANTA";
+                
+                // Mapear Estadísticas de Combate
+                isCombatPlant = true;
+                const pid = plot.plant.id;
+                if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
+                else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
+                else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
+                else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
+                else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
+                else { pAtk = 40; pDef = 20; pHp = 100; }
             } else {
                 return;
             }
@@ -1948,6 +1963,28 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('welcome-plant-penalty').innerHTML = `<strong class="font-black">Riesgo de Daño:</strong> ${penaltyText}`;
             document.getElementById('welcome-plant-rules-title').innerText = rulesTitle;
             
+            // Renderizar Estadísticas
+            const statsContainer = document.getElementById('plant-stats-container');
+            if (isCombatPlant) {
+                statsContainer.classList.remove('hidden');
+                statsContainer.innerHTML = `
+                    <div class="bg-red-50 rounded-lg p-2 border border-red-100 text-center">
+                        <span class="block text-[9px] font-bold text-red-400 uppercase leading-none">Vida</span>
+                        <span class="font-black text-red-600 text-sm leading-none">${pHp}</span>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-2 border border-orange-100 text-center">
+                        <span class="block text-[9px] font-bold text-orange-400 uppercase leading-none">Ataque</span>
+                        <span class="font-black text-orange-600 text-sm leading-none">${pAtk}</span>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-2 border border-blue-100 text-center">
+                        <span class="block text-[9px] font-bold text-blue-400 uppercase leading-none">Defensa</span>
+                        <span class="font-black text-blue-600 text-sm leading-none">${pDef}%</span>
+                    </div>
+                `;
+            } else {
+                statsContainer.classList.add('hidden');
+            }
+
             const modal = document.getElementById('tournament-welcome-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -2556,12 +2593,12 @@ if (typeof window.farmApp === 'undefined') {
         renderCrowWait(container) {
             container.innerHTML = `
                 <div class="text-center animate-fade-in">
-                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
-                        <img src="${this.state.images.crow}" class="absolute w-10 h-10 sm:w-12 sm:h-12 z-10 drop-shadow-md animate-bounce">
-                        <img src="${this.state.inventory.tool_scarecrow.image}" class="absolute top-2 left-2 w-6 h-6 sm:w-8 sm:h-8 z-0 opacity-40 grayscale">
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-5 bg-red-50 rounded-full border-4 border-red-200 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center justify-center overflow-hidden group">
+                        <div class="absolute inset-0 bg-red-500 opacity-10 animate-pulse"></div>
+                        <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="absolute w-16 h-16 sm:w-20 sm:h-20 z-10 drop-shadow-xl animate-bounce transform group-hover:scale-110 transition-transform">
                     </div>
-                    <h3 class="text-lg sm:text-xl font-black text-cg_navy mb-2">Plaga Detectada</h3>
-                    <p class="text-xs sm:text-sm text-gray-500 mb-4">El cuervo ha invadido tu parcela. Espantarlo manualmente tomará <strong class="text-cg_gold">15 Minutos</strong>, pausando el crecimiento de tu planta actual.</p>
+                    <h3 class="text-xl sm:text-2xl font-black text-red-600 mb-2 uppercase tracking-widest drop-shadow-sm">¡Plaga Detectada!</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-5 leading-relaxed">El cuervo carroñero ha invadido tu parcela. Espantarlo manualmente tomará <strong class="text-red-500 font-black">15 Minutos</strong>, pausando el crecimiento de tu planta actual.</p>
                     
                     <div class="bg-blue-50 p-3 sm:p-4 rounded-xl border border-blue-100 mb-6 text-left shadow-sm">
                         <div class="flex items-center gap-3 mb-2">
@@ -2576,7 +2613,7 @@ if (typeof window.farmApp === 'undefined') {
                         </button>
                     </div>
                     
-                    <button onclick="window.farmApp.applyCrowWait()" class="w-full bg-cg_gold hover:bg-orange-500 text-white text-sm sm:text-base font-black py-3.5 sm:py-4 rounded-xl shadow-soft transition-all uppercase tracking-wider">
+                    <button onclick="window.farmApp.applyCrowWait()" class="w-full bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base font-black py-3.5 sm:py-4 rounded-xl shadow-[0_5px_0_#b91c1c] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-wider">
                         Aceptar Retraso de 15m
                     </button>
                 </div>

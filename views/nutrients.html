@@ -933,6 +933,24 @@
 
     function confirmJoinTournament() {
         if (!window.pendingTournament) return;
+        
+        const fee_cop = window.pendingTournament.fee;
+        
+        // VERIFICACIÓN PREVIA DE FONDOS
+        if (window.farmApp && window.farmApp.state) {
+            let seedCost = {0: 5000, 10000: 15000, 30000: 30000, 50000: 50000}[fee_cop] || 5000;
+            
+            if (window.farmApp.state.seedsBalance < seedCost) {
+                showAlertModal('Semillas Insuficientes', `Necesitas ${seedCost.toLocaleString()} 🌱 para entrar a este torneo.`, '❌');
+                return;
+            }
+            if (fee_cop > 0 && window.farmApp.state.balance < fee_cop) {
+                showAlertModal('Saldo COP Insuficiente', `Necesitas $${fee_cop.toLocaleString()} COP para la entrada. Recarga o gana torneos Freeroll.`, '❌');
+                return;
+            }
+        }
+        
+        // Si hay fondos, procedemos con la configuración del juego de sintonización
         window.ritualState.pendingData = { ...window.pendingTournament };
         closePreTournamentModal();
         
