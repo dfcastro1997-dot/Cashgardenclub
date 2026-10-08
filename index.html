@@ -45,92 +45,93 @@
 <body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
 
     <!-- LOGIN SCREEN -->
-    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.postimg.cc/mZ13Y0bz/Gemini-Generated-Image-ph3x3wph3x3wph3x.jpg');">
-        <!-- Capa oscura SIN desenfoque para que la imagen Full HD se vea totalmente nítida -->
-        <div class="absolute inset-0 bg-gray-900/20"></div>
+        <!-- Capa oscura -->
+        <div class="absolute inset-0 bg-gray-900/30"></div>
         
-        <div class="bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md p-8 sm:p-10 relative z-10 border border-white/50 transform transition-all">
-            <div class="flex flex-col items-center justify-center mb-8 relative">
-                <div class="absolute inset-0 bg-white rounded-full blur-2xl opacity-60 w-32 h-32 mx-auto"></div>
-                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-28 sm:h-32 w-auto relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
+        <!-- Tarjeta de Login (Ajustada para móvil y con scroll interno si es necesario) -->
+        <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md p-6 sm:p-8 relative z-10 border border-white/50 transform transition-all max-h-[95vh] overflow-y-auto" style="scrollbar-width: none;">
+            
+            <div class="flex flex-col items-center justify-center mb-5 sm:mb-6 relative">
+                <div class="absolute inset-0 bg-white rounded-full blur-2xl opacity-60 w-24 h-24 mx-auto"></div>
+                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-20 sm:h-24 w-auto relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
             </div>
             
-            <form id="auth-form" class="space-y-6 relative z-10">
-                <div class="text-center mb-6">
-                    <p class="text-[10px] sm:text-xs text-cg_navy font-black bg-white/60 inline-block px-4 py-2 rounded-full border border-gray-200/50 shadow-sm backdrop-blur-md uppercase tracking-widest">🌱 Simulador Skill-Based</p>
+            <form id="auth-form" class="space-y-3 sm:space-y-4 relative z-10">
+                <div class="text-center mb-1">
+                    <p class="text-[9px] sm:text-[10px] text-cg_navy font-black bg-gray-100/80 inline-block px-3 py-1.5 rounded-full border border-gray-200 shadow-sm uppercase tracking-widest">🌱 Simulador Skill-Based</p>
                 </div>
                 
-                <h3 id="form-title" class="text-center font-black text-cg_navy text-2xl hidden mb-2">Crear tu Cuenta</h3>
+                <h3 id="form-title" class="text-center font-black text-cg_navy text-xl sm:text-2xl hidden mb-3">Crear tu Cuenta</h3>
                 
-                <div class="space-y-4">
+                <div class="space-y-2.5 sm:space-y-3">
                     <!-- Usuario -->
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">👤</span>
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">👤</span>
                         </div>
-                        <input type="text" id="username" placeholder="Tu usuario o correo" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
+                        <input type="text" id="username" placeholder="Tu usuario o correo" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
                     </div>
                     
                     <!-- Contraseña -->
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">🔒</span>
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">🔒</span>
                         </div>
-                        <input type="password" id="password" placeholder="Tu contraseña secreta" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400" required>
+                        <input type="password" id="password" placeholder="Tu contraseña secreta" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
                     </div>
 
                     <!-- Confirmar Contraseña (Oculto en Login) -->
                     <div id="confirm-password-container" class="relative group hidden">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-lg">🛡️</span>
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">🛡️</span>
                         </div>
-                        <input type="password" id="confirm_password" placeholder="Repite tu contraseña" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy shadow-inner transition-all placeholder-gray-400">
+                        <input type="password" id="confirm_password" placeholder="Repite tu contraseña" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
                     </div>
                 </div>
                 
-                <!-- CHECKBOXES LEGALES Y CAPTCHA (Ocultos en Login) -->
-                <div id="register-extras-container" class="hidden flex-col gap-3 mt-4">
-                    <!-- Términos y Condiciones -->
-                    <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-gray-50/50 rounded-lg transition-colors border border-transparent hover:border-gray-200/50">
-                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-5 h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
-                        <span class="text-[11px] sm:text-xs text-gray-700 font-medium leading-tight">Acepto los <a href="#" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a> y confirmo ser <strong>mayor de 18 años</strong>.</span>
+                <!-- CHECKBOXES LEGALES Y CAPTCHA -->
+                <div id="register-extras-container" class="hidden flex-col gap-2 mt-2">
+                    <label class="flex items-start gap-2.5 cursor-pointer p-2 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
+                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
+                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Acepto los <a href="#" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a> y confirmo ser <strong>mayor de 18 años</strong>.</span>
                     </label>
                     
-                    <!-- Tratamiento de Datos Personales -->
-                    <label class="flex items-start gap-3 cursor-pointer p-2 hover:bg-gray-50/50 rounded-lg transition-colors border border-transparent hover:border-gray-200/50">
-                        <input type="checkbox" id="chk-privacy" class="mt-0.5 w-5 h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
-                        <span class="text-[11px] sm:text-xs text-gray-700 font-medium leading-tight">Autorizo el <a href="#" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
+                    <label class="flex items-start gap-2.5 cursor-pointer p-2 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
+                        <input type="checkbox" id="chk-privacy" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
+                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Autorizo el <a href="#" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
                     </label>
 
-                    <!-- Simulador Visual de Captcha -->
-                    <div class="bg-gray-50/90 backdrop-blur-sm border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm mt-1">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="chk-captcha" class="w-6 h-6 text-green-500 rounded border-gray-300 focus:ring-green-500 cursor-pointer">
-                            <span class="text-sm font-bold text-gray-700">No soy un robot</span>
+                    <!-- Simulador Visual de Captcha Arreglado -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between shadow-sm mt-1">
+                        <label class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1">
+                            <input type="checkbox" id="chk-captcha" class="w-5 h-5 sm:w-6 sm:h-6 text-green-500 rounded border-gray-300 focus:ring-green-500 cursor-pointer transition-all">
+                            <span class="text-xs sm:text-sm font-bold text-gray-700">No soy un robot</span>
                         </label>
                         <div class="flex flex-col items-center justify-center">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/RecaptchaLogo.svg/1200px-RecaptchaLogo.svg.png" class="h-6 opacity-70" alt="reCAPTCHA">
-                            <span class="text-[8px] text-gray-400 mt-1">Privacidad - Términos</span>
+                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="h-6 sm:h-8 w-auto object-contain opacity-90" alt="reCAPTCHA">
+                            <span class="text-[6px] sm:text-[7px] text-gray-400 mt-0.5">Privacidad - Términos</span>
                         </div>
                     </div>
                 </div>
 
-                <div id="auth-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-2xl text-sm font-bold flex items-center gap-3 shadow-sm">
-                    <span class="text-xl">⚠️</span>
+                <div id="auth-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded-r-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm">
+                    <span class="text-lg">⚠️</span>
                     <span id="auth-error-msg">Error en la autenticación.</span>
                 </div>
                 
-                <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-gradient-to-r from-cg_blue to-blue-600 hover:from-blue-600 hover:to-blue-800 text-white font-black text-lg py-4 rounded-2xl shadow-[0_10px_20px_rgba(41,150,218,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
-                    <span>Ingresar a la Granja</span> <span>➔</span>
-                </button>
+                <div class="pt-2 sm:pt-3">
+                    <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-gradient-to-r from-cg_blue to-blue-600 hover:from-blue-600 hover:to-blue-800 text-white font-black text-sm sm:text-base py-3.5 sm:py-4 rounded-xl shadow-[0_8px_15px_rgba(41,150,218,0.25)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
+                        <span>Ingresar a la Granja</span> <span>➔</span>
+                    </button>
+                    
+                    <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-sm sm:text-base py-3.5 sm:py-4 rounded-xl shadow-[0_8px_15px_rgba(237,153,37,0.25)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
+                        <span>Crear Cuenta</span> <span>➔</span>
+                    </button>
+                </div>
                 
-                <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-lg py-4 rounded-2xl shadow-[0_10px_20px_rgba(237,153,37,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
-                    <span>Crear Cuenta</span> <span>➔</span>
-                </button>
-                
-                <div class="text-center mt-6 pt-5 border-t border-gray-200/60">
-                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-xs sm:text-sm font-black text-gray-500 hover:text-cg_blue transition-colors focus:outline-none">
+                <div class="text-center mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200/60">
+                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-[11px] sm:text-xs font-black text-gray-500 hover:text-cg_blue transition-colors focus:outline-none">
                         ¿No tienes cuenta? <span class="text-cg_blue underline decoration-2 underline-offset-4">Regístrate gratis</span>
                     </button>
                 </div>
