@@ -64,7 +64,7 @@
                 </h3>
             </div>
             <div class="flex gap-2 sm:gap-3">
-                <button onclick="window.combatApp.clearQueue()" class="bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black px-4 py-3.5 sm:py-4 rounded-xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm flex items-center justify-center shrink-0">
+                <button id="cb-clear-btn" onclick="window.combatApp.clearQueue()" class="bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black px-4 py-3.5 sm:py-4 rounded-xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm flex items-center justify-center shrink-0">
                     Limpiar
                 </button>
                 <button id="cb-action-btn" onclick="window.combatApp.endTurn()" class="flex-1 bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 sm:py-4 rounded-xl text-sm sm:text-base shadow-[0_4px_0_#c27818] active:translate-y-[4px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2">
@@ -132,6 +132,7 @@
     </div>
 </div>
 
+<!-- MODAL DE MAZO DE CARTAS -->
 <div id="card-modal" class="fixed inset-0 z-[700] hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.combatApp.closeCardModal()"></div>
     <div class="bg-white rounded-t-[2rem] sm:rounded-3xl w-full sm:w-[95%] max-w-2xl p-5 sm:p-6 md:p-8 relative z-10 flex flex-col border border-gray-100 shadow-2xl animate-fade-in sm:animate-fade-in-up overflow-hidden max-h-[85vh]">
@@ -152,6 +153,7 @@
     </div>
 </div>
 
+<!-- MODAL DE VICTORIA -->
 <div id="combat-victory-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
@@ -172,6 +174,7 @@
     </div>
 </div>
 
+<!-- MODAL DE DERROTA -->
 <div id="combat-defeat-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/95 backdrop-blur-md"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-red-100 overflow-hidden animate-fade-in text-center p-8 md:p-10">
@@ -203,46 +206,46 @@ window.combatApp = {
 
     SKILLS_DICT: {
         'flower_wheat': [
-            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque veloz básico.', icon: '🌿'}, 
-            {name: 'Hoja Afilada', cost: 1, dmg: 45, desc: 'Corte rápido.', icon: '🍃'},
-            {name: 'Drenaje', cost: 2, dmg: 75, desc: 'Golpe pesado.', icon: '🩸'},
-            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Lluvia de espigas.', icon: '🌪️'},
-            {name: 'Lluvia Dorada', cost: 4, dmg: 180, desc: 'ULTIMATE: Furia total.', icon: '✨'}
+            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque con ramas veloces y cortantes.', image: 'https://i.ibb.co/wN1MYB2j/image.png'}, 
+            {name: 'Hoja Afilada', cost: 1, dmg: 45, desc: 'Lanza proyectiles de hojas que perforan.', image: 'https://i.ibb.co/CsVp7tmc/image.png'},
+            {name: 'Drenaje', cost: 2, dmg: 75, desc: 'Absorbe la energía vital del enemigo.', image: 'https://i.ibb.co/SwhbvVh3/image.png'},
+            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Desata una furia de espigas afiladas.', image: 'https://i.ibb.co/6J0zpf4c/image.png'},
+            {name: 'Lluvia Dorada', cost: 4, dmg: 180, desc: 'ULTIMATE: Furia de cosecha inquebrantable.', image: 'https://i.ibb.co/7tpJXGGM/image.png'}
         ],
         'flower_cactus': [
-            {name: 'Espina', cost: 1, dmg: 35, desc: 'Lanza una púa.', icon: '🌵'}, 
-            {name: 'Contraataque', cost: 1, dmg: 40, desc: 'Golpe reactivo.', icon: '🥊'},
-            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto masivo.', icon: '💥'},
-            {name: 'Lluvia Púas', cost: 3, dmg: 110, desc: 'Ataque de área.', icon: '🎯'},
-            {name: 'Terremoto', cost: 4, dmg: 160, desc: 'ULTIMATE: Sismo.', icon: '🌋'}
+            {name: 'Espina', cost: 1, dmg: 35, desc: 'Dispara una dura púa perforante.', image: 'https://i.ibb.co/g5kbrXZ/image.png'}, 
+            {name: 'Contraataque', cost: 1, dmg: 40, desc: 'Reacciona y devuelve el daño al instante.', image: 'https://i.ibb.co/CKWyvxpY/image.png'},
+            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto duro, seco y contundente.', image: 'https://i.ibb.co/xKfw6B74/image.png'},
+            {name: 'Lluvia Púas', cost: 3, dmg: 110, desc: 'Caen múltiples espinas sobre el área.', image: 'https://i.ibb.co/1YLssytP/image.png'},
+            {name: 'Terremoto', cost: 4, dmg: 160, desc: 'ULTIMATE: Sismo arrasador en la arena.', image: 'https://i.ibb.co/JWwfpgXw/image.png'}
         ],
         'flower_bamboo': [
-            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido.', icon: '🎋'}, 
-            {name: 'Empuje', cost: 2, dmg: 70, desc: 'Golpe contundente.', icon: '💨'},
-            {name: 'Hojas Navaja', cost: 2, dmg: 80, desc: 'Corte doble.', icon: '⚔️'},
-            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque profundo.', icon: '🗡️'},
-            {name: 'Furia Verde', cost: 5, dmg: 220, desc: 'ULTIMATE: Devastador.', icon: '🐲'}
+            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso al enemigo.', image: 'https://i.ibb.co/wh6sWsL4/image.png'}, 
+            {name: 'Empuje', cost: 2, dmg: 70, desc: 'Fuerte golpe de vara que desestabiliza.', image: 'https://i.ibb.co/Zp0dty16/image.png'},
+            {name: 'Hojas Navaja', cost: 2, dmg: 80, desc: 'Doble corte profundo e ineludible.', image: 'https://i.ibb.co/WWyLzpFf/image.png'},
+            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque penetrante directo al núcleo.', image: 'https://i.ibb.co/twkzrsJw/image.png'},
+            {name: 'Furia Verde', cost: 5, dmg: 220, desc: 'ULTIMATE: Golpe de dragón esmeralda.', image: 'https://i.ibb.co/v6kMrLXj/image.png'}
         ],
         'flower_crystal': [
-            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Rayo de luz.', icon: '💎'}, 
-            {name: 'Destello', cost: 2, dmg: 85, desc: 'Ciega y golpea.', icon: '☀️'},
-            {name: 'Lente', cost: 2, dmg: 90, desc: 'Luz concentrada.', icon: '🔍'},
-            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Rayo arcoíris.', icon: '🌈'},
-            {name: 'Supernova', cost: 5, dmg: 250, desc: 'ULTIMATE: Explosión.', icon: '🌟'}
+            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Emite un rayo de luz deslumbrante.', image: 'https://i.ibb.co/4wGQ7XbY/image.png'}, 
+            {name: 'Destello', cost: 2, dmg: 85, desc: 'Impacto de luz pura en el objetivo.', image: 'https://i.ibb.co/gZRt0qFY/image.png'},
+            {name: 'Lente', cost: 2, dmg: 90, desc: 'Concentra la energía lumínica letal.', image: 'https://i.ibb.co/XkWNGFT6/image.png'},
+            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Dispara un cañón de rayos de arcoíris.', image: 'https://i.ibb.co/Xfns9mNP/image.png'},
+            {name: 'Supernova', cost: 5, dmg: 250, desc: 'ULTIMATE: Gran explosión estelar.', image: 'https://i.ibb.co/B1m1gRk/image.png'}
         ],
         'flower_moon': [
-            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico.', icon: '🌙'}, 
-            {name: 'Marea', cost: 2, dmg: 80, desc: 'Golpe gravitacional.', icon: '🌊'},
-            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Oscuridad pura.', icon: '🌑'},
-            {name: 'Gravedad', cost: 3, dmg: 120, desc: 'Presión extrema.', icon: '🌌'},
-            {name: 'Caída Lunar', cost: 4, dmg: 170, desc: 'ULTIMATE: Meteoro.', icon: '☄️'}
+            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico que corroe la defensa.', image: 'https://i.ibb.co/BhL05jL/image.png'}, 
+            {name: 'Marea', cost: 2, dmg: 80, desc: 'Manipula la fuerza gravitacional.', image: 'https://i.ibb.co/n8Rxgqxc/image.png'},
+            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Sume al oponente en pura oscuridad.', image: 'https://i.ibb.co/35tLtMXg/image.png'},
+            {name: 'Gravedad', cost: 3, dmg: 120, desc: 'Ejerce inmensa presión aplastante.', image: 'https://i.ibb.co/BVRbSyLq/image.png'},
+            {name: 'Caída Lunar', cost: 4, dmg: 170, desc: 'ULTIMATE: Impacto de meteoro lunar.', image: 'https://i.ibb.co/Z1JxZzDs/image.png'}
         ],
         'default': [
-            {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe básico.', icon: '🍃'}, 
-            {name: 'Placaje', cost: 1, dmg: 35, desc: 'Golpe de cuerpo.', icon: '🛡️'}, 
-            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Golpe cargado.', icon: '🔥'},
-            {name: 'Furia', cost: 3, dmg: 110, desc: 'Ataque salvaje.', icon: '💢'},
-            {name: 'Golpe Final', cost: 4, dmg: 150, desc: 'ULTIMATE: Remate.', icon: '⚔️'}
+            {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe frontal y veloz básico.', image: 'https://i.ibb.co/CsVp7tmc/image.png'}, 
+            {name: 'Placaje', cost: 1, dmg: 35, desc: 'Fuerte impacto rudo cuerpo a cuerpo.', image: 'https://i.ibb.co/Zp0dty16/image.png'}, 
+            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Ataque pesado cargado de energía.', image: 'https://i.ibb.co/xKfw6B74/image.png'},
+            {name: 'Furia', cost: 3, dmg: 110, desc: 'Secuencia rápida de golpes salvajes.', image: 'https://i.ibb.co/v6kMrLXj/image.png'},
+            {name: 'Golpe Final', cost: 4, dmg: 150, desc: 'ULTIMATE: Remate demoledor y absoluto.', image: 'https://i.ibb.co/B1m1gRk/image.png'}
         ]
     },
 
@@ -314,10 +317,8 @@ window.combatApp = {
             this.rpsResolved = false;
             this.rpsResolving = false;
             
-            // 1. Unirse a la sala Socket
             window.socket.emit('join_match', { match_id: this.matchId });
             
-            // 2. Escuchar ataques (INMEDIATO)
             window.socket.off('combat_update');
             window.socket.on('combat_update', (data) => {
                 if (data.actions) {
@@ -334,14 +335,12 @@ window.combatApp = {
                 }
             });
             
-            // 3. Escuchar Piedra Papel Tijera (INMEDIATO)
             window.socket.off('rps_update');
             window.socket.on('rps_update', (data) => {
                 this.oppRpsChoice = data.choice;
                 if (this.myRpsChoice) this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
             });
 
-            // Sincronizar equipos mediante Base de Datos UNA VEZ para comenzar
             this.syncPvPState_DB({ team: this.playerTeam });
             return;
         }
@@ -434,7 +433,6 @@ window.combatApp = {
         }, 1200); 
     },
 
-    // FUNCIÓN SOLO PARA INICIALIZACIÓN (Una vez por partida)
     async syncPvPState_DB(updateData = null) {
         try {
             const res = await fetch('/api/pvp/combat_sync', {
@@ -456,23 +454,9 @@ window.combatApp = {
                 document.getElementById('rps-modal').classList.remove('hidden');
                 document.getElementById('rps-modal').classList.add('flex');
             } else if (!this.active) {
-                setTimeout(() => this.syncPvPState_DB(), 1000); // Polling suave solo hasta encontrar equipo
+                setTimeout(() => this.syncPvPState_DB(), 1000);
             }
         } catch(e) {}
-    },
-
-    executeFlee() {
-        document.getElementById('flee-modal').classList.add('hidden');
-        document.getElementById('flee-modal').classList.remove('flex');
-        if (this.isPvP) {
-            this.playerTeam.forEach(p => p.hp = 0);
-            window.socket.emit('combat_action', { match_id: this.matchId, winner: 'opponent_abandoned' });
-            fetch('/api/pvp/combat_sync', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { winner: 'opponent_abandoned' } })
-            });
-        }
-        this.endCombat(false);
     },
 
     async animateOpponentActions(actions) {
@@ -509,19 +493,18 @@ window.combatApp = {
         this.phase = 'EXECUTION';
         this.setInstruction('⚔️ RESOLVIENDO TUS ATAQUES ⚔️');
         const btn = document.getElementById('cb-action-btn');
+        const clearBtn = document.getElementById('cb-clear-btn');
         if(btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+        if(clearBtn) { clearBtn.disabled = true; clearBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
 
-        // WEBSOCKET: Enviar ataques al instante sin esperar a BD
         if (this.isPvP) {
             window.socket.emit('combat_action', { match_id: this.matchId, actions: this.actionQueue });
-            // Guardar en Background sin bloquear
             fetch('/api/pvp/combat_sync', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { actionQueue: this.actionQueue } })
             });
         }
 
-        // Ejecutar localmente
         for (let action of this.actionQueue) {
             let attacker = this.playerTeam[action.attackerIdx];
             let target = this.enemyTeam[action.targetIdx];
@@ -562,7 +545,7 @@ window.combatApp = {
                 });
                 this.endCombat(true);
             } else if (pAlive.length === 0) {
-                // El oponente enviará la victoria
+                // Victoria reportada por oponente
             } else {
                 this.actionQueue = [];
                 this.turn++;
@@ -572,7 +555,6 @@ window.combatApp = {
             return;
         }
 
-        // PvE (Campaña normal contra cuervos)
         this.setInstruction('🦅 TURNO ENEMIGO...');
         await this.sleep(100);
 
@@ -617,40 +599,34 @@ window.combatApp = {
         this.checkWinLoss();
     },
 
-
-
-
     checkPvPTurnLogic() {
         if (this.currentPvPTurn === this.role) {
             this.startMyTurn();
         } else {
             this.setInstruction('Turno del oponente. Esperando... ⏳', true);
             const btn = document.getElementById('cb-action-btn');
-            if(btn) {
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
+            const clearBtn = document.getElementById('cb-clear-btn');
+            if(btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+            if(clearBtn) { clearBtn.disabled = true; clearBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
+            this.updateUI(); // Remueve el destaque de plantas visualmente
         }
     },
 
     startMyTurn() {
         this.energy = Math.min(this.maxEnergy, this.energy + 3);
         this.phase = 'P_SELECT';
-        this.updateUI();
         this.setInstruction('TU TURNO: Elige tus ataques ⚔️');
         const btn = document.getElementById('cb-action-btn');
-        if(btn) {
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
+        const clearBtn = document.getElementById('cb-clear-btn');
+        if(btn) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+        if(clearBtn) { clearBtn.disabled = false; clearBtn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+        this.updateUI();
     },
-
-
 
     updateEnergyUI() {
         const counter = document.getElementById('cb-energy-counter');
         const box = document.getElementById('energy-box');
-        if (!counter || !box) return; // PROTECCIÓN: Evita el error Null
+        if (!counter || !box) return;
         
         counter.innerText = `${this.energy} / ${this.maxEnergy}`;
         
@@ -667,7 +643,7 @@ window.combatApp = {
 
     setInstruction(text, isAlert = false) {
         const el = document.getElementById('cb-action-text');
-        if (!el) return; // PROTECCIÓN: Evita el error Null
+        if (!el) return;
         el.innerText = text;
         if (isAlert) {
             el.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
@@ -693,7 +669,11 @@ window.combatApp = {
         document.getElementById('flee-modal').classList.remove('flex');
         if (this.isPvP) {
             this.playerTeam.forEach(p => p.hp = 0);
-            this.syncPvPState({ actionQueue: [] });
+            window.socket.emit('combat_action', { match_id: this.matchId, winner: 'opponent_abandoned' });
+            fetch('/api/pvp/combat_sync', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { winner: 'opponent_abandoned' } })
+            });
         }
         this.endCombat(false);
     },
@@ -710,6 +690,12 @@ window.combatApp = {
 
     selectEntity(team, index) {
         if (this.phase === 'EXECUTION') return;
+
+        // VALIDADOR PvP: Bloqueo de interacción si no es tu turno.
+        if (this.isPvP && this.currentPvPTurn !== this.role) {
+            this.setInstruction('No puedes elegir, es turno del rival... ⏳', true);
+            return;
+        }
 
         if (this.phase === 'P_SELECT' || this.phase === 'P_TARGETING') {
             if (team === 'player' && this.playerTeam[index].hp > 0) {
@@ -745,16 +731,17 @@ window.combatApp = {
             const ultBg = isUltimate && canAfford ? 'bg-gradient-to-br from-yellow-50 to-white border-yellow-200' : '';
             
             container.innerHTML += `
-                <button ${canAfford ? `onclick="window.combatApp.selectCard(${plantIdx},${sIdx})"` : 'disabled'} class="w-full text-left p-3 sm:p-4 rounded-2xl flex flex-col justify-between h-[100px] sm:h-[120px] overflow-hidden ${btnClass} ${ultBg}">
-                    <div class="flex justify-between items-start w-full relative z-10">
-                        <div class="bg-blue-50 text-blue-600 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-black text-xs shadow-sm border border-blue-100 shrink-0">${skill.cost}</div>
-                        <span class="text-xl sm:text-2xl drop-shadow-sm shrink-0">${skill.icon}</span>
+                <button ${canAfford ? `onclick="window.combatApp.selectCard(${plantIdx},${sIdx})"` : 'disabled'} class="w-full text-left p-2.5 sm:p-4 rounded-2xl flex flex-col h-auto min-h-[125px] sm:min-h-[140px] overflow-hidden ${btnClass} ${ultBg}">
+                    <div class="flex justify-between items-center w-full relative z-10 mb-2">
+                        <div class="bg-blue-50 text-blue-600 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-black text-xs shadow-sm border border-blue-100 shrink-0">${skill.cost}⚡</div>
+                        <img src="${skill.image}" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md shrink-0 bg-gray-50 rounded-xl p-1 border border-gray-100">
                     </div>
-                    <div class="w-full relative z-10 mt-auto">
-                        <h4 class="font-black text-cg_navy text-[11px] sm:text-xs md:text-sm tracking-tight leading-none mb-1 truncate">${skill.name}</h4>
+                    <div class="w-full relative z-10 mt-auto flex flex-col gap-1.5">
                         <div class="flex items-center justify-between gap-1">
-                            <span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] uppercase tracking-wider shrink-0 border border-red-100">⚔️ ${skill.dmg}</span>
+                            <h4 class="font-black text-cg_navy text-[12px] sm:text-[14px] tracking-tight leading-none truncate">${skill.name}</h4>
+                            <span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0 border border-red-100">⚔️ ${skill.dmg}</span>
                         </div>
+                        <p class="text-[9px] sm:text-[10px] text-gray-500 leading-tight line-clamp-2">${skill.desc}</p>
                     </div>
                 </button>
             `;
@@ -795,10 +782,6 @@ window.combatApp = {
         if (el) { el.style.transform = side === 'P' ? 'translateY(-20px) scale(1.15)' : 'translateY(20px) scale(1.15)'; setTimeout(() => { el.style.transform = ''; }, 300); }
     },
 
-
-
-
-
     shakeElement(elementId) {
         const el = document.getElementById(elementId);
         if (el) { el.classList.add('shake-hit'); setTimeout(() => el.classList.remove('shake-hit'), 350); }
@@ -819,15 +802,16 @@ window.combatApp = {
             this.updateUI();
             this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
             
-            document.getElementById('cb-action-btn').disabled = false;
-            document.getElementById('cb-action-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+            const btn = document.getElementById('cb-action-btn');
+            const clearBtn = document.getElementById('cb-clear-btn');
+            if(btn) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+            if(clearBtn) { clearBtn.disabled = false; clearBtn.classList.remove('opacity-50', 'cursor-not-allowed'); }
         }
     },
 
     endCombat(victory) {
         this.active = false;
         window.farmApp.state.combatLock = false; 
-        if (this.pvpInterval) clearInterval(this.pvpInterval);
 
         if (victory) {
             const reward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
@@ -898,13 +882,17 @@ window.combatApp = {
                 let isTarget = (this.phase === 'EXECUTION' && side === 'E' && this.targetIdx === idx) || 
                                (this.phase === 'EXECUTION' && side === 'P' && this.targetIdx === idx);
 
+                let isMyTurn = (!this.isPvP || this.currentPvPTurn === this.role);
+                let canInteractP = side === 'P' && this.phase === 'P_SELECT' && isMyTurn;
+                let canInteractE = side === 'E' && this.phase === 'P_TARGETING' && isMyTurn;
+
                 let highlight = isActing 
                     ? 'scale-110 drop-shadow-[0_0_20px_rgba(41,150,218,0.8)] z-40'
                     : isTarget 
                         ? 'scale-105 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] z-30 animate-pulse'
-                        : (side === 'P' && this.phase === 'P_SELECT' 
+                        : (canInteractP 
                             ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer' 
-                            : (side === 'E' && this.phase === 'P_TARGETING' 
+                            : (canInteractE 
                                 ? 'hover:scale-105 hover:drop-shadow-lg z-20 cursor-pointer ring-4 ring-red-400 rounded-full animate-pulse' 
                                 : 'opacity-95 z-10'));
                 
@@ -928,7 +916,7 @@ window.combatApp = {
                 }
 
                 c.innerHTML += `
-                    <div id="${elId}" class="${positionClasses} flex flex-col items-center transition-all duration-300 ${highlight}" ${((side === 'P' && this.phase === 'P_SELECT') || (side === 'E' && this.phase === 'P_TARGETING')) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
+                    <div id="${elId}" class="${positionClasses} flex flex-col items-center transition-all duration-300 ${highlight}" ${(canInteractP || canInteractE) ? `onclick="window.combatApp.selectEntity('${side === 'P' ? 'player' : 'enemy'}',${idx})"` : ''}>
                         
                         ${queuedHtml}
                         <div class="w-14 sm:w-16 md:w-20 bg-gray-200 h-1.5 rounded-full overflow-hidden mb-1.5 sm:mb-2 shadow-inner border border-gray-300 shrink-0">
