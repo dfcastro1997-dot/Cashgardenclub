@@ -44,8 +44,11 @@
 </head>
 <body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center bg-bone transition-opacity duration-500 px-4">
+    <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('https://i.postimg.cc/7h5xp3ZS/Gemini-Generated-Image-ph3x3wph3x3wph3x.jpg');">
+        <!-- Superposición oscura opcional para que la tarjeta blanca resalte más sobre el fondo -->
+        <div class="absolute inset-0 bg-cg_navy/20 backdrop-blur-[2px]"></div>
+        
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] w-full max-w-md p-6 sm:p-10 relative z-10 border border-white/40">
         <div class="bg-white rounded-3xl shadow-soft w-full max-w-md p-6 sm:p-10 relative z-10 border border-gray-100">
             <div class="flex flex-col items-center justify-center mb-8 mt-2">
                 <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-24 sm:h-32 w-auto mb-4 drop-shadow-lg">
@@ -90,7 +93,12 @@
     </div>
 
     <!-- MAIN APP -->
+    <!-- MAIN APP -->
     <div id="dashboard-screen" class="hidden h-screen w-full flex-col bg-bone relative">
+        <!-- CAPA DE FONDO TRANSPARENTE DEL DASHBOARD -->
+        <div class="absolute inset-0 z-0 opacity-10 bg-cover bg-center bg-no-repeat pointer-events-none" style="background-image: url('https://i.postimg.cc/fydbV7Q4/Gemini-Generated-Image-edsejoedsejoedse.jpg');"></div>
+        
+        <!-- TOP NAVBAR -->
         <!-- TOP NAVBAR -->
         <header class="bg-white border-b border-gray-100 shadow-sm z-20 relative shrink-0">
             <div class="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
