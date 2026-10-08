@@ -451,6 +451,7 @@ def register():
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    import random
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
@@ -458,19 +459,30 @@ def login():
     user = cur.fetchone()
     if user and check_password_hash(user['password_hash'], data.get('password')):
         token = str(uuid.uuid4())
-        cur.execute("UPDATE users SET session_token = %s WHERE id = %s", (token, user['id']))
+        short_id = user.get('short_id')
+        
+        # --- REPARACIÓN PARA CUENTAS ANTIGUAS SIN ID AL INICIAR SESIÓN ---
+        if not short_id:
+            while True:
+                short_id = str(random.randint(1000, 9999))
+                cur.execute("SELECT id FROM users WHERE short_id = %s", (short_id,))
+                if not cur.fetchone():
+                    break
+            cur.execute("UPDATE users SET session_token = %s, short_id = %s WHERE id = %s", (token, short_id, user['id']))
+        else:
+            cur.execute("UPDATE users SET session_token = %s WHERE id = %s", (token, user['id']))
         conn.commit()
         
         del user['password_hash']
         user['balance'] = float(user['balance'] or 0)
         user['session_token'] = token
+        user['short_id'] = short_id
         
         cur.close(); conn.close()
         return jsonify({"message": "Login exitoso", "user": user})
     
     cur.close(); conn.close()
     return jsonify({"error": "Usuario o contraseña incorrectos"}), 401
-
 
 
 @app.route('/api/sync/<username>', methods=['GET'])
@@ -483,6 +495,18 @@ def sync_user(username):
     user_data = cur.fetchone()
     
     if user_data:
+        # --- REPARACIÓN PARA CUENTAS ANTIGUAS SIN ID ACTIVAS AHORA MISMO ---
+        if not user_data.get('short_id'):
+            import random
+            while True:
+                new_id = str(random.randint(1000, 9999))
+                cur.execute("SELECT id FROM users WHERE short_id = %s", (new_id,))
+                if not cur.fetchone():
+                    break
+            cur.execute("UPDATE users SET short_id = %s WHERE id = %s", (new_id, user_data['id']))
+            conn.commit()
+            user_data['short_id'] = new_id
+
         # Buscar si alguien lo está retando en este momento
         cur.execute('''
             SELECT p.id as match_id, u.username as challenger_name, p.bet_seeds 
@@ -492,8 +516,6 @@ def sync_user(username):
         challenge = cur.fetchone()
         if challenge:
             user_data['pending_challenge'] = challenge
-
-        # --- CORRECCIÓN: SE ELIMINÓ LA LÍNEA EXTRA "user_data = cur.fetchone()" QUE CAUSABA EL 404 ---
 
         if user_data.get('session_token') and user_data['session_token'] != token:
             cur.close(); conn.close()
@@ -511,7 +533,6 @@ def sync_user(username):
     
     cur.close(); conn.close()
     return jsonify({"error": "Usuario no encontrado"}), 404
-
 
 
 
