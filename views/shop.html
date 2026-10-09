@@ -79,9 +79,7 @@ window.shopApp = {
             { id: 'flower_small', name: 'Flor Pequeña', image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png', duration: '1 Hora', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 30% a 90%<br><strong class="text-red-500">Peligro:</strong> Pausa de crecimiento.', price: 2000, hp: 100, atk: 40, def: 20, reward: 4500 },
             { id: 'flower_crystal', name: 'Helecho de Cristal', image: 'https://i.ibb.co/5WcdFhL9/Frame-764.png', duration: '2 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 40% a 80%<br><strong class="text-red-500">Peligro:</strong> Pudrición temporal.', price: 4000, hp: 60, atk: 100, def: 8, reward: 10000 },
             { id: 'flower_big', name: 'Flor Grande', image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png', duration: '5 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 50% a 70%<br><strong class="text-red-500">Peligro:</strong> 30m extra de castigo.', price: 10000, hp: 100, atk: 40, def: 20, reward: 26000 },
-            { id: 'flower_moon', name: 'Lirio Lunar', image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png', duration: '12 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 40% a 90%<br><strong class="text-red-500">Peligro:</strong> Atrae cuervos.', price: 20000, hp: 200, atk: 60, def: 25, reward: 55000 },
-            { id: 'flower_solar', name: 'Girasol Solar', image: 'https://i.ibb.co/JW8C2psK/Frame-766.png', duration: '4 Horas', usage: '1', desc: '<strong class="text-cg_gold">Semilla Premium</strong><br><strong class="text-red-500">Peligro:</strong> Sensible a sobrehidratación.', price_cop: 2500, hp: 100, atk: 40, def: 20, reward: 5000 },
-            { id: 'flower_neon', name: 'Orquídea Neón', image: 'https://i.ibb.co/mF6QtPRV/Frame-767.png', duration: '8 Horas', usage: '1', desc: '<strong class="text-cg_gold">Semilla VIP</strong><br><strong class="text-red-500">Peligro:</strong> Rango exigente.', price_cop: 5000, hp: 100, atk: 40, def: 20, reward: 12000 }
+            { id: 'flower_moon', name: 'Lirio Lunar', image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png', duration: '12 Horas', usage: '1', desc: '<strong class="text-cg_navy">Rango:</strong> 40% a 90%<br><strong class="text-red-500">Peligro:</strong> Atrae cuervos.', price: 20000, hp: 200, atk: 60, def: 25, reward: 55000 }
         ],
         iap: [
             { id: 'iap_water_24h', name: 'Auto-Riego 24H', image: 'https://i.ibb.co/6JgfKLBk/Frame-752.png', duration: '24 Horas', usage: 'Automatización', desc: 'Riega automáticamente tus plantas al 100% de su rango seguro y ahuyenta plagas por un día entero.', price_cop: 5000 },
@@ -195,7 +193,15 @@ window.shopApp = {
             // Renderizado de Estadísticas de Combate y Cosecha si es Flor
             let statsHtml = '';
             let harvestHtml = '';
+            let reqPotHtml = '';
+            
             if (tab === 'flowers' && item.hp) {
+                // Nuevo bloque para mostrar requerimiento de Maceta
+                let reqSize = (item.id.includes('small') || item.id.includes('wheat') || item.id.includes('cactus') || item.id.includes('bamboo') || item.id.includes('crystal')) ? 'Maceta Pequeña' : 'Maceta Grande';
+                reqPotHtml = `<div class="bg-indigo-50 border border-indigo-100 rounded-lg p-2 mb-2 text-center shadow-sm">
+                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">🏺 Requiere: ${reqSize}</span>
+                </div>`;
+
                 harvestHtml = `
                 <div class="bg-green-50 rounded-lg p-2 border border-green-200 mb-3 flex items-center justify-between shadow-sm">
                     <span class="text-[10px] font-black text-green-700 uppercase tracking-widest">Cosecha Estimada</span>
@@ -231,6 +237,7 @@ window.shopApp = {
                         ${durationHtml}
                         <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
                     </div>
+                    ${reqPotHtml}
                     ${harvestHtml}
                     ${statsHtml}
                     <p class="text-[11px] md:text-xs text-gray-500 mb-4 leading-relaxed flex-1">${item.desc}</p>
@@ -278,14 +285,12 @@ window.shopApp = {
                             
                             if (plot.plant && plot.status === 'planted') {
                                 if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
-                                else if (plot.plant.id === 'flower_bamboo' && plot.water > 90) plot.water = 90; // NUEVO
+                                else if (plot.plant.id === 'flower_bamboo' && plot.water > 90) plot.water = 90;
                                 else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
                                 else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
                                 else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
                                 else if (plot.plant.id === 'flower_crystal' && plot.water > 80) plot.water = 80;
                                 else if (plot.plant.id === 'flower_moon' && plot.water > 90) plot.water = 90;
-                                else if (plot.plant.id === 'flower_solar' && plot.water > 70) plot.water = 70;
-                                else if (plot.plant.id === 'flower_neon' && plot.water > 60) plot.water = 60;
                             }
                          }
                     });
@@ -306,7 +311,7 @@ window.shopApp = {
                 targetInventory[itemId] = { 
                     name: catItem.name, 
                     type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                    reqSize: itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') || itemId.includes('solar') ? 'small' : (itemId.includes('big') || itemId.includes('moon') || itemId.includes('neon') ? 'big' : null),                    qty: 0, 
+                    reqSize: itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') ? 'small' : (itemId.includes('big') || itemId.includes('moon') ? 'big' : null),                    qty: 0, 
                     image: catItem.image 
                 };
             }
@@ -527,14 +532,12 @@ window.shopApp = {
                                     plot.crowLeavingAt = 0;
                                     if (plot.plant && plot.status === 'planted') {
                                         if (plot.plant.id === 'flower_wheat') plot.water = 100;
-                                        else if (plot.plant.id === 'flower_bamboo') plot.water = 90; // NUEVO
+                                        else if (plot.plant.id === 'flower_bamboo') plot.water = 90;
                                         else if (plot.plant.id === 'flower_small') plot.water = 90;
                                         else if (plot.plant.id === 'flower_big') plot.water = 70;
                                         else if (plot.plant.id === 'flower_cactus') plot.water = 80;
                                         else if (plot.plant.id === 'flower_crystal') plot.water = 80;
                                         else if (plot.plant.id === 'flower_moon') plot.water = 90;
-                                        else if (plot.plant.id === 'flower_solar') plot.water = 70;
-                                        else if (plot.plant.id === 'flower_neon') plot.water = 60;
                                     } else {
                                         plot.water = 100;
                                     }

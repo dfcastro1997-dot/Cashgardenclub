@@ -911,10 +911,11 @@ if (typeof window.farmApp === 'undefined') {
 
 
         state: {
+            isSynced: false, // <-- NUEVO: CANDADO DE PROTECCIÓN GLOBAL
             seedsBalance: 35000,
             practiceTokens: 0, 
             autoWaterEndTime: 0, 
-            autoHarvestEndTime: 0, // <-- AÑADIDO PARA EL RECOLECTOR
+            autoHarvestEndTime: 0,
             plots: [
                 { id: 0, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 1, status: 'empty', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
@@ -933,27 +934,23 @@ if (typeof window.farmApp === 'undefined') {
                 'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
                 'tool_duel_ticket': { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png' },
                 'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/szXSZjs/Frame-753.png' },
-                'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/S4G2c9qy/Frame-768.png' }, // NUEVO
+                'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/S4G2c9qy/Frame-768.png' },
                 'flower_cactus': { name: 'Cactus de Cuarzo', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/5gvFssT4/Frame-758.png' },
                 'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/mrJyDqV8/Frame-743.png' },
                 'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/qF9G5qMw/Frame-744.png' },
                 'flower_crystal': { name: 'Helecho de Cristal', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/5WcdFhL9/Frame-764.png' },
-                'flower_moon': { name: 'Lirio Lunar', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png' },
-                'flower_solar': { name: 'Girasol Solar', type: 'seed', reqSize: 'small', qty: 0, image: 'https://i.ibb.co/JW8C2psK/Frame-766.png' },
-                'flower_neon': { name: 'Orquídea Neón', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/mF6QtPRV/Frame-767.png' }
+                'flower_moon': { name: 'Lirio Lunar', type: 'seed', reqSize: 'big', qty: 0, image: 'https://i.ibb.co/gbDzsCGh/Frame-765.png' }
             },
             images: {
                 terrain_empty: 'https://i.ibb.co/TqPpc87z/Frame-745.png',
                 terrain_dry: 'https://i.ibb.co/rf66qT74/Frame-751.png',
                 plant_wheat: 'https://i.ibb.co/szXSZjs/Frame-753.png',
-                plant_bamboo: 'https://i.ibb.co/S4G2c9qy/Frame-768.png', // NUEVO
+                plant_bamboo: 'https://i.ibb.co/S4G2c9qy/Frame-768.png',
                 plant_cactus: 'https://i.ibb.co/5gvFssT4/Frame-758.png',
                 plant_small: 'https://i.ibb.co/mrJyDqV8/Frame-743.png',
                 plant_big: 'https://i.ibb.co/qF9G5qMw/Frame-744.png',
                 plant_crystal: 'https://i.ibb.co/5WcdFhL9/Frame-764.png',
                 plant_moon: 'https://i.ibb.co/gbDzsCGh/Frame-765.png',
-                plant_solar: 'https://i.ibb.co/JW8C2psK/Frame-766.png',
-                plant_neon: 'https://i.ibb.co/mF6QtPRV/Frame-767.png',
                 crow: 'https://i.ibb.co/DfG3hswj/Frame-750.png',
                 bonsai: 'https://i.ibb.co/0yv9F7D6/Frame-754.png'
             },
@@ -1089,6 +1086,13 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         saveState() {
+            // --- NUEVO MECANISMO DE DEFENSA: CANDADO ANTI-BORRADO ---
+            if (!this.state.isSynced) {
+                console.warn("Bloqueo de seguridad: Evitando sobreescribir la BD porque el servidor estaba caído.");
+                return; 
+            }
+            // --------------------------------------------------------
+
             this.state.lastTick = Date.now();
             this.state.isSaving = true; 
             
@@ -1103,7 +1107,7 @@ if (typeof window.farmApp === 'undefined') {
             });
 
             const username = sessionStorage.getItem('username');
-            const token = sessionStorage.getItem('session_token'); // <-- LEER TOKEN
+            const token = sessionStorage.getItem('session_token'); 
             
             if (username && token) {
                 if (this.saveTimeout) clearTimeout(this.saveTimeout);
@@ -1114,15 +1118,14 @@ if (typeof window.farmApp === 'undefined') {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                     }).then(res => {
-                        this.state.isSaving = false; // <-- LIBERAR CANDADO AL TERMINAR
+                        this.state.isSaving = false;
                         if (res.status === 401) {
-                            // En lugar del alert() nativo, usamos la modal bonita de index.html
                             if (window.showSessionExpiredModal) {
                                 window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
                             }
                         }
                     }).catch(e => {
-                        this.state.isSaving = false; // <-- LIBERAR CANDADO EN CASO DE ERROR
+                        this.state.isSaving = false;
                         console.error("Error guardando progreso:", e);
                     });
                 }, 500); 
@@ -1147,66 +1150,72 @@ if (typeof window.farmApp === 'undefined') {
                 fetch(`/api/sync/${encodeURIComponent(username)}?token=${encodeURIComponent(token)}`)
                     .then(res => {
                         if (res.status === 401) {
-                            // Despliega el modal de seguridad nativo en lugar de lanzar el error en consola
                             if (window.showSessionExpiredModal) {
                                 window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad. Inicia sesión nuevamente.");
                             }
-                            return null; // Retorna null para detener la ejecución de forma segura
+                            return null;
                         }
+                        
+                        // NUEVO: Si el servidor está reiniciándose (Da error 502/503), forzamos el error.
+                        if (!res.ok) throw new Error("Servidor no disponible");
+                        
                         return res.json();
                     })
                     .then(data => {
-                        if (!data || data.error) return; // Si fue 401, data es null, evitamos continuar
+                        if (!data || data.error) return; 
 
-                        if (data.status === 'success' && data.user.game_state) {
-                            try {
-                                const s = JSON.parse(data.user.game_state);
-                                
-                                this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
-                                this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; 
-                                this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
-                                this.state.autoHarvestEndTime = s.autoHarvestEndTime ?? 0;
-                                this.state.plots = s.plots ?? this.state.plots;
-                                this.state.arsenal = s.arsenal ?? (this.state.arsenal || []);
-                                
-                                // MIGRACIÓN AUTOMÁTICA DE 6 A 9 TERRENOS EN LA CARGA
-                                if (this.state.plots.length === 6) {
-                                    const arenaPlot = this.state.plots[5];
-                                    arenaPlot.id = 8; 
+                        if (data.status === 'success') {
+                            if (data.user.game_state) {
+                                try {
+                                    const s = JSON.parse(data.user.game_state);
                                     
-                                    this.state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
-                                    this.state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
-                                    this.state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
-                                    this.state.plots.push(arenaPlot);
+                                    this.state.seedsBalance = s.seedsBalance ?? this.state.seedsBalance;
+                                    this.state.practiceTokens = s.practiceTokens ?? this.state.practiceTokens; 
+                                    this.state.autoWaterEndTime = s.autoWaterEndTime ?? this.state.autoWaterEndTime;
+                                    this.state.autoHarvestEndTime = s.autoHarvestEndTime ?? 0;
+                                    this.state.plots = s.plots ?? this.state.plots;
+                                    this.state.arsenal = s.arsenal ?? (this.state.arsenal || []);
+                                    
+                                    if (this.state.plots.length === 6) {
+                                        const arenaPlot = this.state.plots[5];
+                                        arenaPlot.id = 8; 
+                                        
+                                        this.state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
+                                        this.state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                        this.state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                        this.state.plots.push(arenaPlot);
+                                    }
+                                    
+                                    if (s.inventory) {
+                                        Object.keys(s.inventory).forEach(k => {
+                                            if (this.state.inventory[k]) {
+                                                this.state.inventory[k].qty = s.inventory[k].qty || 0;
+                                            } else {
+                                                this.state.inventory[k] = s.inventory[k];
+                                            }
+                                        });
+                                    }
+                                    
+                                    this.state.lastTick = s.lastTick ?? Date.now();
+                                    
+                                    // EL JUGADOR CARGÓ CON ÉXITO SU DATA - ABRIR CANDADO
+                                    this.state.isSynced = true;
+                                    this.updateUI(); 
+                                } catch(e) { 
+                                    console.error("Error parseando game_state", e); 
                                 }
-                                
-                                if (s.inventory) {
-                                    Object.keys(s.inventory).forEach(k => {
-                                        if (this.state.inventory[k]) {
-                                            this.state.inventory[k].qty = s.inventory[k].qty || 0;
-                                        } else {
-                                            this.state.inventory[k] = s.inventory[k];
-                                        }
-                                    });
-                                }
-                                
-                                this.state.lastTick = s.lastTick ?? Date.now();
-                                this.updateUI(); 
-                            } catch(e) { 
-                                console.error("Error parseando game_state", e); 
+                            } else {
+                                // USUARIO NUEVO SIN PARTIDA - ABRIR CANDADO PARA QUE GUARDE LA PRIMERA VEZ
+                                this.state.isSynced = true;
+                                this.updateUI();
                             }
-                        } else {
-                            this.updateUI();
                         }
                     })
                     .catch(e => { 
                         console.error("Error de sincronización (Servidor actualizándose):", e); 
-                        // IMPORTANTE: NO llamamos a this.updateUI() aquí.
-                        // Si inicializamos la UI sin datos, cargará 35,000 semillas por defecto 
-                        // y el autoguardado borrará el progreso real cuando el servidor regrese.
-                        
+                        // AL CAER AQUÍ, EL CANDADO SIGUE EN FALSE. NUNCA GUARDARÁ LA DATA POR DEFECTO.
                         if (window.showSessionExpiredModal) {
-                            window.showSessionExpiredModal("El servidor está recibiendo una actualización. Por favor, recarga la página en unos segundos.");
+                            window.showSessionExpiredModal("El servidor está recibiendo una actualización de mantenimiento. Por protección, el juego se ha pausado temporalmente. Por favor, recarga la página en 30 segundos.");
                         }
                     }); 
                 }
@@ -1525,11 +1534,9 @@ if (typeof window.farmApp === 'undefined') {
                                            (plot.plant && plot.plant.id === 'flower_cactus' ? this.state.images.plant_cactus :
                                            (plot.plant && plot.plant.id === 'flower_crystal' ? this.state.images.plant_crystal :
                                            (plot.plant && plot.plant.id === 'flower_moon' ? this.state.images.plant_moon :
-                                           (plot.plant && plot.plant.id === 'flower_solar' ? this.state.images.plant_solar :
-                                           (plot.plant && plot.plant.id === 'flower_neon' ? this.state.images.plant_neon :
                                            (plot.plant && plot.plant.id === 'flower_small' ? this.state.images.plant_small : 
                                            (plot.plant && plot.plant.id === 'flower_big' ? this.state.images.plant_big : 
-                                           (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big)))))))));
+                                           (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big)))))));
 
                     let timeLeftText = '';
                     let progress = 0;
@@ -1541,8 +1548,6 @@ if (typeof window.farmApp === 'undefined') {
                         else if (plot.plant.id === 'flower_small') baseDuration = 3600000;
                         else if (plot.plant.id === 'flower_crystal') baseDuration = 7200000;
                         else if (plot.plant.id === 'flower_big') baseDuration = 18000000;
-                        else if (plot.plant.id === 'flower_solar') baseDuration = 14400000;
-                        else if (plot.plant.id === 'flower_neon') baseDuration = 28800000;
                         else if (plot.plant.id === 'flower_moon') baseDuration = 43200000;
 
                         const msLeft = Math.max(0, plot.harvestAt - now);
@@ -1575,8 +1580,6 @@ if (typeof window.farmApp === 'undefined') {
                             else if (plantId === 'flower_cactus' && plot.water > 80) isRotting = true;
                             else if (plantId === 'flower_crystal' && plot.water > 80) isRotting = true;
                             else if (plantId === 'flower_moon' && plot.water > 90) isRotting = true;
-                            else if (plantId === 'flower_solar' && plot.water > 70) isRotting = true;
-                            else if (plantId === 'flower_neon' && plot.water > 60) isRotting = true;
                             
                             if (plot.crowLeavingAt > now) {
                                 const minsLeft = Math.ceil((plot.crowLeavingAt - now) / 60000);
@@ -1780,14 +1783,12 @@ if (typeof window.farmApp === 'undefined') {
                     let minSafe = 20, maxSafe = 100;
                     if (plot.plant) {
                         if (plot.plant.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
-                        else if (plot.plant.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; } // NUEVO
+                        else if (plot.plant.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; }
                         else if (plot.plant.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
                         else if (plot.plant.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
                         else if (plot.plant.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
                         else if (plot.plant.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
                         else if (plot.plant.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
-                        else if (plot.plant.id === 'flower_solar') { minSafe = 30; maxSafe = 70; }
-                        else if (plot.plant.id === 'flower_neon') { minSafe = 40; maxSafe = 60; }
                     }
 
                     if (!plot.isReady) {
@@ -1830,11 +1831,9 @@ if (typeof window.farmApp === 'undefined') {
                         if (now >= plot.harvestAt) {
                             plot.isReady = true;
                             
-                            // --- AUTO-COSECHADOR ---
-                            // --- AUTO-COSECHADOR ---
                             if (isAutoHarvesting && !plot.isSpoiled) {
                                 let reward = 0;
-                                const currentPlantId = plot.plant ? plot.plant.id : ''; // <-- Variable corregida para JS
+                                const currentPlantId = plot.plant ? plot.plant.id : '';
                                 
                                 if (currentPlantId === 'flower_wheat') reward = 1500;
                                 else if (currentPlantId === 'flower_bamboo') reward = 6500;
@@ -1843,8 +1842,6 @@ if (typeof window.farmApp === 'undefined') {
                                 else if (currentPlantId === 'flower_big') reward = 26000;
                                 else if (currentPlantId === 'flower_crystal') reward = 10000;
                                 else if (currentPlantId === 'flower_moon') reward = 55000;
-                                else if (currentPlantId === 'flower_solar') reward = 5000;
-                                else if (currentPlantId === 'flower_neon') reward = 12000;
                                 
                                 this.state.seedsBalance += reward;
                                 plot.potUses += 1;
@@ -1924,9 +1921,7 @@ if (typeof window.farmApp === 'undefined') {
                     'flower_cactus': { range: '20% y 80%', penalty: 'Pudrición instantánea (Riesgo de contagio)' },
                     'flower_big': { range: '50% y 70%', penalty: 'Pudrición + 30 Minutos de castigo extra' },
                     'flower_crystal': { range: '40% y 80%', penalty: 'Pudrición temporal' },
-                    'flower_moon': { range: '40% y 90%', penalty: 'Atrae cuervos si se seca' },
-                    'flower_solar': { range: '30% y 70%', penalty: 'Pudrición instantánea' },
-                    'flower_neon': { range: '40% y 60%', penalty: 'Pudrición inmediata' }
+                    'flower_moon': { range: '40% y 90%', penalty: 'Atrae cuervos si se seca' }
                 };
                 const rule = PLANT_RULES[plot.plant.id] || { range: '0% y 100%', penalty: 'Ninguno' };
                 name = plot.plant.name;
@@ -1986,7 +1981,7 @@ if (typeof window.farmApp === 'undefined') {
 
         openWaterCalibration(plotId = 8) {
             this.calibration.currentPlotId = plotId;
-            let speed = 1.0; // VELOCIDAD ESTANDARIZADA PARA TODAS LAS PLANTAS
+            let speed = 1.0; 
             let minSafe = 0;
             let maxSafe = 100;
             const plot = this.state.plots[plotId];
@@ -1994,7 +1989,6 @@ if (typeof window.farmApp === 'undefined') {
             
             if (plotId === 8) {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
-                // Ya no sobreescribimos la velocidad con conf.speed
                 minSafe = conf.minWater;
                 maxSafe = conf.maxWater;
             } else {
@@ -2006,8 +2000,6 @@ if (typeof window.farmApp === 'undefined') {
                     else if (plot.plant.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
                     else if (plot.plant.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
                     else if (plot.plant.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
-                    else if (plot.plant.id === 'flower_solar') { minSafe = 30; maxSafe = 70; }
-                    else if (plot.plant.id === 'flower_neon') { minSafe = 40; maxSafe = 60; }
                 }
             }
 
@@ -2095,10 +2087,6 @@ if (typeof window.farmApp === 'undefined') {
                 } else if (plantId === 'flower_crystal' && plot.water > 80) {
                     isRotting = true;
                 } else if (plantId === 'flower_moon' && plot.water > 90) {
-                    isRotting = true;
-                } else if (plantId === 'flower_solar' && plot.water > 70) {
-                    isRotting = true;
-                } else if (plantId === 'flower_neon' && plot.water > 60) {
                     isRotting = true;
                 }
 
@@ -2368,8 +2356,6 @@ if (typeof window.farmApp === 'undefined') {
             else if (plot.plant.id === 'flower_big') reward = 26000;
             else if (plot.plant.id === 'flower_crystal') reward = 10000;
             else if (plot.plant.id === 'flower_moon') reward = 55000;
-            else if (plot.plant.id === 'flower_solar') reward = 5000;
-            else if (plot.plant.id === 'flower_neon') reward = 12000;
                           
             let msg = `+${reward} 🌱`;
             let iconToast = '✨';
@@ -2623,14 +2609,12 @@ if (typeof window.farmApp === 'undefined') {
                     // Lógica de compatibilidad de tierra
                     let minSafe = 20, maxSafe = 100;
                     if (seed.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
-                    else if (seed.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; } // NUEVO
+                    else if (seed.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; } 
                     else if (seed.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
                     else if (seed.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
                     else if (seed.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
                     else if (seed.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
                     else if (seed.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
-                    else if (seed.id === 'flower_solar') { minSafe = 30; maxSafe = 70; }
-                    else if (seed.id === 'flower_neon') { minSafe = 40; maxSafe = 60; }
 
                     let warningHtml = '';
                     if (currentWater > maxSafe) {
@@ -2962,13 +2946,11 @@ if (typeof window.farmApp === 'undefined') {
             
             let msDuration = 3600000; 
             if (seedId === 'flower_wheat') msDuration = 300000; 
-            else if (seedId === 'flower_bamboo') msDuration = 600000; // NUEVO
+            else if (seedId === 'flower_bamboo') msDuration = 600000; 
             else if (seedId === 'flower_cactus') msDuration = 1800000; 
             else if (seedId === 'flower_big') msDuration = 18000000; 
             else if (seedId === 'flower_crystal') msDuration = 7200000;
             else if (seedId === 'flower_moon') msDuration = 43200000;
-            else if (seedId === 'flower_solar') msDuration = 14400000;
-            else if (seedId === 'flower_neon') msDuration = 28800000;
             
             plot.harvestAt = plot.plantedAt + msDuration;
 
@@ -3096,8 +3078,6 @@ if (typeof window.farmApp === 'undefined') {
                 'flower_wheat': 12000,   
                 'flower_bamboo': 10000,  
                 'flower_small': 10000,   
-                'flower_neon': 10000,    
-                'flower_solar': 9000,    
                 'flower_cactus': 7000,   
                 'flower_big': 6000,      
                 'flower_moon': 5000,     
@@ -3199,17 +3179,13 @@ if (typeof window.farmApp === 'undefined') {
                 plot.isReady = false;
                 plot.plantedAt = Date.now();
 
-                // 2. Calcular el tiempo de cosecha basado en la semilla
-                // 2. Calcular el tiempo de cosecha basado en la semilla
-                let msDuration = 3600000; // 1 Hora por defecto
+                let msDuration = 3600000; 
                 if (seedId === 'flower_wheat') msDuration = 300000;
-                else if (seedId === 'flower_bamboo') msDuration = 600000; // AÑADIDO: 10 Minutos para el Bambú
+                else if (seedId === 'flower_bamboo') msDuration = 600000; 
                 else if (seedId === 'flower_cactus') msDuration = 1800000;
                 else if (seedId === 'flower_small') msDuration = 3600000;
                 else if (seedId === 'flower_crystal') msDuration = 7200000;
                 else if (seedId === 'flower_big') msDuration = 18000000;
-                else if (seedId === 'flower_solar') msDuration = 14400000;
-                else if (seedId === 'flower_neon') msDuration = 28800000;
                 else if (seedId === 'flower_moon') msDuration = 43200000;
 
                 plot.harvestAt = plot.plantedAt + msDuration;
