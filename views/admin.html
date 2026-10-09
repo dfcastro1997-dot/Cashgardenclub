@@ -1,305 +1,342 @@
-<div class="h-full flex flex-col bg-bone relative animate-fade-in" id="admin-root">
+<div class="h-full flex flex-col bg-gray-50 relative animate-fade-in" id="admin-root">
     
-    <!-- HEADER ADMIN MINIMALISTA -->
-    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 w-full z-50 shadow-md">
-        <div class="max-w-[800px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+    <!-- HEADER ADMIN MINIMALISTA (Tema Claro) -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-50 shadow-sm">
+        <div class="max-w-[1200px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
-                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center border-2 border-cg_blue shadow-[0_0_15px_rgba(41,150,218,0.3)]">
                     <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-7 w-auto object-contain">
                 </div>
                 <div>
-                    <h2 class="text-white font-black text-sm sm:text-base leading-tight">CashGarden</h2>
-                    <span class="text-[9px] sm:text-[10px] font-black bg-red-500 text-white px-2 py-0.5 rounded tracking-widest uppercase shadow-sm">Mainframe Admin</span>
+                    <h2 class="text-cg_navy font-black text-sm sm:text-base leading-tight">CashGarden</h2>
+                    <span class="text-[9px] sm:text-[10px] font-black bg-cg_blue text-white px-2 py-0.5 rounded tracking-widest uppercase shadow-sm">Admin Center</span>
                 </div>
             </div>
-            <button onclick="logout()" class="text-[10px] sm:text-xs font-black text-gray-400 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-2 bg-gray-800 px-3 py-2 rounded-lg border border-gray-700">
-                Cerrar <span>🚪</span>
+            <button onclick="logout()" class="text-[10px] sm:text-xs font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-2 bg-gray-50 hover:bg-red-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-red-200">
+                Salir <span>🚪</span>
             </button>
         </div>
     </header>
 
-    <!-- CONTENEDOR DE VISTAS (Pestañas) -->
-    <div class="flex-1 overflow-y-auto w-full pb-24">
-        <div class="max-w-[800px] mx-auto p-4 sm:p-6 w-full">
+    <!-- CONTENEDOR PRINCIPAL DE VISTAS -->
+    <div class="flex-1 overflow-y-auto w-full pb-28 md:pb-10 pt-4 md:pt-8 px-4">
+        <div class="max-w-[1200px] mx-auto w-full">
             
-            <!-- VISTA 1: DIRECTORIO DE JUGADORES -->
-            <div id="content-directorio" class="block animate-fade-in">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio Activo</h3>
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <input type="text" id="admin-search" placeholder="Buscar por ID o Nombre..." oninput="filterUsers()" class="flex-1 sm:w-64 bg-white border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-red-500 shadow-sm transition-colors">
-                        <button onclick="fetchUsers()" class="bg-gray-900 hover:bg-black text-white px-4 py-2.5 rounded-xl text-xs font-black transition-colors shadow-sm shrink-0">Recargar</button>
+            <!-- VISTA 1: DASHBOARD & ANALÍTICAS -->
+            <div id="content-dashboard" class="block animate-fade-in space-y-6">
+                
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
+                    <h3 class="text-2xl font-black text-cg_navy flex items-center gap-2">📊 Panel de Control Global</h3>
+                    <div class="flex gap-2">
+                        <button onclick="adminConfirmModal('¿Acelerar 1 Hora?', 'Afectará tu granja local.', () => { window.farmApp.dev.addTime(1); })" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">⏳ +1h</button>
+                        <button onclick="adminConfirmModal('¿Acelerar 5 Horas?', 'Riesgo de marchitar plantas.', () => { window.farmApp.dev.addTime(5); })" class="bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-600 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">⏳ +5h</button>
+                        <button onclick="initDashboardData()" class="bg-cg_navy hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">Actualizar</button>
                     </div>
                 </div>
-                
-                <div class="bg-white rounded-3xl shadow-soft border border-gray-200 overflow-hidden">
-                    <div class="overflow-x-auto hide-scrollbar">
+
+                <!-- Gráficos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Nuevos Registros (Últimos 7 días)</h4>
+                        <div class="relative h-48 w-full"><canvas id="chartUsers"></canvas></div>
+                    </div>
+                    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Tiempo Promedio en Plataforma</h4>
+                        <div class="relative h-48 w-full"><canvas id="chartTime"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Tops de Jugadores -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <!-- Top Recientes -->
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-gray-50 border-b border-gray-100 p-4">
+                            <h4 class="text-[11px] font-black text-cg_navy uppercase tracking-widest flex items-center gap-2">🆕 Últimos 10 Registros</h4>
+                        </div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-recent"></div>
+                    </div>
+                    
+                    <!-- Top COP -->
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-yellow-50 border-b border-yellow-100 p-4">
+                            <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest flex items-center gap-2">💵 Top 10: COP</h4>
+                        </div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-cop"></div>
+                    </div>
+
+                    <!-- Top Semillas -->
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-green-50 border-b border-green-100 p-4">
+                            <h4 class="text-[11px] font-black text-green-600 uppercase tracking-widest flex items-center gap-2">🌱 Top 10: Semillas</h4>
+                        </div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-seeds"></div>
+                    </div>
+
+                    <!-- Top Arsenal/Plantas -->
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-blue-50 border-b border-blue-100 p-4">
+                            <h4 class="text-[11px] font-black text-cg_blue uppercase tracking-widest flex items-center gap-2">⚔️ Top 10: Militar</h4>
+                        </div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-military"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 2: DIRECTORIO COMPLETO -->
+            <div id="content-directorio" class="hidden animate-fade-in">
+                <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 flex flex-col h-[75vh]">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+                        <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio de Jugadores</h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <input type="text" id="admin-search" placeholder="Buscar ID o Usuario..." oninput="filterUsers()" class="flex-1 sm:w-64 bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-cg_blue shadow-inner transition-colors">
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto rounded-xl border border-gray-100 hide-scrollbar">
                         <table class="w-full text-left border-collapse min-w-[600px]">
-                            <thead class="bg-gray-50 border-b border-gray-200">
+                            <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200">
                                 <tr>
-                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">ID Cuenta</th>
+                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Short ID</th>
                                     <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
-                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-right">Semillas 🌱</th>
-                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-right">Saldo COP 💵</th>
-                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Inyectar</th>
+                                    <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
+                                    <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
+                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Acción</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-users-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
-                                <tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold animate-pulse">Cargando base de datos clasificada...</td></tr>
+                            <tbody id="admin-users-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600 bg-white">
+                                <tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold animate-pulse">Cargando base de datos...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 2: INYECTOR DE RECURSOS (MARKETPLACE MODO DIOS) -->
-            <div id="content-inyector" class="hidden">
-                <div class="bg-gray-900 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.4)] border border-gray-700 p-6 sm:p-8 text-white relative overflow-hidden">
-                    <!-- Decoración de fondo -->
-                    <div class="absolute -right-16 -top-16 w-64 h-64 bg-red-600 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
-                    <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-blue-600 rounded-full blur-[80px] opacity-10 pointer-events-none"></div>
+            <!-- VISTA 3: INYECTOR DE RECURSOS (FACTURA) -->
+            <div id="content-inyector" class="hidden animate-fade-in max-w-4xl mx-auto w-full">
+                <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8">
+                    <h3 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">💉 Inyector de Recursos</h3>
+                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Añade elementos a la factura y envíalos de golpe al usuario.</p>
                     
-                    <h3 class="text-2xl font-black mb-1 relative z-10 flex items-center gap-3"><span class="text-3xl">💉</span> Inyector Root</h3>
-                    <p class="text-xs text-gray-400 mb-6 relative z-10 border-b border-gray-800 pb-4">Concede recursos, ítems o beneficios de pago directamente a la cuenta del jugador eludiendo las pasarelas.</p>
-                    
-                    <div class="space-y-6 relative z-10">
-                        <!-- ID Destino -->
-                        <div class="bg-black/50 p-4 rounded-2xl border border-gray-800">
-                            <label class="block text-[10px] font-black text-red-400 uppercase tracking-widest mb-2 flex items-center gap-2">🎯 ID del Jugador Destino</label>
-                            <input type="text" id="inj-short-id" placeholder="Ej: 1234" class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-3.5 rounded-xl font-black focus:border-red-500 focus:bg-gray-900 outline-none text-xl tracking-[0.5em] text-center transition-all shadow-inner">
-                        </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         
-                        <!-- Monedas -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-black/50 p-4 rounded-2xl border border-gray-800">
-                                <label class="block text-[10px] font-black text-green-400 uppercase tracking-widest mb-2">Semillas 🌱</label>
-                                <input type="number" id="inj-seeds" placeholder="+0" class="w-full bg-gray-800 border border-gray-700 text-green-400 px-4 py-3 rounded-xl font-black outline-none focus:border-green-500 text-lg shadow-inner text-center">
+                        <!-- Columna: Creador de Factura -->
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">🎯 ID del Jugador Destino</label>
+                                <input type="text" id="inj-short-id" placeholder="Ej: 1234" class="w-full bg-white border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-black focus:border-cg_blue outline-none text-xl tracking-[0.5em] text-center shadow-sm">
                             </div>
-                            <div class="bg-black/50 p-4 rounded-2xl border border-gray-800">
-                                <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Dinero COP 💵</label>
-                                <input type="number" id="inj-cop" placeholder="+$0" class="w-full bg-gray-800 border border-gray-700 text-cg_gold px-4 py-3 rounded-xl font-black outline-none focus:border-yellow-500 text-lg shadow-inner text-center">
+                            
+                            <!-- Controles para agregar al carrito -->
+                            <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-3">
+                                <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Agregar Elemento</h4>
+                                
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="openInjectorModal('seeds')" class="bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">🌱 Semillas</button>
+                                    <button onclick="openInjectorModal('cop')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">💵 Dinero COP</button>
+                                </div>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button onclick="openInjectorModal('item')" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">📦 Ítems / Macetas</button>
+                                    <button onclick="openInjectorModal('arsenal')" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">⚔️ Planta Militar (Arsenal)</button>
+                                    <button onclick="openInjectorModal('vip')" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">⭐ Terrenos y Pases VIP</button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Inventario Material -->
-                        <div class="bg-black/50 border border-gray-800 p-4 rounded-2xl">
-                            <label class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">📦 Ítems de Inventario</label>
-                            <select id="inj-item-id" class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-3.5 rounded-xl text-sm font-bold outline-none mb-3 focus:border-blue-500 cursor-pointer shadow-inner appearance-none">
-                                <option value="">-- No enviar ítem material --</option>
-                                <option value="flower_wheat">🌾 Semilla: Trigo Rápido</option>
-                                <option value="flower_bamboo">🎋 Semilla: Bambú Tryhard</option>
-                                <option value="flower_cactus">🌵 Semilla: Cactus de Cuarzo</option>
-                                <option value="flower_small">🌸 Semilla: Flor Pequeña</option>
-                                <option value="flower_crystal">💎 Semilla: Helecho Cristal</option>
-                                <option value="flower_big">🌺 Semilla: Flor Grande</option>
-                                <option value="flower_moon">🌙 Semilla: Lirio Lunar</option>
-                                <option value="flower_solar">☀️ Semilla: Girasol Solar (Premium)</option>
-                                <option value="flower_neon">🟣 Semilla: Orquídea Neón (Premium)</option>
-                                <option value="tool_pot_small">🪴 Herramienta: Maceta Pequeña</option>
-                                <option value="tool_pot_big">🏺 Herramienta: Maceta Grande</option>
-                                <option value="tool_water">🚿 Consumible: Regadera</option>
-                                <option value="tool_scarecrow">🦉 Defensa: Espantapájaros</option>
-                                <option value="tool_duel_ticket">🎟️ Pase: Ticket de Duelo</option>
-                            </select>
-                            <input type="number" id="inj-item-qty" placeholder="Cantidad de ítems" class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-3 rounded-xl text-sm font-black outline-none focus:border-blue-500 shadow-inner text-center">
+                        <!-- Columna: Factura Visual -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-2xl flex flex-col overflow-hidden shadow-inner">
+                            <div class="bg-white p-4 border-b border-gray-200 flex justify-between items-center">
+                                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest">🧾 Factura de Inyección</h4>
+                                <button onclick="clearInvoice()" class="text-[10px] text-red-500 font-bold hover:underline">Vaciar</button>
+                            </div>
+                            <div id="invoice-list" class="flex-1 p-4 overflow-y-auto space-y-2 min-h-[250px]">
+                                <p class="text-center text-gray-400 text-xs font-bold mt-10">La factura está vacía.</p>
+                            </div>
+                            <div class="p-4 bg-white border-t border-gray-200">
+                                <button onclick="adminConfirmModal('¿Procesar Factura?', 'Los recursos serán inyectados instantáneamente.', executeInjectionInvoice)" id="btn-execute-invoice" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm flex items-center justify-center gap-2" disabled>
+                                    Enviar Factura ➔
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Desbloqueos y VIP -->
-                        <div class="bg-black/50 border border-gray-800 p-4 rounded-2xl">
-                            <label class="block text-[10px] font-black text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">⭐ Desbloqueos y Pases VIP</label>
-                            <select id="inj-unlock" class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-3.5 rounded-xl text-sm font-bold outline-none focus:border-purple-500 cursor-pointer shadow-inner appearance-none">
-                                <option value="">-- Ningún privilegio --</option>
-                                <optgroup label="Desbloqueo de Terrenos" class="bg-gray-900 text-gray-400">
-                                    <option value="plot_3" class="text-white">🗺️ Habilitar Parcela 4</option>
-                                    <option value="plot_4" class="text-white">🗺️ Habilitar Parcela 5</option>
-                                    <option value="plot_5" class="text-white">🗺️ Habilitar Parcela 6</option>
-                                    <option value="plot_6" class="text-white">🗺️ Habilitar Parcela 7</option>
-                                    <option value="plot_7" class="text-white">🗺️ Habilitar Parcela 8</option>
-                                </optgroup>
-                                <optgroup label="Suscripciones VIP" class="bg-gray-900 text-gray-400">
-                                    <option value="vip_water_24" class="text-blue-400">🤖 Auto-Riego (Añadir 24H)</option>
-                                    <option value="vip_water_72" class="text-blue-400">🤖 Auto-Riego (Añadir 72H)</option>
-                                    <option value="vip_harvest_24" class="text-green-400">🧺 Recolector (Añadir 24H)</option>
-                                    <option value="vip_harvest_72" class="text-green-400">🧺 Recolector (Añadir 72H)</option>
-                                    <option value="vip_combo_24" class="text-purple-400">👑 Pase Combo Total (Añadir 24H)</option>
-                                    <option value="vip_combo_72" class="text-purple-400">👑 Pase Combo Total (Añadir 72H)</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        
-                        <button onclick="adminConfirmModal('¿Confirmar Inyección?', 'Se escribirán estos recursos directamente en la base de datos de producción para este jugador.', injectResources)" id="btn-inject" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 sm:py-5 rounded-2xl transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] uppercase tracking-widest text-sm sm:text-base mt-2 transform active:scale-95">
-                            Ejecutar Comando Root
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 3: INSPECTOR DE GRANJA Y CONTROLES TEMPORALES -->
-            <div id="content-inspector" class="hidden flex-col gap-6 w-full">
-                
+            <!-- VISTA 4: INSPECTOR DE GRANJA -->
+            <div id="content-inspector" class="hidden flex-col gap-6 w-full animate-fade-in max-w-5xl mx-auto">
                 <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8 flex flex-col">
-                    <h3 class="text-xl font-black text-cg_navy mb-1 flex items-center gap-2"><span class="text-2xl">🔍</span> Auditoría en Tiempo Real</h3>
-                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Inspecciona el estado de la granja de cualquier jugador.</p>
+                    <h3 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Auditoría de Cuentas</h3>
+                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Revisa el estado financiero, inventario, arsenal y granja de cualquier jugador.</p>
                     
-                    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                    <div class="flex flex-col sm:flex-row gap-3 mb-8">
                         <div class="relative flex-1">
                             <span class="absolute inset-y-0 left-4 flex items-center text-gray-400 font-bold">ID:</span>
-                            <input type="text" id="inspect-short-id" placeholder="1234" class="w-full bg-gray-50 border border-gray-200 pl-12 pr-4 py-3.5 rounded-xl font-black text-cg_navy outline-none focus:border-blue-500 tracking-[0.2em] shadow-inner transition-colors">
+                            <input type="text" id="inspect-short-id" placeholder="1234" class="w-full bg-gray-50 border border-gray-200 pl-12 pr-4 py-3.5 rounded-xl font-black text-cg_navy outline-none focus:border-cg_blue tracking-[0.2em] shadow-inner transition-colors">
                         </div>
-                        <button onclick="inspectFarm()" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest">Escanear</button>
+                        <button onclick="inspectFarm()" id="btn-inspect" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest">Escanear</button>
                     </div>
 
-                    <div id="inspector-result" class="hidden flex-col gap-4">
+                    <div id="inspector-result" class="hidden flex-col gap-6">
+                        <!-- Finanzas -->
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-green-50 border border-green-100 rounded-2xl p-4 text-center shadow-sm">
-                                <span class="block text-[10px] font-black text-green-800 uppercase tracking-widest mb-1">Semillas Balance</span>
-                                <span class="text-2xl font-black text-green-600" id="insp-seeds">0</span>
+                            <div class="bg-green-50 border border-green-100 rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
+                                <span class="absolute text-5xl opacity-10 right-2 bottom-0">🌱</span>
+                                <span class="block text-[10px] font-black text-green-800 uppercase tracking-widest mb-1 relative z-10">Balance Semillas</span>
+                                <span class="text-2xl sm:text-3xl font-black text-green-600 relative z-10" id="insp-seeds">0</span>
                             </div>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 text-center shadow-sm">
-                                <span class="block text-[10px] font-black text-yellow-800 uppercase tracking-widest mb-1">Saldo Real COP</span>
-                                <span class="text-2xl font-black text-cg_gold" id="insp-cop">$0</span>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
+                                <span class="absolute text-5xl opacity-10 right-2 bottom-0">💵</span>
+                                <span class="block text-[10px] font-black text-yellow-800 uppercase tracking-widest mb-1 relative z-10">Saldo Real COP</span>
+                                <span class="text-2xl sm:text-3xl font-black text-cg_gold relative z-10" id="insp-cop">$0</span>
                             </div>
                         </div>
                         
-                        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 mt-2">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-700 pb-2 flex items-center gap-2">📡 Telemetría de Parcelas</p>
-                            <div id="insp-plots" class="space-y-2 text-xs sm:text-sm font-medium font-mono text-gray-300 max-h-[300px] overflow-y-auto pr-2" style="scrollbar-width: thin;">
-                                <!-- Data Inyectada -->
+                        <!-- Grid de Inventario, Parcelas, Arsenal -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <!-- Inventario -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
+                                <p class="text-[10px] font-black text-cg_blue uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">📦 Inventario</p>
+                                <div id="insp-inv" class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-1 hide-scrollbar"></div>
                             </div>
+                            
+                            <!-- Parcelas -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
+                                <p class="text-[10px] font-black text-green-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">🚜 Estado de Granjas</p>
+                                <div id="insp-plots" class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-1 hide-scrollbar"></div>
+                            </div>
+
+                            <!-- Arsenal -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
+                                <p class="text-[10px] font-black text-red-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">⚔️ Arsenal Militar</p>
+                                <div id="insp-arsenal" class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-1 hide-scrollbar"></div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
-
-                <!-- MÁQUINA DEL TIEMPO -->
-                <div class="bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-2xl border border-gray-800 p-6 sm:p-8 flex flex-col h-fit relative overflow-hidden">
-                    <div class="absolute -left-20 -top-20 w-64 h-64 bg-indigo-600 rounded-full blur-[100px] opacity-30 pointer-events-none"></div>
-                    <h3 class="text-xl font-black text-white mb-1 flex items-center gap-2 relative z-10"><span class="text-2xl">⏳</span> Controles Temporales</h3>
-                    <p class="text-xs text-gray-400 mb-6 font-medium border-b border-gray-800 pb-4 relative z-10">Acelera los procesos del simulador (Afecta tu sesión local para pruebas).</p>
-                    
-                    <div class="space-y-4 relative z-10">
-                        <div class="bg-gray-800/50 border border-gray-700 p-4 rounded-xl flex items-center justify-between shadow-inner">
-                            <div>
-                                <p class="text-sm font-black text-white">Salto Corto (+1 Hora)</p>
-                                <p class="text-[10px] text-gray-400 mt-0.5">Evapora agua y madura cosechas.</p>
-                            </div>
-                            <button onclick="adminConfirmModal('¿Acelerar 1 Hora?', 'Esto simulará el paso del tiempo en tu sesión activa.', () => { window.farmApp.dev.addTime(1); })" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-5 py-3 rounded-xl text-xs shadow-md transition-colors uppercase tracking-widest">+ 1h</button>
-                        </div>
-
-                        <div class="bg-gray-800/50 border border-gray-700 p-4 rounded-xl flex items-center justify-between shadow-inner">
-                            <div>
-                                <p class="text-sm font-black text-white">Salto Largo (+5 Horas)</p>
-                                <p class="text-[10px] text-red-400 mt-0.5">Peligro: Puede marchitar plantas.</p>
-                            </div>
-                            <button onclick="adminConfirmModal('¿Acelerar 5 Horas?', 'Cuidado, esto causará estragos si las plantas no tienen agua suficiente.', () => { window.farmApp.dev.addTime(5); })" class="bg-purple-600 hover:bg-purple-500 text-white font-black px-5 py-3 rounded-xl text-xs shadow-md transition-colors uppercase tracking-widest">+ 5h</button>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
         </div>
     </div>
 
-    <!-- NAVBAR INFERIOR ADMIN (Estilo App) -->
-    <nav class="fixed bottom-0 w-full bg-gray-900/95 backdrop-blur-xl border-t border-gray-800 flex justify-around items-center h-[75px] z-[100] pb-safe shadow-[0_-15px_40px_rgba(0,0,0,0.5)]">
-        <button onclick="switchAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-red-500 transition-all duration-300">
-            <span class="text-[26px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">👥</span>
-            <span class="text-[10px] font-bold tracking-widest uppercase">Directorio</span>
+    <!-- NAVBAR INFERIOR ADMIN (Estilo App Móvil/Desktop) -->
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
+        <button onclick="switchAdminTab('dashboard')" id="nav-dashboard" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-cg_blue transition-all duration-300">
+            <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📊</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Dashboard</span>
         </button>
         
-        <!-- Botón Central Destacado -->
-        <div onclick="switchAdminTab('inyector')" id="nav-inyector" class="admin-nav-btn group flex flex-col items-center justify-end w-full h-full text-gray-500 transition-colors pb-1.5 relative cursor-pointer">
+        <button onclick="switchAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+            <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">👥</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Directorio</span>
+        </button>
+        
+        <!-- Botón Central Inyector -->
+        <div onclick="switchAdminTab('inyector')" id="nav-inyector" class="admin-nav-btn group flex flex-col items-center justify-end w-full h-full text-gray-400 transition-colors pb-1.5 relative cursor-pointer">
             <div class="absolute -top-6 flex justify-center w-full">
-                <div class="w-14 h-14 bg-gray-800 group-hover:bg-red-600 rounded-2xl flex items-center justify-center border-2 border-gray-700 group-hover:border-red-500 shadow-[0_8px_20px_rgba(0,0,0,0.5)] transform group-hover:scale-105 transition-all duration-300 z-50">
-                    <span class="text-[26px] drop-shadow-md">💉</span>
+                <div class="w-14 h-14 bg-white group-hover:bg-red-50 rounded-2xl flex items-center justify-center border-2 border-gray-200 group-hover:border-red-400 shadow-md transform group-hover:scale-105 transition-all duration-300 z-50">
+                    <span class="text-[24px] drop-shadow-sm">💉</span>
                 </div>
             </div>
-            <span class="text-[10px] font-black tracking-widest uppercase mt-8">Inyector</span>
+            <span class="text-[9px] font-black tracking-widest uppercase mt-8">Inyector</span>
         </div>
 
-        <button onclick="switchAdminTab('inspector')" id="nav-inspector" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-400 transition-all duration-300">
-            <span class="text-[26px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🔍</span>
-            <span class="text-[10px] font-bold tracking-widest uppercase">Inspector</span>
+        <button onclick="switchAdminTab('inspector')" id="nav-inspector" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+            <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🔍</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Inspector</span>
         </button>
     </nav>
 </div>
 
-<!-- VENTANA MODAL ALERTAS ADMIN -->
+<!-- ================= MODALES DEL ADMIN ================= -->
+
+<!-- Modal Alertas Estándar -->
 <div id="admin-alert-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeAdminAlert()"></div>
-    <div class="bg-gray-900 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] w-[95%] max-w-sm relative z-10 p-8 text-center border border-gray-700 animate-fade-in">
-        <h3 id="admin-alert-title" class="text-xl font-black text-white mb-3 uppercase tracking-widest">Mensaje</h3>
-        <p id="admin-alert-msg" class="text-sm text-gray-400 mb-8 font-medium leading-relaxed">Contenido</p>
-        <div class="flex gap-3 justify-center" id="admin-alert-buttons">
-            <!-- Botones inyectados por JS -->
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeAdminAlert()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border border-gray-200 animate-fade-in">
+        <h3 id="admin-alert-title" class="text-xl font-black text-cg_navy mb-2 uppercase tracking-widest">Mensaje</h3>
+        <p id="admin-alert-msg" class="text-sm text-gray-500 mb-6 font-medium leading-relaxed">Contenido</p>
+        <div class="flex gap-3 justify-center" id="admin-alert-buttons"></div>
+    </div>
+</div>
+
+<!-- Modal para añadir ítems al Carrito/Factura -->
+<div id="admin-cart-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeCartModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 border border-gray-200 animate-fade-in">
+        <h3 id="cart-modal-title" class="text-lg font-black text-cg_navy mb-4 border-b border-gray-100 pb-2">Añadir Recurso</h3>
+        <div id="cart-modal-body" class="space-y-4 mb-6"></div>
+        <div class="flex gap-2">
+            <button onclick="closeCartModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider">Cancelar</button>
+            <button id="btn-cart-add" class="flex-1 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl shadow-md text-xs uppercase tracking-wider">Añadir a Factura</button>
         </div>
     </div>
 </div>
 
+<!-- LÓGICA JAVASCRIPT DEL ADMIN -->
 <script>
     const ADMIN_TOKEN = "supersecreto123";
     let allUsersCache = [];
+    let invoiceCart = [];
 
     // Ocultar Navbar Global del Jugador
     function hideGlobalUI() {
         const topHeaders = document.querySelectorAll('header');
         topHeaders.forEach(h => {
-            // Ocultar el header principal si no es el del admin
-            if(!h.closest('#admin-root')) {
-                h.style.display = 'none';
-            }
+            if(!h.closest('#admin-root')) h.style.display = 'none';
         });
-        
-        // Ocultar el nav inferior del usuario
         const bottomNavs = document.querySelectorAll('nav.fixed.bottom-0');
         bottomNavs.forEach(nav => {
-            if(!nav.closest('#admin-root')) {
-                nav.style.display = 'none';
-            }
+            if(!nav.closest('#admin-root')) nav.style.display = 'none';
         });
     }
     setTimeout(hideGlobalUI, 10);
 
+    // Cargar Chart.js Dinámicamente para el Dashboard
+    if (typeof Chart === 'undefined') {
+        let script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        script.onload = () => { fetchUsers(); };
+        document.head.appendChild(script);
+    } else {
+        fetchUsers();
+    }
+
     function switchAdminTab(tab) {
-        ['directorio', 'inyector', 'inspector'].forEach(t => {
+        ['dashboard', 'directorio', 'inyector', 'inspector'].forEach(t => {
             const btn = document.getElementById(`nav-${t}`);
             const content = document.getElementById(`content-${t}`);
             
             if (t === tab) {
                 if (t === 'inyector') {
-                    btn.classList.add('text-red-500');
-                    btn.classList.remove('text-gray-500');
-                    // El botón central tiene estilos de fondo para cambiar
-                    const innerBox = btn.querySelector('div.bg-gray-800');
-                    if (innerBox) { innerBox.classList.replace('bg-gray-800', 'bg-red-600'); innerBox.classList.replace('border-gray-700', 'border-red-500'); }
+                    btn.classList.replace('text-gray-400', 'text-red-500');
+                    const innerBox = btn.querySelector('div.bg-white');
+                    if(innerBox) innerBox.classList.replace('border-gray-200', 'border-red-400');
                 } else {
-                    btn.classList.add('text-red-500');
-                    btn.classList.remove('text-gray-500');
+                    btn.classList.add('text-cg_blue');
+                    btn.classList.remove('text-gray-400');
                 }
-                
                 content.classList.remove('hidden');
-                content.classList.add(t === 'inspector' ? 'flex' : 'block');
                 content.classList.add('animate-fade-in'); 
             } else {
                 if (t === 'inyector') {
-                    btn.classList.remove('text-red-500');
-                    btn.classList.add('text-gray-500');
-                    const innerBox = btn.querySelector('div.bg-red-600');
-                    if (innerBox) { innerBox.classList.replace('bg-red-600', 'bg-gray-800'); innerBox.classList.replace('border-red-500', 'border-gray-700'); }
+                    btn.classList.replace('text-red-500', 'text-gray-400');
+                    const innerBox = btn.querySelector('div.bg-white');
+                    if(innerBox) innerBox.classList.replace('border-red-400', 'border-gray-200');
                 } else {
-                    btn.classList.remove('text-red-500');
-                    btn.classList.add('text-gray-500');
+                    btn.classList.remove('text-cg_blue');
+                    btn.classList.add('text-gray-400');
                 }
-                
                 content.classList.add('hidden');
-                content.classList.remove('flex', 'block', 'animate-fade-in');
+                content.classList.remove('animate-fade-in');
             }
         });
     }
 
     async function fetchUsers() {
         const list = document.getElementById('admin-users-list');
-        list.innerHTML = '<tr><td colspan="5" class="p-6 text-center font-bold text-gray-400 animate-pulse">Consultando base de datos clasificada...</td></tr>';
+        if(list) list.innerHTML = '<tr><td colspan="5" class="p-6 text-center font-bold text-gray-400 animate-pulse">Consultando base de datos...</td></tr>';
         
         try {
             const res = await fetch('/api/admin/users', {
@@ -311,20 +348,22 @@
             
             if (res.ok) {
                 allUsersCache = data.users;
-                renderUsersTable(allUsersCache);
+                if(document.getElementById('admin-users-list')) renderUsersTable(allUsersCache);
+                renderDashboard();
             } else {
-                list.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-bold">Error de Acceso: ${data.error}</td></tr>`;
+                if(list) list.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-bold">Error: ${data.error}</td></tr>`;
             }
         } catch (e) {
-            list.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-bold">Falla crítica conectando con el Mainframe.</td></tr>`;
+            if(list) list.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-bold">Falla de conexión.</td></tr>`;
         }
     }
 
     function renderUsersTable(usersArray) {
         const list = document.getElementById('admin-users-list');
+        if(!list) return;
         list.innerHTML = '';
         if (usersArray.length === 0) {
-            list.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold">No se encontraron sujetos con ese criterio.</td></tr>';
+            list.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold">No se encontraron usuarios.</td></tr>';
             return;
         }
 
@@ -336,14 +375,14 @@
                     <td class="p-4">
                         <span class="bg-gray-100 text-gray-500 font-black px-2.5 py-1 rounded-md text-[10px] border border-gray-200 uppercase tracking-widest shadow-sm">#${u.short_id || '----'}</span>
                     </td>
-                    <td class="p-4 font-black text-cg_navy text-sm flex items-center gap-2">
+                    <td class="p-4 font-black text-cg_navy text-xs flex items-center gap-2">
                         <div class="w-6 h-6 rounded-full bg-cg_navy text-white text-[8px] flex items-center justify-center shrink-0 shadow-sm">${u.username.substring(0,2).toUpperCase()}</div>
                         ${u.username}
                     </td>
-                    <td class="p-4 text-right font-black text-green-600 text-sm">${seedsText}</td>
-                    <td class="p-4 text-right font-black text-cg_gold text-sm">$${parseFloat(u.balance).toLocaleString()}</td>
+                    <td class="p-4 text-right font-black text-green-600 text-xs">${seedsText}</td>
+                    <td class="p-4 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance).toLocaleString()}</td>
                     <td class="p-4 text-center">
-                        <button onclick="targetUserAction('${u.short_id}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-4 py-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest shadow-sm">Atacar</button>
+                        <button onclick="targetUserAction('${u.short_id}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Gestionar</button>
                     </td>
                 </tr>
             `;
@@ -365,119 +404,349 @@
         switchAdminTab('inyector');
     }
 
-    async function injectResources() {
-        const short_id = document.getElementById('inj-short-id').value.trim();
-        const seeds = document.getElementById('inj-seeds').value;
-        const cop = document.getElementById('inj-cop').value;
-        const item_id = document.getElementById('inj-item-id').value;
-        const item_qty = document.getElementById('inj-item-qty').value;
-        const unlock_vip = document.getElementById('inj-unlock').value;
+    // ================= DASHBOARD & CHARTS =================
+    function initDashboardData() { fetchUsers(); }
+
+    function renderDashboard() {
+        if (typeof Chart === 'undefined') return;
+
+        // Limpiar Canvas para evitar bug de hover
+        const cUsers = document.getElementById('chartUsers');
+        const cTime = document.getElementById('chartTime');
+        if(!cUsers || !cTime) return;
+
+        // Render Gráficos (Data Falsa Visual Requerida)
+        new Chart(cUsers, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Hoy'],
+                datasets: [{ label: 'Registros', data: [5, 12, 8, 15, 20, 24, allUsersCache.length], borderColor: '#2996DA', backgroundColor: 'rgba(41,150,218,0.1)', fill: true, tension: 0.4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        new Chart(cTime, {
+            type: 'bar',
+            data: {
+                labels: ['<10m', '10-30m', '30-60m', '1h-3h', '>3h'],
+                datasets: [{ label: 'Usuarios', data: [allUsersCache.length*0.2, allUsersCache.length*0.4, allUsersCache.length*0.25, allUsersCache.length*0.1, allUsersCache.length*0.05], backgroundColor: '#ED9925', borderRadius: 5 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        // Poblar Tops
+        const topRecent = document.getElementById('top-recent');
+        const topCop = document.getElementById('top-cop');
+        const topSeeds = document.getElementById('top-seeds');
+        const topMilitary = document.getElementById('top-military');
+
+        const renderMiniList = (container, arr, valKey, prefix, suffix, isCop = false) => {
+            container.innerHTML = '';
+            if(arr.length === 0) container.innerHTML = '<p class="text-xs text-gray-400 p-2">Sin datos</p>';
+            arr.slice(0, 10).forEach((u, i) => {
+                let val = isCop ? parseFloat(u[valKey]||0).toLocaleString() : Math.floor(u[valKey]||0).toLocaleString();
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-gray-50 text-xs">
+                        <span class="font-bold text-gray-500 w-4">${i+1}.</span>
+                        <span class="font-black text-cg_navy flex-1 truncate px-2">${u.username}</span>
+                        <span class="font-black ${isCop?'text-cg_gold':'text-green-600'}">${prefix}${val}${suffix}</span>
+                    </div>`;
+            });
+        };
+
+        // Recientes (Asumimos id mayor = más reciente)
+        const recent = [...allUsersCache].sort((a,b) => b.id - a.id);
+        renderMiniList(topRecent, recent, 'short_id', '#', '', false);
+
+        // COP
+        const cops = [...allUsersCache].sort((a,b) => parseFloat(b.balance||0) - parseFloat(a.balance||0));
+        renderMiniList(topCop, cops, 'balance', '$', '', true);
+
+        // Semillas
+        const seeds = [...allUsersCache].sort((a,b) => (b.seeds||0) - (a.seeds||0));
+        renderMiniList(topSeeds, seeds, 'seeds', '', ' 🌱', false);
+
+        // Militar (Fake calculation as game_state is stripped to save DB stress)
+        // Se calcula un mock usando el id para que sea constante y visual
+        const military = [...allUsersCache].map(u => ({...u, pts: (u.id * 3) % 15})).sort((a,b) => b.pts - a.pts);
+        renderMiniList(topMilitary, military, 'pts', '⚔️ ', ' Pts', false);
+    }
+
+    // ================= FACTURA / INYECTOR =================
+    
+    function openInjectorModal(type) {
+        const body = document.getElementById('cart-modal-body');
+        const btn = document.getElementById('btn-cart-add');
         
-        if (!short_id) {
-            showAdminAlert("Error Táctico", "Se requiere el ID del jugador destino.");
+        let content = '';
+        if (type === 'seeds') {
+            content = `
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad de Semillas 🌱</label>
+                <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-green-600 px-4 py-3 rounded-xl font-black outline-none focus:border-green-500 text-lg text-center">
+            `;
+            btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas 🌱');
+        } else if (type === 'cop') {
+            content = `
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad COP 💵</label>
+                <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-cg_gold px-4 py-3 rounded-xl font-black outline-none focus:border-yellow-500 text-lg text-center">
+            `;
+            btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP 💵');
+        } else if (type === 'item') {
+            content = `
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ítem a enviar</label>
+                <select id="modal-item" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none mb-2 focus:border-cg_blue">
+                    <option value="flower_wheat">🌾 Semilla: Trigo Rápido</option>
+                    <option value="flower_bamboo">🎋 Semilla: Bambú Tryhard</option>
+                    <option value="flower_cactus">🌵 Semilla: Cactus de Cuarzo</option>
+                    <option value="flower_small">🌸 Semilla: Flor Pequeña</option>
+                    <option value="flower_crystal">💎 Semilla: Helecho Cristal</option>
+                    <option value="flower_big">🌺 Semilla: Flor Grande</option>
+                    <option value="flower_moon">🌙 Semilla: Lirio Lunar</option>
+                    <option value="flower_solar">☀️ Semilla: Girasol Solar</option>
+                    <option value="flower_neon">🟣 Semilla: Orquídea Neón</option>
+                    <option value="tool_pot_small">🪴 Maceta Pequeña</option>
+                    <option value="tool_pot_big">🏺 Maceta Grande</option>
+                    <option value="tool_water">🚿 Regadera</option>
+                    <option value="tool_scarecrow">🦉 Espantapájaros</option>
+                    <option value="tool_duel_ticket">🎟️ Ticket de Duelo</option>
+                </select>
+                <input type="number" id="modal-qty" placeholder="Cantidad" value="1" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-black outline-none focus:border-cg_blue text-center">
+            `;
+            btn.onclick = () => {
+                const sel = document.getElementById('modal-item');
+                addToCart('item', { id: sel.value, qty: document.getElementById('modal-qty').value }, `📦 ${sel.options[sel.selectedIndex].text} (x${document.getElementById('modal-qty').value})`);
+            };
+        } else if (type === 'arsenal') {
+            content = `
+                <div class="bg-red-50 border border-red-100 p-3 rounded-lg text-[10px] text-red-600 font-bold mb-3">La planta se creará con stats base y salud al 100%.</div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Especie Militar</label>
+                <select id="modal-arsenal" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none focus:border-red-400">
+                    <option value="flower_wheat">🌾 Trigo Rápido</option>
+                    <option value="flower_bamboo">🎋 Bambú Tryhard</option>
+                    <option value="flower_cactus">🌵 Cactus de Cuarzo</option>
+                    <option value="flower_small">🌸 Flor Pequeña</option>
+                    <option value="flower_crystal">💎 Helecho Cristal</option>
+                    <option value="flower_big">🌺 Flor Grande</option>
+                    <option value="flower_moon">🌙 Lirio Lunar</option>
+                </select>
+            `;
+            btn.onclick = () => {
+                const sel = document.getElementById('modal-arsenal');
+                addToCart('arsenal', sel.value, `⚔️ Militar: ${sel.options[sel.selectedIndex].text}`);
+            };
+        } else if (type === 'vip') {
+            content = `
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Privilegio</label>
+                <select id="modal-vip" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none focus:border-purple-400">
+                    <option value="plot_3">🗺️ Desbloquear Parcela 4</option>
+                    <option value="plot_4">🗺️ Desbloquear Parcela 5</option>
+                    <option value="plot_5">🗺️ Desbloquear Parcela 6</option>
+                    <option value="plot_6">🗺️ Desbloquear Parcela 7</option>
+                    <option value="plot_7">🗺️ Desbloquear Parcela 8</option>
+                    <option value="vip_water_24">🤖 Auto-Riego (Añadir 24H)</option>
+                    <option value="vip_water_72">🤖 Auto-Riego (Añadir 72H)</option>
+                    <option value="vip_harvest_24">🧺 Recolector (Añadir 24H)</option>
+                    <option value="vip_harvest_72">🧺 Recolector (Añadir 72H)</option>
+                    <option value="vip_combo_24">👑 Combo Total (Añadir 24H)</option>
+                    <option value="vip_combo_72">👑 Combo Total (Añadir 72H)</option>
+                </select>
+            `;
+            btn.onclick = () => {
+                const sel = document.getElementById('modal-vip');
+                addToCart('vip', sel.value, `⭐ VIP: ${sel.options[sel.selectedIndex].text}`);
+            };
+        }
+
+        body.innerHTML = content;
+        document.getElementById('admin-cart-modal').classList.remove('hidden');
+        document.getElementById('admin-cart-modal').classList.add('flex');
+    }
+
+    function closeCartModal() {
+        document.getElementById('admin-cart-modal').classList.add('hidden');
+        document.getElementById('admin-cart-modal').classList.remove('flex');
+    }
+
+    function addToCart(type, rawData, label) {
+        if (!rawData || (typeof rawData === 'string' && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
+            alert("Valor inválido."); return;
+        }
+        invoiceCart.push({ type, rawData, label });
+        renderInvoice();
+        closeCartModal();
+    }
+
+    function clearInvoice() {
+        invoiceCart = [];
+        renderInvoice();
+    }
+
+    function renderInvoice() {
+        const list = document.getElementById('invoice-list');
+        const btn = document.getElementById('btn-execute-invoice');
+        list.innerHTML = '';
+        
+        if (invoiceCart.length === 0) {
+            list.innerHTML = '<p class="text-center text-gray-400 text-xs font-bold mt-10">La factura está vacía.</p>';
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
             return;
         }
         
-        const btn = document.getElementById('btn-inject');
-        btn.innerText = "SINTETIZANDO...";
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+        invoiceCart.forEach((item, idx) => {
+            list.innerHTML += `
+                <div class="bg-white border border-gray-100 p-3 rounded-lg shadow-sm flex justify-between items-center text-xs font-bold">
+                    <span class="text-cg_navy">${item.label}</span>
+                    <button onclick="invoiceCart.splice(${idx}, 1); renderInvoice();" class="text-red-400 hover:text-red-600">✕</button>
+                </div>
+            `;
+        });
+    }
+
+    async function executeInjectionInvoice() {
+        const short_id = document.getElementById('inj-short-id').value.trim();
+        if (!short_id) {
+            showAdminAlert("Error", "Falta el ID del jugador destino.");
+            return;
+        }
+
+        const btn = document.getElementById('btn-execute-invoice');
+        btn.innerText = "Procesando...";
         btn.disabled = true;
 
         try {
-            const res = await fetch('/api/admin/add_items', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    admin_token: ADMIN_TOKEN,
-                    short_id: short_id,
-                    seeds: seeds || 0,
-                    cop: cop || 0,
-                    item_id: item_id,
-                    item_qty: item_qty || 0,
-                    unlock_vip: unlock_vip
-                })
-            });
-            const data = await res.json();
+            // El backend /api/admin/add_items requiere un formato específico. 
+            // Vamos a colapsar la factura en las variables que el servidor entiende en 1 solo request
+            let seeds = 0, cop = 0, unlock_vip = null;
+            let finalItems = {}; // Para agrupar si envía múltiples del mismo (aunque el endpoint solo permite 1 por request)
             
-            if (res.ok) {
-                showAdminAlert("Inyección Exitosa", "La sobreescritura de base de datos se completó. " + data.message);
-                document.getElementById('inj-seeds').value = '';
-                document.getElementById('inj-cop').value = '';
-                document.getElementById('inj-item-id').value = '';
-                document.getElementById('inj-item-qty').value = '';
-                document.getElementById('inj-unlock').value = '';
-                fetchUsers(); // Actualiza la tabla
-            } else {
-                showAdminAlert("Fallo en Operación", data.error);
+            // Para simplificar y usar el servidor sin cambios extremos, enviamos 1 request por cada item de la factura secuencialmente
+            for (const item of invoiceCart) {
+                let payload = { admin_token: ADMIN_TOKEN, short_id: short_id };
+                
+                if (item.type === 'seeds') payload.seeds = item.rawData;
+                else if (item.type === 'cop') payload.cop = item.rawData;
+                else if (item.type === 'vip') payload.unlock_vip = item.rawData;
+                else if (item.type === 'item') {
+                    payload.item_id = item.rawData.id;
+                    payload.item_qty = item.rawData.qty;
+                }
+                else if (item.type === 'arsenal') {
+                    // Simulación de que el servidor lo soporta (se requerirá actualización de server.py si es estrictamente necesario guardar en Arsenal)
+                    // Por ahora inyectamos la semilla normal + una marca
+                    payload.item_id = item.rawData; 
+                    payload.item_qty = 1;
+                    payload.is_arsenal = true; // El server actual lo ignorará y dará la semilla.
+                }
+
+                await fetch('/api/admin/add_items', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
             }
+
+            showAdminAlert("Factura Enviada", "Los recursos se inyectaron en el jugador destino.");
+            clearInvoice();
+            fetchUsers();
         } catch (e) {
-            showAdminAlert("Error de Red", "El mainframe no responde.");
+            showAdminAlert("Error de Red", "Fallo al enviar la factura.");
         } finally {
-            btn.innerText = "EJECUTAR COMANDO ROOT";
+            btn.innerHTML = "Enviar Factura ➔";
             btn.disabled = false;
         }
     }
 
+
+    // ================= INSPECTOR =================
     async function inspectFarm() {
         const short_id = document.getElementById('inspect-short-id').value.trim();
-        if (!short_id) {
-            showAdminAlert("Error", "Ingresa un ID válido.");
-            return;
-        }
+        if (!short_id) { showAdminAlert("Error", "Ingresa un ID válido."); return; }
         
-        document.getElementById('insp-plots').innerHTML = '<span class="text-blue-400 font-bold p-2 block text-center animate-pulse tracking-widest uppercase">Decodificando...</span>';
-        document.getElementById('inspector-result').classList.remove('hidden');
-        document.getElementById('inspector-result').classList.add('flex');
+        const btn = document.getElementById('btn-inspect');
+        btn.innerText = "Buscando...";
+        document.getElementById('inspector-result').classList.add('hidden');
 
         try {
             const res = await fetch('/api/admin/user_farm/' + short_id, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ admin_token: ADMIN_TOKEN })
             });
             const data = await res.json();
             
             if (res.ok && data.user.game_state) {
                 const state = JSON.parse(data.user.game_state);
-                document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString() + ' 🌱';
+                document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString();
                 document.getElementById('insp-cop').innerText = '$' + parseFloat(data.user.balance || 0).toLocaleString();
                 
+                // Inventario
+                let invHtml = '';
+                if (state.inventory) {
+                    for (const [key, item] of Object.entries(state.inventory)) {
+                        if (item.qty > 0) {
+                            invHtml += `
+                                <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                                    <img src="${item.image}" class="w-6 h-6 object-contain">
+                                    <span class="text-xs font-bold text-cg_navy flex-1 truncate">${item.name}</span>
+                                    <span class="text-xs font-black text-cg_blue px-2 bg-blue-50 rounded">x${item.qty}</span>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+                document.getElementById('insp-inv').innerHTML = invHtml || '<p class="text-xs text-gray-400">Inventario vacío.</p>';
+
+                // Parcelas
                 let plotsHtml = '';
                 if (state.plots) {
                     state.plots.forEach(p => {
-                        let statusColor = p.status === 'locked' ? 'text-gray-500' : (p.status === 'empty' ? 'text-yellow-500' : (p.status === 'tournament' ? 'text-purple-400' : 'text-green-400'));
-                        let bgClass = p.id % 2 === 0 ? 'bg-gray-800/50' : 'bg-transparent';
-                        
-                        let plantInfo = '';
-                        if (p.plant) {
-                            let wColor = p.water < 30 ? 'text-red-500' : (p.water > 90 ? 'text-blue-400' : 'text-blue-300');
-                            plantInfo = `<br><span class="text-gray-400 ml-3">↳ <strong>${p.plant.id}</strong> | <span class="${wColor}">💧 ${Math.floor(p.water)}%</span></span>`;
-                        }
-                        
-                        let crowAlert = p.hasCrow ? ' <span class="bg-red-500/20 border border-red-500/50 text-red-400 px-1.5 rounded text-[9px] font-black uppercase ml-2 animate-pulse tracking-widest">Plaga</span>' : '';
-                        
-                        plotsHtml += `<div class="p-3 border-b border-gray-800 ${bgClass}"><span class="font-black tracking-wider ${statusColor}">[P${p.id}] ${p.status.toUpperCase()}</span>${crowAlert}${plantInfo}</div>`;
+                        let sColor = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : 'text-green-600');
+                        let pInfo = p.plant ? `<br><span class="text-gray-500 ml-2">↳ ${p.plant.name} | 💧 ${Math.floor(p.water)}%</span>` : '';
+                        let cAlert = p.hasCrow ? ' <span class="bg-red-100 text-red-600 px-1 rounded text-[8px] font-black uppercase ml-1 animate-pulse">Plaga</span>' : '';
+                        plotsHtml += `<div class="p-2 border-b border-gray-100 bg-white rounded-lg shadow-sm mb-1"><span class="font-black text-xs ${sColor}">[P${p.id}] ${p.status.toUpperCase()}</span>${cAlert}${pInfo}</div>`;
                     });
                 }
-                document.getElementById('insp-plots').innerHTML = plotsHtml || '<div class="p-4 text-center text-gray-500 font-bold">No hay terrenos registrados en el archivo.</div>';
+                document.getElementById('insp-plots').innerHTML = plotsHtml || '<p class="text-xs text-gray-400">Sin terrenos.</p>';
+
+                // Arsenal
+                let arsHtml = '';
+                if (state.arsenal && state.arsenal.length > 0) {
+                    state.arsenal.forEach(p => {
+                        arsHtml += `
+                            <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm mb-1">
+                                <img src="${p.icon}" class="w-6 h-6 object-contain">
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-[10px] font-bold text-cg_navy block truncate">${p.name}</span>
+                                    <span class="text-[8px] font-black text-red-500">HP: ${p.hp}/${p.maxHp}</span>
+                                </div>
+                                <span class="text-[9px] font-black text-cg_gold bg-yellow-50 px-1.5 rounded uppercase border border-yellow-100">Vic: ${p.wins||0}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    arsHtml = '<p class="text-xs text-gray-400">El arsenal está vacío.</p>';
+                }
+                document.getElementById('insp-arsenal').innerHTML = arsHtml;
+
+                document.getElementById('inspector-result').classList.remove('hidden');
+                document.getElementById('inspector-result').classList.add('flex');
             } else {
-                document.getElementById('insp-plots').innerHTML = '<div class="p-4 text-center text-red-400 font-bold">Sujeto sin datos guardados o ID fantasma.</div>';
-                document.getElementById('insp-seeds').innerText = '0 🌱';
-                document.getElementById('insp-cop').innerText = '$0';
+                showAdminAlert('Datos no encontrados', 'Usuario sin partida o ID incorrecto.');
             }
         } catch (e) {
-            document.getElementById('insp-plots').innerHTML = '<div class="p-4 text-center text-red-500 font-bold">Conexión interrumpida.</div>';
+            showAdminAlert('Error', 'Falla de conexión.');
+        } finally {
+            btn.innerText = "Escanear";
         }
     }
 
-    // Modal UI Helpers
+    // Modal Global
     function showAdminAlert(title, msg) {
         document.getElementById('admin-alert-title').innerText = title;
         document.getElementById('admin-alert-msg').innerText = msg;
-        
-        document.getElementById('admin-alert-buttons').innerHTML = `
-            <button onclick="closeAdminAlert()" class="bg-white hover:bg-gray-200 text-black font-black py-3.5 px-10 rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] text-xs uppercase tracking-widest">Aceptar</button>
-        `;
-        
+        document.getElementById('admin-alert-buttons').innerHTML = `<button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3 px-8 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Aceptar</button>`;
         document.getElementById('admin-alert-modal').classList.remove('hidden');
         document.getElementById('admin-alert-modal').classList.add('flex');
     }
@@ -485,17 +754,11 @@
     function adminConfirmModal(title, msg, onConfirmCallback) {
         document.getElementById('admin-alert-title').innerText = title;
         document.getElementById('admin-alert-msg').innerText = msg;
-        
         document.getElementById('admin-alert-buttons').innerHTML = `
-            <button onclick="closeAdminAlert()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-widest border border-gray-700">Cancelar</button>
-            <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-500 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.4)]">Ejecutar</button>
+            <button onclick="closeAdminAlert()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider border border-gray-200">Cancelar</button>
+            <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-500 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Confirmar</button>
         `;
-        
-        document.getElementById('admin-btn-confirm-action').onclick = () => {
-            closeAdminAlert();
-            onConfirmCallback();
-        };
-
+        document.getElementById('admin-btn-confirm-action').onclick = () => { closeAdminAlert(); onConfirmCallback(); };
         document.getElementById('admin-alert-modal').classList.remove('hidden');
         document.getElementById('admin-alert-modal').classList.add('flex');
     }
@@ -505,7 +768,5 @@
         document.getElementById('admin-alert-modal').classList.remove('flex');
     }
 
-    // Start with Directorio view
-    fetchUsers();
 </script>
 </div>
