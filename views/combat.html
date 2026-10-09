@@ -67,6 +67,9 @@
                 <button id="cb-clear-btn" onclick="window.combatApp.clearQueue()" class="bg-white border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 text-gray-500 font-black px-4 py-3.5 sm:py-4 rounded-xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm flex items-center justify-center shrink-0">
                     Limpiar
                 </button>
+                <button id="cb-relevo-btn" onclick="window.combatApp.openReserveModal()" class="bg-white border border-gray-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-gray-500 font-black px-4 py-3.5 sm:py-4 rounded-xl transition-all uppercase tracking-widest text-[10px] sm:text-xs shadow-sm flex items-center justify-center shrink-0 relative">
+                    Banquillo
+                </button>
                 <button id="cb-action-btn" onclick="window.combatApp.endTurn()" class="flex-1 bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 sm:py-4 rounded-xl text-sm sm:text-base shadow-[0_4px_0_#c27818] active:translate-y-[4px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2">
                     FINALIZAR TURNO ⚔️
                 </button>
@@ -93,6 +96,35 @@
             <button onclick="window.combatApp.closeCardModal()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold transition-colors shrink-0 text-lg">✕</button>
         </div>
         <div id="cm-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 relative z-10 overflow-y-auto pb-4 sm:pb-0 hide-scrollbar content-start"></div>
+    </div>
+</div>
+
+<!-- MODAL BANQUILLO / RELEVO -->
+<div id="reserve-modal" class="fixed inset-0 z-[750] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="window.combatApp.closeReserveModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-2xl relative z-10 flex flex-col overflow-hidden animate-fade-in text-center p-6 border border-gray-100 max-h-[90vh]">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight flex items-center gap-2">🔄 Relevo Estratégico</h3>
+            <span class="bg-blue-100 text-blue-700 font-black px-3 py-1 rounded-lg text-xs border border-blue-200">-2 ⚡</span>
+        </div>
+        <p class="text-xs text-gray-500 mb-6 font-medium text-left">Selecciona una planta en el campo y una en el banquillo para intercambiarlas.</p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 flex-1 overflow-y-auto min-h-0 mb-4">
+            <div class="flex-1 bg-red-50/50 border border-red-100 rounded-2xl p-4 flex flex-col">
+                <h4 class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-3">Retirar del Campo</h4>
+                <div id="reserve-active-list" class="space-y-2 overflow-y-auto flex-1 hide-scrollbar"></div>
+            </div>
+            
+            <div class="flex-1 bg-green-50/50 border border-green-100 rounded-2xl p-4 flex flex-col">
+                <h4 class="text-[10px] font-black text-green-600 uppercase tracking-widest mb-3">Entrar a la Arena</h4>
+                <div id="reserve-bench-list" class="space-y-2 overflow-y-auto flex-1 hide-scrollbar"></div>
+            </div>
+        </div>
+
+        <div class="flex gap-3 shrink-0">
+            <button onclick="window.combatApp.closeReserveModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-all uppercase tracking-widest text-xs shadow-sm">Cancelar</button>
+            <button id="btn-confirm-swap" onclick="window.combatApp.executeSwap()" class="flex-[2] bg-cg_blue text-white font-black py-3.5 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs opacity-50 cursor-not-allowed" disabled>Ejecutar Relevo</button>
+        </div>
     </div>
 </div>
 
@@ -203,6 +235,7 @@ window.combatApp = {
     active: false,
     phase: 'SETUP', 
     playerTeam: [],
+    playerReserve: [],
     enemyTeam: [],
     turn: 1,
     energy: 5,         
@@ -212,6 +245,9 @@ window.combatApp = {
     currentAttackerIdx: null,
     pendingSkill: null,
     combatStats: { potionUsed: false },
+    
+    swapActiveIdx: null,
+    swapReserveIdx: null,
 
     SKILLS_DICT: {
         'flower_wheat': [
@@ -270,9 +306,10 @@ window.combatApp = {
         }
 
         this.playerTeam = [];
+        this.playerReserve = [];
         const selected = window.farmApp.state.selectedCombatants || [];
         
-        const buildPlant = (pid, name, icon, isArsenal, idTag, incomingHp, incomingWins) => {
+        const buildPlantObj = (pid, name, icon, isArsenal, idTag, incomingHp, incomingWins) => {
             let pDef = 20, pHp = 250, pAtk = 34; 
             if(pid === 'flower_wheat') { pDef = 15; pHp = 250; }
             else if(pid === 'flower_cactus') { pDef = 35; pHp = 350; } 
@@ -281,14 +318,14 @@ window.combatApp = {
             else if(pid === 'flower_moon') { pDef = 25; pHp = 450; } 
             const skills = this.SKILLS_DICT[pid] || this.SKILLS_DICT['default'];
             
-            // Retención de vida y victorias si viene del Arsenal
             let finalHp = (isArsenal && incomingHp !== undefined) ? incomingHp : pHp;
             let finalWins = (isArsenal && incomingWins !== undefined) ? incomingWins : 0;
             
-            this.playerTeam.push({ 
+            return { 
                 fromArsenal: isArsenal, arsId: isArsenal ? idTag : null, plotId: !isArsenal ? idTag : null,
-                plantId: pid, name: name, icon: icon, hp: finalHp, maxHp: pHp, atk: pAtk, def: pDef, originalDef: pDef, skills: skills, hasShield: false, hasBuff: false, wins: finalWins
-            });
+                plantId: pid, name: name, icon: icon, hp: finalHp, maxHp: pHp, atk: pAtk, def: pDef, originalDef: pDef, 
+                skills: skills, hasShield: false, hasBuff: false, wins: finalWins, aggro: 0, hasMark: false 
+            };
         };
 
         const usedArsenalIds = new Set();
@@ -297,18 +334,27 @@ window.combatApp = {
         selected.forEach(sel => {
             if (sel.type === 'arsenal') {
                 const ap = window.farmApp.state.arsenal.find(a => a.id === sel.idTag && !usedArsenalIds.has(a.id)) || window.farmApp.state.arsenal.find(a => !usedArsenalIds.has(a.id));
-                // Pasamos la HP actual y las victorias al armar el escuadrón
-                if (ap) { usedArsenalIds.add(ap.id); buildPlant(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id, ap.hp, ap.wins); }
+                if (ap) { usedArsenalIds.add(ap.id); this.playerTeam.push(buildPlantObj(ap.plantId || 'flower_bamboo', ap.name || 'Planta', ap.icon, true, ap.id, ap.hp, ap.wins)); }
             } else if (sel.type === 'plot') {
                 const p = window.farmApp.state.plots.find(plot => plot.id == sel.idTag && !usedPlotIds.has(plot.id));
-                if (p && p.plant) { usedPlotIds.add(p.id); buildPlant(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id, undefined, 0); }
+                if (p && p.plant) { usedPlotIds.add(p.id); this.playerTeam.push(buildPlantObj(p.plant.id, p.plant.name, p.plant.icon || window.farmApp.state.inventory[p.plant.id]?.image, false, p.id, undefined, 0)); }
             }
         });
 
         if (this.playerTeam.length === 0) {
             let storedArsenal = window.farmApp.state.arsenal || [];
-            storedArsenal.slice(0, 3).forEach(ap => buildPlant(ap.plantId, ap.name, ap.icon, true, ap.id));
+            storedArsenal.slice(0, 3).forEach(ap => {
+                usedArsenalIds.add(ap.id);
+                this.playerTeam.push(buildPlantObj(ap.plantId, ap.name, ap.icon, true, ap.id, ap.hp, ap.wins));
+            });
         }
+
+        // Llenar Banquillo de Reserva Automáticamente (hasta 2 plantas extra del arsenal)
+        let remainingArsenal = (window.farmApp.state.arsenal || []).filter(a => !usedArsenalIds.has(a.id) && a.hp > 0);
+        remainingArsenal.slice(0, 2).forEach(ap => {
+            usedArsenalIds.add(ap.id);
+            this.playerReserve.push(buildPlantObj(ap.plantId, ap.name, ap.icon, true, ap.id, ap.hp, ap.wins));
+        });
 
         window.farmApp.state.combatLock = true;
         
@@ -319,6 +365,10 @@ window.combatApp = {
                 plot.status = 'empty'; plot.plant = null; plot.isReady = false; plot.potUses = Math.max(0, plot.potUses - 1);
             }
         });
+        this.playerReserve.forEach(pt => {
+            window.farmApp.state.arsenal = window.farmApp.state.arsenal.filter(a => a.id !== pt.arsId);
+        });
+        
         window.farmApp.saveState();
 
         this.active = false;
@@ -366,26 +416,144 @@ window.combatApp = {
         const d = new Date(); const hour = d.getHours(); const day = d.getDate();
         const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
         let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
+        
         const createCrow = (baseName, baseHp, baseAtk) => {
             let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
             let finalAtk = Math.floor(baseAtk * envAtkMult);
-            return { name: baseName + namePrefix, icon: window.farmApp.state.images.crow, hp: finalHp, maxHp: finalHp, atk: finalAtk, def: 10, originalDef: 10, hasShield: false, hasBuff: false, usedHeal: false };
+            
+            // Asignar imagen específica según el arquetipo del cuervo
+            let crowIcon = window.farmApp.state.images.crow; 
+            if (baseName.includes('Alfa')) {
+                crowIcon = 'https://i.ibb.co/wZNhF2bY/image-removebg-preview-38.png';
+            } else if (baseName.includes('Vigía')) {
+                crowIcon = 'https://i.ibb.co/7NT3Lcr5/image-removebg-preview-39.png';
+            } else if (baseName.includes('Rastrero')) {
+                crowIcon = 'https://i.ibb.co/XfkRpvpm/image-removebg-preview-41.png';
+            }
+
+            return { name: baseName + namePrefix, icon: crowIcon, hp: finalHp, maxHp: finalHp, atk: finalAtk, def: 10, originalDef: 10, hasShield: false, hasBuff: false, usedHeal: false, enragedAlertDone: false };
         };
 
         if (squadValue < 500) {
-            this.enemyTeam = [ createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35) ];
+            this.enemyTeam = [ createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35), createCrow('Cuervo Vigía', 250, 25) ];
             window.farmApp.state.pendingCombatReward = 15000;
         } else if (squadValue >= 1000) {
-            this.enemyTeam = [ createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85) ];
+            this.enemyTeam = [ createCrow('Cuervo Vigía', 450, 45), createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85) ];
             window.farmApp.state.pendingCombatReward = 60000;
         } else {
-            this.enemyTeam = [ createCrow('C. Rastrero', 250, 45), createCrow('Cuervo Alfa', 450, 75), createCrow('C. Rastrero', 250, 45) ];
+            this.enemyTeam = [ createCrow('C. Rastrero', 250, 45), createCrow('Cuervo Alfa', 450, 75), createCrow('Cuervo Vigía', 300, 35) ];
             window.farmApp.state.pendingCombatReward = 30000;
         }
 
         this.active = true;
         this.updateUI();
         this.setInstruction('TU TURNO: Toca una planta para programar sus ataques');
+    },
+
+    openReserveModal() {
+        if (this.phase === 'EXECUTION') return;
+        if (this.energy < 2) {
+            this.setInstruction('Necesitas 2⚡ para hacer un relevo.', true);
+            return;
+        }
+        let aliveReserves = this.playerReserve.filter(r => r.hp > 0);
+        if (aliveReserves.length === 0) {
+            this.setInstruction('No tienes plantas vivas en el banquillo.', true);
+            return;
+        }
+
+        this.swapActiveIdx = null;
+        this.swapReserveIdx = null;
+        this.renderReserveLists();
+
+        document.getElementById('reserve-modal').classList.remove('hidden');
+        document.getElementById('reserve-modal').classList.add('flex');
+    },
+
+    closeReserveModal() {
+        document.getElementById('reserve-modal').classList.add('hidden');
+        document.getElementById('reserve-modal').classList.remove('flex');
+    },
+
+    selectForSwap(type, idx) {
+        if (type === 'active') {
+            if (this.playerTeam[idx].hp <= 0) return;
+            this.swapActiveIdx = idx;
+        } else {
+            if (this.playerReserve[idx].hp <= 0) return;
+            this.swapReserveIdx = idx;
+        }
+        this.renderReserveLists();
+    },
+
+    renderReserveLists() {
+        const activeContainer = document.getElementById('reserve-active-list');
+        const benchContainer = document.getElementById('reserve-bench-list');
+        const btn = document.getElementById('btn-confirm-swap');
+
+        activeContainer.innerHTML = '';
+        benchContainer.innerHTML = '';
+
+        this.playerTeam.forEach((p, idx) => {
+            const isDead = p.hp <= 0;
+            const isSelected = this.swapActiveIdx === idx;
+            const classStr = isDead ? 'opacity-50 grayscale cursor-not-allowed' : (isSelected ? 'border-red-500 bg-red-100 ring-2 ring-red-400' : 'border-gray-200 bg-white hover:border-red-300 cursor-pointer');
+            activeContainer.innerHTML += `
+                <div onclick="${isDead ? '' : `window.combatApp.selectForSwap('active', ${idx})`}" class="flex items-center gap-3 p-2 rounded-xl border-2 transition-all ${classStr}">
+                    <img src="${p.icon}" class="w-10 h-10 object-contain drop-shadow-sm shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-black text-cg_navy truncate">${p.name}</p>
+                        <div class="w-full bg-gray-200 h-1.5 rounded-full mt-1"><div class="${p.hp > (p.maxHp/2) ? 'bg-green-500' : 'bg-red-500'} h-full" style="width: ${Math.max(0,(p.hp/p.maxHp)*100)}%"></div></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        this.playerReserve.forEach((p, idx) => {
+            const isDead = p.hp <= 0;
+            const isSelected = this.swapReserveIdx === idx;
+            const classStr = isDead ? 'opacity-50 grayscale cursor-not-allowed' : (isSelected ? 'border-green-500 bg-green-100 ring-2 ring-green-400' : 'border-gray-200 bg-white hover:border-green-300 cursor-pointer');
+            benchContainer.innerHTML += `
+                <div onclick="${isDead ? '' : `window.combatApp.selectForSwap('reserve', ${idx})`}" class="flex items-center gap-3 p-2 rounded-xl border-2 transition-all ${classStr}">
+                    <img src="${p.icon}" class="w-10 h-10 object-contain drop-shadow-sm shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-black text-cg_navy truncate">${p.name}</p>
+                        <div class="w-full bg-gray-200 h-1.5 rounded-full mt-1"><div class="${p.hp > (p.maxHp/2) ? 'bg-green-500' : 'bg-red-500'} h-full" style="width: ${Math.max(0,(p.hp/p.maxHp)*100)}%"></div></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (this.swapActiveIdx !== null && this.swapReserveIdx !== null) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    },
+
+    executeSwap() {
+        if (this.energy < 2 || this.swapActiveIdx === null || this.swapReserveIdx === null) return;
+        
+        // Limpiar acciones encoladas del slot activo a reemplazar
+        this.actionQueue = this.actionQueue.filter(a => {
+            if (a.attackerIdx === this.swapActiveIdx) {
+                this.energy += a.skill.cost; 
+                return false;
+            }
+            return true;
+        });
+
+        this.energy -= 2;
+        
+        let temp = this.playerTeam[this.swapActiveIdx];
+        this.playerTeam[this.swapActiveIdx] = this.playerReserve[this.swapReserveIdx];
+        this.playerReserve[this.swapReserveIdx] = temp;
+
+        this.closeReserveModal();
+        this.updateUI();
+        this.setInstruction('Relevo completado. Toca una planta para continuar.');
     },
 
     selectRPS(choice) {
@@ -462,7 +630,7 @@ window.combatApp = {
 
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
-                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; });
+                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; e.enragedAlertDone = false; });
                 this.active = true;
                 this.updateUI();
                 
@@ -608,7 +776,11 @@ window.combatApp = {
                     this.shakeScreen(); 
                     this.showFx(`-${actualDamage}`, "text-red-500");
                     
-                    // Alianza Aviar (Equidad PvE): Cuando un cuervo recibe daño fatal.
+                    // Sumar AGGRO dinámico al atacante (Si es PvE)
+                    if (!this.isPvP) {
+                        attacker.aggro = (attacker.aggro || 0) + actualDamage;
+                    }
+                    
                     if (target.hp <= 0 && !this.isPvP) {
                         let bestAlly = this.enemyTeam.filter(e => e.hp > 0).sort((a,b) => b.hp - a.hp)[0];
                         if(bestAlly) {
@@ -651,10 +823,22 @@ window.combatApp = {
         }
 
         // ==========================================
-        // TURNO DEL ENEMIGO (PvE - Cuervos)
+        // TURNO DEL ENEMIGO (PvE - Cuervos) - SISTEMA CERO AZAR (AGGRO / MARCAS)
         // ==========================================
         this.setInstruction('🦅 TURNO ENEMIGO...');
         await this.sleep(1000); 
+
+        // OLA DE CALOR (Mecánica de Clima)
+        if (this.turn === 4 && this.isSummer) {
+            this.showFx("OLA DE CALOR", "text-orange-500");
+            this.shakeScreen();
+            await this.sleep(1000);
+            this.playerTeam.concat(this.enemyTeam).forEach(ent => {
+                if(ent.hp > 0) ent.hp = Math.max(1, ent.hp - Math.floor(ent.maxHp * 0.10));
+            });
+            this.updateUI();
+            await this.sleep(1000);
+        }
 
         const isBattleCryTurn = (this.turn % 3 === 0);
         if (isBattleCryTurn) {
@@ -670,17 +854,34 @@ window.combatApp = {
             let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
             if (alivePlayers.length === 0) break;
 
-            // --- NUEVA INTELIGENCIA ARTIFICIAL DETERMINISTA (CERO AZAR) ---
+            // Enrage: Último Aliento
+            let aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
+            let isEnraged = aliveEnemies.length === 1;
+            if (isEnraged && !enemy.enragedAlertDone) {
+                this.showFx("ÚLTIMO ALIENTO", "text-red-600");
+                this.shakeScreen();
+                enemy.enragedAlertDone = true;
+                await this.sleep(1000);
+            }
+
+            // SELECCIÓN DE OBJETIVO (100% Determinista)
             let target;
             if (isBattleCryTurn) {
-                // TÁCTICA BANDADA: En Grito de Guerra, focusean a la planta con MÁS VIDA (El Tanque).
+                // En Grito de Guerra atacan siempre al que tenga más vida
                 target = alivePlayers.reduce((prev, curr) => (prev.hp > curr.hp ? prev : curr));
             } else if (enemy.name.includes('Alfa')) {
-                // TÁCTICA ALFA: Busca la mayor amenaza. Ataca a la planta con MÁS ATAQUE.
-                target = alivePlayers.reduce((prev, curr) => (prev.atk > curr.atk ? prev : curr));
+                // Alfa prioriza a la planta con MARCA DE PRESA. Si no hay, ataca al que tenga mayor AGGRO.
+                let marked = alivePlayers.filter(p => p.hasMark);
+                if (marked.length > 0) {
+                    target = marked[0];
+                } else {
+                    target = alivePlayers.reduce((prev, curr) => ((prev.aggro||0) > (curr.aggro||0) ? prev : curr));
+                }
+            } else if (enemy.name.includes('Vigía')) {
+                // Vigía ataca (o marca) a la planta con más VIDA.
+                target = alivePlayers.reduce((prev, curr) => (prev.hp > curr.hp ? prev : curr));
             } else {
-                // TÁCTICA RASTRERO: Busca al más vulnerable. Ataca a la planta con MENOR DEFENSA.
-                // Si tienen la misma defensa, va por el que le quede menos vida actual.
+                // Rastrero ataca a la de menor DEFENSA
                 target = alivePlayers.reduce((prev, curr) => {
                     if (prev.def === curr.def) return prev.hp < curr.hp ? prev : curr;
                     return prev.def < curr.def ? prev : curr;
@@ -692,6 +893,7 @@ window.combatApp = {
             if (enemy.hp / enemy.maxHp <= 0.20 && !enemy.hasShield) eAction = 'shield';
             else if (enemy.hp / enemy.maxHp <= 0.35 && !enemy.usedHeal) eAction = 'heal';
             else if (enemy.name.includes('Alfa') && !enemy.hasBuff && (enemy.hp / enemy.maxHp > 0.50) && this.turn % 2 !== 0) eAction = 'buff';
+            else if (enemy.name.includes('Vigía') && !target.hasMark && this.turn % 2 !== 0) eAction = 'mark';
 
             this.currentAttackerIdx = i;
 
@@ -718,6 +920,13 @@ window.combatApp = {
                 enemy.def = 0;
                 this.updateUI(); await this.sleep(1000);
                 continue;
+            } else if (eAction === 'mark') {
+                this.targetIdx = this.playerTeam.indexOf(target);
+                this.updateUI(); await this.sleep(500);
+                this.showFx("MARCA DE PRESA", "text-purple-500");
+                target.hasMark = true;
+                this.updateUI(); await this.sleep(1000);
+                continue;
             }
             
             // EJECUCIÓN DEL ATAQUE
@@ -732,6 +941,7 @@ window.combatApp = {
             let baseDamage = enemy.atk;
             if (enemy.hasBuff) { baseDamage *= 2; enemy.hasBuff = false; enemy.def = enemy.originalDef; }
             if (isBattleCryTurn) { baseDamage *= 2; }
+            if (isEnraged) { baseDamage *= 2; } // Stacks con Grito de Guerra
             
             if (target.hasShield) {
                 this.showFx("¡BLOQUEADO!", "text-gray-400");
@@ -746,9 +956,17 @@ window.combatApp = {
                 this.showFx(`-${actualDamage}`, "text-red-600");
             }
             
+            // Si el Alfa atacó a un marcado, consume la marca
+            if (enemy.name.includes('Alfa') && target.hasMark) {
+                target.hasMark = false;
+            }
+
             this.updateUI(); 
             await this.sleep(1000); 
         }
+
+        // Decadencia del Aggro
+        this.playerTeam.forEach(p => { if(p.aggro) p.aggro = Math.floor(p.aggro / 2); });
 
         this.actionQueue = [];
         this.currentAttackerIdx = null; this.targetIdx = null;
@@ -867,10 +1085,7 @@ window.combatApp = {
             return;
         }
 
-        // Si tenemos una habilidad pendiente para usar (estamos apuntando a un objetivo)
         if (this.phase === 'P_TARGETING' && this.pendingSkill) {
-            
-            // Si es beneficiosa (Poción, Escudo, etc) y estamos apuntando a un jugador
             if (this.pendingSkill.isBeneficial && team === 'player') {
                 if (this.playerTeam[index].hp > 0) {
                     this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
@@ -893,9 +1108,8 @@ window.combatApp = {
                     this.updateUI();
                     this.setInstruction(`¡Táctica encolada! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
                 }
-                return; // Cortamos aquí para que no siga evaluando y abra el menú del atacante accidentalmente
+                return; 
                 
-            // Si es un ataque dañino y elegimos a un enemigo
             } else if (!this.pendingSkill.isBeneficial && team === 'enemy') {
                 if (this.enemyTeam[index].hp > 0) {
                     this.actionQueue.push({ attackerIdx: this.currentAttackerIdx, targetIdx: index, skill: this.pendingSkill });
@@ -905,17 +1119,15 @@ window.combatApp = {
                     this.updateUI();
                     this.setInstruction(`¡Ataque encolado! Te quedan ${this.energy}⚡. Añade más o Finaliza.`);
                 }
-                return; // Cortamos aquí
+                return; 
             }
             
-            // Si estábamos apuntando pero el usuario en su lugar tocó a otro de sus personajes (Jugador cancela el objetivo para cambiar de planta)
             if (team === 'player' && this.playerTeam[index].hp > 0) {
                 this.pendingSkill = null;
                 this.currentAttackerIdx = index;
                 this.openCardModal(index);
             }
             
-        // Si no teníamos nada pendiente y simplemente seleccionamos una planta
         } else if (this.phase === 'P_SELECT') {
             if (team === 'player' && this.playerTeam[index].hp > 0) {
                 this.currentAttackerIdx = index;
@@ -932,7 +1144,6 @@ window.combatApp = {
         const container = document.getElementById('cm-cards-container');
         container.innerHTML = '';
         
-        // Habilidades Normales
         plant.skills.forEach((skill, sIdx) => {
             const canAfford = this.energy >= skill.cost;
             const btnClass = canAfford ? 'bg-white border-2 border-gray-100 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-xl hover:-translate-y-1 transition-all' : 'bg-gray-50 border-2 border-gray-100 opacity-50 cursor-not-allowed grayscale';
@@ -960,12 +1171,10 @@ window.combatApp = {
             `;
         });
 
-        // Separador Consumibles
         container.innerHTML += `<div class="col-span-full mt-2 mb-2 border-t-2 border-dashed border-gray-200 pt-4 w-full">
             <h4 class="font-black text-cg_navy text-sm uppercase tracking-widest text-center">🎒 Tácticas & Consumibles</h4>
         </div>`;
 
-        // Tácticas Globales
         const tacticas = [
             { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
             { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
@@ -1092,14 +1301,17 @@ window.combatApp = {
             }
 
             if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
-            this.playerTeam.forEach(pt => {
+            
+            // Consolidar equipo activo y banquillo para regresarlos al Arsenal
+            let finalTeam = [...this.playerTeam, ...this.playerReserve];
+            finalTeam.forEach(pt => {
                 if (pt.hp > 0) {
                     window.farmApp.state.arsenal.push({
                         id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                         plantId: pt.plantId, name: pt.name, icon: pt.icon,
                         hp: pt.hp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
                         wins: pt.wins + (victory ? 1 : 0),
-                        lastRecover: Date.now() // Ancla para recuperar vida automáticamente
+                        lastRecover: Date.now() 
                     });
                 }
             });
@@ -1173,6 +1385,13 @@ window.combatApp = {
                 let statusBadges = '';
                 if (ent.hasShield) statusBadges += `<span class="absolute -top-4 sm:-top-6 left-0 text-lg sm:text-2xl drop-shadow-md z-50" title="Escudo Activo">🛡️</span>`;
                 if (ent.hasBuff) statusBadges += `<span class="absolute -top-4 sm:-top-6 right-0 text-lg sm:text-2xl drop-shadow-md z-50 animate-bounce" title="Ataque x2">🔥</span>`;
+                if (ent.hasMark) statusBadges += `<span class="absolute -top-4 sm:-top-6 left-1/2 -translate-x-1/2 text-lg sm:text-2xl drop-shadow-md z-50 animate-pulse" title="Marca de Presa">🎯</span>`;
+                if (ent.aggro > 0 && side === 'P') statusBadges += `<span class="absolute -bottom-4 right-0 bg-red-100 text-red-600 px-1.5 py-0.5 rounded border border-red-200 text-[8px] sm:text-[10px] font-black drop-shadow-md z-50" title="Amenaza (Aggro)">👁️ ${ent.aggro}</span>`;
+                
+                let aliveE = this.enemyTeam.filter(e => e.hp > 0);
+                if (side === 'E' && aliveE.length === 1 && ent.hp > 0) {
+                    statusBadges += `<span class="absolute -top-4 sm:-top-6 left-1/2 -translate-x-1/2 text-lg sm:text-2xl drop-shadow-md z-50 animate-bounce" title="Último Aliento">🔥</span>`;
+                }
 
                 let positionClasses = "";
                 if (side === 'P') {
