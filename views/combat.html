@@ -417,12 +417,17 @@ window.combatApp = {
         const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
         let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
         
+        // 1. En createCrow, asegurar un fallback de respaldo constante:
+        const DEFAULT_CROW_IMG = 'https://i.ibb.co/DfG3hswj/Frame-750.png';
+
         const createCrow = (baseName, baseHp, baseAtk) => {
             let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
             let finalAtk = Math.floor(baseAtk * envAtkMult);
             
-            // Asignar imagen específica según el arquetipo del cuervo
-            let crowIcon = window.farmApp.state.images.crow; 
+            let crowIcon = (window.farmApp && window.farmApp.state && window.farmApp.state.images) 
+                ? window.farmApp.state.images.crow 
+                : DEFAULT_CROW_IMG; 
+
             if (baseName.includes('Alfa')) {
                 crowIcon = 'https://i.ibb.co/wZNhF2bY/image-removebg-preview-38.png';
             } else if (baseName.includes('Vigía')) {
@@ -431,7 +436,19 @@ window.combatApp = {
                 crowIcon = 'https://i.ibb.co/XfkRpvpm/image-removebg-preview-41.png';
             }
 
-            return { name: baseName + namePrefix, icon: crowIcon, hp: finalHp, maxHp: finalHp, atk: finalAtk, def: 10, originalDef: 10, hasShield: false, hasBuff: false, usedHeal: false, enragedAlertDone: false };
+            return { 
+                name: baseName + namePrefix, 
+                icon: crowIcon || DEFAULT_CROW_IMG, 
+                hp: finalHp, 
+                maxHp: finalHp, 
+                atk: finalAtk, 
+                def: 10, 
+                originalDef: 10, 
+                hasShield: false, 
+                hasBuff: false, 
+                usedHeal: false, 
+                enragedAlertDone: false 
+            };
         };
 
         if (squadValue < 500) {
