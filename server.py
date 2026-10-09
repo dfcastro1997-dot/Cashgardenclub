@@ -1157,27 +1157,42 @@ def admin_add_items():
     if data.get('item_id') and data.get('item_qty'):
         item_id = data['item_id']
         qty = int(data['item_qty'])
-        
         if 'inventory' not in state: state['inventory'] = {}
-        
         if item_id not in state['inventory']:
-            # Diccionario base para items nuevos
-            item_data = {
+            state['inventory'][item_id] = {
                 'qty': 0, 
                 'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
                 'name': item_id.replace('_', ' ').title(),
-                'image': 'https://i.ibb.co/TDK1WJMK/Logo.png' # Icono por defecto
+                'image': 'https://i.ibb.co/TDK1WJMK/Logo.png' # Icono default (se sobreescribe en UI)
             }
-            state['inventory'][item_id] = item_data
-            
         state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
+
+    # NUEVO: Procesar Desbloqueos de Terrenos y Pases VIP
+    unlock_vip = data.get('unlock_vip')
+    if unlock_vip:
+        now = int(time.time() * 1000)
+        if unlock_vip.startswith('plot_'):
+            plot_idx = int(unlock_vip.split('_')[1])
+            if 'plots' in state and len(state['plots']) > plot_idx:
+                if state['plots'][plot_idx]['status'] in ['locked', 'arena_locked']:
+                    state['plots'][plot_idx]['status'] = 'empty'
+        
+        elif unlock_vip.startswith('vip_'):
+            parts = unlock_vip.split('_') # Ej: vip_water_24, vip_combo_72
+            v_type = parts[1] # water, harvest, combo
+            v_hours = int(parts[2])
+            ms_to_add = v_hours * 3600000
+            
+            if v_type in ['water', 'combo']:
+                state['autoWaterEndTime'] = max(state.get('autoWaterEndTime', 0), now) + ms_to_add
+            if v_type in ['harvest', 'combo']:
+                state['autoHarvestEndTime'] = max(state.get('autoHarvestEndTime', 0), now) + ms_to_add
 
     cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
     conn.commit()
     cur.close(); conn.close()
     
-    return jsonify({"message": "Recursos inyectados correctamente al usuario."})
-
+    return jsonify({"message": "Recursos y permisos inyectados correctamente al usuario."})
 
 
 
