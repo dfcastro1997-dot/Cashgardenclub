@@ -239,43 +239,44 @@
         <!-- MAIN APP CONTENT -->
         <main id="app-content" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 pb-24 lg:pb-10 relative"></main>
 
-        <nav class="lg:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-16 z-[100] pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
             <!-- 1. Torneos -->
-            <button onclick="loadView('nutrients', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors">
-                <span class="text-xl mb-0.5">🏆</span>
-                <span class="text-[10px] font-bold">Torneos</span>
+            <button onclick="loadView('nutrients', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🏆</span>
+                <span class="text-[10px] font-bold tracking-wide">Torneos</span>
             </button>
             
             <!-- 2. Mercado -->
-            <button onclick="loadView('shop', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors">
-                <span class="text-xl mb-0.5">🛒</span>
-                <span class="text-[10px] font-bold">Mercado</span>
+            <button onclick="loadView('shop', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🛒</span>
+                <span class="text-[10px] font-bold tracking-wide">Mercado</span>
             </button>
             
-            <!-- 3. Granja (Centro destacado) -->
-            <div onclick="loadView('farm', this)" class="nav-btn-mobile flex flex-col items-center justify-end w-full h-full text-cg_navy transition-colors pb-1 relative cursor-pointer">
-                <!-- Botón Central: Granja (Modificado a Blanco y Cuadrado) -->
-                <div class="absolute -top-6 flex justify-center w-full">
-                    <div class="w-14 h-14 bg-white hover:bg-gray-50 rounded-xl flex items-center justify-center border-4 border-gray-100 shadow-[0_4px_15px_rgba(0,0,0,0.1)] transition-transform hover:scale-110 z-50">
-                        <span class="text-2xl drop-shadow-sm">🌱</span>
+            <!-- 3. Granja (Centro destacado - Profesional) -->
+            <div onclick="loadView('farm', this)" class="nav-btn-mobile group flex flex-col items-center justify-end w-full h-full text-cg_navy transition-colors pb-1.5 relative cursor-pointer">
+                <!-- Botón Central: Marco marcado e ícono personalizado -->
+                <div class="absolute -top-7 flex justify-center w-full">
+                    <div class="w-16 h-16 bg-white hover:bg-gray-50 rounded-2xl flex items-center justify-center border-[3px] border-gray-200 shadow-[0_8px_20px_rgba(0,0,0,0.12)] transform group-hover:scale-105 group-hover:border-cg_blue/40 transition-all duration-300 z-50">
+                        <img src="https://i.ibb.co/7dhNf0QB/image-removebg-preview-42.png" alt="Granja" class="w-10 h-10 object-contain drop-shadow-sm">
                     </div>
                 </div>
-                <span class="text-[10px] font-bold mt-8">Granja</span>
+                <span class="text-[10px] font-black tracking-widest mt-8">GRANJA</span>
             </div>
 
             <!-- 4. Guía -->
-            <button onclick="loadView('instructions', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors">
-                <span class="text-xl mb-0.5">📖</span>
-                <span class="text-[10px] font-bold">Guía</span>
+            <button onclick="loadView('instructions', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📖</span>
+                <span class="text-[10px] font-bold tracking-wide">Guía</span>
             </button>
             
             <!-- 5. Noticias -->
-            <button onclick="loadView('news', this)" class="nav-btn-mobile flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_gold transition-colors">
-                <div class="relative mb-0.5">
-                    <span class="text-xl block leading-none">📰</span>
-                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            <button onclick="loadView('news', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <div class="relative mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">
+                    <span class="text-2xl block leading-none">📰</span>
+                    <!-- Punto rojo con borde blanco para que resalte profesionalmente -->
+                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
                 </div>
-                <span class="text-[10px] font-bold">Noticias</span>
+                <span class="text-[10px] font-bold tracking-wide">Noticias</span>
             </button>
         </nav>
     </div>
