@@ -102,7 +102,7 @@
                         <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Autorizo el <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
                     </label>
 
-                    <!-- Simulador Visual de Captcha Arreglado -->
+                    <!-- Simulador Visual de Captcha -->
                     <div class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between shadow-sm mt-1">
                         <label class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1">
                             <input type="checkbox" id="chk-captcha" class="w-5 h-5 sm:w-6 sm:h-6 text-green-500 rounded border-gray-300 focus:ring-green-500 cursor-pointer transition-all">
@@ -143,7 +143,7 @@
 
         <!-- MODAL DE ACCESO ADMIN -->
         <div id="admin-login-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-            <div class="bg-gray-900 border border-gray-700 rounded-3xl p-8 w-full max-w-sm relative shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center">
+            <div class="bg-gray-900 border border-gray-700 rounded-3xl p-8 w-full max-w-sm relative shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center animate-fade-in">
                 <button onclick="document.getElementById('admin-login-modal').classList.replace('flex', 'hidden')" class="absolute top-4 right-5 text-gray-500 hover:text-white font-bold text-xl">✕</button>
                 <div class="text-4xl mb-4">👁️</div>
                 <h3 class="text-white font-black text-xl mb-1 uppercase tracking-widest">Acceso Clasificado</h3>
@@ -217,23 +217,19 @@
                                 <p class="text-sm font-black text-cg_navy truncate" id="dropdown-username">usuario@cashgarden.com</p>
                             </div>
                             <div class="py-2">
-                                <!-- Billetera Wompi - BLOQUEADA -->
                                 <button disabled class="w-full text-left px-5 py-3 text-sm font-bold text-gray-400 opacity-60 cursor-not-allowed flex items-center gap-3">
                                     <span class="text-lg grayscale">🏦</span> Billetera Wompi 
                                     <span class="text-[9px] bg-red-100 text-red-500 px-1.5 py-0.5 rounded uppercase tracking-wider ml-auto">Cerrado</span>
                                 </button>
                                 
-                                <!-- Mi Arsenal -->
                                 <button onclick="loadView('arsenal'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors flex items-center gap-3">
                                     <span class="text-lg">🛡️</span> Mi Arsenal
                                 </button>
                                 
-                                <!-- Alertas Telegram -->
                                 <button onclick="openTelegramModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-blue-500 transition-colors flex items-center gap-3">
                                     <span class="text-lg">✈️</span> Alertas Telegram
                                 </button>
                                 
-                                <!-- Códigos - BLOQUEADOS -->
                                 <button disabled class="w-full text-left px-5 py-3 text-sm font-bold text-gray-400 opacity-60 cursor-not-allowed flex items-center gap-3">
                                     <span class="text-lg grayscale">🎟️</span> Códigos 
                                     <span class="text-[9px] bg-red-100 text-red-500 px-1.5 py-0.5 rounded uppercase tracking-wider ml-auto">Cerrado</span>
@@ -254,21 +250,17 @@
         <main id="app-content" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 pb-24 lg:pb-10 relative"></main>
 
         <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
-            <!-- 1. Torneos -->
             <button onclick="loadView('nutrients', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
                 <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🏆</span>
                 <span class="text-[10px] font-bold tracking-wide">Torneos</span>
             </button>
             
-            <!-- 2. Mercado -->
             <button onclick="loadView('shop', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
                 <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🛒</span>
                 <span class="text-[10px] font-bold tracking-wide">Mercado</span>
             </button>
             
-            <!-- 3. Granja (Centro destacado - Profesional) -->
             <div onclick="loadView('farm', this)" class="nav-btn-mobile group flex flex-col items-center justify-end w-full h-full text-cg_navy transition-colors pb-1.5 relative cursor-pointer">
-                <!-- Botón Central: Marco marcado e ícono personalizado -->
                 <div class="absolute -top-7 flex justify-center w-full">
                     <div class="w-16 h-16 bg-white hover:bg-gray-50 rounded-2xl flex items-center justify-center border-[3px] border-gray-200 shadow-[0_8px_20px_rgba(0,0,0,0.12)] transform group-hover:scale-105 group-hover:border-cg_blue/40 transition-all duration-300 z-50">
                         <img src="https://i.ibb.co/7dhNf0QB/image-removebg-preview-42.png" alt="Granja" class="w-10 h-10 object-contain drop-shadow-sm">
@@ -277,17 +269,14 @@
                 <span class="text-[10px] font-black tracking-widest mt-8">GRANJA</span>
             </div>
 
-            <!-- 4. Guía -->
             <button onclick="loadView('instructions', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
                 <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📖</span>
                 <span class="text-[10px] font-bold tracking-wide">Guía</span>
             </button>
             
-            <!-- 5. Noticias -->
             <button onclick="loadView('news', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
                 <div class="relative mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">
                     <span class="text-2xl block leading-none">📰</span>
-                    <!-- Punto rojo con borde blanco para que resalte profesionalmente -->
                     <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
                 </div>
                 <span class="text-[10px] font-bold tracking-wide">Noticias</span>
@@ -310,8 +299,7 @@
         </div>
     </div>
 
-
-    <!-- NUEVA VENTANA MODAL DE CÓDIGOS -->
+    <!-- MODAL DE CÓDIGOS -->
     <div id="codes-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeCodesModal()"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-gray-200">
@@ -326,7 +314,6 @@
             </button>
         </div>
     </div>
-
 
     <!-- MODAL DE TELEGRAM -->
     <div id="telegram-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
@@ -365,8 +352,6 @@
         </div>
     </div>
 
-
-
     <!-- BANNER DE COOKIES -->
     <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-[1000] bg-cg_navy/95 backdrop-blur-xl border-t border-gray-700 text-white p-4 sm:p-6 transform translate-y-full transition-transform duration-700 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
         <div class="flex items-start sm:items-center gap-4">
@@ -381,13 +366,6 @@
         </div>
     </div>
 
-
-
-
-
-
-
-
     <script>
         let isLoginMode = true;
 
@@ -396,7 +374,6 @@
             document.getElementById('btn-login').classList.toggle('hidden', !isLoginMode);
             document.getElementById('btn-register').classList.toggle('hidden', isLoginMode);
             
-            // Ocultar/Mostrar Título y extras de registro
             document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
             document.getElementById('confirm-password-container').classList.toggle('hidden', isLoginMode);
             document.getElementById('register-extras-container').classList.toggle('hidden', isLoginMode);
@@ -406,10 +383,9 @@
                 : "¿Ya tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Ingresa aquí</span>";
             
             document.getElementById('auth-error').classList.add('hidden');
-            validateRegistrationForm(); // Verificar estado inicial de los checks
+            validateRegistrationForm(); 
         }
 
-        // Event Listeners para habilitar el botón de registro
         document.querySelectorAll('#chk-terms, #chk-privacy, #chk-captcha, #password, #confirm_password').forEach(el => {
             el.addEventListener('input', validateRegistrationForm);
             el.addEventListener('change', validateRegistrationForm);
@@ -480,12 +456,11 @@
             }
         }
 
-        // LÓGICA DE COOKIES
         function checkCookies() {
             if(!localStorage.getItem('cookiesAccepted')) {
                 setTimeout(() => {
                     document.getElementById('cookie-banner').classList.remove('translate-y-full');
-                }, 1500); // Aparece suavemente después de 1.5s
+                }, 1500); 
             }
         }
 
@@ -494,14 +469,13 @@
             document.getElementById('cookie-banner').classList.add('translate-y-full');
         }
 
-        // Añadir a tu window.onload existente
         const oldOnload = window.onload;
         window.onload = async () => {
-            checkCookies(); // Llamar el checkeo de cookies
+            checkCookies(); 
             if(oldOnload) await oldOnload();
         };
 
-        window.socket = io(); // Conexión Global Instantánea WebSockets
+        window.socket = io(); 
 
         function updateProfileUI(userData) {
             const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
@@ -516,14 +490,10 @@
             
             if(window.farmApp) window.farmApp.state.balance = balance;
 
-            // REGISTRAR JUGADOR EN WEBSOCKETS PARA RECIBIR RETOS INMEDIATAMENTE
             sessionStorage.setItem('short_id', shortId);
             window.socket.emit('register_user', { short_id: shortId });
         }
 
-        // ==========================================
-        // SISTEMA PVP WEBSOCKETS (0 LAG)
-        // ==========================================
         window.socket.on('incoming_challenge', (data) => {
             if (!window.isPvPModalOpen) {
                 window.isPvPModalOpen = true;
@@ -576,7 +546,6 @@
             const data = await res.json();
             
             if (res.ok) {
-                // DISPARAR EVENTO WEBSOCKET INSTANTÁNEO
                 window.socket.emit('pvp_challenge', {
                     target_short_id: targetId,
                     challenger_short_id: sessionStorage.getItem('short_id'),
@@ -599,14 +568,12 @@
             const challengerId = window.currentChallenge.challenger_short_id;
             const betAmount = window.currentChallenge.bet;
             
-            // RESPUESTA WEBSOCKET INSTANTÁNEA
             if (action === 'accepted') {
                 window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
             } else {
                 window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
             }
 
-            // GUARDADO DE BASE DE DATOS EN SEGUNDO PLANO
             fetch('/api/pvp/accept', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ match_id: matchId, action: action })
@@ -632,7 +599,7 @@
         async function syncUserData() {
             const username = sessionStorage.getItem('username');
             const token = sessionStorage.getItem('session_token');
-            if (!username || !token) return; // Se aborta si no hay token
+            if (!username || !token) return; 
             
             if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
                 return;
@@ -646,7 +613,6 @@
                 }
                 
                 if (response.status === 401) {
-                    // FIX 401: Borramos el token para detener el bucle infinito de errores
                     sessionStorage.removeItem('session_token');
                     showSessionExpiredModal("Tu sesión ha expirado por seguridad o iniciaste sesión en otro dispositivo.");
                     return;
@@ -656,8 +622,6 @@
                     const data = await response.json();
                     const dbBalance = data.user.real_balance_cop || data.user.balance;
                     
-
-                    // --- DETECCIÓN DE RETOS PVP ---
                     if (data.user.pending_challenge && !window.isPvPModalOpen) {
                         window.isPvPModalOpen = true;
                         window.currentChallenge = data.user.pending_challenge;
@@ -667,7 +631,6 @@
                         document.getElementById('pvp-incoming-modal').classList.add('flex');
                     }
 
-
                     if (data.user.game_state) {
                         try {
                             const state = JSON.parse(data.user.game_state);
@@ -675,17 +638,14 @@
                             if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
                             
                             if (window.farmApp && window.farmApp.state) {
-                                // Solo actualizar si el estado del servidor es más reciente
                                 if ((state.lastTick || 0) > (window.farmApp.state.lastTick || 0)) {
                                     window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
                                     window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
                                     window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
                                     if (state.plots) {
-                                        // MIGRACIÓN AUTOMÁTICA DE 6 A 9 TERRENOS
                                         if (state.plots.length === 6) {
                                             const arenaPlot = state.plots[5];
-                                            arenaPlot.id = 8; // Movemos la Arena al último puesto
-                                            
+                                            arenaPlot.id = 8; 
                                             state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
                                             state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
                                             state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
@@ -757,7 +717,6 @@
                         document.getElementById('dashboard-screen').classList.add('flex');
                         loadView('farm', document.querySelector('.nav-btn-desktop'));
                     } else if (response.status >= 500) {
-                        // Si el servidor se está reiniciando (502, 503), no desloguear. Solo avisar.
                         showSessionExpiredModal("El servidor se está actualizando. Vuelve a intentar en unos segundos.");
                     } else {
                         logout(); 
@@ -773,16 +732,14 @@
 
         function logout() { 
             sessionStorage.removeItem('username');
-            sessionStorage.removeItem('session_token'); // BORRAR TOKEN
+            sessionStorage.removeItem('session_token'); 
             
-            // Ocultar el modal inmediatamente para dar feedback visual instantáneo
             const sessionModal = document.getElementById('session-expired-modal');
             if (sessionModal) {
                 sessionModal.classList.remove('flex');
                 sessionModal.classList.add('hidden');
             }
             
-            // Forzar una redirección limpia e inmediata (evita el caché del reload estándar)
             window.location.replace(window.location.pathname); 
         }
         
@@ -899,40 +856,6 @@
         }
 
 
-        window.respondPvP = async function(action) {
-            document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
-            window.isPvPModalOpen = false;
-            
-            await fetch('/api/pvp/accept', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ match_id: window.currentChallenge.match_id, action: action })
-            });
-
-            if (action === 'accepted') {
-                window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
-                window.farmApp.saveState();
-                
-                sessionStorage.setItem('pvp_match_id', window.currentChallenge.match_id);
-                sessionStorage.setItem('pvp_bet_amount', window.currentChallenge.bet_seeds);
-                
-                const openSelection = () => {
-                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                    let arsenal = window.farmApp.state.arsenal || [];
-                    window.farmApp.openTeamSelection(readyPlots, arsenal);
-                };
-
-                // Si el modal no existe, forzamos la carga de la Granja primero
-                if (!document.getElementById('team-selection-list')) {
-                    await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                    setTimeout(openSelection, 200); // Pequeño retraso para asegurar que el DOM cargó
-                } else {
-                    openSelection();
-                }
-            }
-        };
-
-
         function openCodesModal() {
             document.getElementById('secret-code-input').value = '';
             document.getElementById('codes-modal').classList.remove('hidden');
@@ -947,7 +870,6 @@
         function submitSecretCode() {
             const code = document.getElementById('secret-code-input').value.trim();
             
-            // Verificamos si la instancia de la granja (donde están las funciones de dev) está cargada
             if (!window.farmApp || !window.farmApp.dev) {
                 alert("Debes estar en la pestaña 'Granja' para poder usar códigos.");
                 return;
@@ -973,7 +895,7 @@
                     window.farmApp.dev.addTime(4);
                     break;
                 case '6666':
-                    window.farmApp.dev.reset(true); // Pasa 'true' para ejecutar el Hard Reset (Borrar COP)
+                    window.farmApp.dev.reset(true); 
                     break;
                 default:
                     alert("El código ingresado es inválido o ha expirado.");
@@ -990,17 +912,14 @@
             }
         });
 
-        // BUCLE SEGURO NO ACUMULATIVO PARA EVITAR LAG AL CARGAR PÁGINAS
-        // BUCLE SEGURO NO ACUMULATIVO PARA EVITAR LAG AL CARGAR PÁGINAS Y ERRORES 401
         let isGlobalSyncing = false;
         async function runSyncLoop() {
-            // FIX 401: El bucle solo ejecuta si realmente hay un token válido en sessionStorage
             if (!isGlobalSyncing && sessionStorage.getItem('session_token')) {
                 isGlobalSyncing = true;
-                await syncUserData(); // Espera a que el servidor responda
+                await syncUserData(); 
                 isGlobalSyncing = false;
             }
-            setTimeout(runSyncLoop, 10000); // 10s de respiro antes del siguiente ciclo
+            setTimeout(runSyncLoop, 10000); 
         }
         setTimeout(runSyncLoop, 1000);
 
