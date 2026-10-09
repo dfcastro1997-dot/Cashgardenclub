@@ -1,0 +1,251 @@
+<div class="max-w-[1400px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
+    <!-- HEADER ADMIN -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-[10px] font-extrabold text-red-600 uppercase tracking-widest bg-red-50 border border-red-200 px-2 py-0.5 rounded-md">Acceso Root Global</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Mainframe Administrativo</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Gestión total de la plataforma. Supervisa jugadores, inyecta recursos directamente a las bases de datos e inspecciona el estado de las granjas en tiempo real.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- COLUMNA IZQUIERDA: DIRECTORIO -->
+        <div class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-gray-200 p-6 flex flex-col h-[600px]">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-black text-cg_navy flex items-center gap-2">👥 Directorio de Jugadores</h3>
+                <button onclick="fetchUsers()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm">🔄 Recargar DB</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-50 sticky top-0 z-10">
+                        <tr>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200">ID / Short ID</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200">Usuario</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-right">Saldo COP</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
+                        <tr><td colspan="4" class="p-4 text-center">Cargando base de datos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: MARKETPLACE E INSPECTOR -->
+        <div class="lg:col-span-4 space-y-6">
+            
+            <!-- INYECTOR DE RECURSOS (MARKETPLACE) -->
+            <div class="bg-gray-900 rounded-3xl shadow-xl border border-gray-700 p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-red-600 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+                <h3 class="text-xl font-black mb-1 relative z-10 flex items-center gap-2">💉 Inyector de Recursos</h3>
+                <p class="text-xs text-gray-400 mb-5 relative z-10">Forzar adición a inventarios.</p>
+                
+                <div class="space-y-4 relative z-10">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">ID del Jugador Destino</label>
+                        <input type="text" id="inj-short-id" placeholder="Ej: 1234" class="w-full bg-gray-800 border border-gray-600 text-white px-4 py-2.5 rounded-xl font-black focus:border-red-500 outline-none">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-black text-green-400 uppercase tracking-widest mb-1">+ Semillas 🌱</label>
+                            <input type="number" id="inj-seeds" placeholder="0" class="w-full bg-gray-800 border border-gray-600 text-green-400 px-4 py-2.5 rounded-xl font-black outline-none focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-1">+ Dinero COP 💵</label>
+                            <input type="number" id="inj-cop" placeholder="0" class="w-full bg-gray-800 border border-gray-600 text-cg_gold px-4 py-2.5 rounded-xl font-black outline-none focus:border-yellow-500">
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 border border-gray-700 p-3 rounded-xl mt-2">
+                        <label class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Inyectar Ítem Específico</label>
+                        <select id="inj-item-id" class="w-full bg-gray-900 border border-gray-600 text-white px-3 py-2 rounded-lg text-xs font-bold outline-none mb-2">
+                            <option value="">-- Ninguno --</option>
+                            <option value="flower_wheat">Semilla: Trigo Rápido</option>
+                            <option value="flower_bamboo">Semilla: Bambú Tryhard</option>
+                            <option value="flower_cactus">Semilla: Cactus de Cuarzo</option>
+                            <option value="flower_small">Semilla: Flor Pequeña</option>
+                            <option value="flower_crystal">Semilla: Helecho Cristal</option>
+                            <option value="flower_big">Semilla: Flor Grande</option>
+                            <option value="flower_moon">Semilla: Lirio Lunar</option>
+                            <option value="flower_solar">Semilla: Girasol Solar (Premium)</option>
+                            <option value="flower_neon">Semilla: Orquídea Neón (Premium)</option>
+                            <option value="tool_pot_small">Herramienta: Maceta Pequeña</option>
+                            <option value="tool_pot_big">Herramienta: Maceta Grande</option>
+                            <option value="tool_water">Consumible: Regadera</option>
+                            <option value="tool_scarecrow">Defensa: Espantapájaros</option>
+                            <option value="tool_duel_ticket">Pase: Ticket de Duelo</option>
+                        </select>
+                        <input type="number" id="inj-item-qty" placeholder="Cantidad" class="w-full bg-gray-900 border border-gray-600 text-white px-3 py-2 rounded-lg text-xs font-bold outline-none">
+                    </div>
+                    
+                    <button onclick="injectResources()" id="btn-inject" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase tracking-widest text-xs mt-2">
+                        EJECUTAR INYECCIÓN
+                    </button>
+                </div>
+            </div>
+
+            <!-- INSPECTOR DE GRANJA -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Inspector de Granjas</h3>
+                <p class="text-[10px] text-gray-500 mb-4 font-bold uppercase tracking-widest">Auditoría en tiempo real</p>
+                
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="inspect-short-id" placeholder="ID Jugador" class="flex-1 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg font-black text-sm outline-none focus:border-cg_blue text-center">
+                    <button onclick="inspectFarm()" class="bg-cg_navy hover:bg-black text-white px-4 py-2 rounded-lg font-black text-xs transition-colors shadow-sm">Revisar</button>
+                </div>
+
+                <div id="inspector-result" class="hidden flex-col gap-3">
+                    <div class="bg-green-50 border border-green-100 rounded-xl p-3 flex justify-between items-center">
+                        <span class="text-xs font-black text-green-700">Semillas (Balance):</span>
+                        <span class="text-sm font-black text-green-600" id="insp-seeds">0</span>
+                    </div>
+                    
+                    <div class="bg-gray-900 rounded-xl p-3 text-left">
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 border-b border-gray-700 pb-1">Estado de las Parcelas</p>
+                        <div id="insp-plots" class="space-y-1.5 text-xs font-mono text-green-400 max-h-40 overflow-y-auto" style="scrollbar-width: none;">
+                            <!-- Data -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const ADMIN_TOKEN = "supersecreto123";
+
+    async function fetchUsers() {
+        const list = document.getElementById('admin-users-list');
+        list.innerHTML = '<tr><td colspan="4" class="p-4 text-center font-bold text-gray-400 animate-pulse">Cargando base de datos...</td></tr>';
+        
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ admin_token: ADMIN_TOKEN })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                list.innerHTML = '';
+                data.users.forEach(u => {
+                    list.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-3 border-b border-gray-100">
+                                <span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded text-xs border border-gray-200">#${u.short_id || '----'}</span>
+                                <span class="text-[9px] text-gray-400 ml-1">DB_ID: ${u.id}</span>
+                            </td>
+                            <td class="p-3 border-b border-gray-100 font-black text-cg_navy">${u.username}</td>
+                            <td class="p-3 border-b border-gray-100 text-right font-black text-green-600">$${parseFloat(u.balance).toLocaleString()}</td>
+                            <td class="p-3 border-b border-gray-100 text-center">
+                                <button onclick="document.getElementById('inj-short-id').value='${u.short_id}'; document.getElementById('inspect-short-id').value='${u.short_id}';" class="bg-cg_blue/10 text-cg_blue hover:bg-cg_blue hover:text-white px-2 py-1 rounded transition-colors text-[10px] font-black uppercase tracking-wider">Accionar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                list.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500 font-bold">Error: ${data.error}</td></tr>`;
+            }
+        } catch (e) {
+            list.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500 font-bold">Error de conexión con el servidor.</td></tr>`;
+        }
+    }
+
+    async function injectResources() {
+        const short_id = document.getElementById('inj-short-id').value.trim();
+        const seeds = document.getElementById('inj-seeds').value;
+        const cop = document.getElementById('inj-cop').value;
+        const item_id = document.getElementById('inj-item-id').value;
+        const item_qty = document.getElementById('inj-item-qty').value;
+        
+        if (!short_id) return alert("Debes ingresar el ID del jugador.");
+        
+        const btn = document.getElementById('btn-inject');
+        btn.innerText = "INYECTANDO...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/admin/add_items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    admin_token: ADMIN_TOKEN,
+                    short_id: short_id,
+                    seeds: seeds || 0,
+                    cop: cop || 0,
+                    item_id: item_id,
+                    item_qty: item_qty || 0
+                })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                alert("¡Inyección Exitosa!\n" + data.message);
+                document.getElementById('inj-seeds').value = '';
+                document.getElementById('inj-cop').value = '';
+                document.getElementById('inj-item-id').value = '';
+                document.getElementById('inj-item-qty').value = '';
+                fetchUsers(); // Actualiza la tabla para ver el nuevo saldo
+            } else {
+                alert("Error: " + data.error);
+            }
+        } catch (e) {
+            alert("Error de red.");
+        } finally {
+            btn.innerText = "EJECUTAR INYECCIÓN";
+            btn.disabled = false;
+        }
+    }
+
+    async function inspectFarm() {
+        const short_id = document.getElementById('inspect-short-id').value.trim();
+        if (!short_id) return;
+        
+        document.getElementById('insp-plots').innerHTML = '<span class="text-gray-400">Extrayendo datos...</span>';
+        document.getElementById('inspector-result').classList.remove('hidden');
+        document.getElementById('inspector-result').classList.add('flex');
+
+        try {
+            const res = await fetch('/api/admin/user_farm/' + short_id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ admin_token: ADMIN_TOKEN })
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.user.game_state) {
+                const state = JSON.parse(data.user.game_state);
+                document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString() + ' 🌱';
+                
+                let plotsHtml = '';
+                if (state.plots) {
+                    state.plots.forEach(p => {
+                        let statusColor = p.status === 'locked' ? 'text-gray-500' : (p.status === 'empty' ? 'text-yellow-400' : (p.status === 'tournament' ? 'text-purple-400' : 'text-green-400'));
+                        let plantInfo = p.plant ? ` [${p.plant.id}] 💧${Math.floor(p.water)}%` : '';
+                        let crowAlert = p.hasCrow ? ' <span class="bg-red-500 text-white px-1 rounded">CUERVO</span>' : '';
+                        plotsHtml += `<div class="border-b border-gray-800 pb-1 mb-1"><span class="${statusColor}">P[${p.id}]: ${p.status.toUpperCase()}</span>${plantInfo}${crowAlert}</div>`;
+                    });
+                }
+                document.getElementById('insp-plots').innerHTML = plotsHtml || 'Sin terrenos registrados.';
+            } else {
+                document.getElementById('insp-plots').innerHTML = '<span class="text-red-400">Usuario sin datos guardados o ID incorrecto.</span>';
+                document.getElementById('insp-seeds').innerText = '0 🌱';
+            }
+        } catch (e) {
+            document.getElementById('insp-plots').innerHTML = '<span class="text-red-500">Error de conexión.</span>';
+        }
+    }
+
+    // Inicializar cargando la tabla de usuarios
+    fetchUsers();
+</script>
+</div>

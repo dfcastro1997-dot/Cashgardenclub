@@ -1081,6 +1081,98 @@ def dev_add_cop():
         cur.close()
         conn.close()
 
+
+
+# ==========================================================
+# ENDPOINTS PANEL DE ADMINISTRACIÓN
+# ==========================================================
+
+@app.route('/api/admin/users', methods=['POST'])
+def admin_get_users():
+    data = request.json
+    if data.get('admin_token') != ADMIN_SECRET: return jsonify({"error": "No autorizado"}), 403
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, short_id, balance, phone_nequi FROM users ORDER BY id DESC")
+    users = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify({"status": "success", "users": users})
+
+@app.route('/api/admin/user_farm/<short_id>', methods=['POST'])
+def admin_get_farm(short_id):
+    data = request.json
+    if data.get('admin_token') != ADMIN_SECRET: return jsonify({"error": "No autorizado"}), 403
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT username, balance, game_state, telegram_chat_id FROM users WHERE short_id = %s", (short_id,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+    
+    if user: 
+        return jsonify({"status": "success", "user": user})
+    return jsonify({"error": "Usuario no encontrado"}), 404
+
+@app.route('/api/admin/add_items', methods=['POST'])
+def admin_add_items():
+    data = request.json
+    if data.get('admin_token') != ADMIN_SECRET: return jsonify({"error": "No autorizado"}), 403
+    
+    short_id = data.get('short_id')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, balance, game_state FROM users WHERE short_id = %s FOR UPDATE", (short_id,))
+    user = cur.fetchone()
+    
+    if not user:
+        cur.close(); conn.close()
+        return jsonify({"error": "Usuario no encontrado"}), 404
+        
+    state = json.loads(user['game_state'] or '{}')
+    
+    # Inyectar Semillas
+    if data.get('seeds'):
+        state['seedsBalance'] = state.get('seedsBalance', 0) + int(data['seeds'])
+        
+    # Inyectar COP
+    if data.get('cop'):
+        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (float(data['cop']), user['id']))
+        
+    # Inyectar Items/Plantas al Inventario
+    if data.get('item_id') and data.get('item_qty'):
+        item_id = data['item_id']
+        qty = int(data['item_qty'])
+        
+        if 'inventory' not in state: state['inventory'] = {}
+        
+        if item_id not in state['inventory']:
+            # Diccionario base para items nuevos
+            item_data = {
+                'qty': 0, 
+                'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
+                'name': item_id.replace('_', ' ').title(),
+                'image': 'https://i.ibb.co/TDK1WJMK/Logo.png' # Icono por defecto
+            }
+            state['inventory'][item_id] = item_data
+            
+        state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
+
+    cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
+    conn.commit()
+    cur.close(); conn.close()
+    
+    return jsonify({"message": "Recursos inyectados correctamente al usuario."})
+
+
+
+
+
+
+
+
 @app.route('/api/pvp/challenge', methods=['POST'])
 def pvp_challenge():
     data = request.json
