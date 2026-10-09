@@ -1094,8 +1094,20 @@ def admin_get_users():
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, username, short_id, balance, phone_nequi FROM users ORDER BY id DESC")
+    cur.execute("SELECT id, username, short_id, balance, game_state, phone_nequi FROM users ORDER BY id DESC")
     users = cur.fetchall()
+    
+    # Extraer las semillas de game_state para la tabla
+    for u in users:
+        u['seeds'] = 0
+        if u.get('game_state'):
+            try:
+                st = json.loads(u['game_state'])
+                u['seeds'] = st.get('seedsBalance', 0)
+            except:
+                pass
+        del u['game_state'] # No enviar todo el JSON pesado a la tabla general
+
     cur.close()
     conn.close()
     return jsonify({"status": "success", "users": users})

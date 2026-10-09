@@ -1,131 +1,217 @@
-<div class="max-w-[1400px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
-    <!-- HEADER ADMIN -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
-        <div>
-            <div class="flex items-center gap-2 mb-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-[10px] font-extrabold text-red-600 uppercase tracking-widest bg-red-50 border border-red-200 px-2 py-0.5 rounded-md">Acceso Root Global</span>
+<div class="h-full flex flex-col bg-bone relative animate-fade-in" id="admin-root">
+    
+    <!-- HEADER ADMIN (Reemplaza al header normal) -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-50">
+        <div class="max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 shrink-0">
+                <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-8 w-auto">
+                <span class="text-xs font-black bg-red-100 text-red-600 px-2 py-0.5 rounded border border-red-200">MAINFRAME</span>
             </div>
-            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Mainframe Administrativo</h2>
-            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Gestión total de la plataforma. Supervisa jugadores, inyecta recursos directamente a las bases de datos e inspecciona el estado de las granjas en tiempo real.</p>
+            <button onclick="logout()" class="text-[10px] font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-1">
+                Salir <span>🚪</span>
+            </button>
         </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- COLUMNA IZQUIERDA: DIRECTORIO -->
-        <div class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-gray-200 p-6 flex flex-col h-[600px]">
-            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+        <!-- TABS DE NAVEGACIÓN ADMIN -->
+        <div class="flex gap-2 px-4 max-w-[1400px] mx-auto overflow-x-auto hide-scrollbar pt-2">
+            <button onclick="switchAdminTab('directorio')" id="tab-directorio" class="pb-3 px-3 text-sm font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Directorio</button>
+            <button onclick="switchAdminTab('inyector')" id="tab-inyector" class="pb-3 px-3 text-sm font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Inyector de Recursos</button>
+            <button onclick="switchAdminTab('inspector')" id="tab-inspector" class="pb-3 px-3 text-sm font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Inspector de Granjas</button>
+        </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-4 md:p-8 max-w-[1400px] mx-auto w-full">
+        
+        <!-- TAB 1: DIRECTORIO DE JUGADORES -->
+        <div id="content-directorio" class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 flex flex-col h-full min-h-[500px]">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
                 <h3 class="text-xl font-black text-cg_navy flex items-center gap-2">👥 Directorio de Jugadores</h3>
-                <button onclick="fetchUsers()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm">🔄 Recargar DB</button>
+                
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <input type="text" id="admin-search" placeholder="Filtrar por ID o Nombre..." oninput="filterUsers()" class="flex-1 sm:w-64 bg-gray-50 border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold outline-none focus:border-cg_blue">
+                    <button onclick="fetchUsers()" class="bg-cg_blue hover:bg-cg_navy text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm shrink-0">Recargar</button>
+                </div>
             </div>
             
             <div class="flex-1 overflow-y-auto pr-2" style="scrollbar-width: thin;">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr>
-                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200">ID / Short ID</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200">Short ID</th>
                             <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200">Usuario</th>
-                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-right">Saldo COP</th>
-                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Acciones</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-right">Semillas 🌱</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-right">Saldo COP 💵</th>
+                            <th class="p-3 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="admin-users-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
-                        <tr><td colspan="4" class="p-4 text-center">Cargando base de datos...</td></tr>
+                        <tr><td colspan="5" class="p-4 text-center">Cargando base de datos...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- COLUMNA DERECHA: MARKETPLACE E INSPECTOR -->
-        <div class="lg:col-span-4 space-y-6">
-            
-            <!-- INYECTOR DE RECURSOS (MARKETPLACE) -->
-            <div class="bg-gray-900 rounded-3xl shadow-xl border border-gray-700 p-6 text-white relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-red-600 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-                <h3 class="text-xl font-black mb-1 relative z-10 flex items-center gap-2">💉 Inyector de Recursos</h3>
-                <p class="text-xs text-gray-400 mb-5 relative z-10">Forzar adición a inventarios.</p>
+        <!-- TAB 2: INYECTOR DE RECURSOS (Modificado a Claro con Íconos) -->
+        <div id="content-inyector" class="hidden max-w-2xl mx-auto w-full">
+            <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+                <h3 class="text-xl font-black text-cg_navy mb-1 relative z-10 flex items-center gap-2">💉 Inyector de Recursos</h3>
+                <p class="text-xs text-gray-500 mb-6 relative z-10 font-medium border-b border-gray-100 pb-4">Añade saldo o ítems directamente a la base de datos del jugador.</p>
                 
-                <div class="space-y-4 relative z-10">
+                <div class="space-y-5 relative z-10">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">ID del Jugador Destino</label>
-                        <input type="text" id="inj-short-id" placeholder="Ej: 1234" class="w-full bg-gray-800 border border-gray-600 text-white px-4 py-2.5 rounded-xl font-black focus:border-red-500 outline-none">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">ID del Jugador Destino (4 Dígitos)</label>
+                        <input type="text" id="inj-short-id" placeholder="Ej: 1234" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-black focus:border-red-500 outline-none text-lg tracking-widest">
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-black text-green-400 uppercase tracking-widest mb-1">+ Semillas 🌱</label>
-                            <input type="number" id="inj-seeds" placeholder="0" class="w-full bg-gray-800 border border-gray-600 text-green-400 px-4 py-2.5 rounded-xl font-black outline-none focus:border-green-500">
+                            <label class="block text-[10px] font-black text-green-600 uppercase tracking-widest mb-1.5 flex items-center gap-1">🌱 Semillas</label>
+                            <input type="number" id="inj-seeds" placeholder="0" class="w-full bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl font-black outline-none focus:border-green-500 text-lg">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-1">+ Dinero COP 💵</label>
-                            <input type="number" id="inj-cop" placeholder="0" class="w-full bg-gray-800 border border-gray-600 text-cg_gold px-4 py-2.5 rounded-xl font-black outline-none focus:border-yellow-500">
+                            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-1.5 flex items-center gap-1">💵 COP</label>
+                            <input type="number" id="inj-cop" placeholder="0" class="w-full bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-xl font-black outline-none focus:border-yellow-500 text-lg">
                         </div>
                     </div>
 
-                    <div class="bg-gray-800 border border-gray-700 p-3 rounded-xl mt-2">
-                        <label class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Inyectar Ítem Específico</label>
-                        <select id="inj-item-id" class="w-full bg-gray-900 border border-gray-600 text-white px-3 py-2 rounded-lg text-xs font-bold outline-none mb-2">
-                            <option value="">-- Ninguno --</option>
-                            <option value="flower_wheat">Semilla: Trigo Rápido</option>
-                            <option value="flower_bamboo">Semilla: Bambú Tryhard</option>
-                            <option value="flower_cactus">Semilla: Cactus de Cuarzo</option>
-                            <option value="flower_small">Semilla: Flor Pequeña</option>
-                            <option value="flower_crystal">Semilla: Helecho Cristal</option>
-                            <option value="flower_big">Semilla: Flor Grande</option>
-                            <option value="flower_moon">Semilla: Lirio Lunar</option>
-                            <option value="flower_solar">Semilla: Girasol Solar (Premium)</option>
-                            <option value="flower_neon">Semilla: Orquídea Neón (Premium)</option>
-                            <option value="tool_pot_small">Herramienta: Maceta Pequeña</option>
-                            <option value="tool_pot_big">Herramienta: Maceta Grande</option>
-                            <option value="tool_water">Consumible: Regadera</option>
-                            <option value="tool_scarecrow">Defensa: Espantapájaros</option>
-                            <option value="tool_duel_ticket">Pase: Ticket de Duelo</option>
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl">
+                        <label class="block text-[10px] font-black text-cg_blue uppercase tracking-widest mb-2">Inyectar Ítem de Inventario</label>
+                        <select id="inj-item-id" class="w-full bg-white border border-gray-200 text-gray-700 px-3 py-3 rounded-lg text-sm font-bold outline-none mb-3 focus:border-cg_blue cursor-pointer">
+                            <option value="">-- No inyectar ítem --</option>
+                            <option value="flower_wheat">🌾 Semilla: Trigo Rápido</option>
+                            <option value="flower_bamboo">🎋 Semilla: Bambú Tryhard</option>
+                            <option value="flower_cactus">🌵 Semilla: Cactus de Cuarzo</option>
+                            <option value="flower_small">🌸 Semilla: Flor Pequeña</option>
+                            <option value="flower_crystal">💎 Semilla: Helecho Cristal</option>
+                            <option value="flower_big">🌺 Semilla: Flor Grande</option>
+                            <option value="flower_moon">🌙 Semilla: Lirio Lunar</option>
+                            <option value="tool_pot_small">🪴 Herramienta: Maceta Pequeña</option>
+                            <option value="tool_pot_big">🏺 Herramienta: Maceta Grande</option>
+                            <option value="tool_water">🚿 Consumible: Regadera</option>
+                            <option value="tool_scarecrow">🦉 Defensa: Espantapájaros</option>
+                            <option value="tool_duel_ticket">🎟️ Pase: Ticket de Duelo</option>
                         </select>
-                        <input type="number" id="inj-item-qty" placeholder="Cantidad" class="w-full bg-gray-900 border border-gray-600 text-white px-3 py-2 rounded-lg text-xs font-bold outline-none">
+                        <input type="number" id="inj-item-qty" placeholder="Cantidad a enviar" class="w-full bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm font-bold outline-none focus:border-cg_blue">
                     </div>
                     
-                    <button onclick="injectResources()" id="btn-inject" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)] uppercase tracking-widest text-xs mt-2">
+                    <button onclick="adminConfirmModal('¿Inyectar recursos?', 'Esta acción escribirá directamente en la base de datos del jugador.', injectResources)" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm mt-2">
                         EJECUTAR INYECCIÓN
                     </button>
                 </div>
             </div>
+        </div>
 
-            <!-- INSPECTOR DE GRANJA -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Inspector de Granjas</h3>
-                <p class="text-[10px] text-gray-500 mb-4 font-bold uppercase tracking-widest">Auditoría en tiempo real</p>
+        <!-- TAB 3: INSPECTOR DE GRANJA Y CONTROLES TEMPORALES -->
+        <div id="content-inspector" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            
+            <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8 flex flex-col">
+                <h3 class="text-xl font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Inspector de Cuentas</h3>
+                <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Revisa el estado de las parcelas de un jugador.</p>
                 
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="inspect-short-id" placeholder="ID Jugador" class="flex-1 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg font-black text-sm outline-none focus:border-cg_blue text-center">
-                    <button onclick="inspectFarm()" class="bg-cg_navy hover:bg-black text-white px-4 py-2 rounded-lg font-black text-xs transition-colors shadow-sm">Revisar</button>
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="inspect-short-id" placeholder="ID Jugador (4 Dígitos)" class="flex-1 bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl font-black text-sm outline-none focus:border-cg_blue text-center tracking-widest">
+                    <button onclick="inspectFarm()" class="bg-cg_navy hover:bg-black text-white px-6 py-3 rounded-xl font-black text-sm transition-colors shadow-sm">Revisar</button>
                 </div>
 
-                <div id="inspector-result" class="hidden flex-col gap-3">
-                    <div class="bg-green-50 border border-green-100 rounded-xl p-3 flex justify-between items-center">
-                        <span class="text-xs font-black text-green-700">Semillas (Balance):</span>
-                        <span class="text-sm font-black text-green-600" id="insp-seeds">0</span>
+                <div id="inspector-result" class="hidden flex-col gap-4 flex-1">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-green-50 border border-green-100 rounded-xl p-3 text-center">
+                            <span class="block text-[10px] font-black text-gray-400 uppercase">Semillas</span>
+                            <span class="text-lg font-black text-green-600" id="insp-seeds">0</span>
+                        </div>
+                        <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-3 text-center">
+                            <span class="block text-[10px] font-black text-gray-400 uppercase">Saldo COP</span>
+                            <span class="text-lg font-black text-cg_gold" id="insp-cop">$0</span>
+                        </div>
                     </div>
                     
-                    <div class="bg-gray-900 rounded-xl p-3 text-left">
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 border-b border-gray-700 pb-1">Estado de las Parcelas</p>
-                        <div id="insp-plots" class="space-y-1.5 text-xs font-mono text-green-400 max-h-40 overflow-y-auto" style="scrollbar-width: none;">
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex-1">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Estado de Parcelas</p>
+                        <div id="insp-plots" class="space-y-2 text-sm font-medium text-gray-600 max-h-60 overflow-y-auto pr-2" style="scrollbar-width: thin;">
                             <!-- Data -->
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Controles Temporales (Máquina del Tiempo) -->
+            <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8 flex flex-col h-fit">
+                <h3 class="text-xl font-black text-cg_navy mb-1 flex items-center gap-2">⏳ Máquina del Tiempo</h3>
+                <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Acelera los procesos globales (Simulación en vivo para Devs).</p>
+                
+                <div class="space-y-4">
+                    <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-black text-blue-900">Salto de 1 Hora</p>
+                            <p class="text-[10px] text-blue-700">Evapora agua y crece plantas</p>
+                        </div>
+                        <button onclick="adminConfirmModal('¿Acelerar 1 Hora?', 'Esto afectará tus propias plantas localmente.', () => { window.farmApp.dev.addTime(1); })" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-2.5 rounded-lg text-xs shadow-sm transition-colors">+ 1h</button>
+                    </div>
+
+                    <div class="bg-orange-50 border border-orange-100 p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-black text-orange-900">Salto de 5 Horas</p>
+                            <p class="text-[10px] text-orange-700">Evapora agua y crece plantas</p>
+                        </div>
+                        <button onclick="adminConfirmModal('¿Acelerar 5 Horas?', 'Cuidado, esto puede marchitar plantas.', () => { window.farmApp.dev.addTime(5); })" class="bg-orange-600 hover:bg-orange-700 text-white font-black px-4 py-2.5 rounded-lg text-xs shadow-sm transition-colors">+ 5h</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- VENTANA MODAL ALERTAS ADMIN -->
+<div id="admin-alert-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeAdminAlert()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border border-gray-200">
+        <h3 id="admin-alert-title" class="text-xl font-black text-cg_navy mb-2">Mensaje</h3>
+        <p id="admin-alert-msg" class="text-sm text-gray-600 mb-6">Contenido</p>
+        <div class="flex gap-2 justify-center" id="admin-alert-buttons">
+            <button onclick="closeAdminAlert()" class="bg-gray-100 hover:bg-gray-200 text-cg_navy font-black py-3 px-6 rounded-xl transition-colors text-xs uppercase tracking-wider">Aceptar</button>
         </div>
     </div>
 </div>
 
 <script>
     const ADMIN_TOKEN = "supersecreto123";
+    let allUsersCache = [];
+
+    // Ocultar Navbar Global
+    function hideGlobalUI() {
+        const topHeader = document.querySelector('header');
+        if (topHeader && topHeader.id !== 'admin-root') {
+            topHeader.style.display = 'none';
+        }
+        const bottomNav = document.querySelector('nav.fixed.bottom-0');
+        if (bottomNav) {
+            bottomNav.style.display = 'none';
+        }
+    }
+    setTimeout(hideGlobalUI, 10);
+
+    function switchAdminTab(tab) {
+        ['directorio', 'inyector', 'inspector'].forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            const content = document.getElementById(`content-${t}`);
+            if (t === tab) {
+                btn.className = "pb-3 px-3 text-sm font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors";
+                content.classList.remove('hidden');
+                content.classList.add(t === 'inspector' ? 'grid' : 'block');
+            } else {
+                btn.className = "pb-3 px-3 text-sm font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors";
+                content.classList.add('hidden');
+                content.classList.remove('grid', 'block');
+            }
+        });
+    }
 
     async function fetchUsers() {
         const list = document.getElementById('admin-users-list');
-        list.innerHTML = '<tr><td colspan="4" class="p-4 text-center font-bold text-gray-400 animate-pulse">Cargando base de datos...</td></tr>';
+        list.innerHTML = '<tr><td colspan="5" class="p-4 text-center font-bold text-gray-400 animate-pulse">Cargando base de datos...</td></tr>';
         
         try {
             const res = await fetch('/api/admin/users', {
@@ -136,28 +222,59 @@
             const data = await res.json();
             
             if (res.ok) {
-                list.innerHTML = '';
-                data.users.forEach(u => {
-                    list.innerHTML += `
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-3 border-b border-gray-100">
-                                <span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded text-xs border border-gray-200">#${u.short_id || '----'}</span>
-                                <span class="text-[9px] text-gray-400 ml-1">DB_ID: ${u.id}</span>
-                            </td>
-                            <td class="p-3 border-b border-gray-100 font-black text-cg_navy">${u.username}</td>
-                            <td class="p-3 border-b border-gray-100 text-right font-black text-green-600">$${parseFloat(u.balance).toLocaleString()}</td>
-                            <td class="p-3 border-b border-gray-100 text-center">
-                                <button onclick="document.getElementById('inj-short-id').value='${u.short_id}'; document.getElementById('inspect-short-id').value='${u.short_id}';" class="bg-cg_blue/10 text-cg_blue hover:bg-cg_blue hover:text-white px-2 py-1 rounded transition-colors text-[10px] font-black uppercase tracking-wider">Accionar</button>
-                            </td>
-                        </tr>
-                    `;
-                });
+                allUsersCache = data.users;
+                renderUsersTable(allUsersCache);
             } else {
-                list.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500 font-bold">Error: ${data.error}</td></tr>`;
+                list.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500 font-bold">Error: ${data.error}</td></tr>`;
             }
         } catch (e) {
-            list.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500 font-bold">Error de conexión con el servidor.</td></tr>`;
+            list.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500 font-bold">Error de conexión con el servidor.</td></tr>`;
         }
+    }
+
+    function renderUsersTable(usersArray) {
+        const list = document.getElementById('admin-users-list');
+        list.innerHTML = '';
+        if (usersArray.length === 0) {
+            list.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 font-bold">No se encontraron usuarios.</td></tr>';
+            return;
+        }
+
+        usersArray.forEach(u => {
+            let seedsBalance = 0;
+            // Intentar extraer el balance de semillas si viaja con el JSON (El server_4.py debe enviarlo o aproximarlo)
+            // Asumimos que lo agregaremos al server.py si es necesario, o lo mostramos como "--" si no viene
+            let seedsText = u.seeds !== undefined ? u.seeds.toLocaleString() : '--';
+            
+            list.innerHTML += `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-3 border-b border-gray-100">
+                        <span class="bg-gray-100 text-gray-500 font-black px-2 py-1 rounded text-[10px] border border-gray-200 uppercase tracking-widest">${u.short_id || '----'}</span>
+                    </td>
+                    <td class="p-3 border-b border-gray-100 font-black text-cg_navy text-xs">${u.username}</td>
+                    <td class="p-3 border-b border-gray-100 text-right font-black text-green-600 text-xs">${seedsText}</td>
+                    <td class="p-3 border-b border-gray-100 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance).toLocaleString()}</td>
+                    <td class="p-3 border-b border-gray-100 text-center">
+                        <button onclick="targetUserAction('${u.short_id}')" class="bg-cg_navy text-white hover:bg-black px-3 py-1.5 rounded-lg transition-colors text-[9px] font-black uppercase tracking-wider shadow-sm">Modificar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function filterUsers() {
+        const query = document.getElementById('admin-search').value.toLowerCase();
+        const filtered = allUsersCache.filter(u => 
+            (u.short_id && u.short_id.toLowerCase().includes(query)) || 
+            (u.username && u.username.toLowerCase().includes(query))
+        );
+        renderUsersTable(filtered);
+    }
+
+    function targetUserAction(short_id) {
+        document.getElementById('inj-short-id').value = short_id;
+        document.getElementById('inspect-short-id').value = short_id;
+        switchAdminTab('inyector');
     }
 
     async function injectResources() {
@@ -167,7 +284,10 @@
         const item_id = document.getElementById('inj-item-id').value;
         const item_qty = document.getElementById('inj-item-qty').value;
         
-        if (!short_id) return alert("Debes ingresar el ID del jugador.");
+        if (!short_id) {
+            showAdminAlert("Error", "Debes ingresar el ID del jugador.");
+            return;
+        }
         
         const btn = document.getElementById('btn-inject');
         btn.innerText = "INYECTANDO...";
@@ -189,17 +309,17 @@
             const data = await res.json();
             
             if (res.ok) {
-                alert("¡Inyección Exitosa!\n" + data.message);
+                showAdminAlert("Inyección Exitosa", data.message);
                 document.getElementById('inj-seeds').value = '';
                 document.getElementById('inj-cop').value = '';
                 document.getElementById('inj-item-id').value = '';
                 document.getElementById('inj-item-qty').value = '';
-                fetchUsers(); // Actualiza la tabla para ver el nuevo saldo
+                fetchUsers(); // Actualiza la tabla
             } else {
-                alert("Error: " + data.error);
+                showAdminAlert("Error de Inyección", data.error);
             }
         } catch (e) {
-            alert("Error de red.");
+            showAdminAlert("Error de Red", "No se pudo conectar con el servidor.");
         } finally {
             btn.innerText = "EJECUTAR INYECCIÓN";
             btn.disabled = false;
@@ -210,7 +330,7 @@
         const short_id = document.getElementById('inspect-short-id').value.trim();
         if (!short_id) return;
         
-        document.getElementById('insp-plots').innerHTML = '<span class="text-gray-400">Extrayendo datos...</span>';
+        document.getElementById('insp-plots').innerHTML = '<span class="text-gray-400 font-bold p-2 block text-center animate-pulse">Extrayendo datos clasificados...</span>';
         document.getElementById('inspector-result').classList.remove('hidden');
         document.getElementById('inspector-result').classList.add('flex');
 
@@ -224,28 +344,72 @@
             
             if (res.ok && data.user.game_state) {
                 const state = JSON.parse(data.user.game_state);
-                document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString() + ' 🌱';
+                document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString();
+                document.getElementById('insp-cop').innerText = '$' + parseFloat(data.user.balance || 0).toLocaleString();
                 
                 let plotsHtml = '';
                 if (state.plots) {
                     state.plots.forEach(p => {
-                        let statusColor = p.status === 'locked' ? 'text-gray-500' : (p.status === 'empty' ? 'text-yellow-400' : (p.status === 'tournament' ? 'text-purple-400' : 'text-green-400'));
-                        let plantInfo = p.plant ? ` [${p.plant.id}] 💧${Math.floor(p.water)}%` : '';
-                        let crowAlert = p.hasCrow ? ' <span class="bg-red-500 text-white px-1 rounded">CUERVO</span>' : '';
-                        plotsHtml += `<div class="border-b border-gray-800 pb-1 mb-1"><span class="${statusColor}">P[${p.id}]: ${p.status.toUpperCase()}</span>${plantInfo}${crowAlert}</div>`;
+                        let statusColor = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : (p.status === 'tournament' ? 'text-purple-600' : 'text-green-600'));
+                        let bgClass = p.id % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                        
+                        let plantInfo = '';
+                        if (p.plant) {
+                            let wColor = p.water < 30 ? 'text-red-500' : (p.water > 90 ? 'text-blue-600' : 'text-cg_blue');
+                            plantInfo = `<br><span class="text-cg_navy ml-2">↳ <strong>${p.plant.id}</strong> | <span class="${wColor}">💧 ${Math.floor(p.water)}%</span></span>`;
+                        }
+                        
+                        let crowAlert = p.hasCrow ? ' <span class="bg-red-100 border border-red-200 text-red-600 px-1.5 rounded-md text-[9px] font-black uppercase ml-2 shadow-sm animate-pulse">PLAGA</span>' : '';
+                        
+                        plotsHtml += `<div class="p-2 border-b border-gray-100 ${bgClass}"><span class="font-black ${statusColor}">P[${p.id}]: ${p.status.toUpperCase()}</span>${crowAlert}${plantInfo}</div>`;
                     });
                 }
-                document.getElementById('insp-plots').innerHTML = plotsHtml || 'Sin terrenos registrados.';
+                document.getElementById('insp-plots').innerHTML = plotsHtml || '<div class="p-3 text-center text-gray-400 font-bold">Sin terrenos registrados.</div>';
             } else {
-                document.getElementById('insp-plots').innerHTML = '<span class="text-red-400">Usuario sin datos guardados o ID incorrecto.</span>';
-                document.getElementById('insp-seeds').innerText = '0 🌱';
+                document.getElementById('insp-plots').innerHTML = '<div class="p-3 text-center text-red-400 font-bold">Usuario sin datos guardados o ID incorrecto.</div>';
+                document.getElementById('insp-seeds').innerText = '0';
+                document.getElementById('insp-cop').innerText = '$0';
             }
         } catch (e) {
-            document.getElementById('insp-plots').innerHTML = '<span class="text-red-500">Error de conexión.</span>';
+            document.getElementById('insp-plots').innerHTML = '<div class="p-3 text-center text-red-500 font-bold">Error de conexión.</div>';
         }
     }
 
-    // Inicializar cargando la tabla de usuarios
+    // Modal UI Helpers
+    function showAdminAlert(title, msg) {
+        document.getElementById('admin-alert-title').innerText = title;
+        document.getElementById('admin-alert-msg').innerText = msg;
+        
+        document.getElementById('admin-alert-buttons').innerHTML = `
+            <button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3 px-8 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Aceptar</button>
+        `;
+        
+        document.getElementById('admin-alert-modal').classList.remove('hidden');
+        document.getElementById('admin-alert-modal').classList.add('flex');
+    }
+
+    function adminConfirmModal(title, msg, onConfirmCallback) {
+        document.getElementById('admin-alert-title').innerText = title;
+        document.getElementById('admin-alert-msg').innerText = msg;
+        
+        document.getElementById('admin-alert-buttons').innerHTML = `
+            <button onclick="closeAdminAlert()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 px-6 rounded-xl transition-colors text-xs uppercase tracking-wider">Cancelar</button>
+            <button id="admin-btn-confirm-action" class="bg-red-600 hover:bg-red-700 text-white font-black py-3 px-6 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Confirmar</button>
+        `;
+        
+        document.getElementById('admin-btn-confirm-action').onclick = () => {
+            closeAdminAlert();
+            onConfirmCallback();
+        };
+
+        document.getElementById('admin-alert-modal').classList.remove('hidden');
+        document.getElementById('admin-alert-modal').classList.add('flex');
+    }
+
+    function closeAdminAlert() {
+        document.getElementById('admin-alert-modal').classList.add('hidden');
+        document.getElementById('admin-alert-modal').classList.remove('flex');
+    }
+
     fetchUsers();
 </script>
-</div>
