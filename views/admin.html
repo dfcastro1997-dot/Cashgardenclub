@@ -1,8 +1,8 @@
-<div class="h-full flex flex-col bg-gray-50 relative animate-fade-in" id="admin-root">
+<div class="h-full flex flex-col bg-gray-50 relative animate-fade-in pb-20" id="admin-root">
     
     <!-- HEADER ADMIN MINIMALISTA (Tema Claro) -->
     <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-50 shadow-sm">
-        <div class="max-w-[1200px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+        <div class="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
                 <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center border-2 border-cg_blue shadow-[0_0_15px_rgba(41,150,218,0.3)]">
                     <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-7 w-auto object-contain">
@@ -19,8 +19,8 @@
     </header>
 
     <!-- CONTENEDOR PRINCIPAL DE VISTAS -->
-    <div class="flex-1 overflow-y-auto w-full pb-28 md:pb-10 pt-4 md:pt-8 px-4">
-        <div class="max-w-[1200px] mx-auto w-full">
+    <div class="flex-1 overflow-y-auto w-full pt-4 md:pt-8 px-4">
+        <div class="max-w-[1400px] mx-auto w-full">
             
             <!-- VISTA 1: DASHBOARD & ANALÍTICAS -->
             <div id="content-dashboard" class="block animate-fade-in space-y-6">
@@ -41,19 +41,34 @@
                         <div class="relative h-48 w-full"><canvas id="chartUsers"></canvas></div>
                     </div>
                     <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
-                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Tiempo Promedio en Plataforma</h4>
-                        <div class="relative h-48 w-full"><canvas id="chartTime"></canvas></div>
+                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Métricas Globales de Plataforma</h4>
+                        <div class="flex items-center justify-around h-48">
+                            <div class="text-center">
+                                <span class="block text-4xl font-black text-cg_navy mb-1" id="dash-total-users">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Usuarios<br>Registrados</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-4xl font-black text-green-600 mb-1" id="dash-avg-seeds">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Promedio<br>Semillas</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Tops de Jugadores -->
+            <!-- VISTA 2: TOPS DE JUGADORES -->
+            <div id="content-tops" class="hidden animate-fade-in space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
+                    <h3 class="text-2xl font-black text-cg_navy flex items-center gap-2">🏆 Tablas de Liderazgo (Tops)</h3>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     <!-- Top Recientes -->
                     <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="bg-gray-50 border-b border-gray-100 p-4">
                             <h4 class="text-[11px] font-black text-cg_navy uppercase tracking-widest flex items-center gap-2">🆕 Últimos 10 Registros</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-recent"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-recent"></div>
                     </div>
                     
                     <!-- Top COP -->
@@ -61,7 +76,7 @@
                         <div class="bg-yellow-50 border-b border-yellow-100 p-4">
                             <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest flex items-center gap-2">💵 Top 10: COP</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-cop"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-cop"></div>
                     </div>
 
                     <!-- Top Semillas -->
@@ -69,34 +84,34 @@
                         <div class="bg-green-50 border-b border-green-100 p-4">
                             <h4 class="text-[11px] font-black text-green-600 uppercase tracking-widest flex items-center gap-2">🌱 Top 10: Semillas</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-seeds"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-seeds"></div>
                     </div>
 
                     <!-- Top Arsenal/Plantas -->
                     <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="bg-blue-50 border-b border-blue-100 p-4">
-                            <h4 class="text-[11px] font-black text-cg_blue uppercase tracking-widest flex items-center gap-2">⚔️ Top 10: Militar</h4>
+                            <h4 class="text-[11px] font-black text-cg_blue uppercase tracking-widest flex items-center gap-2">⚔️ Top 10: Victorias Arsenal</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[300px]" id="top-military"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-military"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 2: DIRECTORIO COMPLETO -->
+            <!-- VISTA 3: DIRECTORIO COMPLETO -->
             <div id="content-directorio" class="hidden animate-fade-in">
                 <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 flex flex-col h-[75vh]">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
                         <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio de Jugadores</h3>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <input type="text" id="admin-search" placeholder="Buscar ID o Usuario..." oninput="filterUsers()" class="flex-1 sm:w-64 bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-cg_blue shadow-inner transition-colors">
+                        <div class="relative w-full sm:w-auto">
+                            <input type="text" id="admin-search-dir" placeholder="Buscar ID o Usuario..." oninput="filterUsersDir()" class="w-full sm:w-64 bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-cg_blue shadow-inner transition-colors">
                         </div>
                     </div>
                     
-                    <div class="flex-1 overflow-y-auto rounded-xl border border-gray-100 hide-scrollbar">
+                    <div class="flex-1 overflow-x-auto rounded-xl border border-gray-100 hide-scrollbar">
                         <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200">
                                 <tr>
-                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Short ID</th>
+                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">ID Cuenta</th>
                                     <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
                                     <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
                                     <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
@@ -111,7 +126,7 @@
                 </div>
             </div>
 
-            <!-- VISTA 3: INYECTOR DE RECURSOS (FACTURA) -->
+            <!-- VISTA 4: INYECTOR DE RECURSOS (FACTURA) -->
             <div id="content-inyector" class="hidden animate-fade-in max-w-4xl mx-auto w-full">
                 <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8">
                     <h3 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">💉 Inyector de Recursos</h3>
@@ -121,9 +136,17 @@
                         
                         <!-- Columna: Creador de Factura -->
                         <div class="space-y-4">
-                            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner">
+                            <!-- Búsqueda Autocompletado -->
+                            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner relative">
                                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">🎯 ID del Jugador Destino</label>
-                                <input type="text" id="inj-short-id" placeholder="Ej: 1234" class="w-full bg-white border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-black focus:border-cg_blue outline-none text-xl tracking-[0.5em] text-center shadow-sm">
+                                <input type="text" id="inj-search" placeholder="Buscar por Nombre o ID" oninput="showSuggestions('inj', this.value)" class="w-full bg-white border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-bold focus:border-cg_blue outline-none text-sm text-center shadow-sm">
+                                <div id="inj-suggestions" class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden max-h-48 overflow-y-auto"></div>
+                                
+                                <input type="hidden" id="inj-short-id">
+                                <div id="inj-selected-user" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex justify-between items-center">
+                                    <span class="text-sm font-black text-cg_navy" id="inj-selected-name"></span>
+                                    <button onclick="clearSelectedUser('inj')" class="text-red-500 text-xs font-bold hover:underline">Cambiar</button>
+                                </div>
                             </div>
                             
                             <!-- Controles para agregar al carrito -->
@@ -162,7 +185,7 @@
                 </div>
             </div>
 
-            <!-- VISTA 4: INSPECTOR DE GRANJA -->
+            <!-- VISTA 5: INSPECTOR DE GRANJA -->
             <div id="content-inspector" class="hidden flex-col gap-6 w-full animate-fade-in max-w-5xl mx-auto">
                 <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8 flex flex-col">
                     <h3 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Auditoría de Cuentas</h3>
@@ -170,10 +193,12 @@
                     
                     <div class="flex flex-col sm:flex-row gap-3 mb-8">
                         <div class="relative flex-1">
-                            <span class="absolute inset-y-0 left-4 flex items-center text-gray-400 font-bold">ID:</span>
-                            <input type="text" id="inspect-short-id" placeholder="1234" class="w-full bg-gray-50 border border-gray-200 pl-12 pr-4 py-3.5 rounded-xl font-black text-cg_navy outline-none focus:border-cg_blue tracking-[0.2em] shadow-inner transition-colors">
+                            <span class="absolute inset-y-0 left-4 flex items-center text-gray-400 font-bold">👤</span>
+                            <input type="text" id="inspect-search" placeholder="Buscar por Nombre o ID..." oninput="showSuggestions('insp', this.value)" class="w-full bg-gray-50 border border-gray-200 pl-12 pr-4 py-3.5 rounded-xl font-black text-cg_navy outline-none focus:border-cg_blue shadow-inner transition-colors">
+                            <div id="insp-suggestions" class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden max-h-48 overflow-y-auto"></div>
+                            <input type="hidden" id="inspect-short-id">
                         </div>
-                        <button onclick="inspectFarm()" id="btn-inspect" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest">Escanear</button>
+                        <button onclick="inspectFarm()" id="btn-inspect" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest" disabled>Escanear</button>
                     </div>
 
                     <div id="inspector-result" class="hidden flex-col gap-6">
@@ -222,16 +247,17 @@
 
     <!-- NAVBAR INFERIOR ADMIN (Estilo App Móvil/Desktop) -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
+        
         <button onclick="switchAdminTab('dashboard')" id="nav-dashboard" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-cg_blue transition-all duration-300">
             <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📊</span>
             <span class="text-[9px] font-black tracking-widest uppercase">Dashboard</span>
         </button>
         
-        <button onclick="switchAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
-            <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">👥</span>
-            <span class="text-[9px] font-black tracking-widest uppercase">Directorio</span>
+        <button onclick="switchAdminTab('tops')" id="nav-tops" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+            <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🏆</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Tops</span>
         </button>
-        
+
         <!-- Botón Central Inyector -->
         <div onclick="switchAdminTab('inyector')" id="nav-inyector" class="admin-nav-btn group flex flex-col items-center justify-end w-full h-full text-gray-400 transition-colors pb-1.5 relative cursor-pointer">
             <div class="absolute -top-6 flex justify-center w-full">
@@ -242,10 +268,16 @@
             <span class="text-[9px] font-black tracking-widest uppercase mt-8">Inyector</span>
         </div>
 
+        <button onclick="switchAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+            <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">👥</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Directorio</span>
+        </button>
+
         <button onclick="switchAdminTab('inspector')" id="nav-inspector" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
             <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🔍</span>
             <span class="text-[9px] font-black tracking-widest uppercase">Inspector</span>
         </button>
+
     </nav>
 </div>
 
@@ -266,7 +298,7 @@
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeCartModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 border border-gray-200 animate-fade-in">
         <h3 id="cart-modal-title" class="text-lg font-black text-cg_navy mb-4 border-b border-gray-100 pb-2">Añadir Recurso</h3>
-        <div id="cart-modal-body" class="space-y-4 mb-6"></div>
+        <div id="cart-modal-body" class="space-y-4 mb-6 text-left"></div>
         <div class="flex gap-2">
             <button onclick="closeCartModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider">Cancelar</button>
             <button id="btn-cart-add" class="flex-1 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl shadow-md text-xs uppercase tracking-wider">Añadir a Factura</button>
@@ -304,7 +336,7 @@
     }
 
     function switchAdminTab(tab) {
-        ['dashboard', 'directorio', 'inyector', 'inspector'].forEach(t => {
+        ['dashboard', 'tops', 'directorio', 'inyector', 'inspector'].forEach(t => {
             const btn = document.getElementById(`nav-${t}`);
             const content = document.getElementById(`content-${t}`);
             
@@ -347,7 +379,21 @@
             const data = await res.json();
             
             if (res.ok) {
-                allUsersCache = data.users;
+                // Preprocesar datos para cálculos de Tops
+                allUsersCache = data.users.map(u => {
+                    let totalWins = 0;
+                    if (u.game_state) {
+                        try {
+                            const st = JSON.parse(u.game_state);
+                            if (st.arsenal) {
+                                st.arsenal.forEach(p => { totalWins += (p.wins || 0); });
+                            }
+                        } catch(e){}
+                    }
+                    u.military_wins = totalWins;
+                    return u;
+                });
+                
                 if(document.getElementById('admin-users-list')) renderUsersTable(allUsersCache);
                 renderDashboard();
             } else {
@@ -358,6 +404,67 @@
         }
     }
 
+    // ================= AUTOCOMPLETADO BUSCADORES =================
+    function showSuggestions(prefix, query) {
+        query = query.toLowerCase();
+        const suggestionsBox = document.getElementById(`${prefix}-suggestions`);
+        const hiddenInputId = document.getElementById(`${prefix}-short-id`);
+        
+        if (query.length < 1) {
+            suggestionsBox.classList.add('hidden');
+            return;
+        }
+
+        const filtered = allUsersCache.filter(u => 
+            (u.short_id && u.short_id.toLowerCase().includes(query)) || 
+            (u.username && u.username.toLowerCase().includes(query))
+        ).slice(0, 5); // Mostrar máx 5 sugerencias
+
+        if (filtered.length > 0) {
+            suggestionsBox.innerHTML = filtered.map(u => `
+                <div onclick="selectUser('${prefix}', '${u.short_id}', '${u.username}')" class="p-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
+                    <span class="text-sm font-black text-cg_navy">${u.username}</span>
+                    <span class="text-[10px] font-black text-gray-400 bg-gray-100 px-2 py-0.5 rounded">#${u.short_id}</span>
+                </div>
+            `).join('');
+            suggestionsBox.classList.remove('hidden');
+        } else {
+            suggestionsBox.innerHTML = '<div class="p-3 text-xs text-gray-400 text-center font-bold">No se encontró.</div>';
+            suggestionsBox.classList.remove('hidden');
+        }
+    }
+
+    function selectUser(prefix, short_id, username) {
+        document.getElementById(`${prefix}-suggestions`).classList.add('hidden');
+        document.getElementById(`${prefix}-search`).value = '';
+        document.getElementById(`${prefix}-search`).classList.add('hidden');
+        
+        document.getElementById(`${prefix}-short-id`).value = short_id;
+        
+        if (prefix === 'inj') {
+            document.getElementById('inj-selected-name').innerText = `${username} (#${short_id})`;
+            document.getElementById('inj-selected-user').classList.remove('hidden');
+        } else if (prefix === 'insp') {
+            document.getElementById('btn-inspect').disabled = false;
+            document.getElementById('btn-inspect').click(); // Auto-escanear
+            
+            // Re-mostrar el input pero con el nombre
+            document.getElementById(`${prefix}-search`).value = `${username} (#${short_id})`;
+            document.getElementById(`${prefix}-search`).classList.remove('hidden');
+        }
+    }
+
+    function clearSelectedUser(prefix) {
+        document.getElementById(`${prefix}-short-id`).value = '';
+        document.getElementById(`${prefix}-search`).value = '';
+        document.getElementById(`${prefix}-search`).classList.remove('hidden');
+        
+        if (prefix === 'inj') {
+            document.getElementById('inj-selected-user').classList.add('hidden');
+        }
+    }
+
+    // ================= DIRECTORIO DE USUARIOS =================
     function renderUsersTable(usersArray) {
         const list = document.getElementById('admin-users-list');
         if(!list) return;
@@ -382,15 +489,15 @@
                     <td class="p-4 text-right font-black text-green-600 text-xs">${seedsText}</td>
                     <td class="p-4 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance).toLocaleString()}</td>
                     <td class="p-4 text-center">
-                        <button onclick="targetUserAction('${u.short_id}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Gestionar</button>
+                        <button onclick="targetUserAction('${u.short_id}', '${u.username}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Gestionar</button>
                     </td>
                 </tr>
             `;
         });
     }
 
-    function filterUsers() {
-        const query = document.getElementById('admin-search').value.toLowerCase();
+    function filterUsersDir() {
+        const query = document.getElementById('admin-search-dir').value.toLowerCase();
         const filtered = allUsersCache.filter(u => 
             (u.short_id && u.short_id.toLowerCase().includes(query)) || 
             (u.username && u.username.toLowerCase().includes(query))
@@ -398,9 +505,8 @@
         renderUsersTable(filtered);
     }
 
-    function targetUserAction(short_id) {
-        document.getElementById('inj-short-id').value = short_id;
-        document.getElementById('inspect-short-id').value = short_id;
+    function targetUserAction(short_id, username) {
+        selectUser('inj', short_id, username);
         switchAdminTab('inyector');
     }
 
@@ -410,13 +516,20 @@
     function renderDashboard() {
         if (typeof Chart === 'undefined') return;
 
-        // Limpiar Canvas para evitar bug de hover
         const cUsers = document.getElementById('chartUsers');
         const cTime = document.getElementById('chartTime');
         if(!cUsers || !cTime) return;
 
-        // Render Gráficos (Data Falsa Visual Requerida)
-        new Chart(cUsers, {
+        // Limpiar gráficos anteriores si existen
+        if (window.chartU) window.chartU.destroy();
+        if (window.chartT) window.chartT.destroy();
+
+        document.getElementById('dash-total-users').innerText = allUsersCache.length.toLocaleString();
+        const avgSeeds = allUsersCache.length > 0 ? (allUsersCache.reduce((sum, u) => sum + (u.seeds||0), 0) / allUsersCache.length) : 0;
+        document.getElementById('dash-avg-seeds').innerText = Math.floor(avgSeeds).toLocaleString();
+
+        // Render Gráficos (Data Visual Requerida)
+        window.chartU = new Chart(cUsers, {
             type: 'line',
             data: {
                 labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Hoy'],
@@ -425,7 +538,7 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
-        new Chart(cTime, {
+        window.chartT = new Chart(cTime, {
             type: 'bar',
             data: {
                 labels: ['<10m', '10-30m', '30-60m', '1h-3h', '>3h'],
@@ -446,10 +559,12 @@
             arr.slice(0, 10).forEach((u, i) => {
                 let val = isCop ? parseFloat(u[valKey]||0).toLocaleString() : Math.floor(u[valKey]||0).toLocaleString();
                 container.innerHTML += `
-                    <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-gray-50 text-xs">
-                        <span class="font-bold text-gray-500 w-4">${i+1}.</span>
-                        <span class="font-black text-cg_navy flex-1 truncate px-2">${u.username}</span>
-                        <span class="font-black ${isCop?'text-cg_gold':'text-green-600'}">${prefix}${val}${suffix}</span>
+                    <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <span class="font-black text-gray-400 w-4">${i+1}.</span>
+                            <span class="font-black text-cg_navy truncate">${u.username}</span>
+                        </div>
+                        <span class="font-black shrink-0 ${isCop?'text-cg_gold':'text-green-600'}">${prefix}${val}${suffix}</span>
                     </div>`;
             });
         };
@@ -466,10 +581,9 @@
         const seeds = [...allUsersCache].sort((a,b) => (b.seeds||0) - (a.seeds||0));
         renderMiniList(topSeeds, seeds, 'seeds', '', ' 🌱', false);
 
-        // Militar (Fake calculation as game_state is stripped to save DB stress)
-        // Se calcula un mock usando el id para que sea constante y visual
-        const military = [...allUsersCache].map(u => ({...u, pts: (u.id * 3) % 15})).sort((a,b) => b.pts - a.pts);
-        renderMiniList(topMilitary, military, 'pts', '⚔️ ', ' Pts', false);
+        // Militar (Extraído de processamiento previo)
+        const military = [...allUsersCache].sort((a,b) => (b.military_wins||0) - (a.military_wins||0));
+        renderMiniList(topMilitary, military, 'military_wins', '🏆 ', ' Vic', false);
     }
 
     // ================= FACTURA / INYECTOR =================
@@ -569,7 +683,7 @@
 
     function addToCart(type, rawData, label) {
         if (!rawData || (typeof rawData === 'string' && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
-            alert("Valor inválido."); return;
+            showAdminAlert("Error", "Valor inválido o en cero."); return;
         }
         invoiceCart.push({ type, rawData, label });
         renderInvoice();
@@ -598,9 +712,9 @@
 
         invoiceCart.forEach((item, idx) => {
             list.innerHTML += `
-                <div class="bg-white border border-gray-100 p-3 rounded-lg shadow-sm flex justify-between items-center text-xs font-bold">
-                    <span class="text-cg_navy">${item.label}</span>
-                    <button onclick="invoiceCart.splice(${idx}, 1); renderInvoice();" class="text-red-400 hover:text-red-600">✕</button>
+                <div class="bg-white border border-gray-100 p-3 rounded-xl shadow-sm flex justify-between items-center text-xs font-bold transition-all hover:border-red-200">
+                    <span class="text-cg_navy">${item.type === 'cop' ? '$'+item.rawData : item.type === 'seeds' ? '+'+item.rawData+' '+item.label : item.label}</span>
+                    <button onclick="invoiceCart.splice(${idx}, 1); renderInvoice();" class="text-red-400 hover:text-red-600 font-black">✕</button>
                 </div>
             `;
         });
@@ -609,7 +723,7 @@
     async function executeInjectionInvoice() {
         const short_id = document.getElementById('inj-short-id').value.trim();
         if (!short_id) {
-            showAdminAlert("Error", "Falta el ID del jugador destino.");
+            showAdminAlert("Error", "Falta el ID del jugador destino. Utiliza el buscador arriba.");
             return;
         }
 
@@ -619,11 +733,7 @@
 
         try {
             // El backend /api/admin/add_items requiere un formato específico. 
-            // Vamos a colapsar la factura en las variables que el servidor entiende en 1 solo request
-            let seeds = 0, cop = 0, unlock_vip = null;
-            let finalItems = {}; // Para agrupar si envía múltiples del mismo (aunque el endpoint solo permite 1 por request)
-            
-            // Para simplificar y usar el servidor sin cambios extremos, enviamos 1 request por cada item de la factura secuencialmente
+            // Enviamos 1 request por cada item de la factura secuencialmente
             for (const item of invoiceCart) {
                 let payload = { admin_token: ADMIN_TOKEN, short_id: short_id };
                 
@@ -635,11 +745,10 @@
                     payload.item_qty = item.rawData.qty;
                 }
                 else if (item.type === 'arsenal') {
-                    // Simulación de que el servidor lo soporta (se requerirá actualización de server.py si es estrictamente necesario guardar en Arsenal)
-                    // Por ahora inyectamos la semilla normal + una marca
+                    // Simulación para Arsenal en base al servidor actual (Entrega semilla directamente)
                     payload.item_id = item.rawData; 
                     payload.item_qty = 1;
-                    payload.is_arsenal = true; // El server actual lo ignorará y dará la semilla.
+                    payload.is_arsenal = true; 
                 }
 
                 await fetch('/api/admin/add_items', {
@@ -648,11 +757,11 @@
                 });
             }
 
-            showAdminAlert("Factura Enviada", "Los recursos se inyectaron en el jugador destino.");
+            showAdminAlert("Factura Enviada", "Los recursos se inyectaron exitosamente en la base de datos.");
             clearInvoice();
             fetchUsers();
         } catch (e) {
-            showAdminAlert("Error de Red", "Fallo al enviar la factura.");
+            showAdminAlert("Error de Red", "Fallo al enviar la factura al servidor.");
         } finally {
             btn.innerHTML = "Enviar Factura ➔";
             btn.disabled = false;
@@ -663,7 +772,7 @@
     // ================= INSPECTOR =================
     async function inspectFarm() {
         const short_id = document.getElementById('inspect-short-id').value.trim();
-        if (!short_id) { showAdminAlert("Error", "Ingresa un ID válido."); return; }
+        if (!short_id) { showAdminAlert("Error", "Ingresa un ID válido o búscalo en la lupa."); return; }
         
         const btn = document.getElementById('btn-inspect');
         btn.innerText = "Buscando...";
@@ -681,52 +790,72 @@
                 document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString();
                 document.getElementById('insp-cop').innerText = '$' + parseFloat(data.user.balance || 0).toLocaleString();
                 
-                // Inventario
+                // Inventario con Íconos
                 let invHtml = '';
                 if (state.inventory) {
                     for (const [key, item] of Object.entries(state.inventory)) {
                         if (item.qty > 0) {
                             invHtml += `
-                                <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                                    <img src="${item.image}" class="w-6 h-6 object-contain">
+                                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-200">
+                                        <img src="${item.image}" class="w-5 h-5 object-contain">
+                                    </div>
                                     <span class="text-xs font-bold text-cg_navy flex-1 truncate">${item.name}</span>
-                                    <span class="text-xs font-black text-cg_blue px-2 bg-blue-50 rounded">x${item.qty}</span>
+                                    <span class="text-xs font-black text-cg_blue px-2 py-1 bg-blue-50 rounded-lg">x${item.qty}</span>
                                 </div>
                             `;
                         }
                     }
                 }
-                document.getElementById('insp-inv').innerHTML = invHtml || '<p class="text-xs text-gray-400">Inventario vacío.</p>';
+                document.getElementById('insp-inv').innerHTML = invHtml || '<p class="text-xs text-gray-400 p-2">Inventario vacío.</p>';
 
-                // Parcelas
+                // Parcelas detalladas
                 let plotsHtml = '';
                 if (state.plots) {
                     state.plots.forEach(p => {
-                        let sColor = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : 'text-green-600');
-                        let pInfo = p.plant ? `<br><span class="text-gray-500 ml-2">↳ ${p.plant.name} | 💧 ${Math.floor(p.water)}%</span>` : '';
-                        let cAlert = p.hasCrow ? ' <span class="bg-red-100 text-red-600 px-1 rounded text-[8px] font-black uppercase ml-1 animate-pulse">Plaga</span>' : '';
-                        plotsHtml += `<div class="p-2 border-b border-gray-100 bg-white rounded-lg shadow-sm mb-1"><span class="font-black text-xs ${sColor}">[P${p.id}] ${p.status.toUpperCase()}</span>${cAlert}${pInfo}</div>`;
+                        let sColor = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : (p.status === 'tournament' ? 'text-purple-600' : 'text-green-600'));
+                        
+                        let plantInfo = '';
+                        if (p.plant) {
+                            let wColor = p.water < 30 ? 'text-red-500' : (p.water > 90 ? 'text-blue-500' : 'text-cg_blue');
+                            plantInfo = `
+                                <div class="flex items-center gap-2 mt-2 ml-1">
+                                    <img src="${p.plant.icon}" class="w-6 h-6 object-contain">
+                                    <span class="text-xs font-bold text-cg_navy">${p.plant.name}</span>
+                                    <span class="text-xs font-black ${wColor} ml-auto bg-blue-50 px-2 py-0.5 rounded-lg">💧 ${Math.floor(p.water)}%</span>
+                                </div>`;
+                        }
+                        
+                        let cAlert = p.hasCrow ? ' <span class="bg-red-100 border border-red-200 text-red-600 px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase ml-2 shadow-sm animate-pulse">Plaga</span>' : '';
+                        
+                        plotsHtml += `
+                            <div class="p-3 border border-gray-100 bg-white rounded-xl shadow-sm mb-2">
+                                <span class="font-black text-xs ${sColor} uppercase tracking-widest">[P${p.id}] ${p.status}</span>${cAlert}
+                                ${plantInfo}
+                            </div>`;
                     });
                 }
-                document.getElementById('insp-plots').innerHTML = plotsHtml || '<p class="text-xs text-gray-400">Sin terrenos.</p>';
+                document.getElementById('insp-plots').innerHTML = plotsHtml || '<p class="text-xs text-gray-400 p-2">Sin terrenos.</p>';
 
                 // Arsenal
                 let arsHtml = '';
                 if (state.arsenal && state.arsenal.length > 0) {
                     state.arsenal.forEach(p => {
                         arsHtml += `
-                            <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm mb-1">
-                                <img src="${p.icon}" class="w-6 h-6 object-contain">
-                                <div class="flex-1 min-w-0">
-                                    <span class="text-[10px] font-bold text-cg_navy block truncate">${p.name}</span>
-                                    <span class="text-[8px] font-black text-red-500">HP: ${p.hp}/${p.maxHp}</span>
+                            <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center shrink-0 border border-red-100">
+                                    <img src="${p.icon}" class="w-6 h-6 object-contain">
                                 </div>
-                                <span class="text-[9px] font-black text-cg_gold bg-yellow-50 px-1.5 rounded uppercase border border-yellow-100">Vic: ${p.wins||0}</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-[10px] font-black text-cg_navy block truncate uppercase">${p.name}</span>
+                                    <span class="text-[9px] font-black text-red-500">❤️ ${p.hp}/${p.maxHp}</span>
+                                </div>
+                                <span class="text-[9px] font-black text-cg_gold bg-yellow-50 px-2 py-1 rounded-lg uppercase border border-yellow-100 shadow-sm flex items-center gap-1">🏆 ${p.wins||0}</span>
                             </div>
                         `;
                     });
                 } else {
-                    arsHtml = '<p class="text-xs text-gray-400">El arsenal está vacío.</p>';
+                    arsHtml = '<p class="text-xs text-gray-400 p-2">El arsenal está vacío.</p>';
                 }
                 document.getElementById('insp-arsenal').innerHTML = arsHtml;
 
@@ -739,14 +868,15 @@
             showAdminAlert('Error', 'Falla de conexión.');
         } finally {
             btn.innerText = "Escanear";
+            btn.disabled = false;
         }
     }
 
-    // Modal Global
+    // ================= MODALES =================
     function showAdminAlert(title, msg) {
         document.getElementById('admin-alert-title').innerText = title;
         document.getElementById('admin-alert-msg').innerText = msg;
-        document.getElementById('admin-alert-buttons').innerHTML = `<button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3 px-8 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Aceptar</button>`;
+        document.getElementById('admin-alert-buttons').innerHTML = `<button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3.5 px-10 rounded-xl transition-all shadow-md text-xs uppercase tracking-widest">Aceptar</button>`;
         document.getElementById('admin-alert-modal').classList.remove('hidden');
         document.getElementById('admin-alert-modal').classList.add('flex');
     }
@@ -755,8 +885,8 @@
         document.getElementById('admin-alert-title').innerText = title;
         document.getElementById('admin-alert-msg').innerText = msg;
         document.getElementById('admin-alert-buttons').innerHTML = `
-            <button onclick="closeAdminAlert()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider border border-gray-200">Cancelar</button>
-            <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-500 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Confirmar</button>
+            <button onclick="closeAdminAlert()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-widest border border-gray-200">Cancelar</button>
+            <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-widest shadow-md">Confirmar</button>
         `;
         document.getElementById('admin-btn-confirm-action').onclick = () => { closeAdminAlert(); onConfirmCallback(); };
         document.getElementById('admin-alert-modal').classList.remove('hidden');
