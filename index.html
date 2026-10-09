@@ -772,16 +772,28 @@
             window.location.replace(window.location.pathname); 
         }
         
+        const viewCache = {};
+
         async function loadView(viewName, clickedBtn = null) {
             if (window.farmApp && window.farmApp.state && window.farmApp.state.simulationInterval) {
                 clearInterval(window.farmApp.state.simulationInterval);
             }
             
             const contentDiv = document.getElementById('app-content');
-            contentDiv.innerHTML = '<div class="flex justify-center mt-32"><div class="w-12 h-12 border-4 border-gray-200 border-t-cg_gold rounded-full animate-spin"></div></div>';
+            
+            if (!viewCache[viewName]) {
+                contentDiv.innerHTML = '<div class="flex justify-center mt-32"><div class="w-12 h-12 border-4 border-gray-200 border-t-cg_gold rounded-full animate-spin"></div></div>';
+            }
+            
             try {
-                const response = await fetch(`views/${viewName}.html`);
-                const html = await response.text();
+                let html = viewCache[viewName];
+                
+                if (!html) {
+                    const response = await fetch(`views/${viewName}.html`);
+                    html = await response.text();
+                    viewCache[viewName] = html;
+                }
+                
                 contentDiv.innerHTML = html;
                 
                 const scripts = contentDiv.querySelectorAll('script');
