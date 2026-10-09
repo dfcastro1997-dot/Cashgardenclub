@@ -842,8 +842,11 @@
             const btn = document.getElementById('btn-inspect');
             btn.innerText = "Escaneando...";
             
-            document.getElementById('insp-plots').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Obteniendo paquetes...</p>';
-            document.getElementById('insp-inv').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Desencriptando...</p>';
+            // CORRECCIÓN: Los IDs ahora apuntan correctamente a "res-plots", "res-inv" y "res-arsenal"
+            document.getElementById('res-plots').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Obteniendo paquetes...</p>';
+            document.getElementById('res-inv').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Desencriptando...</p>';
+            document.getElementById('res-arsenal').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Cargando arsenal...</p>';
+            
             document.getElementById('inspector-results').classList.remove('hidden');
             document.getElementById('inspector-results').classList.add('flex');
 
@@ -914,6 +917,7 @@
                 showAdminAlert('Error', 'Falla de conexión.');
             } finally {
                 btn.innerText = "Escanear";
+                btn.disabled = false;
             }
         }
 
