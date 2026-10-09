@@ -177,6 +177,7 @@
 </div>
 
 <!-- MODAL DE HUIDA -->
+<!-- MODAL DE HUIDA -->
 <div id="flee-modal" class="fixed inset-0 z-[950] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.combatApp.cancelFlee()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border-4 border-red-500 animate-fade-in overflow-hidden">
@@ -185,7 +186,7 @@
             <span class="text-3xl">🚪</span>
         </div>
         <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 relative z-10">¿Huir de la Arena?</h3>
-        <p class="text-xs md:text-sm text-gray-500 mb-6 leading-relaxed relative z-10">¡Peligro! Si huyes ahora, perderás a las plantas de tu escuadrón y tu apuesta definitivamente.</p>
+        <p class="text-xs md:text-sm text-gray-500 mb-6 leading-relaxed relative z-10">¡Rendición! Si huyes ahora, perderás tu apuesta y tus plantas regresarán exhaustas al arsenal (1 HP).</p>
         <div class="flex gap-3 relative z-10">
             <button onclick="window.combatApp.cancelFlee()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 rounded-xl transition-all uppercase tracking-widest text-xs shadow-sm">Cancelar</button>
             <button onclick="window.combatApp.executeFlee()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Sí, Huir</button>
@@ -203,11 +204,25 @@
             <span class="text-4xl sm:text-5xl drop-shadow-md">🏆</span>
         </div>
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Victoria Épica</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">El escuadrón rival ha sido exterminado. Tus plantas regresan al almacén y has reclamado el botín.</p>
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 sm:mb-8 relative z-10 shadow-inner">
-            <p class="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Botín Obtenido</p>
-            <p class="text-2xl sm:text-3xl font-black text-green-600" id="combat-victory-reward-text">+0 🌱</p>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 font-medium leading-relaxed relative z-10">El rival ha sido exterminado. Tus plantas regresan al almacén y has reclamado el botín.</p>
+        
+        <!-- FACTURA DE PREMIO Y COMISIÓN -->
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 relative z-10 shadow-inner text-left">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center border-b border-gray-200 pb-2">Factura de Recompensa</p>
+            <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-bold text-gray-600">Premio Bruto:</span>
+                <span class="text-sm font-black text-cg_navy" id="combat-victory-gross">0 🌱</span>
+            </div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-bold text-red-400">Comisión Arena (5%):</span>
+                <span class="text-sm font-black text-red-500" id="combat-victory-tax">-0 🌱</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span class="text-xs font-black text-green-600 uppercase">Total a Recibir:</span>
+                <span class="text-xl font-black text-green-600" id="combat-victory-net">+0 🌱</span>
+            </div>
         </div>
+        
         <button onclick="loadView('farm')" class="w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Cobrar y Salir
         </button>
@@ -222,8 +237,8 @@
         <div class="w-20 h-20 sm:w-24 sm:h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(239,68,68,0.2)] relative z-10 border-4 border-red-100">
             <span class="text-4xl sm:text-5xl drop-shadow-md">🥀🌱</span>
         </div>
-        <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Escuadrón Caído</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has huido o tu escuadrón fue derrotado. Las plantas apostadas y la apuesta se perdieron.</p>
+        <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Retirada Táctica</h3>
+        <p class="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 font-medium leading-relaxed relative z-10">Has sido superado en combate. Tus plantas regresan al almacén exhaustas (1 HP) para recuperarse y perdiste la apuesta.</p>
         <button onclick="loadView('farm')" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all shadow-md uppercase tracking-widest text-xs sm:text-sm relative z-10">
             Aceptar Destino
         </button>
@@ -300,10 +315,7 @@ window.combatApp = {
         this.matchId = sessionStorage.getItem('pvp_match_id');
         this.isPvP = !!this.matchId;
 
-        if (!this.isPvP && window.farmApp.state.inventory['tool_duel_ticket'] && window.farmApp.state.inventory['tool_duel_ticket'].qty > 0) {
-            window.farmApp.state.inventory['tool_duel_ticket'].qty -= 1;
-            window.farmApp.updateInventoryUI();
-        }
+        // SE ELIMINÓ LA CONDICIÓN DEL TICKET DE DUELO. AHORA ES GRATIS PARA LA CAMPAÑA.
 
         this.playerTeam = [];
         this.playerReserve = [];
@@ -1303,41 +1315,53 @@ window.combatApp = {
         this.active = false;
         window.farmApp.state.combatLock = false; 
 
+        if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
+
         if (victory) {
-            const reward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
+            const grossReward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
+            const taxAmount = Math.floor(grossReward * 0.05); // 5% de comisión / tax de quema
+            const netReward = grossReward - taxAmount;
             
             if (!this.isPvP) {
-                window.farmApp.state.seedsBalance += reward;
-                if (!window.farmApp.state.inventory['tool_duel_ticket']) {
-                    window.farmApp.state.inventory['tool_duel_ticket'] = { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'https://i.ibb.co/4nkYz5VM/Frame-769.png' };
-                }
-                window.farmApp.state.inventory['tool_duel_ticket'].qty += 1;
-                window.farmApp.updateInventoryUI();
+                window.farmApp.state.seedsBalance += netReward;
             } else {
                 setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
             }
 
-            if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
-            
-            // Consolidar equipo activo y banquillo para regresarlos al Arsenal
+            // Ganan: Regresan vivas (con la vida que les quedó, mínimo 1 para evitar bug)
             let finalTeam = [...this.playerTeam, ...this.playerReserve];
             finalTeam.forEach(pt => {
-                if (pt.hp > 0) {
-                    window.farmApp.state.arsenal.push({
-                        id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                        plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                        hp: pt.hp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
-                        wins: pt.wins + (victory ? 1 : 0),
-                        lastRecover: Date.now() 
-                    });
-                }
+                window.farmApp.state.arsenal.push({
+                    id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                    plantId: pt.plantId, name: pt.name, icon: pt.icon,
+                    hp: Math.max(1, pt.hp), 
+                    maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                    wins: pt.wins + 1, // Suman victoria
+                    lastRecover: Date.now() 
+                });
             });
 
-            document.getElementById('combat-victory-reward-text').innerText = `+${reward.toLocaleString()} 🌱`;
+            document.getElementById('combat-victory-gross').innerText = `${grossReward.toLocaleString()} 🌱`;
+            document.getElementById('combat-victory-tax').innerText = `-${taxAmount.toLocaleString()} 🌱`;
+            document.getElementById('combat-victory-net').innerText = `+${netReward.toLocaleString()} 🌱`;
+            
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
             window.farmApp.saveState();
         } else {
+            // Derrota: Nunca las pierden, quedan en Fatiga Crítica (1 HP)
+            let finalTeam = [...this.playerTeam, ...this.playerReserve];
+            finalTeam.forEach(pt => {
+                window.farmApp.state.arsenal.push({
+                    id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                    plantId: pt.plantId, name: pt.name, icon: pt.icon,
+                    hp: 1, // Castigo de Fatiga al regresar a base
+                    maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                    wins: pt.wins,
+                    lastRecover: Date.now() 
+                });
+            });
+
             document.getElementById('combat-defeat-modal').classList.remove('hidden');
             document.getElementById('combat-defeat-modal').classList.add('flex');
             window.farmApp.saveState(); 

@@ -233,13 +233,12 @@
         </div>
         
         <div class="flex flex-col md:flex-row gap-4 md:gap-8 overflow-y-auto pr-1 pb-1" style="scrollbar-width: thin;">
-            <!-- Botón Historia (Cuervos) -->
             <button onclick="selectHistoria()" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-2xl p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] flex flex-col sm:flex-row md:flex-col items-center justify-start text-center sm:text-left md:text-center transition-all duration-300 group gap-3 md:gap-0 shrink-0">
                 <img src="https://i.ibb.co/gLcb71CG/Frame-773.png" class="w-20 h-20 sm:w-24 sm:h-24 md:w-48 md:h-48 object-contain drop-shadow-xl md:mb-6 group-hover:scale-110 transition-transform duration-500 shrink-0" alt="Campaña PvE">
                 <div>
                     <h4 class="font-black text-cg_navy text-lg md:text-2xl leading-none mb-2 md:mb-4">Campaña (PvE)</h4>
                     <p class="text-[10px] md:text-sm text-gray-500 leading-relaxed font-medium">
-                        Enfréntate a la implacable bandada de cuervos gestionada por la Inteligencia Artificial. Pon a prueba la resistencia y sinergia de tu escuadrón botánico en intensos combates. Requiere consumir un Ticket de Duelo. ¡Derrota a la plaga y asegurarás un generoso botín para expandir tu invernadero!
+                        Enfréntate a la implacable bandada de cuervos gestionada por Inteligencia Artificial sin costo de entrada. Pon a prueba la sinergia de tu escuadrón botánico. ¡Derrota a la plaga y asegurarás un generoso botín para expandir tu invernadero!
                     </p>
                 </div>
             </button>
@@ -729,12 +728,6 @@ if (typeof window.farmApp === 'undefined') {
         sessionStorage.removeItem('pvp_bet_amount');
         document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
         
-        if (!window.farmApp.state.inventory['tool_duel_ticket'] || window.farmApp.state.inventory['tool_duel_ticket'].qty <= 0) {
-            const ticketModal = document.getElementById('ticket-required-modal');
-            if (ticketModal) { ticketModal.classList.remove('hidden'); ticketModal.classList.add('flex'); }
-            return;
-        }
-
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
         let arsenal = window.farmApp.state.arsenal || [];
 
