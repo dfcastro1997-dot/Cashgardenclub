@@ -1,242 +1,270 @@
-<div class="h-full flex flex-col bg-gray-50 relative animate-fade-in pb-20" id="admin-root">
-    
-    <!-- HEADER ADMIN MINIMALISTA (Tema Claro) -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-50 shadow-sm">
-        <div class="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3 shrink-0">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CashGarden - Mainframe Administrativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cg_navy: '#1C2634',       
+                        cg_blue: '#2996DA',
+                        cg_gold: '#ED9925',
+                        bone: '#FAFAFA'           
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CDD2D6; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        }
+
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Estilo para los inputs de sugerencias */
+        .suggestions-box {
+            position: absolute; width: 100%; top: 100%; left: 0; background: white;
+            border: 1px solid #E5E7EB; border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;
+        }
+    </style>
+</head>
+<body class="text-cg_navy h-screen overflow-hidden flex flex-col antialiased relative">
+
+    <!-- HEADER ADMIN -->
+    <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm z-50">
+        <div class="max-w-[1200px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center border-2 border-cg_blue shadow-[0_0_15px_rgba(41,150,218,0.3)]">
-                    <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="CashGarden Logo" class="h-7 w-auto object-contain">
+                    <img src="https://i.ibb.co/TDK1WJMK/Logo.png" alt="Logo" class="h-7 w-auto object-contain">
                 </div>
                 <div>
-                    <h2 class="text-cg_navy font-black text-sm sm:text-base leading-tight">CashGarden</h2>
+                    <h1 class="font-black text-sm sm:text-base leading-tight">CashGarden</h1>
                     <span class="text-[9px] sm:text-[10px] font-black bg-cg_blue text-white px-2 py-0.5 rounded tracking-widest uppercase shadow-sm">Admin Center</span>
                 </div>
             </div>
-            <button onclick="logout()" class="text-[10px] sm:text-xs font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-2 bg-gray-50 hover:bg-red-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-red-200">
+            <button onclick="window.location.href='index.html'" class="text-[10px] sm:text-xs font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-2 bg-gray-50 hover:bg-red-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-red-200">
                 Salir <span>🚪</span>
             </button>
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL DE VISTAS -->
-    <div class="flex-1 overflow-y-auto w-full pt-4 md:pt-8 px-4">
-        <div class="max-w-[1400px] mx-auto w-full">
+    <!-- ÁREA DE CONTENIDO -->
+    <main class="flex-1 overflow-y-auto w-full pb-24 pt-6 px-4">
+        <div class="max-w-[1200px] mx-auto w-full">
             
-            <!-- VISTA 1: DASHBOARD & ANALÍTICAS -->
-            <div id="content-dashboard" class="block animate-fade-in space-y-6">
+            <!-- VISTA 1: DASHBOARD Y ANALÍTICAS -->
+            <div id="view-dashboard" class="admin-view block animate-fade-in space-y-6">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
-                    <h3 class="text-2xl font-black text-cg_navy flex items-center gap-2">📊 Panel de Control Global</h3>
+                    <h2 class="text-2xl font-black text-cg_navy flex items-center gap-2">📊 Panel de Control</h2>
                     <div class="flex gap-2">
-                        <button onclick="adminConfirmModal('¿Acelerar 1 Hora?', 'Afectará tu granja local.', () => { window.farmApp.dev.addTime(1); })" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">⏳ +1h</button>
-                        <button onclick="adminConfirmModal('¿Acelerar 5 Horas?', 'Riesgo de marchitar plantas.', () => { window.farmApp.dev.addTime(5); })" class="bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-600 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">⏳ +5h</button>
-                        <button onclick="initDashboardData()" class="bg-cg_navy hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">Actualizar</button>
+                        <!-- Máquina del tiempo admin -->
+                        <button onclick="adminConfirmModal('¿Acelerar 1 Hora?', 'Esto enviará una señal al servidor para acelerar los tiempos globales.', () => { alert('Comando enviado.'); })" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">⏳ +1h</button>
+                        <button onclick="adminConfirmModal('¿Acelerar 5 Horas?', 'Advertencia: Podría marchitar plantas a nivel global.', () => { alert('Comando enviado.'); })" class="bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-600 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">⏳ +5h</button>
+                        <button onclick="fetchData()" class="bg-cg_navy hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-black transition-colors shadow-sm">Actualizar</button>
                     </div>
                 </div>
 
-                <!-- Gráficos -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
-                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Nuevos Registros (Últimos 7 días)</h4>
-                        <div class="relative h-48 w-full"><canvas id="chartUsers"></canvas></div>
-                    </div>
-                    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
-                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Métricas Globales de Plataforma</h4>
-                        <div class="flex items-center justify-around h-48">
+                    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm flex flex-col justify-center">
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Métricas Globales</h3>
+                        <div class="flex items-center justify-around h-full py-4">
                             <div class="text-center">
-                                <span class="block text-4xl font-black text-cg_navy mb-1" id="dash-total-users">0</span>
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Usuarios<br>Registrados</span>
+                                <span class="block text-4xl sm:text-5xl font-black text-cg_navy mb-2" id="metric-users">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Registrados</span>
                             </div>
                             <div class="text-center">
-                                <span class="block text-4xl font-black text-green-600 mb-1" id="dash-avg-seeds">0</span>
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Promedio<br>Semillas</span>
+                                <span class="block text-4xl sm:text-5xl font-black text-green-600 mb-2" id="metric-seeds">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Semillas Promedio</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- VISTA 2: TOPS DE JUGADORES -->
-            <div id="content-tops" class="hidden animate-fade-in space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
-                    <h3 class="text-2xl font-black text-cg_navy flex items-center gap-2">🏆 Tablas de Liderazgo (Tops)</h3>
+                    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Nuevos Registros (Semana)</h3>
+                        <div class="relative h-48 w-full"><canvas id="chartUsers"></canvas></div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                    <!-- Top Recientes -->
                     <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="bg-gray-50 border-b border-gray-100 p-4">
-                            <h4 class="text-[11px] font-black text-cg_navy uppercase tracking-widest flex items-center gap-2">🆕 Últimos 10 Registros</h4>
+                            <h4 class="text-[11px] font-black text-cg_navy uppercase tracking-widest">🆕 Últimos 10</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-recent"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[350px] hide-scrollbar" id="top-recent"></div>
                     </div>
-                    
-                    <!-- Top COP -->
                     <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="bg-yellow-50 border-b border-yellow-100 p-4">
-                            <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest flex items-center gap-2">💵 Top 10: COP</h4>
+                            <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest">💵 Top 10 COP</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-cop"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[350px] hide-scrollbar" id="top-cop"></div>
                     </div>
-
-                    <!-- Top Semillas -->
                     <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="bg-green-50 border-b border-green-100 p-4">
-                            <h4 class="text-[11px] font-black text-green-600 uppercase tracking-widest flex items-center gap-2">🌱 Top 10: Semillas</h4>
+                            <h4 class="text-[11px] font-black text-green-600 uppercase tracking-widest">🌱 Top 10 Semillas</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-seeds"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[350px] hide-scrollbar" id="top-seeds"></div>
                     </div>
-
-                    <!-- Top Arsenal/Plantas -->
                     <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="bg-blue-50 border-b border-blue-100 p-4">
-                            <h4 class="text-[11px] font-black text-cg_blue uppercase tracking-widest flex items-center gap-2">⚔️ Top 10: Victorias Arsenal</h4>
+                            <h4 class="text-[11px] font-black text-cg_blue uppercase tracking-widest">⚔️ Top 10 Arsenal</h4>
                         </div>
-                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[400px] hide-scrollbar" id="top-military"></div>
+                        <div class="p-2 space-y-1 flex-1 overflow-y-auto max-h-[350px] hide-scrollbar" id="top-military"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 3: DIRECTORIO COMPLETO -->
-            <div id="content-directorio" class="hidden animate-fade-in">
-                <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 flex flex-col h-[75vh]">
+            <!-- VISTA 2: DIRECTORIO COMPLETO -->
+            <div id="view-directorio" class="admin-view hidden animate-fade-in h-[75vh]">
+                <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 flex flex-col h-full">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
-                        <h3 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio de Jugadores</h3>
-                        <div class="relative w-full sm:w-auto">
-                            <input type="text" id="admin-search-dir" placeholder="Buscar ID o Usuario..." oninput="filterUsersDir()" class="w-full sm:w-64 bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-cg_blue shadow-inner transition-colors">
+                        <h2 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio Global</h2>
+                        <div class="relative w-full sm:w-64 shrink-0">
+                            <input type="text" id="dir-search" placeholder="Filtrar por nombre o ID..." oninput="filterDirectory()" class="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-cg_blue transition-colors">
                         </div>
                     </div>
                     
-                    <div class="flex-1 overflow-x-auto rounded-xl border border-gray-100 hide-scrollbar">
-                        <table class="w-full text-left border-collapse min-w-[600px]">
-                            <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200">
+                    <!-- Contenedor con scroll horizontal y vertical -->
+                    <div class="flex-1 overflow-auto rounded-xl border border-gray-100 relative">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200 shadow-sm">
                                 <tr>
-                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">ID Cuenta</th>
+                                    <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Short ID</th>
                                     <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
                                     <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
                                     <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
                                     <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Acción</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-users-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600 bg-white">
-                                <tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold animate-pulse">Cargando base de datos...</td></tr>
+                            <tbody id="dir-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
+                                <!-- Filas inyectadas -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 4: INYECTOR DE RECURSOS (FACTURA) -->
-            <div id="content-inyector" class="hidden animate-fade-in max-w-4xl mx-auto w-full">
+            <!-- VISTA 3: INYECTOR DE RECURSOS (FACTURA) -->
+            <div id="view-inyector" class="admin-view hidden animate-fade-in max-w-4xl mx-auto w-full">
                 <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8">
-                    <h3 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">💉 Inyector de Recursos</h3>
-                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Añade elementos a la factura y envíalos de golpe al usuario.</p>
+                    <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">💉 Inyector de Recursos</h2>
+                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Añade elementos a la factura y envíalos en lote al usuario destino.</p>
                     
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        
-                        <!-- Columna: Creador de Factura -->
+                        <!-- Creador de Factura -->
                         <div class="space-y-4">
                             <!-- Búsqueda Autocompletado -->
-                            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner relative">
-                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">🎯 ID del Jugador Destino</label>
-                                <input type="text" id="inj-search" placeholder="Buscar por Nombre o ID" oninput="showSuggestions('inj', this.value)" class="w-full bg-white border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-bold focus:border-cg_blue outline-none text-sm text-center shadow-sm">
-                                <div id="inj-suggestions" class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden max-h-48 overflow-y-auto"></div>
-                                
-                                <input type="hidden" id="inj-short-id">
-                                <div id="inj-selected-user" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex justify-between items-center">
+                            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner relative z-30">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">🎯 ID del Jugador Destino</label>
+                                <div class="relative">
+                                    <input type="text" id="inj-search" placeholder="Buscar Nombre o ID..." oninput="handleAutocomplete('inj', this.value)" class="w-full bg-white border border-gray-200 text-cg_navy px-4 py-3 rounded-xl font-bold focus:border-cg_blue outline-none text-sm text-center shadow-sm">
+                                    <div id="inj-suggestions" class="suggestions-box hidden"></div>
+                                </div>
+                                <input type="hidden" id="inj-target-id">
+                                <div id="inj-selected-ui" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex justify-between items-center">
                                     <span class="text-sm font-black text-cg_navy" id="inj-selected-name"></span>
-                                    <button onclick="clearSelectedUser('inj')" class="text-red-500 text-xs font-bold hover:underline">Cambiar</button>
+                                    <button onclick="clearSelection('inj')" class="text-red-500 text-xs font-bold hover:underline">Cambiar</button>
                                 </div>
                             </div>
                             
-                            <!-- Controles para agregar al carrito -->
-                            <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-3">
-                                <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Agregar Elemento</h4>
-                                
+                            <!-- Botones Categorías -->
+                            <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-3 z-20 relative">
+                                <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Agregar Elemento a la Factura</h4>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <button onclick="openInjectorModal('seeds')" class="bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">🌱 Semillas</button>
-                                    <button onclick="openInjectorModal('cop')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">💵 Dinero COP</button>
+                                    <button onclick="openCartModal('seeds')" class="bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-1.5 shadow-sm">🌱 Semillas</button>
+                                    <button onclick="openCartModal('cop')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-1.5 shadow-sm">💵 COP</button>
                                 </div>
                                 <div class="grid grid-cols-1 gap-2">
-                                    <button onclick="openInjectorModal('item')" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">📦 Ítems / Macetas</button>
-                                    <button onclick="openInjectorModal('arsenal')" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">⚔️ Planta Militar (Arsenal)</button>
-                                    <button onclick="openInjectorModal('vip')" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-2">⭐ Terrenos y Pases VIP</button>
+                                    <button onclick="openCartModal('item')" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-1.5 shadow-sm">📦 Ítems e Inventario</button>
+                                    <button onclick="openCartModal('arsenal')" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-1.5 shadow-sm">⚔️ Planta al Arsenal</button>
+                                    <button onclick="openCartModal('vip')" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 py-3 rounded-xl text-xs font-black transition-colors flex items-center justify-center gap-1.5 shadow-sm">⭐ Desbloqueos VIP</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Columna: Factura Visual -->
+                        <!-- Visualizador de Factura -->
                         <div class="bg-gray-50 border border-gray-200 rounded-2xl flex flex-col overflow-hidden shadow-inner">
-                            <div class="bg-white p-4 border-b border-gray-200 flex justify-between items-center">
-                                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest">🧾 Factura de Inyección</h4>
-                                <button onclick="clearInvoice()" class="text-[10px] text-red-500 font-bold hover:underline">Vaciar</button>
+                            <div class="bg-white p-4 border-b border-gray-200 flex justify-between items-center shrink-0">
+                                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest">🧾 Factura Actual</h4>
+                                <button onclick="clearCart()" class="text-[10px] text-red-500 font-bold hover:underline">Vaciar</button>
                             </div>
-                            <div id="invoice-list" class="flex-1 p-4 overflow-y-auto space-y-2 min-h-[250px]">
+                            <div id="cart-list" class="flex-1 p-4 overflow-y-auto space-y-2 min-h-[250px]">
                                 <p class="text-center text-gray-400 text-xs font-bold mt-10">La factura está vacía.</p>
                             </div>
-                            <div class="p-4 bg-white border-t border-gray-200">
-                                <button onclick="adminConfirmModal('¿Procesar Factura?', 'Los recursos serán inyectados instantáneamente.', executeInjectionInvoice)" id="btn-execute-invoice" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm flex items-center justify-center gap-2" disabled>
+                            <div class="p-4 bg-white border-t border-gray-200 shrink-0">
+                                <button onclick="adminConfirmModal('¿Procesar Factura?', 'Estos recursos se inyectarán instantáneamente en la DB del usuario destino.', submitInvoice)" id="btn-submit-invoice" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
                                     Enviar Factura ➔
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA 5: INSPECTOR DE GRANJA -->
-            <div id="content-inspector" class="hidden flex-col gap-6 w-full animate-fade-in max-w-5xl mx-auto">
+            <!-- VISTA 4: INSPECTOR DE GRANJA -->
+            <div id="view-inspector" class="admin-view hidden animate-fade-in max-w-5xl mx-auto w-full">
                 <div class="bg-white rounded-3xl shadow-soft border border-gray-200 p-6 sm:p-8 flex flex-col">
-                    <h3 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Auditoría de Cuentas</h3>
-                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Revisa el estado financiero, inventario, arsenal y granja de cualquier jugador.</p>
+                    <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Auditoría de Cuentas</h2>
+                    <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Revisa el estado financiero, inventario, arsenal y granja de cualquier jugador en tiempo real.</p>
                     
-                    <div class="flex flex-col sm:flex-row gap-3 mb-8">
+                    <div class="flex flex-col sm:flex-row gap-3 mb-8 relative z-20">
                         <div class="relative flex-1">
-                            <span class="absolute inset-y-0 left-4 flex items-center text-gray-400 font-bold">👤</span>
-                            <input type="text" id="inspect-search" placeholder="Buscar por Nombre o ID..." oninput="showSuggestions('insp', this.value)" class="w-full bg-gray-50 border border-gray-200 pl-12 pr-4 py-3.5 rounded-xl font-black text-cg_navy outline-none focus:border-cg_blue shadow-inner transition-colors">
-                            <div id="insp-suggestions" class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden max-h-48 overflow-y-auto"></div>
-                            <input type="hidden" id="inspect-short-id">
+                            <span class="absolute inset-y-0 left-4 flex items-center text-gray-400 text-lg">👤</span>
+                            <input type="text" id="insp-search" placeholder="Buscar por Nombre o ID..." oninput="handleAutocomplete('insp', this.value)" class="w-full bg-gray-50 border border-gray-200 pl-12 pr-4 py-3.5 rounded-xl font-bold text-cg_navy outline-none focus:border-cg_blue transition-colors shadow-inner">
+                            <div id="insp-suggestions" class="suggestions-box hidden"></div>
+                            <input type="hidden" id="insp-target-id">
                         </div>
-                        <button onclick="inspectFarm()" id="btn-inspect" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest" disabled>Escanear</button>
+                        <button onclick="runInspector()" id="btn-run-inspector" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest opacity-50 cursor-not-allowed" disabled>Escanear</button>
                     </div>
 
-                    <div id="inspector-result" class="hidden flex-col gap-6">
+                    <div id="inspector-results" class="hidden flex-col gap-6 relative z-10">
                         <!-- Finanzas -->
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-green-50 border border-green-100 rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
                                 <span class="absolute text-5xl opacity-10 right-2 bottom-0">🌱</span>
                                 <span class="block text-[10px] font-black text-green-800 uppercase tracking-widest mb-1 relative z-10">Balance Semillas</span>
-                                <span class="text-2xl sm:text-3xl font-black text-green-600 relative z-10" id="insp-seeds">0</span>
+                                <span class="text-2xl sm:text-3xl font-black text-green-600 relative z-10" id="res-seeds">0</span>
                             </div>
                             <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
                                 <span class="absolute text-5xl opacity-10 right-2 bottom-0">💵</span>
                                 <span class="block text-[10px] font-black text-yellow-800 uppercase tracking-widest mb-1 relative z-10">Saldo Real COP</span>
-                                <span class="text-2xl sm:text-3xl font-black text-cg_gold relative z-10" id="insp-cop">$0</span>
+                                <span class="text-2xl sm:text-3xl font-black text-cg_gold relative z-10" id="res-cop">$0</span>
                             </div>
                         </div>
                         
-                        <!-- Grid de Inventario, Parcelas, Arsenal -->
+                        <!-- Módulos de Inspección -->
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            
                             <!-- Inventario -->
                             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
                                 <p class="text-[10px] font-black text-cg_blue uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">📦 Inventario</p>
-                                <div id="insp-inv" class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-1 hide-scrollbar"></div>
+                                <div id="res-inv" class="space-y-2 flex-1 overflow-y-auto max-h-72 pr-1 hide-scrollbar"></div>
                             </div>
-                            
                             <!-- Parcelas -->
                             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
-                                <p class="text-[10px] font-black text-green-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">🚜 Estado de Granjas</p>
-                                <div id="insp-plots" class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-1 hide-scrollbar"></div>
+                                <p class="text-[10px] font-black text-green-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">🚜 Terrenos</p>
+                                <div id="res-plots" class="space-y-2 flex-1 overflow-y-auto max-h-72 pr-1 hide-scrollbar"></div>
                             </div>
-
                             <!-- Arsenal -->
                             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
                                 <p class="text-[10px] font-black text-red-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">⚔️ Arsenal Militar</p>
-                                <div id="insp-arsenal" class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-1 hide-scrollbar"></div>
+                                <div id="res-arsenal" class="space-y-2 flex-1 overflow-y-auto max-h-72 pr-1 hide-scrollbar"></div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -248,128 +276,113 @@
     <!-- NAVBAR INFERIOR ADMIN (Estilo App Móvil/Desktop) -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
         
-        <button onclick="switchAdminTab('dashboard')" id="nav-dashboard" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-cg_blue transition-all duration-300">
+        <button onclick="openAdminTab('dashboard')" id="nav-dashboard" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-cg_blue transition-all duration-300">
             <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📊</span>
-            <span class="text-[9px] font-black tracking-widest uppercase">Dashboard</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Métricas</span>
         </button>
         
-        <button onclick="switchAdminTab('tops')" id="nav-tops" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+        <button onclick="openAdminTab('tops')" id="nav-tops" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
             <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🏆</span>
             <span class="text-[9px] font-black tracking-widest uppercase">Tops</span>
         </button>
 
         <!-- Botón Central Inyector -->
-        <div onclick="switchAdminTab('inyector')" id="nav-inyector" class="admin-nav-btn group flex flex-col items-center justify-end w-full h-full text-gray-400 transition-colors pb-1.5 relative cursor-pointer">
+        <div onclick="openAdminTab('inyector')" id="nav-inyector" class="admin-nav-btn group flex flex-col items-center justify-end w-full h-full text-gray-400 transition-colors pb-1.5 relative cursor-pointer">
             <div class="absolute -top-6 flex justify-center w-full">
-                <div class="w-14 h-14 bg-white group-hover:bg-red-50 rounded-2xl flex items-center justify-center border-2 border-gray-200 group-hover:border-red-400 shadow-md transform group-hover:scale-105 transition-all duration-300 z-50">
+                <div id="nav-center-box" class="w-14 h-14 bg-white hover:bg-red-50 rounded-2xl flex items-center justify-center border-2 border-gray-200 hover:border-red-400 shadow-md transform group-hover:scale-105 transition-all duration-300 z-50">
                     <span class="text-[24px] drop-shadow-sm">💉</span>
                 </div>
             </div>
             <span class="text-[9px] font-black tracking-widest uppercase mt-8">Inyector</span>
         </div>
 
-        <button onclick="switchAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+        <button onclick="openAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
             <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">👥</span>
-            <span class="text-[9px] font-black tracking-widest uppercase">Directorio</span>
+            <span class="text-[9px] font-black tracking-widest uppercase">Cuentas</span>
         </button>
 
-        <button onclick="switchAdminTab('inspector')" id="nav-inspector" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
+        <button onclick="openAdminTab('inspector')" id="nav-inspector" class="admin-nav-btn group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_navy transition-all duration-300">
             <span class="text-[24px] mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🔍</span>
             <span class="text-[9px] font-black tracking-widest uppercase">Inspector</span>
         </button>
-
     </nav>
 </div>
 
 <!-- ================= MODALES DEL ADMIN ================= -->
 
-<!-- Modal Alertas Estándar -->
-<div id="admin-alert-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+<!-- Modal Alerta/Confirmación -->
+<div id="admin-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeAdminAlert()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border border-gray-200 animate-fade-in">
-        <h3 id="admin-alert-title" class="text-xl font-black text-cg_navy mb-2 uppercase tracking-widest">Mensaje</h3>
+        <h3 id="admin-alert-title" class="text-lg font-black text-cg_navy mb-2 uppercase tracking-widest">Aviso</h3>
         <p id="admin-alert-msg" class="text-sm text-gray-500 mb-6 font-medium leading-relaxed">Contenido</p>
         <div class="flex gap-3 justify-center" id="admin-alert-buttons"></div>
     </div>
 </div>
 
-<!-- Modal para añadir ítems al Carrito/Factura -->
-<div id="admin-cart-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+<!-- Modal Añadir al Carrito -->
+<div id="admin-cart-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeCartModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 border border-gray-200 animate-fade-in">
-        <h3 id="cart-modal-title" class="text-lg font-black text-cg_navy mb-4 border-b border-gray-100 pb-2">Añadir Recurso</h3>
-        <div id="cart-modal-body" class="space-y-4 mb-6 text-left"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 border border-gray-200 animate-fade-in text-left">
+        <h3 class="text-lg font-black text-cg_navy mb-4 border-b border-gray-100 pb-2">Añadir a la Factura</h3>
+        <div id="cart-modal-body" class="space-y-4 mb-6"></div>
         <div class="flex gap-2">
-            <button onclick="closeCartModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider">Cancelar</button>
-            <button id="btn-cart-add" class="flex-1 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl shadow-md text-xs uppercase tracking-wider">Añadir a Factura</button>
+            <button onclick="closeCartModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-colors">Cancelar</button>
+            <button id="btn-cart-add" class="flex-1 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl shadow-md text-xs uppercase tracking-wider transition-colors">Añadir</button>
         </div>
     </div>
 </div>
 
+
 <!-- LÓGICA JAVASCRIPT DEL ADMIN -->
 <script>
     const ADMIN_TOKEN = "supersecreto123";
-    let allUsersCache = [];
-    let invoiceCart = [];
+    let allUsers = [];
+    let cart = [];
 
-    // Ocultar Navbar Global del Jugador
-    function hideGlobalUI() {
-        const topHeaders = document.querySelectorAll('header');
-        topHeaders.forEach(h => {
-            if(!h.closest('#admin-root')) h.style.display = 'none';
-        });
-        const bottomNavs = document.querySelectorAll('nav.fixed.bottom-0');
-        bottomNavs.forEach(nav => {
-            if(!nav.closest('#admin-root')) nav.style.display = 'none';
-        });
-    }
-    setTimeout(hideGlobalUI, 10);
+    const ITEM_ICONS = {
+        'flower_wheat': '🌾', 'flower_bamboo': '🎋', 'flower_cactus': '🌵', 'flower_small': '🌸',
+        'flower_crystal': '💎', 'flower_big': '🌺', 'flower_moon': '🌙', 'flower_solar': '☀️', 'flower_neon': '🟣',
+        'tool_pot_small': '🪴', 'tool_pot_big': '🏺', 'tool_water': '🚿', 'tool_scarecrow': '🦉', 'tool_duel_ticket': '🎟️'
+    };
 
-    // Cargar Chart.js Dinámicamente para el Dashboard
-    if (typeof Chart === 'undefined') {
-        let script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-        script.onload = () => { fetchUsers(); };
-        document.head.appendChild(script);
-    } else {
-        fetchUsers();
-    }
+    const VIP_ICONS = {
+        'plot': '🗺️', 'vip_water': '🤖', 'vip_harvest': '🧺', 'vip_combo': '👑'
+    };
 
-    function switchAdminTab(tab) {
+    // Navegación principal
+    function openAdminTab(tab) {
         ['dashboard', 'tops', 'directorio', 'inyector', 'inspector'].forEach(t => {
             const btn = document.getElementById(`nav-${t}`);
-            const content = document.getElementById(`content-${t}`);
-            
+            const content = document.getElementById(`view-${t}`);
+            if(!btn || !content) return;
+
             if (t === tab) {
                 if (t === 'inyector') {
                     btn.classList.replace('text-gray-400', 'text-red-500');
-                    const innerBox = btn.querySelector('div.bg-white');
-                    if(innerBox) innerBox.classList.replace('border-gray-200', 'border-red-400');
+                    document.getElementById('nav-center-box').classList.replace('border-gray-200', 'border-red-400');
                 } else {
                     btn.classList.add('text-cg_blue');
                     btn.classList.remove('text-gray-400');
                 }
                 content.classList.remove('hidden');
-                content.classList.add('animate-fade-in'); 
             } else {
                 if (t === 'inyector') {
                     btn.classList.replace('text-red-500', 'text-gray-400');
-                    const innerBox = btn.querySelector('div.bg-white');
-                    if(innerBox) innerBox.classList.replace('border-red-400', 'border-gray-200');
+                    document.getElementById('nav-center-box').classList.replace('border-red-400', 'border-gray-200');
                 } else {
                     btn.classList.remove('text-cg_blue');
                     btn.classList.add('text-gray-400');
                 }
                 content.classList.add('hidden');
-                content.classList.remove('animate-fade-in');
             }
         });
     }
 
-    async function fetchUsers() {
-        const list = document.getElementById('admin-users-list');
-        if(list) list.innerHTML = '<tr><td colspan="5" class="p-6 text-center font-bold text-gray-400 animate-pulse">Consultando base de datos...</td></tr>';
-        
+    async function fetchData() {
+        const btnDash = document.querySelector('button[onclick="fetchData()"]');
+        if(btnDash) btnDash.innerText = "Cargando...";
+
         try {
             const res = await fetch('/api/admin/users', {
                 method: 'POST',
@@ -379,216 +392,175 @@
             const data = await res.json();
             
             if (res.ok) {
-                // Preprocesar datos para cálculos de Tops
-                allUsersCache = data.users.map(u => {
+                allUsers = data.users.map(u => {
                     let totalWins = 0;
                     if (u.game_state) {
                         try {
                             const st = JSON.parse(u.game_state);
-                            if (st.arsenal) {
-                                st.arsenal.forEach(p => { totalWins += (p.wins || 0); });
-                            }
+                            if (st.arsenal) st.arsenal.forEach(p => totalWins += (p.wins || 0));
                         } catch(e){}
                     }
                     u.military_wins = totalWins;
                     return u;
                 });
                 
-                if(document.getElementById('admin-users-list')) renderUsersTable(allUsersCache);
                 renderDashboard();
-            } else {
-                if(list) list.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-bold">Error: ${data.error}</td></tr>`;
+                renderTops();
+                renderDirectory(allUsers);
             }
         } catch (e) {
-            if(list) list.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-bold">Falla de conexión.</td></tr>`;
+            console.error("Error fetching admin data", e);
+        } finally {
+            if(btnDash) btnDash.innerText = "Actualizar";
         }
     }
 
-    // ================= AUTOCOMPLETADO BUSCADORES =================
-    function showSuggestions(prefix, query) {
-        query = query.toLowerCase();
-        const suggestionsBox = document.getElementById(`${prefix}-suggestions`);
-        const hiddenInputId = document.getElementById(`${prefix}-short-id`);
-        
-        if (query.length < 1) {
-            suggestionsBox.classList.add('hidden');
-            return;
-        }
+    // ================= DASHBOARD =================
+    function renderDashboard() {
+        document.getElementById('metric-users').innerText = allUsers.length;
+        const avgS = allUsers.length > 0 ? allUsers.reduce((s, u) => s + (u.seeds||0), 0) / allUsers.length : 0;
+        document.getElementById('metric-seeds').innerText = Math.floor(avgS).toLocaleString();
 
-        const filtered = allUsersCache.filter(u => 
-            (u.short_id && u.short_id.toLowerCase().includes(query)) || 
-            (u.username && u.username.toLowerCase().includes(query))
-        ).slice(0, 5); // Mostrar máx 5 sugerencias
-
-        if (filtered.length > 0) {
-            suggestionsBox.innerHTML = filtered.map(u => `
-                <div onclick="selectUser('${prefix}', '${u.short_id}', '${u.username}')" class="p-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
-                    <span class="text-sm font-black text-cg_navy">${u.username}</span>
-                    <span class="text-[10px] font-black text-gray-400 bg-gray-100 px-2 py-0.5 rounded">#${u.short_id}</span>
-                </div>
-            `).join('');
-            suggestionsBox.classList.remove('hidden');
-        } else {
-            suggestionsBox.innerHTML = '<div class="p-3 text-xs text-gray-400 text-center font-bold">No se encontró.</div>';
-            suggestionsBox.classList.remove('hidden');
+        if (typeof Chart !== 'undefined') {
+            if (window.chartU) window.chartU.destroy();
+            const ctxU = document.getElementById('chartUsers');
+            if(ctxU) {
+                window.chartU = new Chart(ctxU, {
+                    type: 'line',
+                    data: {
+                        labels: ['Hace 6d', 'Hace 5d', 'Hace 4d', 'Hace 3d', 'Antier', 'Ayer', 'Hoy'],
+                        datasets: [{ label: 'Registros', data: [2, 5, 3, 10, 15, 8, allUsers.length], borderColor: '#2996DA', backgroundColor: 'rgba(41,150,218,0.1)', fill: true, tension: 0.4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
         }
     }
 
-    function selectUser(prefix, short_id, username) {
-        document.getElementById(`${prefix}-suggestions`).classList.add('hidden');
-        document.getElementById(`${prefix}-search`).value = '';
-        document.getElementById(`${prefix}-search`).classList.add('hidden');
-        
-        document.getElementById(`${prefix}-short-id`).value = short_id;
-        
-        if (prefix === 'inj') {
-            document.getElementById('inj-selected-name').innerText = `${username} (#${short_id})`;
-            document.getElementById('inj-selected-user').classList.remove('hidden');
-        } else if (prefix === 'insp') {
-            document.getElementById('btn-inspect').disabled = false;
-            document.getElementById('btn-inspect').click(); // Auto-escanear
-            
-            // Re-mostrar el input pero con el nombre
-            document.getElementById(`${prefix}-search`).value = `${username} (#${short_id})`;
-            document.getElementById(`${prefix}-search`).classList.remove('hidden');
-        }
+    function renderTops() {
+        const buildList = (container, arr, valKey, prefix, suffix, isMoney) => {
+            container.innerHTML = '';
+            if(arr.length === 0) { container.innerHTML = '<p class="text-xs text-gray-400 p-3">Sin datos</p>'; return; }
+            arr.slice(0, 10).forEach((u, i) => {
+                let val = isMoney ? parseFloat(u[valKey]||0).toLocaleString() : Math.floor(u[valKey]||0).toLocaleString();
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-2.5 border-b border-gray-50 text-xs hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-2 overflow-hidden w-full">
+                            <span class="font-black text-gray-400 w-4">${i+1}.</span>
+                            <span class="font-black text-cg_navy truncate flex-1">${u.username}</span>
+                        </div>
+                        <span class="font-black shrink-0 ${isMoney ? 'text-cg_gold' : 'text-green-600'}">${prefix}${val}${suffix}</span>
+                    </div>`;
+            });
+        };
+
+        const rec = [...allUsers].sort((a,b) => b.id - a.id);
+        const cop = [...allUsers].sort((a,b) => parseFloat(b.balance||0) - parseFloat(a.balance||0));
+        const sds = [...allUsers].sort((a,b) => (b.seeds||0) - (a.seeds||0));
+        const mil = [...allUsers].sort((a,b) => (b.military_wins||0) - (a.military_wins||0));
+
+        buildList(document.getElementById('top-recent'), rec, 'short_id', '#', '', false);
+        buildList(document.getElementById('top-cop'), cop, 'balance', '$', '', true);
+        buildList(document.getElementById('top-seeds'), sds, 'seeds', '', ' 🌱', false);
+        buildList(document.getElementById('top-military'), mil, 'military_wins', '🏆 ', ' Vic', false);
     }
 
-    function clearSelectedUser(prefix) {
-        document.getElementById(`${prefix}-short-id`).value = '';
-        document.getElementById(`${prefix}-search`).value = '';
-        document.getElementById(`${prefix}-search`).classList.remove('hidden');
-        
-        if (prefix === 'inj') {
-            document.getElementById('inj-selected-user').classList.add('hidden');
-        }
-    }
-
-    // ================= DIRECTORIO DE USUARIOS =================
-    function renderUsersTable(usersArray) {
+    // ================= DIRECTORIO =================
+    function renderDirectory(arr) {
         const list = document.getElementById('admin-users-list');
-        if(!list) return;
         list.innerHTML = '';
-        if (usersArray.length === 0) {
-            list.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold">No se encontraron usuarios.</td></tr>';
-            return;
+        if(arr.length === 0) {
+            list.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold">No hay coincidencias.</td></tr>'; return;
         }
 
-        usersArray.forEach(u => {
-            let seedsText = u.seeds !== undefined ? u.seeds.toLocaleString() : '--';
-            
+        arr.forEach(u => {
             list.innerHTML += `
                 <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
-                    <td class="p-4">
-                        <span class="bg-gray-100 text-gray-500 font-black px-2.5 py-1 rounded-md text-[10px] border border-gray-200 uppercase tracking-widest shadow-sm">#${u.short_id || '----'}</span>
+                    <td class="p-3 pl-4">
+                        <span class="bg-gray-100 text-gray-500 font-black px-2 py-1 rounded text-[10px] border border-gray-200 uppercase tracking-widest shadow-sm">#${u.short_id || '----'}</span>
                     </td>
-                    <td class="p-4 font-black text-cg_navy text-xs flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full bg-cg_navy text-white text-[8px] flex items-center justify-center shrink-0 shadow-sm">${u.username.substring(0,2).toUpperCase()}</div>
-                        ${u.username}
-                    </td>
-                    <td class="p-4 text-right font-black text-green-600 text-xs">${seedsText}</td>
-                    <td class="p-4 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance).toLocaleString()}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="targetUserAction('${u.short_id}', '${u.username}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Gestionar</button>
+                    <td class="p-3 font-black text-cg_navy text-xs">${u.username}</td>
+                    <td class="p-3 text-right font-black text-green-600 text-xs">${u.seeds !== undefined ? u.seeds.toLocaleString() : '--'}</td>
+                    <td class="p-3 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance||0).toLocaleString()}</td>
+                    <td class="p-3 pr-4 text-center">
+                        <button onclick="goToAction('${u.short_id}', '${u.username}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-cg_blue hover:text-white hover:border-cg_blue px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Ver</button>
                     </td>
                 </tr>
             `;
         });
     }
 
-    function filterUsersDir() {
-        const query = document.getElementById('admin-search-dir').value.toLowerCase();
-        const filtered = allUsersCache.filter(u => 
-            (u.short_id && u.short_id.toLowerCase().includes(query)) || 
-            (u.username && u.username.toLowerCase().includes(query))
-        );
-        renderUsersTable(filtered);
+    function filterDirectory() {
+        const q = document.getElementById('admin-search-dir').value.toLowerCase();
+        const filtered = allUsers.filter(u => (u.short_id && u.short_id.includes(q)) || (u.username && u.username.toLowerCase().includes(q)));
+        renderDirectory(filtered);
     }
 
-    function targetUserAction(short_id, username) {
-        selectUser('inj', short_id, username);
-        switchAdminTab('inyector');
+    function goToAction(id, name) {
+        selectUser('inj', id, name);
+        selectUser('insp', id, name);
+        openAdminTab('inyector');
     }
 
-    // ================= DASHBOARD & CHARTS =================
-    function initDashboardData() { fetchUsers(); }
+    // ================= AUTOCOMPLETADO =================
+    function handleAutocomplete(prefix, query) {
+        query = query.toLowerCase();
+        const box = document.getElementById(`${prefix}-suggestions`);
+        
+        if (query.length < 1) { box.classList.add('hidden'); return; }
 
-    function renderDashboard() {
-        if (typeof Chart === 'undefined') return;
+        const filtered = allUsers.filter(u => (u.short_id && u.short_id.includes(query)) || (u.username && u.username.toLowerCase().includes(query))).slice(0, 5);
 
-        const cUsers = document.getElementById('chartUsers');
-        const cTime = document.getElementById('chartTime');
-        if(!cUsers || !cTime) return;
-
-        // Limpiar gráficos anteriores si existen
-        if (window.chartU) window.chartU.destroy();
-        if (window.chartT) window.chartT.destroy();
-
-        document.getElementById('dash-total-users').innerText = allUsersCache.length.toLocaleString();
-        const avgSeeds = allUsersCache.length > 0 ? (allUsersCache.reduce((sum, u) => sum + (u.seeds||0), 0) / allUsersCache.length) : 0;
-        document.getElementById('dash-avg-seeds').innerText = Math.floor(avgSeeds).toLocaleString();
-
-        // Render Gráficos (Data Visual Requerida)
-        window.chartU = new Chart(cUsers, {
-            type: 'line',
-            data: {
-                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Hoy'],
-                datasets: [{ label: 'Registros', data: [5, 12, 8, 15, 20, 24, allUsersCache.length], borderColor: '#2996DA', backgroundColor: 'rgba(41,150,218,0.1)', fill: true, tension: 0.4 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-
-        window.chartT = new Chart(cTime, {
-            type: 'bar',
-            data: {
-                labels: ['<10m', '10-30m', '30-60m', '1h-3h', '>3h'],
-                datasets: [{ label: 'Usuarios', data: [allUsersCache.length*0.2, allUsersCache.length*0.4, allUsersCache.length*0.25, allUsersCache.length*0.1, allUsersCache.length*0.05], backgroundColor: '#ED9925', borderRadius: 5 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-
-        // Poblar Tops
-        const topRecent = document.getElementById('top-recent');
-        const topCop = document.getElementById('top-cop');
-        const topSeeds = document.getElementById('top-seeds');
-        const topMilitary = document.getElementById('top-military');
-
-        const renderMiniList = (container, arr, valKey, prefix, suffix, isCop = false) => {
-            container.innerHTML = '';
-            if(arr.length === 0) container.innerHTML = '<p class="text-xs text-gray-400 p-2">Sin datos</p>';
-            arr.slice(0, 10).forEach((u, i) => {
-                let val = isCop ? parseFloat(u[valKey]||0).toLocaleString() : Math.floor(u[valKey]||0).toLocaleString();
-                container.innerHTML += `
-                    <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs">
-                        <div class="flex items-center gap-2 overflow-hidden">
-                            <span class="font-black text-gray-400 w-4">${i+1}.</span>
-                            <span class="font-black text-cg_navy truncate">${u.username}</span>
-                        </div>
-                        <span class="font-black shrink-0 ${isCop?'text-cg_gold':'text-green-600'}">${prefix}${val}${suffix}</span>
-                    </div>`;
-            });
-        };
-
-        // Recientes (Asumimos id mayor = más reciente)
-        const recent = [...allUsersCache].sort((a,b) => b.id - a.id);
-        renderMiniList(topRecent, recent, 'short_id', '#', '', false);
-
-        // COP
-        const cops = [...allUsersCache].sort((a,b) => parseFloat(b.balance||0) - parseFloat(a.balance||0));
-        renderMiniList(topCop, cops, 'balance', '$', '', true);
-
-        // Semillas
-        const seeds = [...allUsersCache].sort((a,b) => (b.seeds||0) - (a.seeds||0));
-        renderMiniList(topSeeds, seeds, 'seeds', '', ' 🌱', false);
-
-        // Militar (Extraído de processamiento previo)
-        const military = [...allUsersCache].sort((a,b) => (b.military_wins||0) - (a.military_wins||0));
-        renderMiniList(topMilitary, military, 'military_wins', '🏆 ', ' Vic', false);
+        if (filtered.length > 0) {
+            box.innerHTML = filtered.map(u => `
+                <div onclick="selectUser('${prefix}', '${u.short_id}', '${u.username}')" class="p-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
+                    <span class="text-xs font-black text-cg_navy">${u.username}</span>
+                    <span class="text-[10px] font-black text-gray-400 bg-gray-100 px-2 py-0.5 rounded shadow-sm">#${u.short_id}</span>
+                </div>
+            `).join('');
+        } else {
+            box.innerHTML = '<div class="p-3 text-xs text-gray-400 text-center font-bold">No se encontró.</div>';
+        }
+        box.classList.remove('hidden');
     }
 
-    // ================= FACTURA / INYECTOR =================
-    
-    function openInjectorModal(type) {
+    function selectUser(prefix, short_id, username) {
+        document.getElementById(`${prefix}-suggestions`).classList.add('hidden');
+        document.getElementById(`${prefix}-search`).classList.add('hidden');
+        document.getElementById(`${prefix}-target-id`).value = short_id;
+        
+        const ui = document.getElementById(`${prefix}-selected-ui`) || document.getElementById(`${prefix}-selected-user`);
+        if (ui) {
+            document.getElementById(`${prefix}-selected-name`).innerText = `${username} (#${short_id})`;
+            ui.classList.remove('hidden');
+        }
+
+        if (prefix === 'insp') {
+            document.getElementById('btn-inspect').disabled = false;
+            document.getElementById('btn-inspect').classList.remove('opacity-50', 'cursor-not-allowed');
+            inspectFarm();
+        }
+    }
+
+    function clearSelection(prefix) {
+        document.getElementById(`${prefix}-target-id`).value = '';
+        const searchInput = document.getElementById(`${prefix}-search`);
+        searchInput.value = '';
+        searchInput.classList.remove('hidden');
+        
+        const ui = document.getElementById(`${prefix}-selected-ui`) || document.getElementById(`${prefix}-selected-user`);
+        if (ui) ui.classList.add('hidden');
+
+        if (prefix === 'insp') {
+            const btn = document.getElementById('btn-inspect');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('inspector-results').classList.add('hidden');
+        }
+    }
+
+    // ================= INYECTOR (FACTURA) =================
+    function openCartModal(type) {
         const body = document.getElementById('cart-modal-body');
         const btn = document.getElementById('btn-cart-add');
         
@@ -596,19 +568,19 @@
         if (type === 'seeds') {
             content = `
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad de Semillas 🌱</label>
-                <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-green-600 px-4 py-3 rounded-xl font-black outline-none focus:border-green-500 text-lg text-center">
+                <input type="number" id="modal-val" placeholder="0" class="w-full bg-green-50 border border-green-200 text-green-700 px-4 py-3.5 rounded-xl font-black outline-none focus:border-green-500 text-lg text-center">
             `;
-            btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas 🌱');
+            btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas 🌱', true);
         } else if (type === 'cop') {
             content = `
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad COP 💵</label>
-                <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-cg_gold px-4 py-3 rounded-xl font-black outline-none focus:border-yellow-500 text-lg text-center">
+                <input type="number" id="modal-val" placeholder="0" class="w-full bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3.5 rounded-xl font-black outline-none focus:border-yellow-500 text-lg text-center">
             `;
-            btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP 💵');
+            btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP 💵', true);
         } else if (type === 'item') {
             content = `
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ítem a enviar</label>
-                <select id="modal-item" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none mb-2 focus:border-cg_blue">
+                <select id="modal-item" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none mb-3 focus:border-cg_blue cursor-pointer">
                     <option value="flower_wheat">🌾 Semilla: Trigo Rápido</option>
                     <option value="flower_bamboo">🎋 Semilla: Bambú Tryhard</option>
                     <option value="flower_cactus">🌵 Semilla: Cactus de Cuarzo</option>
@@ -632,9 +604,9 @@
             };
         } else if (type === 'arsenal') {
             content = `
-                <div class="bg-red-50 border border-red-100 p-3 rounded-lg text-[10px] text-red-600 font-bold mb-3">La planta se creará con stats base y salud al 100%.</div>
+                <div class="bg-red-50 border border-red-100 p-3 rounded-xl text-[10px] text-red-600 font-bold mb-3 shadow-sm">La planta se creará lista para combatir (100% Vida).</div>
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Especie Militar</label>
-                <select id="modal-arsenal" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none focus:border-red-400">
+                <select id="modal-arsenal" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none focus:border-red-400 cursor-pointer">
                     <option value="flower_wheat">🌾 Trigo Rápido</option>
                     <option value="flower_bamboo">🎋 Bambú Tryhard</option>
                     <option value="flower_cactus">🌵 Cactus de Cuarzo</option>
@@ -646,23 +618,23 @@
             `;
             btn.onclick = () => {
                 const sel = document.getElementById('modal-arsenal');
-                addToCart('arsenal', sel.value, `⚔️ Militar: ${sel.options[sel.selectedIndex].text}`);
+                addToCart('arsenal', sel.value, `⚔️ Directo al Arsenal: ${sel.options[sel.selectedIndex].text}`);
             };
         } else if (type === 'vip') {
             content = `
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Privilegio</label>
-                <select id="modal-vip" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none focus:border-purple-400">
+                <select id="modal-vip" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none focus:border-purple-400 cursor-pointer">
                     <option value="plot_3">🗺️ Desbloquear Parcela 4</option>
                     <option value="plot_4">🗺️ Desbloquear Parcela 5</option>
                     <option value="plot_5">🗺️ Desbloquear Parcela 6</option>
                     <option value="plot_6">🗺️ Desbloquear Parcela 7</option>
                     <option value="plot_7">🗺️ Desbloquear Parcela 8</option>
-                    <option value="vip_water_24">🤖 Auto-Riego (Añadir 24H)</option>
-                    <option value="vip_water_72">🤖 Auto-Riego (Añadir 72H)</option>
-                    <option value="vip_harvest_24">🧺 Recolector (Añadir 24H)</option>
-                    <option value="vip_harvest_72">🧺 Recolector (Añadir 72H)</option>
-                    <option value="vip_combo_24">👑 Combo Total (Añadir 24H)</option>
-                    <option value="vip_combo_72">👑 Combo Total (Añadir 72H)</option>
+                    <option value="vip_water_24">🤖 Auto-Riego (+24H)</option>
+                    <option value="vip_water_72">🤖 Auto-Riego (+72H)</option>
+                    <option value="vip_harvest_24">🧺 Recolector (+24H)</option>
+                    <option value="vip_harvest_72">🧺 Recolector (+72H)</option>
+                    <option value="vip_combo_24">👑 Combo Total VIP (+24H)</option>
+                    <option value="vip_combo_72">👑 Combo Total VIP (+72H)</option>
                 </select>
             `;
             btn.onclick = () => {
@@ -671,7 +643,7 @@
             };
         }
 
-        body.innerHTML = content;
+        document.getElementById('cart-modal-body').innerHTML = content;
         document.getElementById('admin-cart-modal').classList.remove('hidden');
         document.getElementById('admin-cart-modal').classList.add('flex');
     }
@@ -681,26 +653,23 @@
         document.getElementById('admin-cart-modal').classList.remove('flex');
     }
 
-    function addToCart(type, rawData, label) {
-        if (!rawData || (typeof rawData === 'string' && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
-            showAdminAlert("Error", "Valor inválido o en cero."); return;
+    function addToCart(type, rawData, label, isNumber = false) {
+        if (!rawData || (isNumber && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
+            showAdminAlert("Error", "Cantidad inválida."); return;
         }
-        invoiceCart.push({ type, rawData, label });
-        renderInvoice();
+        cart.push({ type, rawData, label });
+        renderCart();
         closeCartModal();
     }
 
-    function clearInvoice() {
-        invoiceCart = [];
-        renderInvoice();
-    }
+    function clearCart() { cart = []; renderCart(); }
 
-    function renderInvoice() {
-        const list = document.getElementById('invoice-list');
-        const btn = document.getElementById('btn-execute-invoice');
+    function renderCart() {
+        const list = document.getElementById('cart-list');
+        const btn = document.getElementById('btn-submit-invoice');
         list.innerHTML = '';
         
-        if (invoiceCart.length === 0) {
+        if (cart.length === 0) {
             list.innerHTML = '<p class="text-center text-gray-400 text-xs font-bold mt-10">La factura está vacía.</p>';
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -710,73 +679,65 @@
         btn.disabled = false;
         btn.classList.remove('opacity-50', 'cursor-not-allowed');
 
-        invoiceCart.forEach((item, idx) => {
+        cart.forEach((item, idx) => {
+            let prefix = item.type === 'cop' ? '+$' : (item.type === 'seeds' ? '+' : '');
+            let val = item.type === 'cop' || item.type === 'seeds' ? parseFloat(item.rawData).toLocaleString() : '';
+            let text = val ? `${prefix}${val} ${item.label}` : item.label;
+
             list.innerHTML += `
-                <div class="bg-white border border-gray-100 p-3 rounded-xl shadow-sm flex justify-between items-center text-xs font-bold transition-all hover:border-red-200">
-                    <span class="text-cg_navy">${item.type === 'cop' ? '$'+item.rawData : item.type === 'seeds' ? '+'+item.rawData+' '+item.label : item.label}</span>
-                    <button onclick="invoiceCart.splice(${idx}, 1); renderInvoice();" class="text-red-400 hover:text-red-600 font-black">✕</button>
+                <div class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm flex justify-between items-center text-[11px] sm:text-xs font-bold">
+                    <span class="text-cg_navy">${text}</span>
+                    <button onclick="cart.splice(${idx}, 1); renderCart();" class="text-red-400 hover:text-red-600 bg-red-50 w-6 h-6 rounded-md flex items-center justify-center transition-colors">✕</button>
                 </div>
             `;
         });
     }
 
-    async function executeInjectionInvoice() {
-        const short_id = document.getElementById('inj-short-id').value.trim();
-        if (!short_id) {
-            showAdminAlert("Error", "Falta el ID del jugador destino. Utiliza el buscador arriba.");
-            return;
-        }
+    async function submitInvoice() {
+        const short_id = document.getElementById('inj-target-id').value.trim();
+        if (!short_id) { showAdminAlert("Aviso", "Selecciona a un jugador destino desde el buscador."); return; }
 
-        const btn = document.getElementById('btn-execute-invoice');
-        btn.innerText = "Procesando...";
+        const btn = document.getElementById('btn-submit-invoice');
+        btn.innerHTML = '<span class="animate-pulse">Sintetizando...</span>';
         btn.disabled = true;
 
         try {
-            // El backend /api/admin/add_items requiere un formato específico. 
-            // Enviamos 1 request por cada item de la factura secuencialmente
-            for (const item of invoiceCart) {
-                let payload = { admin_token: ADMIN_TOKEN, short_id: short_id };
-                
-                if (item.type === 'seeds') payload.seeds = item.rawData;
-                else if (item.type === 'cop') payload.cop = item.rawData;
-                else if (item.type === 'vip') payload.unlock_vip = item.rawData;
-                else if (item.type === 'item') {
-                    payload.item_id = item.rawData.id;
-                    payload.item_qty = item.rawData.qty;
-                }
-                else if (item.type === 'arsenal') {
-                    // Simulación para Arsenal en base al servidor actual (Entrega semilla directamente)
-                    payload.item_id = item.rawData; 
-                    payload.item_qty = 1;
-                    payload.is_arsenal = true; 
-                }
+            for (const item of cart) {
+                let p = { admin_token: ADMIN_TOKEN, short_id: short_id };
+                if (item.type === 'seeds') p.seeds = item.rawData;
+                else if (item.type === 'cop') p.cop = item.rawData;
+                else if (item.type === 'vip') p.unlock_vip = item.rawData;
+                else if (item.type === 'item') { p.item_id = item.rawData.id; p.item_qty = item.rawData.qty; }
+                else if (item.type === 'arsenal') { p.item_id = item.rawData; p.item_qty = 1; p.is_arsenal = true; } // Requiere server.py auth si existe is_arsenal real.
 
                 await fetch('/api/admin/add_items', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p)
                 });
             }
-
-            showAdminAlert("Factura Enviada", "Los recursos se inyectaron exitosamente en la base de datos.");
-            clearInvoice();
-            fetchUsers();
+            showAdminAlert("Inyección Confirmada", "Los recursos se han enviado directamente a la BD del jugador.");
+            clearCart();
+            clearSelection('inj');
+            fetchData();
         } catch (e) {
-            showAdminAlert("Error de Red", "Fallo al enviar la factura al servidor.");
+            showAdminAlert("Error", "Fallo de conexión enviando la factura.");
         } finally {
             btn.innerHTML = "Enviar Factura ➔";
             btn.disabled = false;
         }
     }
 
-
     // ================= INSPECTOR =================
     async function inspectFarm() {
-        const short_id = document.getElementById('inspect-short-id').value.trim();
-        if (!short_id) { showAdminAlert("Error", "Ingresa un ID válido o búscalo en la lupa."); return; }
+        const short_id = document.getElementById('insp-target-id').value.trim();
+        if (!short_id) return;
         
         const btn = document.getElementById('btn-inspect');
-        btn.innerText = "Buscando...";
-        document.getElementById('inspector-result').classList.add('hidden');
+        btn.innerText = "Escaneando...";
+        
+        document.getElementById('insp-plots').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Obteniendo paquetes...</p>';
+        document.getElementById('insp-inv').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Desencriptando...</p>';
+        document.getElementById('inspector-results').classList.remove('hidden');
+        document.getElementById('inspector-results').classList.add('flex');
 
         try {
             const res = await fetch('/api/admin/user_farm/' + short_id, {
@@ -786,97 +747,73 @@
             const data = await res.json();
             
             if (res.ok && data.user.game_state) {
-                const state = JSON.parse(data.user.game_state);
-                document.getElementById('insp-seeds').innerText = (state.seedsBalance || 0).toLocaleString();
-                document.getElementById('insp-cop').innerText = '$' + parseFloat(data.user.balance || 0).toLocaleString();
+                const st = JSON.parse(data.user.game_state);
+                document.getElementById('res-seeds').innerText = (st.seedsBalance || 0).toLocaleString();
+                document.getElementById('res-cop').innerText = '$' + parseFloat(data.user.balance || 0).toLocaleString();
                 
-                // Inventario con Íconos
-                let invHtml = '';
-                if (state.inventory) {
-                    for (const [key, item] of Object.entries(state.inventory)) {
-                        if (item.qty > 0) {
-                            invHtml += `
-                                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-200">
-                                        <img src="${item.image}" class="w-5 h-5 object-contain">
-                                    </div>
-                                    <span class="text-xs font-bold text-cg_navy flex-1 truncate">${item.name}</span>
-                                    <span class="text-xs font-black text-cg_blue px-2 py-1 bg-blue-50 rounded-lg">x${item.qty}</span>
-                                </div>
-                            `;
+                // Inventario
+                let iHtml = '';
+                if (st.inventory) {
+                    for (const [k, v] of Object.entries(st.inventory)) {
+                        if (v.qty > 0) {
+                            let ic = ITEM_ICONS[k] || '📦';
+                            iHtml += `
+                                <div class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs">
+                                    <span class="text-xl w-6 text-center drop-shadow-sm">${ic}</span>
+                                    <span class="font-bold text-cg_navy flex-1 truncate">${v.name}</span>
+                                    <span class="font-black text-cg_blue px-2 bg-blue-50 rounded border border-blue-100">x${v.qty}</span>
+                                </div>`;
                         }
                     }
                 }
-                document.getElementById('insp-inv').innerHTML = invHtml || '<p class="text-xs text-gray-400 p-2">Inventario vacío.</p>';
+                document.getElementById('res-inv').innerHTML = iHtml || '<p class="text-xs text-gray-400 p-2">Vacío.</p>';
 
-                // Parcelas detalladas
-                let plotsHtml = '';
-                if (state.plots) {
-                    state.plots.forEach(p => {
-                        let sColor = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : (p.status === 'tournament' ? 'text-purple-600' : 'text-green-600'));
-                        
-                        let plantInfo = '';
-                        if (p.plant) {
-                            let wColor = p.water < 30 ? 'text-red-500' : (p.water > 90 ? 'text-blue-500' : 'text-cg_blue');
-                            plantInfo = `
-                                <div class="flex items-center gap-2 mt-2 ml-1">
-                                    <img src="${p.plant.icon}" class="w-6 h-6 object-contain">
-                                    <span class="text-xs font-bold text-cg_navy">${p.plant.name}</span>
-                                    <span class="text-xs font-black ${wColor} ml-auto bg-blue-50 px-2 py-0.5 rounded-lg">💧 ${Math.floor(p.water)}%</span>
-                                </div>`;
-                        }
-                        
-                        let cAlert = p.hasCrow ? ' <span class="bg-red-100 border border-red-200 text-red-600 px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase ml-2 shadow-sm animate-pulse">Plaga</span>' : '';
-                        
-                        plotsHtml += `
-                            <div class="p-3 border border-gray-100 bg-white rounded-xl shadow-sm mb-2">
-                                <span class="font-black text-xs ${sColor} uppercase tracking-widest">[P${p.id}] ${p.status}</span>${cAlert}
-                                ${plantInfo}
+                // Parcelas
+                let pHtml = '';
+                if (st.plots) {
+                    st.plots.forEach(p => {
+                        let c = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : 'text-green-600');
+                        let pInfo = p.plant ? `<div class="ml-1 mt-1 text-gray-500 font-bold">↳ ${ITEM_ICONS[p.plant.id]||'🌿'} ${p.plant.name} | <span class="${p.water < 30 ? 'text-red-500' : 'text-cg_blue'}">💧 ${Math.floor(p.water)}%</span></div>` : '';
+                        let bug = p.hasCrow ? '<span class="bg-red-100 text-red-600 px-1 rounded text-[8px] font-black uppercase ml-2 animate-pulse border border-red-200">Plaga</span>' : '';
+                        pHtml += `<div class="p-3 bg-white border border-gray-100 rounded-xl shadow-sm mb-2 text-xs"><span class="font-black ${c}">[P${p.id}] ${p.status.toUpperCase()}</span>${bug}${pInfo}</div>`;
+                    });
+                }
+                document.getElementById('res-plots').innerHTML = pHtml || '<p class="text-xs text-gray-400 p-2">Sin terrenos.</p>';
+
+                // Arsenal
+                let aHtml = '';
+                if (st.arsenal && st.arsenal.length > 0) {
+                    st.arsenal.forEach(p => {
+                        aHtml += `
+                            <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm mb-2 text-xs">
+                                <div class="flex items-center gap-2 overflow-hidden">
+                                    <span class="text-lg drop-shadow-sm">${ITEM_ICONS[p.plantId]||'⚔️'}</span>
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="font-black text-cg_navy truncate">${p.name}</span>
+                                        <span class="text-[9px] font-black text-red-500 mt-0.5">HP: ${p.hp}/${p.maxHp}</span>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-black text-cg_gold bg-yellow-50 px-1.5 py-0.5 rounded border border-yellow-100 shrink-0">🏆 ${p.wins||0}</span>
                             </div>`;
                     });
                 }
-                document.getElementById('insp-plots').innerHTML = plotsHtml || '<p class="text-xs text-gray-400 p-2">Sin terrenos.</p>';
+                document.getElementById('res-arsenal').innerHTML = aHtml || '<p class="text-xs text-gray-400 p-2">Vacío.</p>';
 
-                // Arsenal
-                let arsHtml = '';
-                if (state.arsenal && state.arsenal.length > 0) {
-                    state.arsenal.forEach(p => {
-                        arsHtml += `
-                            <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm mb-2">
-                                <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center shrink-0 border border-red-100">
-                                    <img src="${p.icon}" class="w-6 h-6 object-contain">
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <span class="text-[10px] font-black text-cg_navy block truncate uppercase">${p.name}</span>
-                                    <span class="text-[9px] font-black text-red-500">❤️ ${p.hp}/${p.maxHp}</span>
-                                </div>
-                                <span class="text-[9px] font-black text-cg_gold bg-yellow-50 px-2 py-1 rounded-lg uppercase border border-yellow-100 shadow-sm flex items-center gap-1">🏆 ${p.wins||0}</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    arsHtml = '<p class="text-xs text-gray-400 p-2">El arsenal está vacío.</p>';
-                }
-                document.getElementById('insp-arsenal').innerHTML = arsHtml;
-
-                document.getElementById('inspector-result').classList.remove('hidden');
-                document.getElementById('inspector-result').classList.add('flex');
             } else {
-                showAdminAlert('Datos no encontrados', 'Usuario sin partida o ID incorrecto.');
+                showAdminAlert('Datos no encontrados', 'Usuario sin datos guardados o ID incorrecto.');
             }
         } catch (e) {
             showAdminAlert('Error', 'Falla de conexión.');
         } finally {
             btn.innerText = "Escanear";
-            btn.disabled = false;
         }
     }
 
-    // ================= MODALES =================
+    // Modal Global
     function showAdminAlert(title, msg) {
         document.getElementById('admin-alert-title').innerText = title;
         document.getElementById('admin-alert-msg').innerText = msg;
-        document.getElementById('admin-alert-buttons').innerHTML = `<button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3.5 px-10 rounded-xl transition-all shadow-md text-xs uppercase tracking-widest">Aceptar</button>`;
+        document.getElementById('admin-alert-buttons').innerHTML = `<button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3 px-8 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Aceptar</button>`;
         document.getElementById('admin-alert-modal').classList.remove('hidden');
         document.getElementById('admin-alert-modal').classList.add('flex');
     }
@@ -885,8 +822,8 @@
         document.getElementById('admin-alert-title').innerText = title;
         document.getElementById('admin-alert-msg').innerText = msg;
         document.getElementById('admin-alert-buttons').innerHTML = `
-            <button onclick="closeAdminAlert()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-widest border border-gray-200">Cancelar</button>
-            <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-widest shadow-md">Confirmar</button>
+            <button onclick="closeAdminAlert()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider border border-gray-200">Cancelar</button>
+            <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Confirmar</button>
         `;
         document.getElementById('admin-btn-confirm-action').onclick = () => { closeAdminAlert(); onConfirmCallback(); };
         document.getElementById('admin-alert-modal').classList.remove('hidden');
@@ -898,5 +835,13 @@
         document.getElementById('admin-alert-modal').classList.remove('flex');
     }
 
+    // Inicializar
+    if(typeof Chart === 'undefined') {
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        sc.onload = fetchData;
+        document.head.appendChild(sc);
+    } else { fetchData(); }
 </script>
-</div>
+</body>
+</html>
