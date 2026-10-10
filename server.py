@@ -9,23 +9,28 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_socketio import SocketIO, join_room, emit # <-- NUEVA LIBRERÍA
+from flask_socketio import SocketIO, join_room, emit
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-socketio = SocketIO(app, cors_allowed_origins="*") # <-- INICIALIZACIÓN WEBSOCKET
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA") # NUEVO
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA")
 WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "test_events_YCoAJd13MYktS6RQGpt1kpZfEIgeZwQV")
 WOMPI_PRV_KEY = os.getenv("WOMPI_PRV_KEY", "prv_test_dFZ8LK0A0cYV8brLyHjtQ5KSHBjB86e9")
 
+def get_db_connection():
+    for _ in range(6):
+        try:
+            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
+        except psycopg2.OperationalError:
+            time.sleep(0.5)
+    return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
 
 @app.route('/api/webhooks/wompi', methods=['POST'])
 def wompi_webhook():
     data = request.json
-    
-    # 1. Extraer datos del evento
     event_type = data.get('event')
     transaction = data.get('data', {}).get('transaction', {})
     
@@ -37,7 +42,6 @@ def wompi_webhook():
     amount_in_cents = transaction.get('amount_in_cents')
     signature = data.get('signature', {}).get('checksum')
 
-    # 2. Validar firma de seguridad (Vital para evitar fraude)
     timestamp = data.get('timestamp', '')
     raw_signature = f"{transaction.get('id')}{status}{amount_in_cents}{timestamp}{WOMPI_EVENTS_SECRET}"
     expected_signature = hashlib.sha256(raw_signature.encode('utf-8')).hexdigest()
@@ -45,33 +49,30 @@ def wompi_webhook():
     if signature != expected_signature:
         return jsonify({"error": "Firma inválida"}), 403
 
-    # 3. Procesar si fue aprobada
     if status == 'APPROVED' and reference.startswith('REC-'):
-        short_id = reference.split('-')[1] # Extraemos el ID del jugador
-        amount_cop = amount_in_cents / 100
+        short_id = reference.split('-')[1] 
+        # IMPORTANTE: Descontamos el 5% de mantenimiento en el servidor antes de sumarlo
+        gross_amount = amount_in_cents / 100
+        net_amount = gross_amount * 0.95
 
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # Verificar que no se haya procesado esta referencia antes
         cur.execute("SELECT id FROM financial_ledger WHERE external_reference = %s", (reference,))
         if not cur.fetchone():
-            # Acreditar al usuario
-            cur.execute("UPDATE users SET balance = balance + %s WHERE short_id = %s RETURNING id", (amount_cop, short_id))
+            cur.execute("UPDATE users SET balance = balance + %s WHERE short_id = %s RETURNING id", (net_amount, short_id))
             user = cur.fetchone()
             
             if user:
-                # Registrar en el libro mayor
                 cur.execute(
                     "INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, %s, %s, %s, %s)",
-                    (user['id'], 'deposit', amount_cop, reference, 'completed')
+                    (user['id'], 'deposit', net_amount, reference, 'completed')
                 )
                 conn.commit()
                 
         cur.close(); conn.close()
 
     return jsonify({"status": "ok"}), 200
-
 
 @app.route('/api/wallet/payout', methods=['POST'])
 def dispatch_nequi_payout():
@@ -95,7 +96,6 @@ def dispatch_nequi_payout():
     cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (phone_nequi, amount_cop, user['id']))
     payout_ref = f"PO-{user['id']}-{int(time.time())}"
     
-    # LLAMADA REAL AL API DE TRANSFERENCIAS DE WOMPI
     headers = {
         "Authorization": f"Bearer {WOMPI_PRV_KEY}",
         "Content-Type": "application/json"
@@ -119,7 +119,7 @@ def dispatch_nequi_payout():
             msg = "Retiro en proceso. Llegará a tu Nequi en 24h hábiles."
         else:
             conn.rollback()
-            return jsonify({"error": "Error del banco: " + str(wompi_data)}), 500
+            return jsonify({"error": "Error del banco: " + str(wompi_data.get('error', {}).get('messages', ''))}), 500
             
     except Exception as e:
         conn.rollback()
@@ -127,8 +127,6 @@ def dispatch_nequi_payout():
         
     cur.close(); conn.close()
     return jsonify({"message": msg, "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
-
-
 
 # Función helper para Telegram (Soporta Imágenes)
 def send_telegram_msg(chat_id, text, image_url=None):

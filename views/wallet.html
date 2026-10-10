@@ -102,6 +102,21 @@
     </div>
 </div>
 
+<!-- Estilos para forzar el tamaño del iframe de Wompi en móviles -->
+<style>
+    /* Forzar que el iframe de Wompi sea full screen en móviles para que no se corte */
+    @media (max-width: 768px) {
+        iframe[src*="checkout.wompi.co"] {
+            width: 100vw !important;
+            height: 100vh !important;
+            top: 0 !important;
+            left: 0 !important;
+            position: fixed !important;
+            z-index: 9999 !important;
+        }
+    }
+</style>
+
 <!-- SCRIPT OFICIAL DEL WIDGET DE WOMPI -->
 <script src="https://checkout.wompi.co/widget.js"></script>
 
@@ -140,15 +155,12 @@
     }
 
     function selectDepositAmount(amount) {
-        // Limpiar el campo manual
         document.getElementById('custom-deposit-input').value = '';
         
-        // Efecto visual botones
         const buttons = document.querySelectorAll('.deposit-btn');
         buttons.forEach(btn => {
             btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
             btn.classList.add('border-gray-200', 'text-gray-600', 'bg-gray-50');
-            // Si el botón coincide con el monto, lo marcamos
             if (btn.innerText.replace(/\D/g, '') == amount) {
                 btn.classList.add('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
                 btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-gray-50');
@@ -160,7 +172,6 @@
     }
 
     function handleCustomDeposit() {
-        // Desmarcar botones preestablecidos
         const buttons = document.querySelectorAll('.deposit-btn');
         buttons.forEach(btn => {
             btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
@@ -208,18 +219,13 @@
             return;
         }
 
-        const username = sessionStorage.getItem('username');
         const short_id = sessionStorage.getItem('short_id') || '0000';
-        
-        // Referencia única para identificar la transacción en tu servidor
         const reference = `REC-${short_id}-${Date.now()}`;
-
         const wompiPublicKey = 'pub_test_lwNtQO2xAWUmv47mSWD2QAiYbE2R7gDP';
 
-        // El usuario paga el monto TOTAL (currentDepositAmount), pero a su cuenta interna le sumas el neto.
         var checkout = new WidgetCheckout({
             currency: 'COP',
-            amountInCents: currentDepositAmount * 100, // Wompi lee en centavos
+            amountInCents: currentDepositAmount * 100, 
             reference: reference,
             publicKey: wompiPublicKey,
             redirectUrl: window.location.origin, 
@@ -228,8 +234,7 @@
         checkout.open(function (result) {
             var transaction = result.transaction;
             if (transaction.status === 'APPROVED') {
-                alert("✅ ¡Pago aprobado!\n\nTu saldo con el aporte descontado se actualizará automáticamente en unos segundos.");
-                // Opcional: forzar recarga del balance
+                alert("✅ ¡Pago aprobado!\n\nTu saldo se actualizará automáticamente.");
             } else {
                 alert("❌ El pago no se completó. Estado: " + transaction.status);
             }
