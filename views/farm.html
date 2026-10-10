@@ -1353,18 +1353,24 @@ if (typeof window.farmApp === 'undefined') {
                                     </button>
                                 `;
                             } else {
-                                crowHtml = `
-                                    <div class="relative flex items-center justify-center cursor-pointer" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
-                                        <div class="absolute -right-2 top-4 flex items-center gap-1.5 z-40">
-                                            <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md animate-bounce" />
-                                            <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse">
-                                                <span>⏱️</span>
-                                                <span id="crow-timer-${plot.id}">15:00</span>
+                                    crowHtml = `
+                                        </div> <!-- Cierra el contenedor de la esquina superior derecha -->
+                                        <!-- Contenedor central absoluto -->
+                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+                                            <!-- mt-12 (abajo) y -ml-8 (izquierda). pointer-events-auto permite hacer click -->
+                                            <div class="pointer-events-auto flex items-center gap-2 cursor-pointer mt-12 -ml-8" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
+                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md animate-bounce" />
+                                                <!-- Caja del tiempo ahora visible de forma nativa en el flex -->
+                                                <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse">
+                                                    <span>⏱️</span>
+                                                    <span id="crow-timer-${plot.id}">15:00</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                `;
-                            }
+                                        <!-- Div oculto para absorber la etiqueta original de cierre -->
+                                        <div class="hidden">
+                                    `;
+                                }
                         } else {
                             plot.crowArrivedAt = 0;
                         }
@@ -1595,15 +1601,21 @@ if (typeof window.farmApp === 'undefined') {
                                     `;
                                 } else {
                                     crowHtml = `
-                                        <div class="relative flex items-center justify-center cursor-pointer" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
-                                            <div class="absolute -right-2 top-4 flex items-center gap-1.5 z-40">
+                                        </div> <!-- Cierra el contenedor de la esquina superior derecha -->
+                                        <!-- Contenedor central absoluto -->
+                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+                                            <!-- mt-12 (abajo) y -ml-8 (izquierda). pointer-events-auto permite hacer click -->
+                                            <div class="pointer-events-auto flex items-center gap-2 cursor-pointer mt-12 -ml-8" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
                                                 <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md animate-bounce" />
+                                                <!-- Caja del tiempo ahora visible de forma nativa en el flex -->
                                                 <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse">
                                                     <span>⏱️</span>
                                                     <span id="crow-timer-${plot.id}">15:00</span>
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- Div oculto para absorber la etiqueta original de cierre -->
+                                        <div class="hidden">
                                     `;
                                 }
                             }
