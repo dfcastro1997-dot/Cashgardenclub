@@ -1133,28 +1133,56 @@ def admin_add_items():
     data = request.json
     if data.get('admin_token') != ADMIN_SECRET: return jsonify({"error": "No autorizado"}), 403
     
-    short_id = data.get('short_id')
     conn = get_db_connection()
     cur = conn.cursor()
+
+    short_id = data.get('short_id')
+    if not short_id:
+        cur.close(); conn.close()
+        return jsonify({"error": "ID requerido"}), 400
+
+    # 1. ACELERADOR DE TIEMPO INDIVIDUAL (Afecta solo al jugador especificado)
+    if data.get('time_skip'):
+        skip_ms = int(data['time_skip']) * 3600000
+        cur.execute("SELECT id, game_state FROM users WHERE short_id = %s FOR UPDATE", (short_id,))
+        u = cur.fetchone()
+        if not u:
+            cur.close(); conn.close()
+            return jsonify({"error": "Usuario no encontrado"}), 404
+            
+        if u['game_state']:
+            try:
+                st = json.loads(u['game_state'])
+                st['autoWaterEndTime'] = max(0, st.get('autoWaterEndTime', 0) - skip_ms)
+                st['autoHarvestEndTime'] = max(0, st.get('autoHarvestEndTime', 0) - skip_ms)
+                for p in st.get('plots', []):
+                    if p.get('plantedAt'): p['plantedAt'] -= skip_ms
+                    if p.get('harvestAt'): p['harvestAt'] -= skip_ms
+                    if p.get('scarecrowEndTime'): p['scarecrowEndTime'] = max(0, p['scarecrowEndTime'] - skip_ms)
+                    if p.get('crowLeavingAt'): p['crowLeavingAt'] = max(0, p['crowLeavingAt'] - skip_ms)
+                    if p.get('tournamentEndTime'): p['tournamentEndTime'] = max(0, p['tournamentEndTime'] - skip_ms)
+                cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), u['id']))
+                conn.commit()
+            except Exception: pass
+            
+        cur.close(); conn.close()
+        return jsonify({"message": f"Se ha adelantado el tiempo {data['time_skip']} horas en la granja del jugador #{short_id}."})
+
+    # 2. INYECCIÓN NORMAL DE RECURSOS AL USUARIO
     cur.execute("SELECT id, balance, game_state FROM users WHERE short_id = %s FOR UPDATE", (short_id,))
     user = cur.fetchone()
-    
     if not user:
         cur.close(); conn.close()
         return jsonify({"error": "Usuario no encontrado"}), 404
         
     state = json.loads(user['game_state'] or '{}')
     
-    # Inyectar Semillas
-    if data.get('seeds'):
-        state['seedsBalance'] = state.get('seedsBalance', 0) + int(data['seeds'])
-        
-    # Inyectar COP
-    if data.get('cop'):
-        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (float(data['cop']), user['id']))
-        
-    # Inyectar Items/Plantas al Inventario
-    if data.get('item_id') and data.get('item_qty'):
+    # Inyectar Semillas y COP
+    if data.get('seeds'): state['seedsBalance'] = state.get('seedsBalance', 0) + int(data['seeds'])
+    if data.get('cop'): cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (float(data['cop']), user['id']))
+    
+    # Inyectar Items/Macetas/Agua
+    if data.get('item_id') and data.get('item_qty') and not data.get('is_arsenal'):
         item_id = data['item_id']
         qty = int(data['item_qty'])
         if 'inventory' not in state: state['inventory'] = {}
@@ -1163,11 +1191,43 @@ def admin_add_items():
                 'qty': 0, 
                 'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
                 'name': item_id.replace('_', ' ').title(),
-                'image': 'https://i.ibb.co/TDK1WJMK/Logo.png' # Icono default (se sobreescribe en UI)
+                'image': 'https://i.ibb.co/TDK1WJMK/Logo.png'
             }
         state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
 
-    # NUEVO: Procesar Desbloqueos de Terrenos y Pases VIP
+    # Inyectar Plantas Vivas directamente al Arsenal
+    if data.get('is_arsenal') and data.get('item_id'):
+        if 'arsenal' not in state: state['arsenal'] = []
+        pid = data['item_id']
+        patk, pdef, php = 40, 20, 100
+        if pid == 'flower_wheat': patk, pdef, php = 34, 15, 100
+        elif pid == 'flower_cactus': patk, pdef, php = 34, 35, 150
+        elif pid == 'flower_bamboo': patk, pdef, php = 50, 20, 100
+        elif pid == 'flower_crystal': patk, pdef, php = 100, 8, 60
+        elif pid == 'flower_moon': patk, pdef, php = 60, 25, 200
+        
+        names = {
+            'flower_wheat': 'Trigo Rápido', 'flower_bamboo': 'Bambú Tryhard', 'flower_cactus': 'Cactus de Cuarzo',
+            'flower_small': 'Flor Pequeña', 'flower_crystal': 'Helecho Cristal', 'flower_big': 'Flor Grande',
+            'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón'
+        }
+        icons = {
+            'flower_wheat': 'https://i.ibb.co/szXSZjs/Frame-753.png', 'flower_bamboo': 'https://i.ibb.co/S4G2c9qy/Frame-768.png', 
+            'flower_cactus': 'https://i.ibb.co/5gvFssT4/Frame-758.png', 'flower_small': 'https://i.ibb.co/mrJyDqV8/Frame-743.png', 
+            'flower_crystal': 'https://i.ibb.co/5WcdFhL9/Frame-764.png', 'flower_big': 'https://i.ibb.co/qF9G5qMw/Frame-744.png', 
+            'flower_moon': 'https://i.ibb.co/gbDzsCGh/Frame-765.png', 'flower_solar': 'https://i.ibb.co/JW8C2psK/Frame-766.png', 
+            'flower_neon': 'https://i.ibb.co/mF6QtPRV/Frame-767.png'
+        }
+        
+        state['arsenal'].append({
+            'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
+            'plantId': pid,
+            'name': names.get(pid, pid.replace('_', ' ').title()),
+            'icon': icons.get(pid, 'https://i.ibb.co/TDK1WJMK/Logo.png'),
+            'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
+        })
+
+    # Desbloqueos VIP y Parcelas
     unlock_vip = data.get('unlock_vip')
     if unlock_vip:
         now = int(time.time() * 1000)
@@ -1176,13 +1236,11 @@ def admin_add_items():
             if 'plots' in state and len(state['plots']) > plot_idx:
                 if state['plots'][plot_idx]['status'] in ['locked', 'arena_locked']:
                     state['plots'][plot_idx]['status'] = 'empty'
-        
         elif unlock_vip.startswith('vip_'):
-            parts = unlock_vip.split('_') # Ej: vip_water_24, vip_combo_72
-            v_type = parts[1] # water, harvest, combo
+            parts = unlock_vip.split('_')
+            v_type = parts[1]
             v_hours = int(parts[2])
             ms_to_add = v_hours * 3600000
-            
             if v_type in ['water', 'combo']:
                 state['autoWaterEndTime'] = max(state.get('autoWaterEndTime', 0), now) + ms_to_add
             if v_type in ['harvest', 'combo']:
@@ -1192,10 +1250,7 @@ def admin_add_items():
     conn.commit()
     cur.close(); conn.close()
     
-    return jsonify({"message": "Recursos y permisos inyectados correctamente al usuario."})
-
-
-
+    return jsonify({"message": "Recursos inyectados correctamente al usuario."})
 
 
 
