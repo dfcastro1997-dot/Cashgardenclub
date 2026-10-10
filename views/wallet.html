@@ -324,6 +324,7 @@
             });
             const data = await res.json();
             
+            
             if (res.ok) {
                 if(window.farmApp) {
                     window.farmApp.state.balance = data.new_balance;
