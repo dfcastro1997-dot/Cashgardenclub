@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <!-- APLICACIÓN ADMIN PRINCIPAL (Oculta hasta el login) -->
+    <!-- APLICACIÓN ADMIN PRINCIPAL -->
     <div id="admin-main-app" class="hidden flex-col h-full w-full">
         
         <!-- HEADER ADMIN -->
@@ -191,7 +191,7 @@
                                         <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
                                         <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
                                         <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
-                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Acción</th>
+                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Auditar</th>
                                     </tr>
                                 </thead>
                                 <tbody id="dir-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
@@ -398,12 +398,30 @@
             'tool_pot_small': '🪴', 'tool_pot_big': '🏺', 'tool_water': '🚿', 'tool_scarecrow': '🦉', 'tool_duel_ticket': '🎟️'
         };
 
-        // AUTENTICACIÓN
+        // BYPASS LOGIN SI YA SE INICIÓ SESIÓN RECIENTEMENTE
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                document.getElementById('admin-login-screen').classList.add('hidden');
+                document.getElementById('admin-main-app').classList.remove('hidden');
+                document.getElementById('admin-main-app').classList.add('flex');
+                
+                if (typeof Chart === 'undefined') {
+                    let script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                    script.onload = () => { fetchData(); };
+                    document.head.appendChild(script);
+                } else {
+                    fetchData();
+                }
+            }
+        });
+
         function verifyAdmin() {
             const u = document.getElementById('admin-user').value;
             const p = document.getElementById('admin-pass').value;
             
             if (u === 'DamianCastro' && p === '12345') {
+                sessionStorage.setItem('admin_logged_in', 'true');
                 document.getElementById('admin-login-screen').classList.add('opacity-0');
                 setTimeout(() => {
                     document.getElementById('admin-login-screen').classList.add('hidden');
@@ -425,10 +443,10 @@
         }
 
         function exitAdmin() {
-            window.location.replace('index.html');
+            sessionStorage.removeItem('admin_logged_in');
+            window.location.replace('/');
         }
 
-        // CONTROL DE PESTAÑAS
         function openAdminTab(tab) {
             ['dashboard', 'tops', 'directorio', 'inyector', 'inspector'].forEach(t => {
                 const btn = document.getElementById(`nav-${t}`);
@@ -470,7 +488,6 @@
             document.getElementById('admin-scroll-area').scrollTop = 0;
         }
 
-        // CARGA DE DATOS GENERALES
         async function fetchData() {
             try {
                 const res = await fetch('/api/admin/users', {
@@ -502,7 +519,6 @@
             }
         }
 
-        // ================= DASHBOARD & TOPS =================
         function renderDashboard() {
             document.getElementById('metric-users').innerText = allUsersCache.length;
             const avgS = allUsersCache.length > 0 ? allUsersCache.reduce((s, u) => s + (u.seeds||0), 0) / allUsersCache.length : 0;
@@ -593,7 +609,6 @@
             buildList(document.getElementById('top-military'), mil, 'military_wins', '🏆 ', ' Vic', false);
         }
 
-        // ================= DIRECTORIO =================
         function renderDirectory(arr) {
             const list = document.getElementById('dir-list');
             if(!list) return;
@@ -633,7 +648,6 @@
             openAdminTab('inspector');
         }
 
-        // ================= AUTOCOMPLETADO =================
         function handleAutocomplete(prefix, query) {
             query = query.toLowerCase();
             const box = document.getElementById(`${prefix}-suggestions`);
@@ -661,6 +675,7 @@
             const searchInput = document.getElementById(`${prefix}-search`);
             if(searchInput) {
                 searchInput.value = '';
+                searchInput.classList.add('hidden');
             }
             
             document.getElementById(`${prefix}-target-id`).value = short_id;
@@ -684,6 +699,7 @@
             const searchInput = document.getElementById(`${prefix}-search`);
             if(searchInput) {
                 searchInput.value = '';
+                searchInput.classList.remove('hidden');
             }
             const ui = document.getElementById(`${prefix}-selected-ui`);
             if (ui) ui.classList.add('hidden');
@@ -696,7 +712,6 @@
             }
         }
 
-        // ================= INYECTOR (FACTURA & REGALOS) =================
         function openCartModal(type) {
             const body = document.getElementById('cart-modal-body');
             const btn = document.getElementById('btn-cart-add');
@@ -707,13 +722,13 @@
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad de Semillas 🌱</label>
                     <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-green-600 px-4 py-3.5 rounded-xl font-black outline-none focus:border-green-500 text-lg text-center shadow-inner">
                 `;
-                btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas 🌱', true);
+                btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas');
             } else if (type === 'cop') {
                 content = `
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad COP 💵</label>
                     <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-cg_gold px-4 py-3.5 rounded-xl font-black outline-none focus:border-yellow-500 text-lg text-center shadow-inner">
                 `;
-                btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP 💵', true);
+                btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP');
             } else if (type === 'item') {
                 content = `
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ítem a enviar</label>
@@ -733,17 +748,19 @@
                         <option value="tool_scarecrow">🦉 Espantapájaros</option>
                         <option value="tool_duel_ticket">🎟️ Ticket de Duelo</option>
                     </select>
-                    <input type="number" id="modal-qty" placeholder="Cantidad" value="1" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl font-black outline-none focus:border-cg_blue text-center shadow-inner">
+                    <input type="number" id="modal-qty" placeholder="Cantidad" value="1" min="1" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl font-black outline-none focus:border-cg_blue text-center shadow-inner">
                 `;
                 btn.onclick = () => {
                     const sel = document.getElementById('modal-item');
-                    addToCart('item', { id: sel.value, qty: document.getElementById('modal-qty').value }, `📦 ${sel.options[sel.selectedIndex].text} (x${document.getElementById('modal-qty').value})`);
+                    const qty = document.getElementById('modal-qty').value;
+                    const cleanText = sel.options[sel.selectedIndex].text.split(' ').slice(1).join(' ');
+                    addToCart('item', { id: sel.value, qty: qty }, `${cleanText} (x${qty})`);
                 };
             } else if (type === 'arsenal') {
                 content = `
                     <div class="bg-red-50 border border-red-100 p-3 rounded-lg text-[10px] text-red-600 font-bold mb-3 shadow-sm">La planta se creará con salud al 100% lista para pelear.</div>
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Especie Militar</label>
-                    <select id="modal-arsenal" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none focus:border-red-400 shadow-sm cursor-pointer">
+                    <select id="modal-arsenal" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none focus:border-red-400 shadow-sm cursor-pointer mb-3">
                         <option value="flower_wheat">🌾 Trigo Rápido</option>
                         <option value="flower_bamboo">🎋 Bambú Tryhard</option>
                         <option value="flower_cactus">🌵 Cactus de Cuarzo</option>
@@ -752,10 +769,13 @@
                         <option value="flower_big">🌺 Flor Grande</option>
                         <option value="flower_moon">🌙 Lirio Lunar</option>
                     </select>
+                    <input type="number" id="modal-qty" placeholder="Cantidad" value="1" min="1" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl font-black outline-none focus:border-red-400 text-center shadow-inner">
                 `;
                 btn.onclick = () => {
                     const sel = document.getElementById('modal-arsenal');
-                    addToCart('arsenal', sel.value, `⚔️ Militar: ${sel.options[sel.selectedIndex].text}`);
+                    const qty = document.getElementById('modal-qty').value;
+                    const cleanText = sel.options[sel.selectedIndex].text.split(' ').slice(1).join(' ');
+                    addToCart('arsenal', { id: sel.value, qty: qty }, `Planta Arsenal: ${cleanText} (x${qty})`);
                 };
             } else if (type === 'vip') {
                 content = `
@@ -776,7 +796,8 @@
                 `;
                 btn.onclick = () => {
                     const sel = document.getElementById('modal-vip');
-                    addToCart('vip', sel.value, `⭐ VIP: ${sel.options[sel.selectedIndex].text}`);
+                    const cleanText = sel.options[sel.selectedIndex].text.split(' ').slice(1).join(' ');
+                    addToCart('vip', sel.value, `VIP: ${cleanText}`);
                 };
             }
 
@@ -790,8 +811,8 @@
             document.getElementById('admin-cart-modal').classList.remove('flex');
         }
 
-        function addToCart(type, rawData, label, isNumber = false) {
-            if (!rawData || (isNumber && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
+        function addToCart(type, rawData, label) {
+            if (!rawData || (typeof rawData === 'string' && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
                 showAdminAlert("Error", "Cantidad inválida."); return;
             }
             invoiceCart.push({ type, rawData, label });
@@ -873,7 +894,7 @@
             }
         }
 
-        // ================= MÁQUINA DEL TIEMPO (GLOBAL) =================
+        // ================= MÁQUINA DEL TIEMPO =================
         async function globalTimeSkip(hours) {
             try {
                 const res = await fetch('/api/admin/add_items', {

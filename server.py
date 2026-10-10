@@ -1218,7 +1218,9 @@ def admin_add_items():
             
         elif t == 'arsenal':
             if 'arsenal' not in state: state['arsenal'] = []
-            pid = raw
+            pid = raw['id']
+            qty = int(raw['qty'])
+            
             patk, pdef, php = 40, 20, 100
             if pid == 'flower_wheat': patk, pdef, php = 34, 15, 100
             elif pid == 'flower_cactus': patk, pdef, php = 34, 35, 150
@@ -1239,12 +1241,15 @@ def admin_add_items():
                 'flower_neon': 'https://i.ibb.co/mF6QtPRV/Frame-767.png'
             }
             import uuid
-            state['arsenal'].append({
-                'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
-                'plantId': pid, 'name': names.get(pid, pid.replace('_', ' ').title()), 'icon': img_icons.get(pid, 'https://i.ibb.co/TDK1WJMK/Logo.png'),
-                'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
-            })
-            gift_items.append({"icon": icons.get(pid, '⚔️'), "text": f"Planta (Arsenal): {names.get(pid, pid)}"})
+            
+            for _ in range(qty):
+                state['arsenal'].append({
+                    'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
+                    'plantId': pid, 'name': names.get(pid, pid.replace('_', ' ').title()), 'icon': img_icons.get(pid, 'https://i.ibb.co/TDK1WJMK/Logo.png'),
+                    'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
+                })
+                
+            gift_items.append({"icon": icons.get(pid, '⚔️'), "text": f"Planta Arsenal: {names.get(pid, pid)} (x{qty})"})
 
         elif t == 'vip':
             unlock_vip = raw

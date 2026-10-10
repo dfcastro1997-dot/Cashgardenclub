@@ -1018,12 +1018,12 @@
             const p = document.getElementById('admin-pass').value;
             
             if (u === 'DamianCastro' && p === '12345') {
+                sessionStorage.setItem('admin_logged_in', 'true'); // Guarda la sesión admin
                 document.getElementById('admin-login-modal').classList.replace('flex', 'hidden');
                 document.getElementById('login-screen').classList.add('opacity-0');
                 
                 setTimeout(() => {
-                    // Redirige directamente a la página independiente del Administrador
-                    window.location.href = '/admin.html';
+                    window.location.href = 'admin.html';
                 }, 300);
             } else {
                 alert('Acceso denegado. Credenciales incorrectas.');

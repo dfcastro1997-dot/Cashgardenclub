@@ -435,6 +435,7 @@
     <span class="text-xs font-black uppercase tracking-widest hidden group-hover:inline-block px-2">Control Admin</span>
 </button>
 
+
 <!-- MANUAL DEL INVERNADERO -->
 <div id="instructions-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeModals()"></div>
@@ -1145,14 +1146,6 @@ if (typeof window.farmApp === 'undefined') {
             const token = sessionStorage.getItem('session_token'); 
             
             if (username && token) { 
-                if (username === 'DamianCastro') {
-                    const adminBtn = document.getElementById('admin-dev-btn');
-                    if (adminBtn) {
-                        adminBtn.classList.remove('hidden');
-                        adminBtn.classList.add('hidden', 'md:flex');
-                    }
-                }
-
                 fetch(`/api/sync/${encodeURIComponent(username)}?token=${encodeURIComponent(token)}`)
                     .then(res => {
                         if (res.status === 401) {
@@ -1161,10 +1154,7 @@ if (typeof window.farmApp === 'undefined') {
                             }
                             return null;
                         }
-                        
-                        // NUEVO: Si el servidor está reiniciándose (Da error 502/503), forzamos el error.
                         if (!res.ok) throw new Error("Servidor no disponible");
-                        
                         return res.json();
                     })
                     .then(data => {
@@ -1203,11 +1193,8 @@ if (typeof window.farmApp === 'undefined') {
                                     }
                                     
                                     this.state.lastTick = s.lastTick ?? Date.now();
-                                    
-                                    // EL JUGADOR CARGÓ CON ÉXITO SU DATA - ABRIR CANDADO
                                     this.state.isSynced = true;
 
-                                    // ¡AQUÍ ATRAPAMOS EL REGALO AL ENTRAR AL JUEGO!
                                     if (s.pending_gift) {
                                         this.state.pending_gift = s.pending_gift;
                                         const gModal = document.getElementById('gift-modal');
@@ -1229,21 +1216,18 @@ if (typeof window.farmApp === 'undefined') {
                                     console.error("Error parseando game_state", e); 
                                 }
                             } else {
-                                // USUARIO NUEVO SIN PARTIDA - ABRIR CANDADO PARA QUE GUARDE LA PRIMERA VEZ
                                 this.state.isSynced = true;
                                 this.updateUI();
                             }
                         }
                     })
                     .catch(e => { 
-                        console.error("Error de sincronización (Servidor actualizándose):", e); 
-                        // AL CAER AQUÍ, EL CANDADO SIGUE EN FALSE. NUNCA GUARDARÁ LA DATA POR DEFECTO.
                         if (window.showSessionExpiredModal) {
                             window.showSessionExpiredModal("El servidor está recibiendo una actualización de mantenimiento. Por protección, el juego se ha pausado temporalmente. Por favor, recarga la página en 30 segundos.");
                         }
                     }); 
-                }
-            },
+            }
+        },
 
         updateUI() {
             const localBalance = document.getElementById('global-seeds-display');
