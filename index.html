@@ -284,6 +284,44 @@
         </nav>
     </div>
 
+
+
+
+
+    <!-- MODAL DE REGALO SORPRESA -->
+    <div id="gift-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-md"></div>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in text-center p-8">
+            <div class="absolute -top-16 -right-16 w-32 h-32 bg-yellow-100 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-blue-100 rounded-full blur-2xl"></div>
+            
+            <div class="w-24 h-24 bg-gradient-to-br from-cg_gold to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(237,153,37,0.4)] border-4 border-white relative z-10 animate-bounce">
+                <span class="text-5xl drop-shadow-md">🎁</span>
+            </div>
+            
+            <h3 class="text-2xl font-black text-cg_navy mb-2 relative z-10 tracking-tight">¡Un obsequio para ti!</h3>
+            <p id="gift-msg-text" class="text-sm text-gray-600 mb-6 font-medium italic relative z-10 leading-relaxed px-2">"Mensaje del admin"</p>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 relative z-10 shadow-inner text-left max-h-48 overflow-y-auto hide-scrollbar">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center border-b border-gray-200 pb-2">Contenido de la entrega</p>
+                <ul id="gift-items-list" class="space-y-2">
+                    <!-- Items -->
+                </ul>
+            </div>
+            
+            <button onclick="claimGift()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm relative z-10 active:scale-95">
+                Reclamar Recompensas
+            </button>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
     <!-- MODAL DE SEGURIDAD / SESIÓN MÚLTIPLE -->
     <div id="session-expired-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
@@ -634,6 +672,22 @@
                     if (data.user.game_state) {
                         try {
                             const state = JSON.parse(data.user.game_state);
+
+                            // ---- AÑADE ESTO (DETECTOR DE REGALOS) ----
+                            if (state.pending_gift) {
+                                document.getElementById('gift-msg-text').innerText = `"${state.pending_gift.message}"`;
+                                const list = document.getElementById('gift-items-list');
+                                list.innerHTML = state.pending_gift.items.map(item => `
+                                    <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-cg_navy">
+                                        <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
+                                        <span>${item.text}</span>
+                                    </li>
+                                `).join('');
+                                document.getElementById('gift-modal').classList.remove('hidden');
+                                document.getElementById('gift-modal').classList.add('flex');
+                            }
+                            // ------------------------------------------
+
                             const seedsEl = document.getElementById('global-seeds-display');
                             if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
                             
@@ -743,6 +797,25 @@
             window.location.replace(window.location.pathname); 
         }
         
+
+
+        window.claimGift = function() {
+            document.getElementById('gift-modal').classList.add('hidden');
+            document.getElementById('gift-modal').classList.remove('flex');
+            if (window.farmApp && window.farmApp.state) {
+                delete window.farmApp.state.pending_gift;
+                window.farmApp.saveState();
+                window.farmApp.updateUI();
+            }
+        };
+
+
+
+
+
+
+
+
         const viewCache = {};
 
         async function loadView(viewName, clickedBtn = null) {

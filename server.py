@@ -1140,7 +1140,7 @@ def admin_add_items():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # 1. ACELERADOR DE TIEMPO GLOBAL (Afecta a todos los jugadores)
+    # 1. ACELERADOR DE TIEMPO GLOBAL
     if data.get('global_time_skip'):
         skip_ms = int(data['global_time_skip']) * 3600000
         cur.execute("SELECT id, game_state FROM users")
@@ -1163,11 +1163,11 @@ def admin_add_items():
         cur.close(); conn.close()
         return jsonify({"message": f"Se ha adelantado el tiempo {data['global_time_skip']} horas en TODAS las granjas."})
 
-    # 2. INYECCIÓN NORMAL DE RECURSOS AL USUARIO
+    # 2. INYECCIÓN POR LOTES (CARRITO) O REGALO
     short_id = data.get('short_id')
     if not short_id:
         cur.close(); conn.close()
-        return jsonify({"error": "ID requerido para inyección individual"}), 400
+        return jsonify({"error": "ID requerido para inyección"}), 400
 
     cur.execute("SELECT id, balance, game_state FROM users WHERE short_id = %s FOR UPDATE", (short_id,))
     user = cur.fetchone()
@@ -1176,79 +1176,111 @@ def admin_add_items():
         return jsonify({"error": "Usuario no encontrado"}), 404
         
     state = json.loads(user['game_state'] or '{}')
+    now = int(time.time() * 1000)
     
-    if data.get('seeds'): state['seedsBalance'] = state.get('seedsBalance', 0) + int(data['seeds'])
-    if data.get('cop'): cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (float(data['cop']), user['id']))
+    cart = data.get('cart', [])
+    gift_msg = data.get('gift_msg', '').strip()
+    gift_items = []
     
-    if data.get('item_id') and data.get('item_qty') and not data.get('is_arsenal'):
-        item_id = data['item_id']
-        qty = int(data['item_qty'])
-        if 'inventory' not in state: state['inventory'] = {}
-        if item_id not in state['inventory']:
-            state['inventory'][item_id] = {
-                'qty': 0, 
-                'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
-                'name': item_id.replace('_', ' ').title(),
-                'image': 'https://i.ibb.co/TDK1WJMK/Logo.png'
+    icons = {
+        'flower_wheat': '🌾', 'flower_bamboo': '🎋', 'flower_cactus': '🌵', 'flower_small': '🌸',
+        'flower_crystal': '💎', 'flower_big': '🌺', 'flower_moon': '🌙', 'flower_solar': '☀️', 'flower_neon': '🟣',
+        'tool_pot_small': '🪴', 'tool_pot_big': '🏺', 'tool_water': '🚿', 'tool_scarecrow': '🦉', 'tool_duel_ticket': '🎟️'
+    }
+    
+    # Procesar todos los ítems del carrito
+    for item in cart:
+        t = item.get('type')
+        raw = item.get('rawData')
+        lbl = item.get('label', '')
+        
+        if t == 'seeds':
+            qty = int(raw)
+            state['seedsBalance'] = state.get('seedsBalance', 0) + qty
+            gift_items.append({"icon": "🌱", "text": f"+{qty} Semillas"})
+            
+        elif t == 'cop':
+            qty = float(raw)
+            cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (qty, user['id']))
+            gift_items.append({"icon": "💵", "text": f"+${int(qty)} COP"})
+            
+        elif t == 'item':
+            item_id = raw['id']
+            qty = int(raw['qty'])
+            if 'inventory' not in state: state['inventory'] = {}
+            if item_id not in state['inventory']:
+                state['inventory'][item_id] = {
+                    'qty': 0, 'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
+                    'name': item_id.replace('_', ' ').title(), 'image': 'https://i.ibb.co/TDK1WJMK/Logo.png'
+                }
+            state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
+            gift_items.append({"icon": icons.get(item_id, '📦'), "text": lbl})
+            
+        elif t == 'arsenal':
+            if 'arsenal' not in state: state['arsenal'] = []
+            pid = raw
+            patk, pdef, php = 40, 20, 100
+            if pid == 'flower_wheat': patk, pdef, php = 34, 15, 100
+            elif pid == 'flower_cactus': patk, pdef, php = 34, 35, 150
+            elif pid == 'flower_bamboo': patk, pdef, php = 50, 20, 100
+            elif pid == 'flower_crystal': patk, pdef, php = 100, 8, 60
+            elif pid == 'flower_moon': patk, pdef, php = 60, 25, 200
+            
+            names = {
+                'flower_wheat': 'Trigo Rápido', 'flower_bamboo': 'Bambú Tryhard', 'flower_cactus': 'Cactus de Cuarzo',
+                'flower_small': 'Flor Pequeña', 'flower_crystal': 'Helecho Cristal', 'flower_big': 'Flor Grande',
+                'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón'
             }
-        state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
+            img_icons = {
+                'flower_wheat': 'https://i.ibb.co/szXSZjs/Frame-753.png', 'flower_bamboo': 'https://i.ibb.co/S4G2c9qy/Frame-768.png', 
+                'flower_cactus': 'https://i.ibb.co/5gvFssT4/Frame-758.png', 'flower_small': 'https://i.ibb.co/mrJyDqV8/Frame-743.png', 
+                'flower_crystal': 'https://i.ibb.co/5WcdFhL9/Frame-764.png', 'flower_big': 'https://i.ibb.co/qF9G5qMw/Frame-744.png', 
+                'flower_moon': 'https://i.ibb.co/gbDzsCGh/Frame-765.png', 'flower_solar': 'https://i.ibb.co/JW8C2psK/Frame-766.png', 
+                'flower_neon': 'https://i.ibb.co/mF6QtPRV/Frame-767.png'
+            }
+            import uuid
+            state['arsenal'].append({
+                'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
+                'plantId': pid, 'name': names.get(pid, pid.replace('_', ' ').title()), 'icon': img_icons.get(pid, 'https://i.ibb.co/TDK1WJMK/Logo.png'),
+                'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
+            })
+            gift_items.append({"icon": icons.get(pid, '⚔️'), "text": f"Planta (Arsenal): {names.get(pid, pid)}"})
 
-    if data.get('is_arsenal') and data.get('item_id'):
-        if 'arsenal' not in state: state['arsenal'] = []
-        pid = data['item_id']
-        patk, pdef, php = 40, 20, 100
-        if pid == 'flower_wheat': patk, pdef, php = 34, 15, 100
-        elif pid == 'flower_cactus': patk, pdef, php = 34, 35, 150
-        elif pid == 'flower_bamboo': patk, pdef, php = 50, 20, 100
-        elif pid == 'flower_crystal': patk, pdef, php = 100, 8, 60
-        elif pid == 'flower_moon': patk, pdef, php = 60, 25, 200
-        
-        names = {
-            'flower_wheat': 'Trigo Rápido', 'flower_bamboo': 'Bambú Tryhard', 'flower_cactus': 'Cactus de Cuarzo',
-            'flower_small': 'Flor Pequeña', 'flower_crystal': 'Helecho Cristal', 'flower_big': 'Flor Grande',
-            'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón'
-        }
-        icons = {
-            'flower_wheat': 'https://i.ibb.co/szXSZjs/Frame-753.png', 'flower_bamboo': 'https://i.ibb.co/S4G2c9qy/Frame-768.png', 
-            'flower_cactus': 'https://i.ibb.co/5gvFssT4/Frame-758.png', 'flower_small': 'https://i.ibb.co/mrJyDqV8/Frame-743.png', 
-            'flower_crystal': 'https://i.ibb.co/5WcdFhL9/Frame-764.png', 'flower_big': 'https://i.ibb.co/qF9G5qMw/Frame-744.png', 
-            'flower_moon': 'https://i.ibb.co/gbDzsCGh/Frame-765.png', 'flower_solar': 'https://i.ibb.co/JW8C2psK/Frame-766.png', 
-            'flower_neon': 'https://i.ibb.co/mF6QtPRV/Frame-767.png'
-        }
-        
-        import uuid
-        state['arsenal'].append({
-            'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
-            'plantId': pid,
-            'name': names.get(pid, pid.replace('_', ' ').title()),
-            'icon': icons.get(pid, 'https://i.ibb.co/TDK1WJMK/Logo.png'),
-            'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
-        })
+        elif t == 'vip':
+            unlock_vip = raw
+            if unlock_vip.startswith('plot_'):
+                plot_idx = int(unlock_vip.split('_')[1])
+                if 'plots' in state and len(state['plots']) > plot_idx:
+                    if state['plots'][plot_idx]['status'] in ['locked', 'arena_locked']:
+                        state['plots'][plot_idx]['status'] = 'empty'
+            elif unlock_vip.startswith('vip_'):
+                parts = unlock_vip.split('_')
+                ms_to_add = int(parts[2]) * 3600000
+                if parts[1] in ['water', 'combo']: state['autoWaterEndTime'] = max(state.get('autoWaterEndTime', 0), now) + ms_to_add
+                if parts[1] in ['harvest', 'combo']: state['autoHarvestEndTime'] = max(state.get('autoHarvestEndTime', 0), now) + ms_to_add
+            gift_items.append({"icon": "⭐", "text": lbl})
 
-    unlock_vip = data.get('unlock_vip')
-    if unlock_vip:
-        now = int(time.time() * 1000)
-        if unlock_vip.startswith('plot_'):
-            plot_idx = int(unlock_vip.split('_')[1])
-            if 'plots' in state and len(state['plots']) > plot_idx:
-                if state['plots'][plot_idx]['status'] in ['locked', 'arena_locked']:
-                    state['plots'][plot_idx]['status'] = 'empty'
-        elif unlock_vip.startswith('vip_'):
-            parts = unlock_vip.split('_')
-            v_type = parts[1]
-            v_hours = int(parts[2])
-            ms_to_add = v_hours * 3600000
-            if v_type in ['water', 'combo']:
-                state['autoWaterEndTime'] = max(state.get('autoWaterEndTime', 0), now) + ms_to_add
-            if v_type in ['harvest', 'combo']:
-                state['autoHarvestEndTime'] = max(state.get('autoHarvestEndTime', 0), now) + ms_to_add
+    # ACELERADOR INDIVIDUAL
+    if data.get('time_skip'):
+        skip_ms = int(data['time_skip']) * 3600000
+        state['autoWaterEndTime'] = max(0, state.get('autoWaterEndTime', 0) - skip_ms)
+        state['autoHarvestEndTime'] = max(0, state.get('autoHarvestEndTime', 0) - skip_ms)
+        for p in state.get('plots', []):
+            if p.get('plantedAt'): p['plantedAt'] -= skip_ms
+            if p.get('harvestAt'): p['harvestAt'] -= skip_ms
+            if p.get('scarecrowEndTime'): p['scarecrowEndTime'] = max(0, p['scarecrowEndTime'] - skip_ms)
+            if p.get('crowLeavingAt'): p['crowLeavingAt'] = max(0, p['crowLeavingAt'] - skip_ms)
+            if p.get('tournamentEndTime'): p['tournamentEndTime'] = max(0, p['tournamentEndTime'] - skip_ms)
+
+    # GUARDAR EL MENSAJE SI FUE MARCADO COMO REGALO
+    if gift_msg and len(gift_items) > 0:
+        state['pending_gift'] = { "message": gift_msg, "items": gift_items }
 
     cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
     conn.commit()
     cur.close(); conn.close()
     
-    return jsonify({"message": "Recursos inyectados correctamente al usuario."})
-
+    return jsonify({"message": "Inyección / Regalo procesado correctamente."})
 
 
 @app.route('/api/pvp/challenge', methods=['POST'])
