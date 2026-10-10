@@ -845,16 +845,15 @@ if (typeof window.farmApp === 'undefined') {
         getSeasonData(timestamp_ms) {
             const d = new Date(timestamp_ms);
             const day = d.getDate();
-            if (day >= 1 && day <= 9) return { name: 'Invierno', icon: '❄️', mult: 0.5, color: 'text-blue-600', bg: 'bg-blue-100', endDay: 9 };
-            else if (day >= 10 && day <= 19) return { name: 'Otoño', icon: '🍂', mult: 1.5, color: 'text-orange-600', bg: 'bg-orange-100', endDay: 19 };
-            else if (day >= 20 && day <= 26) return { name: 'Primavera', icon: '🌸', mult: 1.0, color: 'text-pink-600', bg: 'bg-pink-100', endDay: 26 };
-            else return { name: 'Verano', icon: '☀️', mult: 2.0, color: 'text-red-600', bg: 'bg-red-100', endDay: new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() };
+            if (day >= 1 && day <= 9) return { name: 'Invierno', icon: '❄️', mult: 0.5, color: 'text-blue-600', bg: 'bg-blue-100', endDay: 9, suffix: '_invi' };
+            else if (day >= 10 && day <= 19) return { name: 'Otoño', icon: '🍂', mult: 1.5, color: 'text-orange-600', bg: 'bg-orange-100', endDay: 19, suffix: '_oto' };
+            else if (day >= 20 && day <= 26) return { name: 'Primavera', icon: '🌸', mult: 1.0, color: 'text-pink-600', bg: 'bg-pink-100', endDay: 26, suffix: '_pri' };
+            else return { name: 'Verano', icon: '☀️', mult: 2.0, color: 'text-red-600', bg: 'bg-red-100', endDay: new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(), suffix: '_ver' };
         },
 
         updateSeasonWidget() {
             const desktopEl = document.getElementById('season-widget');
             const mobileEl = document.getElementById('season-widget-mobile');
-            if (!desktopEl && !mobileEl) return;
             
             const now = Date.now();
             const season = this.getSeasonData(now);
@@ -862,6 +861,23 @@ if (typeof window.farmApp === 'undefined') {
             const end = new Date(d.getFullYear(), d.getMonth(), season.endDay, 23, 59, 59).getTime();
             const left = Math.max(0, end - now);
             
+            // --- NUEVO: ACTUALIZACIÓN DINÁMICA DE IMÁGENES SEGÚN TEMPORADA ---
+            this.state.images.terrain_empty = `assets/Fondos/terreno_vacio${season.suffix}.png`;
+            this.state.images.crow = `assets/Enemigos/Cuervos/cuervo_base${season.suffix}.png`;
+            
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${season.suffix}.jpg')`;
+            
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            if (dashboardScreen) {
+                // Selecciona la capa del fondo
+                const bgLayer = dashboardScreen.querySelector('.bg-cover');
+                if (bgLayer) bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
+            }
+            // -----------------------------------------------------------------
+
+            if (!desktopEl && !mobileEl) return;
+
             const days = Math.floor(left / (1000 * 60 * 60 * 24));
             const hours = Math.floor((left % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const mins = Math.floor((left % (1000 * 60 * 60)) / (1000 * 60));
@@ -1333,7 +1349,7 @@ if (typeof window.farmApp === 'undefined') {
                                 const crowsCount = plot.crowsCount || 1;
                                 const currentMult = plot.rewardMultiplier !== undefined ? plot.rewardMultiplier : 1.0;
                                 const lostPct = Math.round((1.0 - currentMult) * 100);
-                                let crowsIcons = Array(crowsCount).fill('<img src="assets/Enemigos/Cuervos/cuervo_base.png" class="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-md animate-bounce">').join('');
+                                let crowsIcons = Array(crowsCount).fill(`<img src="${this.state.images.crow}" class="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-md animate-bounce">`).join('');
                                 crowHtml = `
                                     <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-2xl px-2 py-1 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
                                         <div class="flex gap-0.5">${crowsIcons}</div>
@@ -1360,7 +1376,7 @@ if (typeof window.farmApp === 'undefined') {
                                             <!-- mt-2 (un poco más arriba) y ml-56 (un poco más a la derecha) -->
                                             <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-2 ml-56" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
                                                 <!-- Imagen del Cuervo Base en tamaño mediano y quieto -->
-                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
+                                                <img src="${this.state.images.crow}" alt="Cuervo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
                                             </div>
                                         </div>
                                         <!-- Div oculto para absorber la etiqueta original de cierre -->
@@ -1603,7 +1619,7 @@ if (typeof window.farmApp === 'undefined') {
                                             <!-- mt-2 (un poco más arriba) y ml-56 (un poco más a la derecha) -->
                                             <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-2 ml-56" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
                                                 <!-- Imagen del Cuervo Base en tamaño mediano y quieto -->
-                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
+                                                <img src="${this.state.images.crow}" alt="Cuervo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
                                             </div>
                                         </div>
                                         <!-- Div oculto para absorber la etiqueta original de cierre -->
@@ -2490,7 +2506,7 @@ if (typeof window.farmApp === 'undefined') {
                 <div class="text-center animate-fade-in">
                     <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-5 bg-red-50 rounded-full border-4 border-red-200 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center justify-center overflow-hidden group">
                         <div class="absolute inset-0 bg-red-500 opacity-10 animate-pulse"></div>
-                        <img src="assets/Enemigos/Cuervos/cuervo_base.png" class="absolute w-16 h-16 sm:w-20 sm:h-20 z-10 drop-shadow-xl animate-bounce transform group-hover:scale-110 transition-transform">
+                        <img src="${window.farmApp.state.images.crow}" class="absolute w-16 h-16 sm:w-20 sm:h-20 z-10 drop-shadow-xl animate-bounce transform group-hover:scale-110 transition-transform">
                     </div>
                     <h3 class="text-xl sm:text-2xl font-black text-red-600 mb-2 uppercase tracking-widest drop-shadow-sm">¡Plaga Detectada!</h3>
                     <p class="text-xs sm:text-sm text-gray-600 mb-5 leading-relaxed">El cuervo carroñero ha invadido tu parcela. Espantarlo manualmente tomará <strong class="text-red-500 font-black">15 Minutos</strong>, pausando el crecimiento de tu planta actual.</p>
