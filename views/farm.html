@@ -864,6 +864,23 @@ if (typeof window.farmApp === 'undefined') {
             // --- NUEVO: ACTUALIZACIÓN DINÁMICA DE IMÁGENES SEGÚN TEMPORADA ---
             this.state.images.terrain_empty = `assets/Fondos/terreno_vacio${season.suffix}.png`;
             this.state.images.crow = `assets/Enemigos/Cuervos/cuervo_base${season.suffix}.png`;
+            this.state.images.scarecrow = `assets/Herramientas_y_Servicios/espantapajaros${season.suffix}.png`;
+            
+            // Sincronizamos la imagen del inventario para que cambie en la parcela y en el panel
+            if (this.state.inventory && this.state.inventory.tool_scarecrow) {
+                this.state.inventory.tool_scarecrow.image = this.state.images.scarecrow;
+            }
+            
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${season.suffix}.jpg')`;
+            
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            if (dashboardScreen) {
+                // Selecciona la capa del fondo
+                const bgLayer = dashboardScreen.querySelector('.bg-cover');
+                if (bgLayer) bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
+            }
+            // -----------------------------------------------------------------
             
             const loginScreen = document.getElementById('login-screen');
             if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${season.suffix}.jpg')`;
