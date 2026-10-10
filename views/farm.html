@@ -1710,7 +1710,6 @@ if (typeof window.farmApp === 'undefined') {
         }, // <--- ¡AGREGA ESTA COMA AQUÍ!
 
         processTick() {
-            // NUEVO: ESCUDO DE COMBATE (Si estás peleando, la granja se congela en el tiempo)
             if (this.state.combatLock) return; 
 
             const now = Date.now();
@@ -1774,14 +1773,13 @@ if (typeof window.farmApp === 'undefined') {
                 if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
                     plot.hasCrow = false;
                     plot.crowLeavingAt = 0;
-                    // ...
                     changesMade = true;
                     if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Plaga/Pudrición curada');
                 }
 
                 if (plot.status === 'empty' || plot.status === 'pot') {
                     if (plot.water > 0) {
-                        let acceleratedEvap = 40.0 * 4.0 * seasonMultiplier; // 4x de evaporación al sol
+                        let acceleratedEvap = 40.0 * 4.0 * seasonMultiplier; 
                         plot.water = Math.max(0, plot.water - (acceleratedEvap * deltaHours));
                         changesMade = true;
                     }
@@ -1799,14 +1797,17 @@ if (typeof window.farmApp === 'undefined') {
                         else if (plot.plant.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
                     }
 
+                    // === CORRECCIÓN: AUTO-RIEGO ANCLA LA HUMEDAD ===
+                    if (isAutoWatering) {
+                        let safeMid = minSafe + ((maxSafe - minSafe) / 2);
+                        plot.water = safeMid;
+                        plot.hasCrow = false;
+                        plot.crowLeavingAt = 0;
+                    }
+
                     if (!plot.isReady) {
-                        if (isAutoWatering) {
-                            if (plot.plant) { plot.water = maxSafe; }
-                            plot.hasCrow = false; 
-                            plot.crowLeavingAt = 0;
-                        } else {
+                        if (!isAutoWatering) {
                             if (plot.water > 0) {
-                                // ESTA ES LA VERSIÓN JAVASCRIPT CORRECTA:
                                 let evapRate = (plot.plant && plot.plant.id === 'flower_bamboo') ? 800 : ((plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40);
                                 evapRate = evapRate * seasonMultiplier;
                                 plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
@@ -1862,7 +1863,6 @@ if (typeof window.farmApp === 'undefined') {
                                 }
                                 
                                 plot.plant = null; 
-                                // El agua se conserva en el terreno para secarse al sol
                                 plot.hasCrow = false;
                                 plot.crowLeavingAt = 0; plot.scarecrowEndTime = 0;
                                 plot.plantedAt = 0; plot.harvestAt = 0; plot.isReady = false; plot.isSpoiled = false;
@@ -1875,7 +1875,8 @@ if (typeof window.farmApp === 'undefined') {
                             }
                         }
                     } else {
-                        if (plot.plantedAt) {
+                        // === CORRECCIÓN: AUTO-RIEGO PROTEGE PLANTA MADURA ===
+                        if (plot.plantedAt && !isAutoWatering) {
                             const growthTime = plot.harvestAt - plot.plantedAt;
                             if (now >= (plot.harvestAt + growthTime) && !plot.isSpoiled) {
                                 plot.isSpoiled = true;

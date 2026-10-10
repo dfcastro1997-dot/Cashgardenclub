@@ -315,7 +315,6 @@ def process_server_tick(game_state_str, chat_id=None):
                 for p in state.get('plots', [])
             )
 
-            # NUEVO: Bandera para procesar el contagio del Cuervo Carroñero
             contagion_triggered = False
 
             for plot in state.get('plots', []):
@@ -347,7 +346,7 @@ def process_server_tick(game_state_str, chat_id=None):
                     min_safe = 20
                     max_safe = 100
                     if plant_id == 'flower_wheat': min_safe, max_safe = 60, 100
-                    elif plant_id == 'flower_bamboo': min_safe, max_safe = 50, 90 # NUEVO
+                    elif plant_id == 'flower_bamboo': min_safe, max_safe = 50, 90
                     elif plant_id == 'flower_small': min_safe, max_safe = 30, 90
                     elif plant_id == 'flower_big': min_safe, max_safe = 50, 70
                     elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
@@ -356,15 +355,18 @@ def process_server_tick(game_state_str, chat_id=None):
                     elif plant_id == 'flower_solar': min_safe, max_safe = 30, 70
                     elif plant_id == 'flower_neon': min_safe, max_safe = 40, 60
 
+                    # === CORRECCIÓN AUTO-RIEGO ===
+                    # Ancla el agua al centro seguro exacto de la planta, asegurando que nunca se ahogue ni se seque
+                    if is_auto_watering:
+                        safe_mid = min_safe + ((max_safe - min_safe) / 2.0)
+                        plot['water'] = safe_mid
+                        plot['hasCrow'] = False
+                        plot['crowLeavingAt'] = 0
+
                     if not plot.get('isReady'):
-                        if is_auto_watering:
-                            plot['water'] = max_safe 
-                            plot['hasCrow'] = False
-                        else:
-                            # -------- AQUÍ VA TU BLOQUE EXACTO --------
+                        if not is_auto_watering:
                             evap_rate = 800.0 if plant_id == 'flower_bamboo' else (10.0 if plant_id == 'flower_cactus' else 40.0)
                             evap_rate = evap_rate * season_multiplier 
-                            # ------------------------------------------
                             
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
@@ -383,7 +385,6 @@ def process_server_tick(game_state_str, chat_id=None):
                             elif plot.get('water', 0) > max_safe:
                                 plot['hasCrow'] = True
                             
-
                         if plot.get('hasCrow'):
                             crow_arrived = plot.get('crowArrivedAt', now)
                             plot['crowArrivedAt'] = crow_arrived
@@ -404,13 +405,14 @@ def process_server_tick(game_state_str, chat_id=None):
                         if plot.get('water', 0) <= 0 or is_crow_landed:
                             plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
 
+                    # FASE DE COSECHA O ABANDONO
                     if now >= plot.get('harvestAt', now):
                         plot['isReady'] = True
                         
                         if is_auto_harvesting and not plot.get('isSpoiled'):
                             reward = 0
                             if plant_id == 'flower_wheat': reward = 1500
-                            elif plant_id == 'flower_bamboo': reward = 6500 # NUEVO
+                            elif plant_id == 'flower_bamboo': reward = 6500
                             elif plant_id == 'flower_cactus': reward = 3200
                             elif plant_id == 'flower_small': reward = 4500
                             elif plant_id == 'flower_big': reward = 26000
@@ -440,42 +442,43 @@ def process_server_tick(game_state_str, chat_id=None):
                             plot['isReady'] = False
                             plot['isSpoiled'] = False
                         else:
-                            # --- SISTEMA CUERVO CARROÑERO ---
-                            growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
-                            grace_period = growth_time / 2.0  # 50% del tiempo de vida
-                            time_overdue = now - (plot.get('harvestAt', now) + grace_period)
-                            
-                            if time_overdue > 0:
-                                plot['isSpoiled'] = True
-                                plot['hasCrow'] = True
+                            # === CORRECCIÓN: SOLO PENALIZAR POR ABANDONO SI NO TIENE AUTO-RIEGO ===
+                            if not is_auto_watering:
+                                growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
+                                grace_period = growth_time / 2.0  # 50% del tiempo de vida
+                                time_overdue = now - (plot.get('harvestAt', now) + grace_period)
                                 
-                                # Tramos de 15 minutos = 900,000 ms
-                                if time_overdue > 2700000: # 45 mins: 3 cuervos + Colapso
-                                    plot['crowsCount'] = 3
-                                    plot['rewardMultiplier'] = 0.0 # Pierde el 100% de la ganancia
+                                if time_overdue > 0:
+                                    plot['isSpoiled'] = True
+                                    plot['hasCrow'] = True
                                     
-                                    # Contagio al siguiente terreno (se procesa fuera del for)
-                                    if not plot.get('contagionTriggered'):
-                                        plot['contagionTriggered'] = True
-                                        contagion_triggered = True
+                                    # Tramos de 15 minutos = 900,000 ms
+                                    if time_overdue > 2700000: # 45 mins: 3 cuervos + Colapso
+                                        plot['crowsCount'] = 3
+                                        plot['rewardMultiplier'] = 0.0 # Pierde el 100% de la ganancia
                                         
-                                elif time_overdue > 1800000: # 30 mins: 3 cuervos (-5%/min extra)
-                                    plot['crowsCount'] = 3
-                                    mins_w_three = (time_overdue - 1800000) / 60000.0
-                                    penalty = 0.30 + 0.45 + (mins_w_three * 0.05)
-                                    plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
-                                    
-                                elif time_overdue > 900000: # 15 mins: 2 cuervos (-3%/min extra)
-                                    plot['crowsCount'] = 2
-                                    mins_w_two = (time_overdue - 900000) / 60000.0
-                                    penalty = 0.30 + (mins_w_two * 0.03)
-                                    plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
-                                    
-                                else: # 0 a 15 mins: 1 cuervo (-1%/min)
-                                    plot['crowsCount'] = 1
-                                    mins_w_one = time_overdue / 60000.0
-                                    penalty = mins_w_one * 0.01
-                                    plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                        # Contagio al siguiente terreno (se procesa fuera del for)
+                                        if not plot.get('contagionTriggered'):
+                                            plot['contagionTriggered'] = True
+                                            contagion_triggered = True
+                                            
+                                    elif time_overdue > 1800000: # 30 mins: 3 cuervos (-5%/min extra)
+                                        plot['crowsCount'] = 3
+                                        mins_w_three = (time_overdue - 1800000) / 60000.0
+                                        penalty = 0.30 + 0.45 + (mins_w_three * 0.05)
+                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                        
+                                    elif time_overdue > 900000: # 15 mins: 2 cuervos (-3%/min extra)
+                                        plot['crowsCount'] = 2
+                                        mins_w_two = (time_overdue - 900000) / 60000.0
+                                        penalty = 0.30 + (mins_w_two * 0.03)
+                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                        
+                                    else: # 0 a 15 mins: 1 cuervo (-1%/min)
+                                        plot['crowsCount'] = 1
+                                        mins_w_one = time_overdue / 60000.0
+                                        penalty = mins_w_one * 0.01
+                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
                     
                     # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
                     if chat_id and plot.get('status') == 'planted':
@@ -543,6 +546,8 @@ def process_server_tick(game_state_str, chat_id=None):
     except Exception as e:
         print("Server tick error:", e)
     return game_state_str
+
+
 
 @app.route('/')
 def serve_index(): return send_from_directory('.', 'index.html')
