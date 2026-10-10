@@ -17,6 +17,119 @@ socketio = SocketIO(app, cors_allowed_origins="*") # <-- INICIALIZACIÓN WEBSOCK
 DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA") # NUEVO
+WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "tu_secreto_de_eventos_wompi")
+WOMPI_PRV_KEY = os.getenv("WOMPI_PRV_KEY", "prv_test_TU_LLAVE_PRIVADA")
+
+
+@app.route('/api/webhooks/wompi', methods=['POST'])
+def wompi_webhook():
+    data = request.json
+    
+    # 1. Extraer datos del evento
+    event_type = data.get('event')
+    transaction = data.get('data', {}).get('transaction', {})
+    
+    if event_type != 'transaction.updated':
+        return jsonify({"status": "ignored"}), 200
+
+    status = transaction.get('status')
+    reference = transaction.get('reference')
+    amount_in_cents = transaction.get('amount_in_cents')
+    signature = data.get('signature', {}).get('checksum')
+
+    # 2. Validar firma de seguridad (Vital para evitar fraude)
+    timestamp = data.get('timestamp', '')
+    raw_signature = f"{transaction.get('id')}{status}{amount_in_cents}{timestamp}{WOMPI_EVENTS_SECRET}"
+    expected_signature = hashlib.sha256(raw_signature.encode('utf-8')).hexdigest()
+
+    if signature != expected_signature:
+        return jsonify({"error": "Firma inválida"}), 403
+
+    # 3. Procesar si fue aprobada
+    if status == 'APPROVED' and reference.startswith('REC-'):
+        short_id = reference.split('-')[1] # Extraemos el ID del jugador
+        amount_cop = amount_in_cents / 100
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Verificar que no se haya procesado esta referencia antes
+        cur.execute("SELECT id FROM financial_ledger WHERE external_reference = %s", (reference,))
+        if not cur.fetchone():
+            # Acreditar al usuario
+            cur.execute("UPDATE users SET balance = balance + %s WHERE short_id = %s RETURNING id", (amount_cop, short_id))
+            user = cur.fetchone()
+            
+            if user:
+                # Registrar en el libro mayor
+                cur.execute(
+                    "INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, %s, %s, %s, %s)",
+                    (user['id'], 'deposit', amount_cop, reference, 'completed')
+                )
+                conn.commit()
+                
+        cur.close(); conn.close()
+
+    return jsonify({"status": "ok"}), 200
+
+
+@app.route('/api/wallet/payout', methods=['POST'])
+def dispatch_nequi_payout():
+    payload = request.get_json() or {}
+    token = payload.get('session_token')
+    amount_cop = float(payload.get('amount_cop', 0))
+    phone_nequi = payload.get('phone_nequi')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, balance, session_token FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
+    user = cur.fetchone()
+    
+    # Validaciones (Las que ya tienes)
+    if not user or float(user['balance']) < amount_cop or amount_cop < 10000:
+        cur.close(); conn.close()
+        return jsonify({"error": "Fondos insuficientes o menores a $10.000"}), 400
+        
+    # Descontar saldo inmediatamente para evitar doble gasto
+    cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (phone_nequi, amount_cop, user['id']))
+    payout_ref = f"PO-{user['id']}-{int(time.time())}"
+    
+    # ---------------------------------------------------------
+    # NUEVO: LLAMADA REAL AL API DE TRANSFERENCIAS DE WOMPI
+    # ---------------------------------------------------------
+    headers = {
+        "Authorization": f"Bearer {WOMPI_PRV_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    wompi_payload = {
+        "amount_in_cents": int(amount_cop * 100),
+        "currency": "COP",
+        "reference": payout_ref,
+        "recipient_type": "NEQUI",
+        "recipient_number": phone_nequi # Número de celular
+    }
+    
+    try:
+        response = requests.post("https://sandbox.wompi.co/v1/transfers", json=wompi_payload, headers=headers)
+        wompi_data = response.json()
+        
+        if response.status_code == 201:
+            # Transferencia encolada exitosamente en Wompi
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_cop, payout_ref))
+            conn.commit()
+            msg = "Retiro en proceso. Llegará a tu Nequi en 24h hábiles."
+        else:
+            # Falló el API de Wompi, revertimos el saldo al usuario
+            conn.rollback()
+            return jsonify({"error": "Error del banco: " + str(wompi_data)}), 500
+            
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": "Error de conexión con el banco"}), 500
+        
+    cur.close(); conn.close()
+    return jsonify({"message": msg, "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
 
 # Función helper para Telegram (Soporta Imágenes)
 def send_telegram_msg(chat_id, text, image_url=None):

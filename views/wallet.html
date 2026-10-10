@@ -1,51 +1,244 @@
-<div class="max-w-[1000px] mx-auto space-y-6 md:space-y-8 animate-fade-in px-4 md:px-0">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
+<div class="max-w-[1000px] mx-auto space-y-6 md:space-y-8 animate-fade-in px-4 md:px-0 pb-20">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5 pt-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-                <span class="text-xs font-extrabold text-green-600 uppercase tracking-widest">Payouts Automáticos (Zero-Balance)</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-cg_blue animate-pulse"></span>
+                <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Finanzas y Billetera</span>
             </div>
-            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Configuración de Retiros</h2>
-            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Vincula tu cuenta. Los premios de torneo ganados se dispersarán automáticamente a tu Nequi al finalizar.</p>
+            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Gestión de Capital (COP)</h2>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Ingresa fondos para tus servicios VIP o retira las ganancias de tus torneos a Nequi.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 px-5 py-3 rounded-2xl text-right shadow-inner">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Saldo Disponible</p>
+            <p class="text-xl md:text-2xl font-black text-green-600" id="wallet-balance-display">$0 COP</p>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-5 md:p-8 relative overflow-hidden max-w-2xl">
-        <div class="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 md:p-5 mb-5 md:mb-6 flex gap-3 md:gap-4 text-xs md:text-sm text-blue-800">
-            <div class="shrink-0 text-xl md:text-2xl mt-0.5">ℹ️</div>
+    <!-- TABS DE NAVEGACIÓN -->
+    <div class="flex gap-2 md:gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
+        <button onclick="switchWalletTab('deposit')" id="tab-btn-deposit" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Ingresar Dinero</button>
+        <button onclick="switchWalletTab('withdraw')" id="tab-btn-withdraw" class="pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Retirar Ganancias</button>
+    </div>
+
+    <!-- SECCIÓN 1: INGRESAR DINERO (WOMPI) -->
+    <div id="section-deposit" class="bg-white rounded-3xl shadow-soft border border-gray-100 p-5 md:p-8 relative overflow-hidden animate-fade-in block">
+        <div class="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 md:p-5 mb-6 flex gap-3 md:gap-4 text-xs md:text-sm text-blue-800">
+            <div class="shrink-0 text-xl md:text-2xl mt-0.5">🌱</div>
             <div class="leading-relaxed">
-                <p class="mb-2">Por seguridad regulatoria, <strong>CashGarden no almacena saldos en COP de los usuarios.</strong></p>
-                <p class="text-[11px] md:text-xs opacity-80 font-medium">Todo premio ganado en la Arena será transferido directamente mediante Wompi en un plazo máximo de 24 horas tras finalizar el evento.</p>
+                <p class="mb-1 font-black">¡Haz crecer tu granja al instante!</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Tus ingresos se reflejarán de manera <strong>inmediata</strong> (Tiempo Real) en tu saldo tras ser aprobados por Wompi. Para mantener nuestros servidores en las mejores condiciones, desarrollar nuevas expansiones y brindarte soporte 24/7, aplicamos un pequeño <strong>aporte de mantenimiento del 5%</strong> a los ingresos. ¡Tú haces posible CashGarden!</p>
+            </div>
+        </div>
+
+        <h3 class="text-sm font-black text-cg_navy uppercase tracking-widest mb-4">Selecciona el monto a recargar</h3>
+        
+        <!-- Botones de Cantidades -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-6" id="deposit-amount-grid">
+            <button onclick="selectDepositAmount(10000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$10.000</button>
+            <button onclick="selectDepositAmount(20000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$20.000</button>
+            <button onclick="selectDepositAmount(30000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$30.000</button>
+            <button onclick="selectDepositAmount(50000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$50.000</button>
+            <button onclick="selectDepositAmount(100000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$100.000</button>
+            <button onclick="selectDepositAmount(200000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$200.000</button>
+        </div>
+
+        <!-- Campo Libre -->
+        <div class="mb-6">
+            <label class="block text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Otra Cantidad (COP)</label>
+            <input type="number" id="custom-deposit-input" placeholder="Escribe el monto..." class="w-full px-4 md:px-5 py-3.5 md:py-4 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-cg_navy text-lg transition-all" oninput="handleCustomDeposit()">
+        </div>
+
+        <!-- Resumen de Transacción -->
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 shadow-inner">
+            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Resumen de Operación</h4>
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-bold text-gray-600">Recarga Solicitada:</span>
+                <span class="text-sm font-black text-cg_navy" id="summary-requested">$0</span>
+            </div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-bold text-red-400">Aporte Mantenimiento / Soporte (5%):</span>
+                <span class="text-xs font-black text-red-500" id="summary-fee">-$0</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                <span class="text-sm font-black text-green-600 uppercase">Recibes en CashGarden:</span>
+                <span class="text-xl md:text-2xl font-black text-green-600" id="summary-total">$0</span>
+            </div>
+        </div>
+
+        <button id="btn-pay-wompi" onclick="processWompiDeposit()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
+            Pagar con Wompi ➔
+        </button>
+    </div>
+
+    <!-- SECCIÓN 2: RETIRAR DINERO -->
+    <div id="section-withdraw" class="bg-white rounded-3xl shadow-soft border border-gray-100 p-5 md:p-8 relative overflow-hidden animate-fade-in hidden">
+        <div class="bg-orange-50/80 border border-orange-100 rounded-2xl p-4 md:p-5 mb-6 flex gap-3 md:gap-4 text-xs md:text-sm text-orange-800">
+            <div class="shrink-0 text-xl md:text-2xl mt-0.5">🏦</div>
+            <div class="leading-relaxed">
+                <p class="mb-1 font-black">Transferencias Seguras</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Los retiros se procesan de manera manual y segura a través del portal bancario. El tiempo estimado de entrega a tu cuenta es de <strong>24 a 48 horas hábiles</strong>. El monto mínimo de retiro es de $10.000 COP. No aplicamos descuentos adicionales a tus retiros ganados en torneos.</p>
             </div>
         </div>
         
         <form id="payout-settings-form" class="space-y-5 md:space-y-6">
             <div>
-                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">N° Celular Nequi (Receptor de Premios)</label>
-                <input type="tel" id="nequi-phone" placeholder="Ej: 300 000 0000" class="w-full px-4 md:px-5 py-3 md:py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-bold text-cg_navy transition-all" required>
+                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Retirar (COP)</label>
+                <input type="number" id="cashout-amount" min="10000" placeholder="Ej: 50000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-black text-cg_navy text-lg transition-all" required>
             </div>
+
+            <div>
+                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">N° Celular Nequi o Cuenta Bancaria</label>
+                <input type="tel" id="nequi-phone" placeholder="Ej: 300 000 0000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-bold text-cg_navy transition-all" required>
+            </div>
+
+            <!-- Alertas de estado de retiro -->
+            <div id="cashout-error" class="hidden bg-red-50 text-red-600 border border-red-200 p-3 rounded-lg text-xs font-bold"></div>
+            <div id="cashout-success" class="hidden bg-green-50 text-green-600 border border-green-200 p-3 rounded-lg text-xs font-bold"></div>
             
-            <button type="button" onclick="alert('Cuenta Nequi vinculada correctamente para futuros premios.');" class="w-full bg-cg_navy hover:bg-black text-white font-black text-base md:text-lg py-3.5 md:py-4 rounded-xl shadow-md transition-all mt-2">
-                Vincular Cuenta de Payout
+            <button type="button" onclick="processCashout()" class="w-full bg-cg_navy hover:bg-black text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none transition-all mt-2 uppercase tracking-widest">
+                Solicitar Retiro
             </button>
         </form>
     </div>
 </div>
 
+<!-- SCRIPT OFICIAL DEL WIDGET DE WOMPI -->
+<script src="https://checkout.wompi.co/widget.js"></script>
+
 <script>
+    let currentDepositAmount = 0;
+    const FEE_PERCENTAGE = 0.05; // 5% Aporte de Mantenimiento
+
     function initWallet() {
         if (!window.farmApp) return;
-        const balance = window.farmApp.state.balance;
+        const balance = window.farmApp.state.balance || 0;
         document.getElementById('wallet-balance-display').innerText = "$" + balance.toLocaleString() + " COP";
         
         const maxInput = document.getElementById('cashout-amount');
         if (maxInput) {
             maxInput.max = balance;
-            maxInput.value = balance >= 10000 ? balance : '';
         }
     }
 
-    async function processNequiCashout() {
+    function switchWalletTab(tab) {
+        const depBtn = document.getElementById('tab-btn-deposit');
+        const witBtn = document.getElementById('tab-btn-withdraw');
+        const depSec = document.getElementById('section-deposit');
+        const witSec = document.getElementById('section-withdraw');
+
+        if (tab === 'deposit') {
+            depBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors";
+            witBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors";
+            depSec.classList.remove('hidden');
+            witSec.classList.add('hidden');
+        } else {
+            witBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-black text-orange-500 border-b-4 border-orange-500 whitespace-nowrap transition-colors";
+            depBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors";
+            witSec.classList.remove('hidden');
+            depSec.classList.add('hidden');
+        }
+    }
+
+    function selectDepositAmount(amount) {
+        // Limpiar el campo manual
+        document.getElementById('custom-deposit-input').value = '';
+        
+        // Efecto visual botones
+        const buttons = document.querySelectorAll('.deposit-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
+            btn.classList.add('border-gray-200', 'text-gray-600', 'bg-gray-50');
+            // Si el botón coincide con el monto, lo marcamos
+            if (btn.innerText.replace(/\D/g, '') == amount) {
+                btn.classList.add('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
+                btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-gray-50');
+            }
+        });
+
+        currentDepositAmount = amount;
+        updateDepositSummary();
+    }
+
+    function handleCustomDeposit() {
+        // Desmarcar botones
+        const buttons = document.querySelectorAll('.deposit-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
+            btn.classList.add('border-gray-200', 'text-gray-600', 'bg-gray-50');
+        });
+
+        const val = parseInt(document.getElementById('custom-deposit-input').value);
+        if (isNaN(val) || val <= 0) {
+            currentDepositAmount = 0;
+        } else {
+            currentDepositAmount = val;
+        }
+        updateDepositSummary();
+    }
+
+    function updateDepositSummary() {
+        const reqEl = document.getElementById('summary-requested');
+        const feeEl = document.getElementById('summary-fee');
+        const totEl = document.getElementById('summary-total');
+        const btnPay = document.getElementById('btn-pay-wompi');
+
+        if (currentDepositAmount > 0) {
+            const fee = Math.floor(currentDepositAmount * FEE_PERCENTAGE);
+            const netAmount = currentDepositAmount - fee;
+
+            reqEl.innerText = "$" + currentDepositAmount.toLocaleString();
+            feeEl.innerText = "-$" + fee.toLocaleString();
+            totEl.innerText = "$" + netAmount.toLocaleString();
+
+            btnPay.disabled = false;
+            btnPay.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            reqEl.innerText = "$0";
+            feeEl.innerText = "-$0";
+            totEl.innerText = "$0";
+
+            btnPay.disabled = true;
+            btnPay.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    function processWompiDeposit() {
+        if (currentDepositAmount < 5000) {
+            alert("El monto mínimo de recarga es de $5.000 COP.");
+            return;
+        }
+
+        const username = sessionStorage.getItem('username');
+        const short_id = sessionStorage.getItem('short_id') || '0000';
+        
+        // Referencia única para identificar la transacción en el Webhook de tu backend
+        // Formato: REC-{ID_JUGADOR}-{TIMESTAMP}
+        const reference = `REC-${short_id}-${Date.now()}`;
+
+        // LA LLAVE PUBLICA DEBE SER LA DE TU COMERCIO EN WOMPI
+        // Usar pub_test_... para pruebas, y pub_prod_... para dinero real.
+        const wompiPublicKey = 'pub_test_AQUI_PONES_TU_LLAVE_PUBLICA_DE_WOMPI';
+
+        var checkout = new WidgetCheckout({
+            currency: 'COP',
+            amountInCents: currentDepositAmount * 100, // Wompi requiere centavos
+            reference: reference,
+            publicKey: wompiPublicKey,
+            redirectUrl: window.location.origin, // Opcional, devuelve a la app si se sale
+        });
+
+        checkout.open(function (result) {
+            var transaction = result.transaction;
+            if (transaction.status === 'APPROVED') {
+                alert("✅ ¡Pago aprobado por Wompi!\n\nTu saldo se actualizará automáticamente en unos segundos.");
+                // Aquí podrías hacer un fetch o un polling manual a /api/sync/ para actualizar la UI rápido
+            } else {
+                alert("❌ El pago no se completó. Estado: " + transaction.status);
+            }
+        });
+    }
+
+    async function processCashout() {
         const amount = parseInt(document.getElementById('cashout-amount').value);
         const phone = document.getElementById('nequi-phone').value;
         const err = document.getElementById('cashout-error');
@@ -54,30 +247,48 @@
         if(err) err.classList.add('hidden'); 
         if(suc) suc.classList.add('hidden');
 
-        if (!phone || phone.length < 10) { if(err) { err.innerText = "Número Nequi inválido."; err.classList.remove('hidden'); } return; }
-        if (isNaN(amount) || amount < 10000) { if(err) { err.innerText = "Mínimo $10.000 COP."; err.classList.remove('hidden'); } return; }
-        if (amount > window.farmApp.state.balance) { if(err) { err.innerText = "Saldo insuficiente."; err.classList.remove('hidden'); } return; }
+        if (!phone || phone.length < 10) { 
+            err.innerText = "Número Nequi o cuenta inválida."; 
+            err.classList.remove('hidden'); 
+            return; 
+        }
+        if (isNaN(amount) || amount < 10000) { 
+            err.innerText = "El monto mínimo de retiro es $10.000 COP."; 
+            err.classList.remove('hidden'); 
+            return; 
+        }
+        if (amount > (window.farmApp?.state?.balance || 0)) { 
+            err.innerText = "No tienes saldo suficiente."; 
+            err.classList.remove('hidden'); 
+            return; 
+        }
 
         try {
-            const username = sessionStorage.getItem('username'); // Obtenido del identificador temporal, no localStorage
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
             const res = await fetch('/api/wallet/payout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, amount_cop: amount, phone_nequi: phone })
+                body: JSON.stringify({ username: username, session_token: token, amount_cop: amount, phone_nequi: phone })
             });
             const data = await res.json();
             
             if (res.ok) {
-                if(window.farmApp) window.farmApp.state.balance = data.new_balance;
-                if(suc) {
-                    suc.innerText = "¡Retiro exitoso! Ref: " + data.reference;
-                    suc.classList.remove('hidden');
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance;
+                    window.farmApp.saveState();
                 }
+                suc.innerText = "¡Retiro en proceso! Tu dinero llegará en 24 a 48 horas. Ref: " + data.reference;
+                suc.classList.remove('hidden');
                 initWallet();
             } else {
-                if(err) { err.innerText = data.error; err.classList.remove('hidden'); }
+                err.innerText = data.error; 
+                err.classList.remove('hidden');
             }
-        } catch(e) { if(err) { err.innerText = "Error de red."; err.classList.remove('hidden'); } }
+        } catch(e) { 
+            err.innerText = "Error de red al conectar con el servidor."; 
+            err.classList.remove('hidden'); 
+        }
     }
 
     setTimeout(initWallet, 100); 
