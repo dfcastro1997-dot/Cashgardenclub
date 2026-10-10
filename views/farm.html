@@ -1458,11 +1458,19 @@ if (typeof window.farmApp === 'undefined') {
                     el.className = `bg-white rounded-2xl border-2 border-dashed border-gray-200 h-56 sm:h-64 relative cursor-pointer hover:border-cg_blue transition-all ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm'}`;
                     
                     let protectionHtml = '';
-                    if (plot.scarecrowEndTime > now || isAutoWatering) {
-                        protectionHtml = `
+                    if (isAutoWatering) {
+                        protectionHtml += `
                             <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
-                                ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md shrink-0">` : ''}
-                                ${isAutoWatering ? `<img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
+                                <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">
+                            </div>
+                        `;
+                    }
+                    if (plot.scarecrowEndTime > now) {
+                        protectionHtml += `
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+                                <div class="pointer-events-none flex flex-col items-center gap-1 mt-2 ml-56">
+                                    <img src="${this.state.inventory.tool_scarecrow.image}" alt="Espantapájaros" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
+                                </div>
                             </div>
                         `;
                     }
@@ -1487,11 +1495,19 @@ if (typeof window.farmApp === 'undefined') {
                     const potName = plot.pot === 'small' ? 'MACETA PEQ.' : 'MACETA GDE.';
                     
                     let protectionHtml = '';
-                    if (plot.scarecrowEndTime > now || isAutoWatering) {
-                        protectionHtml = `
+                    if (isAutoWatering) {
+                        protectionHtml += `
                             <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
-                                ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md shrink-0">` : ''}
-                                ${isAutoWatering ? `<img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
+                                <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">
+                            </div>
+                        `;
+                    }
+                    if (plot.scarecrowEndTime > now) {
+                        protectionHtml += `
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+                                <div class="pointer-events-none flex flex-col items-center gap-1 mt-2 ml-56">
+                                    <img src="${this.state.inventory.tool_scarecrow.image}" alt="Espantapájaros" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
+                                </div>
                             </div>
                         `;
                     }
@@ -1643,10 +1659,16 @@ if (typeof window.farmApp === 'undefined') {
                         </button>
 
                         <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
-                            ${plot.scarecrowEndTime > now ? `<img src="${this.state.inventory.tool_scarecrow.image}" class="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md shrink-0">` : ''}
                             ${isAutoWatering ? `<img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
                             ${crowHtml}
                         </div>
+                        ${plot.scarecrowEndTime > now ? `
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+                            <div class="pointer-events-none flex flex-col items-center gap-1 mt-2 ml-56">
+                                <img src="${this.state.inventory.tool_scarecrow.image}" alt="Espantapájaros" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
+                            </div>
+                        </div>
+                        ` : ''}
 
                         <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center">
