@@ -412,14 +412,23 @@
             else if (day >= 10 && day <= 19) suffix = '_oto'; // Otoño
             else if (day >= 20 && day <= 26) suffix = '_pri'; // Primavera
             
+            // 1. Aplicar al Login
             const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${suffix}.jpg')`;
+            if (loginScreen) {
+                // Forzamos el !important en línea si es necesario y nos aseguramos de que el path sea correcto
+                loginScreen.style.setProperty('background-image', `url('assets/Fondos/login_bg${suffix}.jpg')`, 'important');
+            }
             
+            // 2. Aplicar al Dashboard
             const dashboardBg = document.querySelector('#dashboard-screen .bg-cover');
-            if (dashboardBg) dashboardBg.style.backgroundImage = `url('assets/Fondos/dashboard_bg${suffix}.jpg')`;
+            if (dashboardBg) {
+                dashboardBg.style.setProperty('background-image', `url('assets/Fondos/dashboard_bg${suffix}.jpg')`, 'important');
+            }
         }
-        // Ejecutar inmediatamente al abrir la página
+        
+        // Ejecutar inmediatamente al abrir la página y re-ejecutar tras cargar el DOM
         applySeasonalBackgrounds();
+        document.addEventListener('DOMContentLoaded', applySeasonalBackgrounds);
         // --------------------------------------------------------------------
 
         let isLoginMode = true;
