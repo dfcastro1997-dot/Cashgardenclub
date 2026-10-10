@@ -1096,15 +1096,23 @@ if (typeof window.farmApp === 'undefined') {
             this.state.lastTick = Date.now();
             this.state.isSaving = true; 
             
-            const stateToSave = JSON.stringify({
+            const stateObj = {
                 seedsBalance: this.state.seedsBalance,
                 practiceTokens: this.state.practiceTokens || 0, 
                 autoWaterEndTime: this.state.autoWaterEndTime,
+                autoHarvestEndTime: this.state.autoHarvestEndTime || 0,
                 plots: this.state.plots,
                 inventory: this.state.inventory,
                 arsenal: this.state.arsenal || [],
                 lastTick: this.state.lastTick
-            });
+            };
+            
+            // ¡VITAL! Evita que se borre el regalo al auto-guardar
+            if (this.state.pending_gift) {
+                stateObj.pending_gift = this.state.pending_gift;
+            }
+            
+            const stateToSave = JSON.stringify(stateObj);
 
             const username = sessionStorage.getItem('username');
             const token = sessionStorage.getItem('session_token'); 
@@ -1119,10 +1127,8 @@ if (typeof window.farmApp === 'undefined') {
                         body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                     }).then(res => {
                         this.state.isSaving = false;
-                        if (res.status === 401) {
-                            if (window.showSessionExpiredModal) {
-                                window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
-                            }
+                        if (res.status === 401 && window.showSessionExpiredModal) {
+                            window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
                         }
                     }).catch(e => {
                         this.state.isSaving = false;
@@ -1200,6 +1206,24 @@ if (typeof window.farmApp === 'undefined') {
                                     
                                     // EL JUGADOR CARGÓ CON ÉXITO SU DATA - ABRIR CANDADO
                                     this.state.isSynced = true;
+
+                                    // ¡AQUÍ ATRAPAMOS EL REGALO AL ENTRAR AL JUEGO!
+                                    if (s.pending_gift) {
+                                        this.state.pending_gift = s.pending_gift;
+                                        const gModal = document.getElementById('gift-modal');
+                                        if (gModal) {
+                                            document.getElementById('gift-msg-text').innerText = `"${s.pending_gift.message}"`;
+                                            document.getElementById('gift-items-list').innerHTML = s.pending_gift.items.map(item => `
+                                                <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-cg_navy">
+                                                    <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
+                                                    <span>${item.text}</span>
+                                                </li>
+                                            `).join('');
+                                            gModal.classList.remove('hidden');
+                                            gModal.classList.add('flex');
+                                        }
+                                    }
+
                                     this.updateUI(); 
                                 } catch(e) { 
                                     console.error("Error parseando game_state", e); 

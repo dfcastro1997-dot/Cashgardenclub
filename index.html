@@ -673,18 +673,25 @@
                         try {
                             const state = JSON.parse(data.user.game_state);
 
-                            // ---- AÑADE ESTO (DETECTOR DE REGALOS) ----
+                            // ---- DETECTOR DE REGALOS EN VIVO ----
                             if (state.pending_gift) {
-                                document.getElementById('gift-msg-text').innerText = `"${state.pending_gift.message}"`;
-                                const list = document.getElementById('gift-items-list');
-                                list.innerHTML = state.pending_gift.items.map(item => `
-                                    <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-cg_navy">
-                                        <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
-                                        <span>${item.text}</span>
-                                    </li>
-                                `).join('');
-                                document.getElementById('gift-modal').classList.remove('hidden');
-                                document.getElementById('gift-modal').classList.add('flex');
+                                // Pasarlo a la memoria de la granja para que no se borre
+                                if (window.farmApp && window.farmApp.state) {
+                                    window.farmApp.state.pending_gift = state.pending_gift;
+                                }
+                                const gModal = document.getElementById('gift-modal');
+                                // Mostrar el modal solo si está oculto
+                                if (gModal && gModal.classList.contains('hidden')) {
+                                    document.getElementById('gift-msg-text').innerText = `"${state.pending_gift.message}"`;
+                                    document.getElementById('gift-items-list').innerHTML = state.pending_gift.items.map(item => `
+                                        <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-cg_navy">
+                                            <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
+                                            <span>${item.text}</span>
+                                        </li>
+                                    `).join('');
+                                    gModal.classList.remove('hidden');
+                                    gModal.classList.add('flex');
+                                }
                             }
                             // ------------------------------------------
 
