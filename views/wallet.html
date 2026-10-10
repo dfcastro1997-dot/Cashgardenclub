@@ -213,32 +213,67 @@
         }
     }
 
-    function processWompiDeposit() {
+    async function processWompiDeposit() {
         if (currentDepositAmount < 5000) {
             alert("El monto mínimo de recarga es de $5.000 COP.");
             return;
         }
 
+        const btnPay = document.getElementById('btn-pay-wompi');
+        btnPay.innerText = 'Cargando Pasarela...';
+        btnPay.disabled = true;
+
         const short_id = sessionStorage.getItem('short_id') || '0000';
         const reference = `REC-${short_id}-${Date.now()}`;
+        const amountInCents = currentDepositAmount * 100;
         const wompiPublicKey = 'pub_test_lwNtQO2xAWUmv47mSWD2QAiYbE2R7gDP';
 
-        var checkout = new WidgetCheckout({
-            currency: 'COP',
-            amountInCents: currentDepositAmount * 100, 
-            reference: reference,
-            publicKey: wompiPublicKey,
-            redirectUrl: window.location.origin, 
-        });
-
-        checkout.open(function (result) {
-            var transaction = result.transaction;
-            if (transaction.status === 'APPROVED') {
-                alert("✅ ¡Pago aprobado!\n\nTu saldo se actualizará automáticamente.");
-            } else {
-                alert("❌ El pago no se completó. Estado: " + transaction.status);
+        try {
+            // 1. Pedir la Firma de Seguridad al Servidor
+            const res = await fetch('/api/wompi/signature', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reference: reference,
+                    amount_in_cents: amountInCents,
+                    currency: 'COP'
+                })
+            });
+            const data = await res.json();
+            
+            if (!res.ok) {
+                alert("Error generando firma de seguridad.");
+                btnPay.innerText = 'Proceder al Pago ➔';
+                btnPay.disabled = false;
+                return;
             }
-        });
+
+            // 2. Abrir Wompi con la firma incluida
+            var checkout = new WidgetCheckout({
+                currency: 'COP',
+                amountInCents: amountInCents,
+                reference: reference,
+                publicKey: wompiPublicKey,
+                signature: { integrity: data.signature }, // <-- ESTO SOLUCIONA EL ERROR
+                redirectUrl: window.location.origin, 
+            });
+
+            checkout.open(function (result) {
+                var transaction = result.transaction;
+                if (transaction.status === 'APPROVED') {
+                    alert("✅ ¡Pago aprobado!\n\nTu saldo se actualizará automáticamente en unos segundos.");
+                } else {
+                    alert("❌ El pago no se completó. Estado: " + transaction.status);
+                }
+                btnPay.innerText = 'Proceder al Pago ➔';
+                btnPay.disabled = false;
+            });
+            
+        } catch(e) {
+            alert("Error de red conectando con la pasarela.");
+            btnPay.innerText = 'Proceder al Pago ➔';
+            btnPay.disabled = false;
+        }
     }
 
     async function processCashout() {

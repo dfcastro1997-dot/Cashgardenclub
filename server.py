@@ -20,6 +20,25 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcs
 WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "test_events_YCoAJd13MYktS6RQGpt1kpZfEIgeZwQV")
 WOMPI_PRV_KEY = os.getenv("WOMPI_PRV_KEY", "prv_test_dFZ8LK0A0cYV8brLyHjtQ5KSHBjB86e9")
 
+# --- AÑADE ESTO (Es tu Secreto de Integridad de Wompi) ---
+WOMPI_INTEGRITY_SECRET = os.getenv("WOMPI_INTEGRITY_SECRET", "test_integrity_wsgH1421JNMDMEVUxvrMD9T9ExaJAmuW")
+
+@app.route('/api/wompi/signature', methods=['POST'])
+def generate_wompi_signature():
+    data = request.json
+    reference = data.get('reference')
+    amount_in_cents = str(data.get('amount_in_cents'))
+    currency = data.get('currency', 'COP')
+    
+    if not reference or not amount_in_cents:
+        return jsonify({"error": "Faltan parámetros"}), 400
+        
+    # La firma de Wompi requiere juntar: referencia + monto + moneda + secreto
+    raw_string = f"{reference}{amount_in_cents}{currency}{WOMPI_INTEGRITY_SECRET}"
+    signature = hashlib.sha256(raw_string.encode('utf-8')).hexdigest()
+    
+    return jsonify({"signature": signature}), 200
+
 def get_db_connection():
     for _ in range(6):
         try:
