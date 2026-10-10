@@ -419,6 +419,10 @@ def process_server_tick(game_state_str, chat_id=None):
 def serve_index(): return send_from_directory('.', 'index.html')
 @app.route('/views/<path:path>')
 def serve_views(path): return send_from_directory('views', path)
+@app.route('/admin.html')
+def serve_admin(): return send_from_directory('.', 'admin.html')
+
+
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -1136,39 +1140,35 @@ def admin_add_items():
     conn = get_db_connection()
     cur = conn.cursor()
 
+    # 1. ACELERADOR DE TIEMPO GLOBAL (Afecta a todos los jugadores)
+    if data.get('global_time_skip'):
+        skip_ms = int(data['global_time_skip']) * 3600000
+        cur.execute("SELECT id, game_state FROM users")
+        users = cur.fetchall()
+        for u in users:
+            if u['game_state']:
+                try:
+                    st = json.loads(u['game_state'])
+                    st['autoWaterEndTime'] = max(0, st.get('autoWaterEndTime', 0) - skip_ms)
+                    st['autoHarvestEndTime'] = max(0, st.get('autoHarvestEndTime', 0) - skip_ms)
+                    for p in st.get('plots', []):
+                        if p.get('plantedAt'): p['plantedAt'] -= skip_ms
+                        if p.get('harvestAt'): p['harvestAt'] -= skip_ms
+                        if p.get('scarecrowEndTime'): p['scarecrowEndTime'] = max(0, p['scarecrowEndTime'] - skip_ms)
+                        if p.get('crowLeavingAt'): p['crowLeavingAt'] = max(0, p['crowLeavingAt'] - skip_ms)
+                        if p.get('tournamentEndTime'): p['tournamentEndTime'] = max(0, p['tournamentEndTime'] - skip_ms)
+                    cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), u['id']))
+                except: pass
+        conn.commit()
+        cur.close(); conn.close()
+        return jsonify({"message": f"Se ha adelantado el tiempo {data['global_time_skip']} horas en TODAS las granjas."})
+
+    # 2. INYECCIÓN NORMAL DE RECURSOS AL USUARIO
     short_id = data.get('short_id')
     if not short_id:
         cur.close(); conn.close()
-        return jsonify({"error": "ID requerido"}), 400
+        return jsonify({"error": "ID requerido para inyección individual"}), 400
 
-    # 1. ACELERADOR DE TIEMPO INDIVIDUAL (Afecta solo al jugador especificado)
-    if data.get('time_skip'):
-        skip_ms = int(data['time_skip']) * 3600000
-        cur.execute("SELECT id, game_state FROM users WHERE short_id = %s FOR UPDATE", (short_id,))
-        u = cur.fetchone()
-        if not u:
-            cur.close(); conn.close()
-            return jsonify({"error": "Usuario no encontrado"}), 404
-            
-        if u['game_state']:
-            try:
-                st = json.loads(u['game_state'])
-                st['autoWaterEndTime'] = max(0, st.get('autoWaterEndTime', 0) - skip_ms)
-                st['autoHarvestEndTime'] = max(0, st.get('autoHarvestEndTime', 0) - skip_ms)
-                for p in st.get('plots', []):
-                    if p.get('plantedAt'): p['plantedAt'] -= skip_ms
-                    if p.get('harvestAt'): p['harvestAt'] -= skip_ms
-                    if p.get('scarecrowEndTime'): p['scarecrowEndTime'] = max(0, p['scarecrowEndTime'] - skip_ms)
-                    if p.get('crowLeavingAt'): p['crowLeavingAt'] = max(0, p['crowLeavingAt'] - skip_ms)
-                    if p.get('tournamentEndTime'): p['tournamentEndTime'] = max(0, p['tournamentEndTime'] - skip_ms)
-                cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), u['id']))
-                conn.commit()
-            except Exception: pass
-            
-        cur.close(); conn.close()
-        return jsonify({"message": f"Se ha adelantado el tiempo {data['time_skip']} horas en la granja del jugador #{short_id}."})
-
-    # 2. INYECCIÓN NORMAL DE RECURSOS AL USUARIO
     cur.execute("SELECT id, balance, game_state FROM users WHERE short_id = %s FOR UPDATE", (short_id,))
     user = cur.fetchone()
     if not user:
@@ -1177,11 +1177,9 @@ def admin_add_items():
         
     state = json.loads(user['game_state'] or '{}')
     
-    # Inyectar Semillas y COP
     if data.get('seeds'): state['seedsBalance'] = state.get('seedsBalance', 0) + int(data['seeds'])
     if data.get('cop'): cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (float(data['cop']), user['id']))
     
-    # Inyectar Items/Macetas/Agua
     if data.get('item_id') and data.get('item_qty') and not data.get('is_arsenal'):
         item_id = data['item_id']
         qty = int(data['item_qty'])
@@ -1195,7 +1193,6 @@ def admin_add_items():
             }
         state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
 
-    # Inyectar Plantas Vivas directamente al Arsenal
     if data.get('is_arsenal') and data.get('item_id'):
         if 'arsenal' not in state: state['arsenal'] = []
         pid = data['item_id']
@@ -1219,6 +1216,7 @@ def admin_add_items():
             'flower_neon': 'https://i.ibb.co/mF6QtPRV/Frame-767.png'
         }
         
+        import uuid
         state['arsenal'].append({
             'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
             'plantId': pid,
@@ -1227,7 +1225,6 @@ def admin_add_items():
             'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
         })
 
-    # Desbloqueos VIP y Parcelas
     unlock_vip = data.get('unlock_vip')
     if unlock_vip:
         now = int(time.time() * 1000)
@@ -1251,7 +1248,6 @@ def admin_add_items():
     cur.close(); conn.close()
     
     return jsonify({"message": "Recursos inyectados correctamente al usuario."})
-
 
 
 
