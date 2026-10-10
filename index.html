@@ -641,6 +641,19 @@
             if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
                 return;
             }
+
+            // --- NUEVO: ACTUALIZAR EL FONDO DEL DASHBOARD GLOBAL SEGÚN LA TEMPORADA ---
+            if (window.farmApp && typeof window.farmApp.getSeasonData === 'function') {
+                const season = window.farmApp.getSeasonData(Date.now());
+                const dashboardScreen = document.getElementById('dashboard-screen');
+                if (dashboardScreen) {
+                    const bgLayer = dashboardScreen.querySelector('.bg-cover');
+                    if (bgLayer) {
+                        bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
+                    }
+                }
+            }
+            // --------------------------------------------------------------------------
             
             try {
                 const response = await fetch(`/api/sync/${username}?token=${token}`);
