@@ -85,18 +85,17 @@ def dispatch_nequi_payout():
     cur.execute("SELECT id, balance, session_token FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
     user = cur.fetchone()
     
-    # Validaciones (Las que ya tienes)
     if not user or float(user['balance']) < amount_cop or amount_cop < 10000:
         cur.close(); conn.close()
         return jsonify({"error": "Fondos insuficientes o menores a $10.000"}), 400
+    if user.get('session_token') and user['session_token'] != token:
+        cur.close(); conn.close()
+        return jsonify({"error": "Sesión inválida"}), 401
         
-    # Descontar saldo inmediatamente para evitar doble gasto
     cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (phone_nequi, amount_cop, user['id']))
     payout_ref = f"PO-{user['id']}-{int(time.time())}"
     
-    # ---------------------------------------------------------
-    # NUEVO: LLAMADA REAL AL API DE TRANSFERENCIAS DE WOMPI
-    # ---------------------------------------------------------
+    # LLAMADA REAL AL API DE TRANSFERENCIAS DE WOMPI
     headers = {
         "Authorization": f"Bearer {WOMPI_PRV_KEY}",
         "Content-Type": "application/json"
@@ -107,7 +106,7 @@ def dispatch_nequi_payout():
         "currency": "COP",
         "reference": payout_ref,
         "recipient_type": "NEQUI",
-        "recipient_number": phone_nequi # Número de celular
+        "recipient_number": phone_nequi 
     }
     
     try:
@@ -115,12 +114,10 @@ def dispatch_nequi_payout():
         wompi_data = response.json()
         
         if response.status_code == 201:
-            # Transferencia encolada exitosamente en Wompi
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_cop, payout_ref))
             conn.commit()
             msg = "Retiro en proceso. Llegará a tu Nequi en 24h hábiles."
         else:
-            # Falló el API de Wompi, revertimos el saldo al usuario
             conn.rollback()
             return jsonify({"error": "Error del banco: " + str(wompi_data)}), 500
             
@@ -130,6 +127,8 @@ def dispatch_nequi_payout():
         
     cur.close(); conn.close()
     return jsonify({"message": msg, "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
+
+
 
 # Función helper para Telegram (Soporta Imágenes)
 def send_telegram_msg(chat_id, text, image_url=None):
@@ -1150,28 +1149,6 @@ def get_leaderboard(instance_id):
         "max_players": instance['max_players'] if instance else 10,
         "leaderboard": players
     })
-
-@app.route('/api/wallet/payout', methods=['POST'])
-def dispatch_nequi_payout():
-    payload = request.get_json() or {}
-    token = payload.get('session_token')
-    amount_cop = float(payload.get('amount_cop', 0))
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT id, balance, session_token FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
-    user = cur.fetchone()
-    if not user or float(user['balance']) < amount_cop or amount_cop < 10000:
-        cur.close(); conn.close()
-        return jsonify({"error": "Fondos insuficientes o menores a $10.000"}), 400
-    if user.get('session_token') and user['session_token'] != token:
-        cur.close(); conn.close()
-        return jsonify({"error": "Sesión inválida"}), 401
-        
-    cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (payload.get('phone_nequi'), amount_cop, user['id']))
-    payout_ref = f"PO-{user['id']}-{int(time.time())}"
-    cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_cop, payout_ref))
-    conn.commit(); cur.close(); conn.close()
-    return jsonify({"message": "Retiro tramitado hacia Nequi", "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
 
 @app.route('/api/dev/add_cop', methods=['POST'])
 def dev_add_cop():
