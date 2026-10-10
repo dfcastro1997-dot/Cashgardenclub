@@ -1357,15 +1357,10 @@ if (typeof window.farmApp === 'undefined') {
                                         </div> <!-- Cierra el contenedor de la esquina superior derecha -->
                                         <!-- Contenedor central absoluto -->
                                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-                                            <!-- flex-col apila los elementos verticalmente (caja arriba, cuervo abajo) -->
-                                            <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-12 -ml-8" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
-                                                <!-- Caja del tiempo AHORA EN LA PARTE SUPERIOR -->
-                                                <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse z-10">
-                                                    <span>⏱️</span>
-                                                    <span id="crow-timer-${plot.id}">15:00</span>
-                                                </div>
-                                                <!-- Imagen del Cuervo Base x3 MÁS GRANDE -->
-                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-32 h-32 sm:w-36 sm:h-36 object-contain drop-shadow-md animate-bounce" />
+                                            <!-- mt-12 (abajo) y -ml-16 (más a la izquierda). pointer-events-auto permite hacer click -->
+                                            <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-12 -ml-16" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
+                                                <!-- Imagen del Cuervo Base x3 MÁS GRANDE y QUIETO (sin animate-bounce) -->
+                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-32 h-32 sm:w-36 sm:h-36 object-contain drop-shadow-md" />
                                             </div>
                                         </div>
                                         <!-- Div oculto para absorber la etiqueta original de cierre -->
@@ -1605,15 +1600,10 @@ if (typeof window.farmApp === 'undefined') {
                                         </div> <!-- Cierra el contenedor de la esquina superior derecha -->
                                         <!-- Contenedor central absoluto -->
                                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-                                            <!-- flex-col apila los elementos verticalmente (caja arriba, cuervo abajo) -->
-                                            <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-12 -ml-8" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
-                                                <!-- Caja del tiempo AHORA EN LA PARTE SUPERIOR -->
-                                                <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse z-10">
-                                                    <span>⏱️</span>
-                                                    <span id="crow-timer-${plot.id}">15:00</span>
-                                                </div>
-                                                <!-- Imagen del Cuervo Base x3 MÁS GRANDE -->
-                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-32 h-32 sm:w-36 sm:h-36 object-contain drop-shadow-md animate-bounce" />
+                                            <!-- mt-12 (abajo) y -ml-16 (más a la izquierda). pointer-events-auto permite hacer click -->
+                                            <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-12 -ml-16" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
+                                                <!-- Imagen del Cuervo Base x3 MÁS GRANDE y QUIETO (sin animate-bounce) -->
+                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-32 h-32 sm:w-36 sm:h-36 object-contain drop-shadow-md" />
                                             </div>
                                         </div>
                                         <!-- Div oculto para absorber la etiqueta original de cierre -->
