@@ -871,26 +871,12 @@ if (typeof window.farmApp === 'undefined') {
                 this.state.inventory.tool_scarecrow.image = this.state.images.scarecrow;
             }
             
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${season.suffix}.jpg')`;
+            // Reasignación sin usar "const" para evitar colisiones al recargar la vista
+            var lsEl = document.getElementById('login-screen');
+            if (lsEl) lsEl.style.backgroundImage = `url('assets/Fondos/login_bg${season.suffix}.jpg')`;
             
-            const dashboardScreen = document.getElementById('dashboard-screen');
-            if (dashboardScreen) {
-                // Selecciona la capa del fondo
-                const bgLayer = dashboardScreen.querySelector('.bg-cover');
-                if (bgLayer) bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
-            }
-            // -----------------------------------------------------------------
-            
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${season.suffix}.jpg')`;
-            
-            const dashboardScreen = document.getElementById('dashboard-screen');
-            if (dashboardScreen) {
-                // Selecciona la capa del fondo
-                const bgLayer = dashboardScreen.querySelector('.bg-cover');
-                if (bgLayer) bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
-            }
+            var dsBg = document.querySelector('#dashboard-screen .bg-cover');
+            if (dsBg) dsBg.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
             // -----------------------------------------------------------------
 
             if (!desktopEl && !mobileEl) return;
