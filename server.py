@@ -17,8 +17,8 @@ socketio = SocketIO(app, cors_allowed_origins="*") # <-- INICIALIZACIÓN WEBSOCK
 DB_URI = os.getenv("DATABASE_URL")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "supersecreto123")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA") # NUEVO
-WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "tu_secreto_de_eventos_wompi")
-WOMPI_PRV_KEY = os.getenv("WOMPI_PRV_KEY", "prv_test_TU_LLAVE_PRIVADA")
+WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "test_events_YCoAJd13MYktS6RQGpt1kpZfEIgeZwQV")
+WOMPI_PRV_KEY = os.getenv("WOMPI_PRV_KEY", "prv_test_dFZ8LK0A0cYV8brLyHjtQ5KSHBjB86e9")
 
 
 @app.route('/api/webhooks/wompi', methods=['POST'])

@@ -26,11 +26,11 @@
             <div class="shrink-0 text-xl md:text-2xl mt-0.5">🌱</div>
             <div class="leading-relaxed">
                 <p class="mb-1 font-black">¡Haz crecer tu granja al instante!</p>
-                <p class="text-[11px] md:text-xs opacity-90 font-medium">Tus ingresos se reflejarán de manera <strong>inmediata</strong> (Tiempo Real) en tu saldo tras ser aprobados por Wompi. Para mantener nuestros servidores en las mejores condiciones, desarrollar nuevas expansiones y brindarte soporte 24/7, aplicamos un pequeño <strong>aporte de mantenimiento del 5%</strong> a los ingresos. ¡Tú haces posible CashGarden!</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Tus ingresos se reflejarán de manera <strong>inmediata</strong> (Tiempo Real) en tu saldo tras ser aprobados por tu banco. Para mantener nuestros servidores estables, desarrollar nuevas mecánicas y brindarte soporte 24/7, aplicamos un pequeño <strong>aporte de mantenimiento del 5%</strong> al ingresar. ¡Tú haces posible el ecosistema de CashGarden!</p>
             </div>
         </div>
 
-        <h3 class="text-sm font-black text-cg_navy uppercase tracking-widest mb-4">Selecciona el monto a recargar</h3>
+        <h3 class="text-sm font-black text-cg_navy uppercase tracking-widest mb-4">Selecciona el monto a ingresar</h3>
         
         <!-- Botones de Cantidades -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-6" id="deposit-amount-grid">
@@ -45,14 +45,14 @@
         <!-- Campo Libre -->
         <div class="mb-6">
             <label class="block text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Otra Cantidad (COP)</label>
-            <input type="number" id="custom-deposit-input" placeholder="Escribe el monto..." class="w-full px-4 md:px-5 py-3.5 md:py-4 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-cg_navy text-lg transition-all" oninput="handleCustomDeposit()">
+            <input type="number" id="custom-deposit-input" placeholder="Escribe un monto personalizado..." class="w-full px-4 md:px-5 py-3.5 md:py-4 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-cg_navy text-lg transition-all" oninput="handleCustomDeposit()">
         </div>
 
         <!-- Resumen de Transacción -->
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 shadow-inner">
             <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Resumen de Operación</h4>
             <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-bold text-gray-600">Recarga Solicitada:</span>
+                <span class="text-sm font-bold text-gray-600">Ingreso Solicitado:</span>
                 <span class="text-sm font-black text-cg_navy" id="summary-requested">$0</span>
             </div>
             <div class="flex justify-between items-center mb-3">
@@ -66,7 +66,7 @@
         </div>
 
         <button id="btn-pay-wompi" onclick="processWompiDeposit()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
-            Pagar con Wompi ➔
+            Proceder al Pago ➔
         </button>
     </div>
 
@@ -75,15 +75,15 @@
         <div class="bg-orange-50/80 border border-orange-100 rounded-2xl p-4 md:p-5 mb-6 flex gap-3 md:gap-4 text-xs md:text-sm text-orange-800">
             <div class="shrink-0 text-xl md:text-2xl mt-0.5">🏦</div>
             <div class="leading-relaxed">
-                <p class="mb-1 font-black">Transferencias Seguras</p>
-                <p class="text-[11px] md:text-xs opacity-90 font-medium">Los retiros se procesan de manera manual y segura a través del portal bancario. El tiempo estimado de entrega a tu cuenta es de <strong>24 a 48 horas hábiles</strong>. El monto mínimo de retiro es de $10.000 COP. No aplicamos descuentos adicionales a tus retiros ganados en torneos.</p>
+                <p class="mb-1 font-black">Dispersión de Ganancias</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Los retiros se procesan de manera segura a través de nuestro portal bancario asociado. El tiempo estimado de entrega a tu cuenta Nequi es de <strong>24 a 48 horas hábiles</strong>. <br>El monto mínimo de retiro es de $10.000 COP. <strong>No aplicamos descuentos adicionales ni impuestos</strong> a las ganancias que retires.</p>
             </div>
         </div>
         
         <form id="payout-settings-form" class="space-y-5 md:space-y-6">
             <div>
                 <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Retirar (COP)</label>
-                <input type="number" id="cashout-amount" min="10000" placeholder="Ej: 50000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-black text-cg_navy text-lg transition-all" required>
+                <input type="number" id="cashout-amount" min="10000" placeholder="Mínimo $10.000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-black text-cg_navy text-lg transition-all" required>
             </div>
 
             <div>
@@ -160,7 +160,7 @@
     }
 
     function handleCustomDeposit() {
-        // Desmarcar botones
+        // Desmarcar botones preestablecidos
         const buttons = document.querySelectorAll('.deposit-btn');
         buttons.forEach(btn => {
             btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
@@ -211,27 +211,25 @@
         const username = sessionStorage.getItem('username');
         const short_id = sessionStorage.getItem('short_id') || '0000';
         
-        // Referencia única para identificar la transacción en el Webhook de tu backend
-        // Formato: REC-{ID_JUGADOR}-{TIMESTAMP}
+        // Referencia única para identificar la transacción en tu servidor
         const reference = `REC-${short_id}-${Date.now()}`;
 
-        // LA LLAVE PUBLICA DEBE SER LA DE TU COMERCIO EN WOMPI
-        // Usar pub_test_... para pruebas, y pub_prod_... para dinero real.
-        const wompiPublicKey = 'pub_test_AQUI_PONES_TU_LLAVE_PUBLICA_DE_WOMPI';
+        const wompiPublicKey = 'pub_test_lwNtQO2xAWUmv47mSWD2QAiYbE2R7gDP';
 
+        // El usuario paga el monto TOTAL (currentDepositAmount), pero a su cuenta interna le sumas el neto.
         var checkout = new WidgetCheckout({
             currency: 'COP',
-            amountInCents: currentDepositAmount * 100, // Wompi requiere centavos
+            amountInCents: currentDepositAmount * 100, // Wompi lee en centavos
             reference: reference,
             publicKey: wompiPublicKey,
-            redirectUrl: window.location.origin, // Opcional, devuelve a la app si se sale
+            redirectUrl: window.location.origin, 
         });
 
         checkout.open(function (result) {
             var transaction = result.transaction;
             if (transaction.status === 'APPROVED') {
-                alert("✅ ¡Pago aprobado por Wompi!\n\nTu saldo se actualizará automáticamente en unos segundos.");
-                // Aquí podrías hacer un fetch o un polling manual a /api/sync/ para actualizar la UI rápido
+                alert("✅ ¡Pago aprobado!\n\nTu saldo con el aporte descontado se actualizará automáticamente en unos segundos.");
+                // Opcional: forzar recarga del balance
             } else {
                 alert("❌ El pago no se completó. Estado: " + transaction.status);
             }
