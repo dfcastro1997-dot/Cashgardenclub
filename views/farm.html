@@ -1353,14 +1353,16 @@ if (typeof window.farmApp === 'undefined') {
                                     </button>
                                 `;
                             } else {
-                                const iconHtml = isRotting 
-                                    ? `<span class="text-lg sm:text-xl">🦠</span>` 
-                                    : `<img src="assets/Enemigos/Cuervos/cuervo_base.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">`;
                                 crowHtml = `
-                                    <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                        ${iconHtml}
-                                        <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
-                                    </button>
+                                    <div class="relative flex items-center justify-center cursor-pointer" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
+                                        <div class="absolute -right-2 top-4 flex items-center gap-1.5 z-40">
+                                            <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md animate-bounce" />
+                                            <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse">
+                                                <span>⏱️</span>
+                                                <span id="crow-timer-${plot.id}">15:00</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 `;
                             }
                         } else {
@@ -1592,14 +1594,16 @@ if (typeof window.farmApp === 'undefined') {
                                         </button>
                                     `;
                                 } else {
-                                    const iconHtml = isRotting 
-                                        ? `<span class="text-lg sm:text-xl">🦠</span>` 
-                                        : `<img src="assets/Enemigos/Cuervos/cuervo_base.png" class="w-5 h-5 sm:w-6 sm:h-6 object-contain drop-shadow-md">`;
                                     crowHtml = `
-                                        <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-bounce cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                            ${iconHtml}
-                                            <div class="absolute right-10 sm:right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡CLICK PARA LIMPIAR!</div>
-                                        </button>
+                                        <div class="relative flex items-center justify-center cursor-pointer" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
+                                            <div class="absolute -right-2 top-4 flex items-center gap-1.5 z-40">
+                                                <img src="assets/Enemigos/Cuervos/cuervo_base.png" alt="Cuervo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md animate-bounce" />
+                                                <div class="bg-red-600 text-white border border-red-400 font-extrabold text-[10px] sm:text-xs px-2 py-1 rounded-lg shadow-md flex items-center justify-center gap-1 animate-pulse">
+                                                    <span>⏱️</span>
+                                                    <span id="crow-timer-${plot.id}">15:00</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     `;
                                 }
                             }
