@@ -942,16 +942,8 @@
                 document.getElementById('login-screen').classList.add('opacity-0');
                 
                 setTimeout(() => {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
-                    document.getElementById('dashboard-screen').classList.add('flex');
-                    
-                    // Configuramos la interfaz para modo Admin
-                    document.getElementById('profile-name').innerHTML = 'ADMINISTRADOR <span class="bg-red-500 text-white px-1.5 py-0.5 rounded text-[10px] ml-1">#GOD</span>';
-                    document.getElementById('global-balance').innerText = "ILIMITADO";
-                    document.getElementById('global-seeds-display').innerText = "ILIMITADO 🌱";
-                    
-                    loadView('admin'); // Cargará el nuevo HTML
+                    // Redirige directamente a la página independiente del Administrador
+                    window.location.href = '/admin.html';
                 }, 300);
             } else {
                 alert('Acceso denegado. Credenciales incorrectas.');
