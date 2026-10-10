@@ -90,35 +90,28 @@
                 <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">N° Celular Nequi o Cuenta Bancaria</label>
                 <input type="tel" id="nequi-phone" placeholder="Ej: 300 000 0000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-bold text-cg_navy transition-all" required>
             </div>
-
-            <!-- Alertas de estado de retiro -->
-            <div id="cashout-error" class="hidden bg-red-50 text-red-600 border border-red-200 p-3 rounded-lg text-xs font-bold"></div>
-            <div id="cashout-success" class="hidden bg-green-50 text-green-600 border border-green-200 p-3 rounded-lg text-xs font-bold"></div>
             
-            <button type="button" onclick="processCashout()" class="w-full bg-cg_navy hover:bg-black text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none transition-all mt-2 uppercase tracking-widest">
+            <button type="button" id="btn-withdraw" onclick="processCashout()" class="w-full bg-cg_navy hover:bg-black text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none transition-all mt-2 uppercase tracking-widest">
                 Solicitar Retiro
             </button>
         </form>
     </div>
 </div>
 
-<!-- Estilos para forzar el tamaño del iframe de Wompi en móviles -->
-<style>
-    /* Forzar que el iframe de Wompi sea full screen en móviles para que no se corte */
-    @media (max-width: 768px) {
-        iframe[src*="checkout.wompi.co"] {
-            width: 100vw !important;
-            height: 100vh !important;
-            top: 0 !important;
-            left: 0 !important;
-            position: fixed !important;
-            z-index: 9999 !important;
-        }
-    }
-</style>
-
-<!-- SCRIPT OFICIAL DEL WIDGET DE WOMPI -->
-<script src="https://checkout.wompi.co/widget.js"></script>
+<!-- VENTANA MODAL PROFESIONAL PARA ALERTAS (REEMPLAZA AL ALERT NORMAL) -->
+<div id="wallet-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeWalletAlertModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border overflow-hidden animate-fade-in text-center p-6 md:p-8" id="wallet-alert-card">
+        <div id="wallet-alert-icon-container" class="mx-auto mb-4 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-gray-50 border-gray-100">
+            <span class="text-3xl md:text-4xl" id="wallet-alert-icon">⚠️</span>
+        </div>
+        <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-cg_navy" id="wallet-alert-title">Aviso</h3>
+        <p class="text-xs md:text-sm text-gray-500 mb-6 font-medium leading-relaxed" id="wallet-alert-msg">Mensaje descriptivo</p>
+        <button onclick="closeWalletAlertModal()" id="wallet-alert-btn" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm bg-cg_navy hover:bg-black">
+            Aceptar
+        </button>
+    </div>
+</div>
 
 <script>
     let currentDepositAmount = 0;
@@ -133,6 +126,47 @@
         if (maxInput) {
             maxInput.max = balance;
         }
+    }
+
+    // Funciones del Modal Profesional
+    function showWalletAlertModal(title, msg, type = 'info') {
+        const modal = document.getElementById('wallet-alert-modal');
+        const card = document.getElementById('wallet-alert-card');
+        const iconCont = document.getElementById('wallet-alert-icon-container');
+        const icon = document.getElementById('wallet-alert-icon');
+        const titleEl = document.getElementById('wallet-alert-title');
+        const btn = document.getElementById('wallet-alert-btn');
+
+        titleEl.innerText = title;
+        document.getElementById('wallet-alert-msg').innerText = msg;
+
+        if (type === 'success') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-green-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "✅";
+            titleEl.className = "text-xl md:text-2xl font-black text-green-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-green-500 hover:bg-green-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm";
+        } else if (type === 'error') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-red-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "❌";
+            titleEl.className = "text-xl md:text-2xl font-black text-red-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm";
+        } else {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-200 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-full border-4 border-gray-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "⚠️";
+            titleEl.className = "text-xl md:text-2xl font-black text-cg_navy mb-2 tracking-tight";
+            btn.className = "w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm";
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeWalletAlertModal() {
+        document.getElementById('wallet-alert-modal').classList.add('hidden');
+        document.getElementById('wallet-alert-modal').classList.remove('flex');
     }
 
     function switchWalletTab(tab) {
@@ -215,62 +249,45 @@
 
     async function processWompiDeposit() {
         if (currentDepositAmount < 5000) {
-            alert("El monto mínimo de recarga es de $5.000 COP.");
+            showWalletAlertModal('Monto Inválido', 'El monto mínimo de recarga es de $5.000 COP.', 'error');
             return;
         }
 
         const btnPay = document.getElementById('btn-pay-wompi');
-        btnPay.innerText = 'Cargando Pasarela...';
+        btnPay.innerHTML = '<span class="animate-pulse">Cargando Pasarela...</span>';
         btnPay.disabled = true;
 
         const short_id = sessionStorage.getItem('short_id') || '0000';
         const reference = `REC-${short_id}-${Date.now()}`;
         const amountInCents = currentDepositAmount * 100;
+        
+        // Llave Pública de Wompi
         const wompiPublicKey = 'pub_test_lwNtQO2xAWUmv47mSWD2QAiYbE2R7gDP';
 
         try {
-            // 1. Pedir la Firma de Seguridad al Servidor
+            // 1. Pedir Firma de Seguridad al Servidor
             const res = await fetch('/api/wompi/signature', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    reference: reference,
-                    amount_in_cents: amountInCents,
-                    currency: 'COP'
-                })
+                body: JSON.stringify({ reference: reference, amount_in_cents: amountInCents, currency: 'COP' })
             });
             const data = await res.json();
             
             if (!res.ok) {
-                alert("Error generando firma de seguridad.");
+                showWalletAlertModal('Error de Seguridad', 'No se pudo generar la firma de transacción. Reintenta.', 'error');
                 btnPay.innerText = 'Proceder al Pago ➔';
                 btnPay.disabled = false;
                 return;
             }
 
-            // 2. Abrir Wompi con la firma incluida
-            var checkout = new WidgetCheckout({
-                currency: 'COP',
-                amountInCents: amountInCents,
-                reference: reference,
-                publicKey: wompiPublicKey,
-                signature: { integrity: data.signature }, // <-- ESTO SOLUCIONA EL ERROR
-                redirectUrl: window.location.origin, 
-            });
+            // 2. Redirección al Web Checkout de Wompi (Optimizado para móviles, no se corta)
+            const redirectUrl = encodeURIComponent(window.location.origin);
+            const wompiUrl = `https://checkout.wompi.co/p/?public-key=${wompiPublicKey}&currency=COP&amount-in-cents=${amountInCents}&reference=${reference}&signature:integrity=${data.signature}&redirect-url=${redirectUrl}`;
 
-            checkout.open(function (result) {
-                var transaction = result.transaction;
-                if (transaction.status === 'APPROVED') {
-                    alert("✅ ¡Pago aprobado!\n\nTu saldo se actualizará automáticamente en unos segundos.");
-                } else {
-                    alert("❌ El pago no se completó. Estado: " + transaction.status);
-                }
-                btnPay.innerText = 'Proceder al Pago ➔';
-                btnPay.disabled = false;
-            });
+            window.location.href = wompiUrl;
             
         } catch(e) {
-            alert("Error de red conectando con la pasarela.");
+            showWalletAlertModal('Error de Red', 'Falla conectando con el servidor de pagos. Verifica tu internet.', 'error');
             btnPay.innerText = 'Proceder al Pago ➔';
             btnPay.disabled = false;
         }
@@ -279,27 +296,23 @@
     async function processCashout() {
         const amount = parseInt(document.getElementById('cashout-amount').value);
         const phone = document.getElementById('nequi-phone').value;
-        const err = document.getElementById('cashout-error');
-        const suc = document.getElementById('cashout-success');
+        const btnWithdraw = document.getElementById('btn-withdraw');
         
-        if(err) err.classList.add('hidden'); 
-        if(suc) suc.classList.add('hidden');
-
         if (!phone || phone.length < 10) { 
-            err.innerText = "Número Nequi o cuenta inválida."; 
-            err.classList.remove('hidden'); 
+            showWalletAlertModal('Datos Inválidos', 'El número de Nequi o cuenta debe tener al menos 10 dígitos.', 'error');
             return; 
         }
         if (isNaN(amount) || amount < 10000) { 
-            err.innerText = "El monto mínimo de retiro es $10.000 COP."; 
-            err.classList.remove('hidden'); 
+            showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 COP.', 'error');
             return; 
         }
         if (amount > (window.farmApp?.state?.balance || 0)) { 
-            err.innerText = "No tienes saldo suficiente."; 
-            err.classList.remove('hidden'); 
+            showWalletAlertModal('Saldo Insuficiente', 'No tienes saldo COP suficiente para retirar esa cantidad.', 'error');
             return; 
         }
+
+        btnWithdraw.innerHTML = '<span class="animate-pulse">Procesando Retiro...</span>';
+        btnWithdraw.disabled = true;
 
         try {
             const username = sessionStorage.getItem('username');
@@ -316,18 +329,20 @@
                     window.farmApp.state.balance = data.new_balance;
                     window.farmApp.saveState();
                 }
-                suc.innerText = "¡Retiro en proceso! Tu dinero llegará en 24 a 48 horas. Ref: " + data.reference;
-                suc.classList.remove('hidden');
+                showWalletAlertModal('¡Retiro en Proceso!', `Se han descontado $${amount.toLocaleString()} COP. Tu dinero llegará en 24 a 48 horas hábiles.\n\nRef: ${data.reference}`, 'success');
+                document.getElementById('cashout-amount').value = '';
                 initWallet();
             } else {
-                err.innerText = data.error; 
-                err.classList.remove('hidden');
+                showWalletAlertModal('Error al Retirar', data.error, 'error');
             }
         } catch(e) { 
-            err.innerText = "Error de red al conectar con el servidor."; 
-            err.classList.remove('hidden'); 
+            showWalletAlertModal('Error de Red', 'No se pudo conectar con el servidor bancario.', 'error');
+        } finally {
+            btnWithdraw.innerText = 'Solicitar Retiro';
+            btnWithdraw.disabled = false;
         }
     }
 
+    // Inicializar saldos apenas cargue
     setTimeout(initWallet, 100); 
 </script>
