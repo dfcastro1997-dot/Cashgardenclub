@@ -404,6 +404,24 @@
     </div>
 
     <script>
+        // --- NUEVA LÓGICA DE TEMPORADA GLOBAL PARA FONDOS DESDE EL INICIO ---
+        function applySeasonalBackgrounds() {
+            const day = new Date().getDate();
+            let suffix = '_ver'; // Verano por defecto (27 al final del mes)
+            if (day >= 1 && day <= 9) suffix = '_invi';      // Invierno
+            else if (day >= 10 && day <= 19) suffix = '_oto'; // Otoño
+            else if (day >= 20 && day <= 26) suffix = '_pri'; // Primavera
+            
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) loginScreen.style.backgroundImage = `url('assets/Fondos/login_bg${suffix}.jpg')`;
+            
+            const dashboardBg = document.querySelector('#dashboard-screen .bg-cover');
+            if (dashboardBg) dashboardBg.style.backgroundImage = `url('assets/Fondos/dashboard_bg${suffix}.jpg')`;
+        }
+        // Ejecutar inmediatamente al abrir la página
+        applySeasonalBackgrounds();
+        // --------------------------------------------------------------------
+
         let isLoginMode = true;
 
         function toggleAuthMode() {
