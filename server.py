@@ -1310,11 +1310,13 @@ def admin_add_items():
         'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón'
     }
     img_icons = {
-        'flower_wheat': 'https://i.ibb.co/szXSZjs/Frame-753.png', 'flower_bamboo': 'https://i.ibb.co/S4G2c9qy/Frame-768.png', 
-        'flower_cactus': 'https://i.ibb.co/5gvFssT4/Frame-758.png', 'flower_small': 'https://i.ibb.co/mrJyDqV8/Frame-743.png', 
-        'flower_crystal': 'https://i.ibb.co/5WcdFhL9/Frame-764.png', 'flower_big': 'https://i.ibb.co/qF9G5qMw/Frame-744.png', 
-        'flower_moon': 'https://i.ibb.co/gbDzsCGh/Frame-765.png', 'flower_solar': 'https://i.ibb.co/JW8C2psK/Frame-766.png', 
-        'flower_neon': 'https://i.ibb.co/mF6QtPRV/Frame-767.png'
+        'flower_wheat': 'assets/Plantas/trigo_rapido.png', 
+        'flower_bamboo': 'assets/Plantas/bambu_tryhard.png', 
+        'flower_cactus': 'assets/Plantas/cactus_cuarzo.png', 
+        'flower_small': 'assets/Plantas/flor_pequena.png', 
+        'flower_crystal': 'assets/Plantas/helecho_cristal.png', 
+        'flower_big': 'assets/Plantas/flor_grande.png', 
+        'flower_moon': 'assets/Plantas/lirio_lunar.png'
     }
 
     for user in users_to_update:
@@ -1344,7 +1346,7 @@ def admin_add_items():
                 if item_id not in state['inventory']:
                     state['inventory'][item_id] = {
                         'qty': 0, 'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
-                        'name': item_id.replace('_', ' ').title(), 'image': 'https://i.ibb.co/TDK1WJMK/Logo.png'
+                        'name': item_id.replace('_', ' ').title(), 'image': 'assets/Fondos/logo.png'
                     }
                 state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
                 gift_items.append({"icon": icons.get(item_id, '📦'), "text": lbl})
@@ -1363,7 +1365,7 @@ def admin_add_items():
                 for _ in range(qty):
                     state['arsenal'].append({
                         'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
-                        'plantId': pid, 'name': names.get(pid, pid.replace('_', ' ').title()), 'icon': img_icons.get(pid, 'https://i.ibb.co/TDK1WJMK/Logo.png'),
+                        'plantId': pid, 'name': names.get(pid, pid.replace('_', ' ').title()), 'icon': img_icons.get(pid, 'assets/Fondos/logo.png'),
                         'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
                     })
                 gift_items.append({"icon": icons.get(pid, '⚔️'), "text": lbl})

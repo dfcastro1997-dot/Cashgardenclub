@@ -10,593 +10,363 @@
             <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Notas del Parche y Novedades</h2>
             <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Mantente informado sobre las últimas mecánicas, expansiones botánicas y cambios en el balance de la economía global de CashGarden.</p>
         </div>
-        
-        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar shrink-0">
-            <button class="px-4 py-2 rounded-xl bg-cg_navy text-white text-xs font-bold shadow-md whitespace-nowrap transition-all">Todas</button>
-            <button class="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue text-xs font-bold transition-all whitespace-nowrap shadow-sm">Mecánicas</button>
-            <button class="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue text-xs font-bold transition-all whitespace-nowrap shadow-sm">Economía</button>
-        </div>
-    </div>
-
-    <!-- HIGHLIGHT (DESTACADO): LA ARENA 3V3 -->
-    <div class="bg-white rounded-[2rem] shadow-lg border border-gray-100 overflow-hidden group cursor-pointer hover:shadow-2xl hover:border-red-400 transition-all duration-500 relative mb-8" 
-         onclick="openNewsModal(
-             'El Despertar de la Arena: Combate Táctico 3v3 (PvP y PvE)', 
-             '¡La actualización más grande hasta la fecha ya está aquí!\n\nTu Invernadero ya no es solo para cosechar, ahora es una base militar botánica. Hemos introducido la nueva Arena de Duelos con mecánicas RPG por turnos y cartas de habilidad.\n\n🛡️ MODO CAMPAÑA (PvE):\nEnfréntate a la Inteligencia Artificial (la temible bandada de cuervos). Usa tus Tickets de Duelo comprados en el Mercado para ingresar. Si tu escuadrón sobrevive, ganarás botines inmensos de semillas para expandir tu terreno.\n\n⚔️ MODO DUELO (PvP DIRECTO):\n¿Crees tener la mejor estrategia? Ingresa el ID de 4 dígitos de un rival o amigo, fijen una apuesta en semillas (Ej: 10,000 🌱) y luchen a muerte súbita. El ganador se lleva todo el pozo y el perdedor se queda sin nada.\n\nPrepara a tus 3 mejores plantas, administra tus Puntos de Energía (⚡) sabiamente, y domina el juego de Piedra, Papel o Tijera para asegurar la iniciativa de ataque. ¡La gloria te espera!', 
-             '05-10-2026', 
-             'https://i.ibb.co/cS1bctdT/Frame-774.png', 
-             'GRAN EXPANSIÓN',
-             'bg-gradient-to-r from-red-600 to-red-900'
-         )">
-        <div class="absolute -right-20 -top-20 w-80 h-80 bg-red-100 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700 opacity-60"></div>
-        <div class="grid grid-cols-1 lg:grid-cols-12 relative z-10">
-            <div class="lg:col-span-5 bg-gradient-to-br from-red-500 to-red-800 p-8 flex flex-col justify-center items-center relative overflow-hidden min-h-[250px] border-r border-red-900/20">
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <div class="flex items-center justify-between w-full absolute top-6 px-6 z-20">
-                    <span class="bg-black/30 border border-white/20 text-white backdrop-blur-md text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">⚔️ Gran Expansión</span>
-                    <span class="text-[10px] font-bold text-white/90 bg-black/20 px-2 py-1 rounded">V2.0</span>
-                </div>
-                <div class="relative z-10 flex items-center justify-center gap-4 mt-6">
-                    <img src="https://i.ibb.co/gLcb71CG/Frame-773.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500 transform -rotate-6">
-                    <img src="https://i.ibb.co/cS1bctdT/Frame-774.png" class="w-28 h-28 md:w-36 md:h-36 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500 delay-75 transform rotate-6">
-                </div>
-            </div>
-            <div class="lg:col-span-7 p-6 md:p-10 flex flex-col justify-center bg-white/90 backdrop-blur-sm">
-                <div class="text-xs font-extrabold text-red-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> En Vivo Ahora
-                </div>
-                <h3 class="text-2xl md:text-3xl font-black text-cg_navy group-hover:text-red-600 transition-colors mb-4 leading-tight tracking-tight">
-                    El Despertar de la Arena: <br>Combate Táctico 3v3 (PvP y PvE)
-                </h3>
-                <p class="text-gray-500 text-sm md:text-base leading-relaxed mb-8 font-medium">
-                    Recluta tu escuadrón, apuesta tus semillas y enfréntate a la IA o a jugadores reales en nuestro nuevo sistema de combate por turnos RPG. Administra tu energía y destruye al rival.
-                </p>
-                <div class="flex items-center gap-3">
-                    <button class="bg-red-50 text-red-600 font-black text-xs px-4 py-2 rounded-xl uppercase tracking-widest border border-red-100 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
-                        Leer Notas del Parche &rarr;
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- LISTA RESPONSIVE DE ACTUALIZACIONES (FLEX/GRID CARDS) -->
     <div class="space-y-3 md:space-y-4">
 
-        <!-- 1. V2.2 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-purple-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Cero Azar: Nueva Inteligencia Aviar', 'Para garantizar la total legalidad como juego de habilidad, hemos reescrito la Inteligencia Artificial del modo Campaña (PvE). Ahora es 100% predecible, pero mucho más letal.\n\n👁️ Sistema de Amenaza (Aggro): El Cuervo Alfa atacará a la planta que más daño le haya hecho a su equipo en el turno anterior. ¡Cuidado con quién atacas!\n🎯 Marcas de Presa: El nuevo Cuervo Vigía marcará a tu planta con más Vida. Si el Alfa ve una marca, ignorará el Aggro y la aniquilará.\n🔥 Último Aliento y Ola de Calor: Si dejas a un solo cuervo vivo, se enfurecerá duplicando su daño. Además, si el combate se da en la temporada de Verano, una Ola de Calor en el Turno 4 quitará el 10% de HP a todos los combatientes.', '08-10-2026', 'https://i.ibb.co/wZNhF2bY/image-removebg-preview-38.png', 'SISTEMA DE COMBATE', 'bg-gradient-to-r from-purple-600 to-red-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
+        <!-- Destacado: La Arena 3v3 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-red-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-red-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V2.0</span>
+                <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">05-10-2026</span>
+            </div>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">El Despertar de la Arena: Combate Táctico 3v3 (PvP y PvE)</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">¡La actualización más grande hasta la fecha ya está aquí! Tu Invernadero ya no es solo para cosechar, ahora es una base militar botánica. Hemos introducido la nueva Arena de Duelos con mecánicas RPG por turnos y cartas de habilidad.
+
+🛡️ MODO CAMPAÑA (PvE): Enfréntate a la Inteligencia Artificial (la temible bandada de cuervos). Usa tus Tickets de Duelo comprados en el Mercado para ingresar. Si tu escuadrón sobrevive, ganarás botines inmensos de semillas para expandir tu terreno.
+
+⚔️ MODO DUELO (PvP DIRECTO): ¿Crees tener la mejor estrategia? Ingresa el ID de 4 dígitos de un rival o amigo, fijen una apuesta en semillas (Ej: 10,000 🌱) y luchen a muerte súbita. El ganador se lleva todo el pozo y el perdedor se queda sin nada.
+
+Prepara a tus 3 mejores plantas, administra tus Puntos de Energía (⚡) sabiamente, y domina el juego de Piedra, Papel o Tijera para asegurar la iniciativa de ataque. ¡La gloria te espera!</p>
+            </div>
+        </div>
+
+        <!-- V2.2 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-purple-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
                 <span class="bg-purple-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V2.2</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">08-10-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-purple-50 rounded-xl border border-purple-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/wZNhF2bY/image-removebg-preview-38.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-purple-600 transition-colors leading-tight mb-1">Cero Azar: Nueva Inteligencia Aviar</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Llegan el Aggro, las Marcas de Presa y la Ola de Calor a la Arena PvE.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-purple-600 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Cero Azar: Nueva Inteligencia Aviar</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Para garantizar la total legalidad como juego de habilidad, hemos reescrito la Inteligencia Artificial del modo Campaña (PvE). Ahora es 100% predecible, pero mucho más letal.
+
+👁️ Sistema de Amenaza (Aggro): El Cuervo Alfa atacará a la planta que más daño le haya hecho a su equipo en el turno anterior. ¡Cuidado con quién atacas!
+🎯 Marcas de Presa: El nuevo Cuervo Vigía marcará a tu planta con más Vida. Si el Alfa ve una marca, ignorará el Aggro y la aniquilará.
+🔥 Último Aliento y Ola de Calor: Si dejas a un solo cuervo vivo, se enfurecerá duplicando su daño. Además, si el combate se da en la temporada de Verano, una Ola de Calor en el Turno 4 quitará el 10% de HP a todos los combatientes.</p>
             </div>
         </div>
 
-        <!-- 2. V2.1 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-cg_blue transition-all cursor-pointer group"
-             onclick="openNewsModal('Banquillo de Reservas: Escuadrones de 5', 'Hemos escuchado a la comunidad. Para darle más profundidad estratégica al combate sin saturar la pantalla de celulares, implementamos el Banquillo de Reservas.\n\nAhora puedes formar tu escuadrón con hasta 5 plantas de tu Arsenal. Tres de ellas entrarán al campo de batalla y dos se quedarán en el Banquillo.\n\n🔄 Relevo Estratégico: Durante tu turno, puedes gastar 2⚡ para retirar una planta en peligro o marcada por el enemigo, y reemplazarla por una planta fresca de tu reserva. ¡Adapta tu estrategia en tiempo real!', '07-10-2026', 'https://i.ibb.co/tw72tZxv/Frame-740.png', 'NUEVA MECÁNICA', 'bg-gradient-to-r from-blue-500 to-cyan-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-cg_blue text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V2.1</span>
+        <!-- V2.1 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-blue-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V2.1</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">07-10-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-50 rounded-xl border border-blue-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <span class="text-3xl">🔄</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-cg_blue transition-colors leading-tight mb-1">Banquillo de Reservas: Escuadrones de 5</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Lleva hasta 5 plantas a la Arena y realiza relevos tácticos en pleno combate por 2⚡.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-cg_blue group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Banquillo de Reservas: Escuadrones de 5</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Hemos escuchado a la comunidad. Para darle más profundidad estratégica al combate sin saturar la pantalla de celulares, implementamos el Banquillo de Reservas.
+
+Ahora puedes formar tu escuadrón con hasta 5 plantas de tu Arsenal. Tres de ellas entrarán al campo de batalla y dos se quedarán en el Banquillo.
+
+🔄 Relevo Estratégico: Durante tu turno, puedes gastar 2⚡ para retirar una planta en peligro o marcada por el enemigo, y reemplazarla por una planta fresca de tu reserva. ¡Adapta tu estrategia en tiempo real!</p>
             </div>
         </div>
 
-        <!-- 3. V1.9.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-cg_blue transition-all cursor-pointer group"
-             onclick="openNewsModal('Balance de Estadísticas PVP', 'Se han ajustado las estadísticas base de Vida, Ataque y Defensa de todas las plantas en preparación para la apertura de la Arena 3v3.\n\nAhora el Helecho de Cristal cuenta con un daño letal pero vida muy frágil, mientras que el Bambú Tryhard y el Cactus asumen el rol de tanques con alta defensa base.\n\nPuedes consultar estas nuevas estadísticas tocando el ícono de información (i) de tus plantas o dentro del nuevo Almacén Estratégico.', '28-09-2026', 'https://i.ibb.co/S4G2c9qy/Frame-768.png', 'BALANCE', 'bg-gradient-to-r from-blue-500 to-indigo-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-cg_blue group-hover:text-white transition-colors">V1.9.5</span>
+        <!-- V1.9.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-indigo-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-indigo-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.9.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">28-09-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/S4G2c9qy/Frame-768.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-cg_blue transition-colors leading-tight mb-1">Balance de Estadísticas PVP</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Ajuste profundo de Vida, Ataque y Defensa para todas las especies del Invernadero.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-cg_blue group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Balance de Estadísticas PVP</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Se han ajustado las estadísticas base de Vida, Ataque y Defensa de todas las plantas en preparación para la apertura de la Arena 3v3.
+
+Ahora el Helecho de Cristal cuenta con un daño letal pero vida muy frágil, mientras que el Bambú Tryhard y el Cactus asumen el rol de tanques con alta defensa base.
+
+Puedes consultar estas nuevas estadísticas tocando el ícono de información (i) de tus plantas o dentro del nuevo Almacén Estratégico.</p>
             </div>
         </div>
 
-        <!-- 4. V1.9 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Almacén Estratégico (Arsenal)', 'Tus plantas ya no sirven solo para ser vendidas por semillas.\n\nHemos inaugurado el Almacén Estratégico (Arsenal). Al momento de realizar la cosecha, ahora tendrás la opción de \'Almacenar\' a tu planta para conservarla permanentemente. Podrás utilizar las plantas de tu Arsenal para formar escuadrones de combate en futuros parches.\n\nLas plantas almacenadas conservan su vida y ganan experiencia por cada batalla que sobreviven.', '20-09-2026', 'https://i.ibb.co/tw72tZxv/Frame-740.png', 'MECÁNICA NUEVA', 'bg-gradient-to-r from-green-600 to-green-900')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-green-500 group-hover:text-white transition-colors">V1.9</span>
+        <!-- V1.9 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-green-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-green-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.9</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">20-09-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/tw72tZxv/Frame-740.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-green-600 transition-colors leading-tight mb-1">Almacén Estratégico (Arsenal)</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Nueva opción al cosechar: Guarda tus mejores especímenes de forma permanente.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-green-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Almacén Estratégico (Arsenal)</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Tus plantas ya no sirven solo para ser vendidas por semillas.
+
+Hemos inaugurado el Almacén Estratégico (Arsenal). Al momento de realizar la cosecha, ahora tendrás la opción de 'Almacenar' a tu planta para conservarla permanentemente. Podrás utilizar las plantas de tu Arsenal para formar escuadrones de combate en futuros parches.
+
+Las plantas almacenadas conservan su vida y ganan experiencia por cada batalla que sobreviven.</p>
             </div>
         </div>
 
-        <!-- 5. V1.8 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-yellow-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Expansión del Catálogo', 'Hemos añadido nuevas especies botánicas al Mercado para diversificar tu estrategia de inversión:\n\n🌙 Lirio Lunar:\nNuestra nueva semilla masiva. Otorga asombrosos +55,000 🌱, pero atrae cuervos salvajemente si llega a descuidarse.\n\n¡Visita el Mercado para explorar el nuevo catálogo y expandir tus cultivos!', '12-09-2026', 'https://i.ibb.co/gbDzsCGh/Frame-765.png', 'NUEVAS PLANTAS', 'bg-gradient-to-r from-yellow-500 to-orange-500')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-yellow-500 group-hover:text-white transition-colors">V1.8</span>
+        <!-- V1.8 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-yellow-500 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.8</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">12-09-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-white rounded-xl border border-yellow-300 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform shadow-inner">
-                    <img src="https://i.ibb.co/gbDzsCGh/Frame-765.png" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-yellow-600 transition-colors leading-tight mb-1">Expansión del Catálogo</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Llega el masivo Lirio Lunar al mercado.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-yellow-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Expansión del Catálogo</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Hemos añadido nuevas especies botánicas al Mercado para diversificar tu estrategia de inversión:
+
+🌙 Lirio Lunar:
+Nuestra nueva semilla masiva. Otorga asombrosos +55,000 🌱, pero atrae cuervos salvajemente si llega a descuidarse.
+
+¡Visita el Mercado para explorar el nuevo catálogo y expandir tus cultivos!</p>
             </div>
         </div>
 
-        <!-- 6. V1.7.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-cg_gold transition-all cursor-pointer group"
-             onclick="openNewsModal('Torneos Sit & Go Escalados', 'Para asegurar un ecosistema competitivo sano, hemos reprogramado los horarios de la Arena de Torneos.\n\nAhora, cada liga tiene un desfase de inicio escalonado de 1 hora (Ej: Bonsái arranca a las 12:00, Orquídea a las 1:00, Rosa a las 2:00, etc.). Esto permite a los granjeros profesionales participar en múltiples ligas sin que sus tiempos de calibración de riego se solapen y causen ahogamientos masivos.', '05-09-2026', 'https://i.ibb.co/bRq5k4G3/Frame-756.png', 'COMPETITIVO', 'bg-gradient-to-r from-yellow-600 to-red-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-cg_gold group-hover:text-white transition-colors">V1.7.5</span>
+        <!-- V1.7.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-yellow-600 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-yellow-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.7.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">05-09-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/bRq5k4G3/Frame-756.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-cg_gold transition-colors leading-tight mb-1">Torneos Sit & Go Escalados</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Reorganización de los horarios de las ligas competitivas para evitar solapamientos.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-cg_gold group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Torneos Sit & Go Escalados</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Para asegurar un ecosistema competitivo sano, hemos reprogramado los horarios de la Arena de Torneos.
+
+Ahora, cada liga tiene un desfase de inicio escalonado de 1 hora (Ej: Bonsái arranca a las 12:00, Orquídea a las 1:00, Rosa a las 2:00, etc.). Esto permite a los granjeros profesionales participar en múltiples ligas sin que sus tiempos de calibración de riego se solapen y causen ahogamientos masivos.</p>
             </div>
         </div>
 
-        <!-- 7. V1.7 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Nueva Especie: Bambú Tryhard', 'Los jugadores lo pidieron y nosotros escuchamos.\n\nEl Bambú Tryhard hace honor a su nombre: tiene la evaporación base más extrema de todo el juego (800% / h) y un tiempo de crecimiento ultracorto de 10 minutos. \n\nSi logras cultivarlo sin que se seque o se llene de cuervos, la recompensa es gigantesca. Solo para granjeros con nervios de acero y mucha regadera.', '28-08-2026', 'https://i.ibb.co/S4G2c9qy/Frame-768.png', 'CONTENIDO', 'bg-gradient-to-r from-emerald-500 to-green-700')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-green-500 group-hover:text-white transition-colors">V1.7</span>
+        <!-- V1.7 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-emerald-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-emerald-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.7</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">28-08-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/S4G2c9qy/Frame-768.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-green-600 transition-colors leading-tight mb-1">Nueva Especie: Bambú Tryhard</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Una planta con 800% de evaporación por hora. ¿Te atreves a cultivarla?</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-green-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Nueva Especie: Bambú Tryhard</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Los jugadores lo pidieron y nosotros escuchamos.
+
+El Bambú Tryhard hace honor a su nombre: tiene la evaporación base más extrema de todo el juego (800% / h) y un tiempo de crecimiento ultracorto de 10 minutos. 
+
+Si logras cultivarlo sin que se seque o se llene de cuervos, la recompensa es gigantesca. Solo para granjeros con nervios de acero y mucha regadera.</p>
             </div>
         </div>
 
-        <!-- 8. V1.6.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Ajustes de Economía Global', 'Debido a la inyección masiva de liquidez a través de la Casa de Cambio, hemos implementado mecanismos de quema de Semillas para estabilizar la economía.\n\n- El costo de la Maceta Grande se incrementó de 10,000 🌱 a 15,000 🌱.\n- Los premios del torneo Freeroll de Bonsái se ajustaron para los puestos inferiores, priorizando la recompensa fuerte solo para el TOP 3.', '20-08-2026', 'https://i.ibb.co/k6DQJbhW/Frame-760.png', 'BALANCE', 'bg-gradient-to-r from-gray-500 to-gray-800')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-gray-600 group-hover:text-white transition-colors">V1.6.5</span>
+        <!-- V1.6.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-gray-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-gray-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.6.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">20-08-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/k6DQJbhW/Frame-760.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-gray-700 transition-colors leading-tight mb-1">Ajustes de Economía (Quema)</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Nuevos costos de macetas y rebalanceo de recompensas para estabilizar la inflación de semillas.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-gray-600 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Ajustes de Economía Global</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Debido a la inyección masiva de liquidez a través de la Casa de Cambio, hemos implementado mecanismos de quema de Semillas para estabilizar la economía.
+
+- El costo de la Maceta Grande se incrementó de 10,000 🌱 a 15,000 🌱.
+- Los premios del torneo Freeroll de Bonsái se ajustaron para los puestos inferiores, priorizando la recompensa fuerte solo para el TOP 3.</p>
             </div>
         </div>
 
-        <!-- 9. V1.6 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-purple-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Automatización Total: El Ecosistema VIP', 'Para los jugadores con poco tiempo, el Mercado ahora ofrece herramientas de delegación total adquiribles con Dinero Real (COP).\n\n🤖 Asistente Auto-Riego:\nRiega tus plantas automáticamente al 100% de su franja segura y ahuyenta plagas instantáneamente durante 24h o 72h.\n\n🧺 El Recolector:\nCosecha tus plantas en el instante preciso en que maduran, depositando las semillas en tu inventario sin riesgo de que los cuervos te roben por abandono.\n\n🎟️ Pase Granjero (Combo Total):\nObtén ambos servicios juntos y permite que tu Invernadero trabaje de forma autónoma al 100% mientras duermes.', '10-08-2026', 'https://i.ibb.co/C5GGQDyy/Frame-763.png', 'SISTEMA VIP', 'bg-gradient-to-r from-purple-600 to-indigo-800')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-purple-600 group-hover:text-white transition-colors">V1.6</span>
+        <!-- V1.6 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-purple-600 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-purple-700 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.6</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">10-08-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/C5GGQDyy/Frame-763.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-purple-600 transition-colors leading-tight mb-1">Automatización Total: Sistema VIP</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Delega el trabajo con el Asistente Auto-Riego y el Recolector automático.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-purple-600 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Automatización Total: El Ecosistema VIP</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Para los jugadores con poco tiempo, el Mercado ahora ofrece herramientas de delegación total adquiribles con Dinero Real (COP).
+
+🤖 Asistente Auto-Riego:
+Riega tus plantas automáticamente al 100% de su franja segura y ahuyenta plagas instantáneamente durante 24h o 72h.
+
+🧺 El Recolector:
+Cosecha tus plantas en el instante preciso en que maduran, depositando las semillas en tu inventario sin riesgo de que los cuervos te roben por abandono.
+
+🎟️ Pase Granjero (Combo Total):
+Obtén ambos servicios juntos y permite que tu Invernadero trabaje de forma autónoma al 100% mientras duermes.</p>
             </div>
         </div>
 
-        <!-- 10. V1.5.8 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-yellow-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Nuevos Lotes de Semillas en Mercado', 'La tienda básica de semillas se ha actualizado con mayores cantidades de stock para agilizar las compras de granjeros de nivel alto. Ahora puedes adquirir paquetes de hasta x10 semillas con un solo clic, reduciendo la fatiga de interacción y agilizando las siembras masivas.', '02-08-2026', 'https://i.ibb.co/mF6QtPRV/Frame-767.png', 'MERCADO', 'bg-gradient-to-r from-yellow-400 to-orange-500')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-yellow-500 group-hover:text-white transition-colors">V1.5.8</span>
+        <!-- V1.5.8 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-yellow-400 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-yellow-500 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.5.8</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">02-08-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <span class="text-3xl">🛒</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-yellow-600 transition-colors leading-tight mb-1">Nuevos Lotes de Semillas</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Se agilizó la compra masiva de semillas para Invernaderos de gran escala.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-yellow-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Nuevos Lotes de Semillas en Mercado</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">La tienda básica de semillas se ha actualizado con mayores cantidades de stock para agilizar las compras de granjeros de nivel alto. Ahora puedes adquirir paquetes de hasta x10 semillas con un solo clic, reduciendo la fatiga de interacción y agilizando las siembras masivas.</p>
             </div>
         </div>
 
-        <!-- 11. V1.5.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Sistema de Contagio Global', 'Los Cuervos Carroñeros se han vuelto más inteligentes y letales.\n\nSi dejas una planta abandonada o infectada por pudrición por más de 45 minutos sin atenderla, no solo perderás esa cosecha por completo (Colapso Total), sino que la bandada de cuervos comenzará a volar a tus parcelas vecinas, infectando terrenos sanos en cadena.\n\n¡La negligencia ahora tiene consecuencias a nivel de toda tu granja!', '25-07-2026', 'https://i.ibb.co/DfG3hswj/Frame-750.png', 'MECÁNICA', 'bg-gradient-to-r from-red-600 to-black')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-red-600 group-hover:text-white transition-colors">V1.5.5</span>
+        <!-- V1.5.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-red-600 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-red-700 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.5.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">25-07-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 rounded-xl border border-red-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/DfG3hswj/Frame-750.png" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-red-600 transition-colors leading-tight mb-1">Sistema de Contagio Global</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Cuidado: Un cuervo ignorado por mucho tiempo propagará la infección al resto de tus parcelas sanas.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-red-600 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Sistema de Contagio Global</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Los Cuervos Carroñeros se han vuelto más inteligentes y letales.
+
+Si dejas una planta abandonada o infectada por pudrición por más de 45 minutos sin atenderla, no solo perderás esa cosecha por completo (Colapso Total), sino que la bandada de cuervos comenzará a volar a tus parcelas vecinas, infectando terrenos sanos en cadena.
+
+¡La negligencia ahora tiene consecuencias a nivel de toda tu granja!</p>
             </div>
         </div>
 
-        <!-- 12. V1.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Defensas: El Espantapájaros', 'Presentamos la primera herramienta de protección preventiva: El Espantapájaros.\n\nDisponible en la tienda por semillas, esta herramienta protege una parcela de forma garantizada durante 24 horas frente a cuervos generados por sequía. Además, si lo usas sobre una planta ya podrida o infectada, expulsará al cuervo al instante, saltándose la penalización normal de 15 minutos.', '18-07-2026', 'https://i.ibb.co/pBBDqXXw/Frame-742.png', 'NUEVO ÍTEM', 'bg-gradient-to-r from-green-600 to-lime-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-green-600 group-hover:text-white transition-colors">V1.5</span>
+        <!-- V1.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-green-600 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-green-700 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">18-07-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/pBBDqXXw/Frame-742.png" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-green-600 transition-colors leading-tight mb-1">Defensas: El Espantapájaros</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Protege tus cultivos preventivamente durante 24 horas y limpia pudriciones instantáneamente.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-green-600 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Defensas: El Espantapájaros</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Presentamos la primera herramienta de protección preventiva: El Espantapájaros.
+
+Disponible en la tienda por semillas, esta herramienta protege una parcela de forma garantizada durante 24 horas frente a cuervos generados por sequía. Además, si lo usas sobre una planta ya podrida o infectada, expulsará al cuervo al instante, saltándose la penalización normal de 15 minutos.</p>
             </div>
         </div>
 
-        <!-- 13. V1.4.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-500 transition-all cursor-pointer group"
-             onclick="openNewsModal('Mejoras de Seguridad Wompi', 'La seguridad de tus retiros en COP es prioridad.\n\nHemos actualizado la integración con la pasarela de pagos Wompi y Nequi, implementando una doble validación asíncrona de saldo. Esto erradica los problemas donde los desembolsos se retrasaban debido a micro-cortes del servidor.\n\nRetirar tus ganancias de torneos hacia Nequi ahora es 100% fluido y automático si superas los $10.000 COP mínimos.', '10-07-2026', 'https://i.ibb.co/qFdW7j8f/Frame-761.png', 'SISTEMA', 'bg-gradient-to-r from-blue-600 to-indigo-700')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-blue-600 group-hover:text-white transition-colors">V1.4.5</span>
+        <!-- V1.4.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-blue-600 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-blue-700 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.4.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">10-07-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-50 rounded-xl border border-blue-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <span class="text-3xl">🏦</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-blue-600 transition-colors leading-tight mb-1">Mejoras de Seguridad Wompi</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Optimización y aseguramiento de la pasarela de pagos para retiros directos a Nequi.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Mejoras de Seguridad Wompi</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">La seguridad de tus retiros en COP es prioridad.
+
+Hemos actualizado la integración con la pasarela de pagos Wompi y Nequi, implementando una doble validación asíncrona de saldo. Esto erradica los problemas donde los desembolsos se retrasaban debido a micro-cortes del servidor.
+
+Retirar tus ganancias de torneos hacia Nequi ahora es 100% fluido y automático si superas los $10.000 COP mínimos.</p>
             </div>
         </div>
 
-        <!-- 14. V1.4 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-yellow-500 transition-all cursor-pointer group"
-             onclick="openNewsModal(
-                 'Inauguración Oficial: La Casa de Cambio', 
-                 'Hemos integrado una nueva sección en el Mercado: La Casa de Cambio. Ahora puedes usar tus Pesos Colombianos (COP) ganados en los torneos para inyectar liquidez masiva a tu granja.\n\n💼 Lotes Disponibles:\nLote N°1: Entregas $10,000 COP a cambio de un fondo rápido de 4,250 🌱 (Aplica 15% de comisión de red).\nLote N°2: Entregas $25,000 COP y recibes 11,000 🌱. Perfecto para pagar entradas de freerolls.\nLote N°3: Entregas $50,000 COP y te llevas 22,500 🌱 (Mejor tasa de conversión, solo 10% de comisión).\n\nEsto te permitirá escalar tus parcelas y comprar macetas sin esperar el tiempo de cosecha natural.', 
-                 '01-07-2026', 
-                 'https://i.ibb.co/qFdW7j8f/Frame-761.png', 
-                 'ECONOMÍA',
-                 'bg-gradient-to-r from-yellow-500 to-orange-500'
-             )">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-yellow-500 group-hover:text-white transition-colors">V1.4</span>
+        <!-- V1.4 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-yellow-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-yellow-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.4</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">01-07-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/qFdW7j8f/Frame-761.png" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-yellow-600 transition-colors leading-tight mb-1">Inauguración: La Casa de Cambio</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Intercambia tu saldo COP de torneos por lotes masivos de semillas para escalar velozmente.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-yellow-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Inauguración Oficial: La Casa de Cambio</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Hemos integrado una nueva sección en el Mercado: La Casa de Cambio. Ahora puedes usar tus Pesos Colombianos (COP) ganados en los torneos para inyectar liquidez masiva a tu granja.
+
+💼 Lotes Disponibles:
+Lote N°1: Entregas $10,000 COP a cambio de un fondo rápido de 4,250 🌱 (Aplica 15% de comisión de red).
+Lote N°2: Entregas $25,000 COP y recibes 11,000 🌱. Perfecto para pagar entradas de freerolls.
+Lote N°3: Entregas $50,000 COP y te llevas 22,500 🌱 (Mejor tasa de conversión, solo 10% de comisión).
+
+Esto te permitirá escalar tus parcelas y comprar macetas sin esperar el tiempo de cosecha natural.</p>
             </div>
         </div>
 
-        <!-- 15. V1.3.8 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-cg_blue transition-all cursor-pointer group"
-             onclick="openNewsModal('Expansión de Parcelas', '¡Tu Invernadero crece!\n\nDebido a la alta demanda agrícola, hemos ampliado el límite máximo de terrenos de tierra de 6 a 8 parcelas cultivables.\n\nLos costos de las parcelas finales han sido ajustados progresivamente para representar un verdadero desafío end-game para los magnates botánicos.', '20-06-2026', 'https://i.ibb.co/rf66qT74/Frame-751.png', 'MECÁNICA', 'bg-gradient-to-r from-blue-400 to-blue-700')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-cg_blue group-hover:text-white transition-colors">V1.3.8</span>
+        <!-- V1.3.8 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-blue-700 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-blue-800 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.3.8</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">20-06-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/rf66qT74/Frame-751.png" class="w-full h-full object-contain drop-shadow-md">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-cg_blue transition-colors leading-tight mb-1">Expansión de Parcelas</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Aumentado el límite de terrenos cultivables de 6 a 8 para magnates.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-cg_blue group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Expansión de Parcelas</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">¡Tu Invernadero crece!
+
+Debido a la alta demanda agrícola, hemos ampliado el límite máximo de terrenos de tierra de 6 a 8 parcelas cultivables.
+
+Los costos de las parcelas finales han sido ajustados progresivamente para representar un verdadero desafío end-game para los magnates botánicos.</p>
             </div>
         </div>
 
-        <!-- 16. V1.3.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-400 transition-all cursor-pointer group"
-             onclick="openNewsModal('Alertas Inteligentes de Telegram', '¡Nunca más dejes morir una planta por descuido!\n\nHemos implementado integración oficial con Telegram. Ahora puedes vincular tu Chat ID en la sección Perfil > Alertas Telegram.\n\nRecibirás mensajes carismáticos directamente en tu celular cuando tus plantas tengan sed, cuando un cuervo aterrice, o cuando estén perfectamente maduras para la cosecha.', '12-06-2026', 'https://i.ibb.co/C5GGQDyy/Frame-763.png', 'NOTIFICACIONES', 'bg-gradient-to-r from-blue-400 to-cyan-500')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-blue-500 group-hover:text-white transition-colors">V1.3.5</span>
+        <!-- V1.3.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-cyan-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-cyan-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.3.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">12-06-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-50 rounded-xl border border-blue-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <span class="text-3xl">✈️</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-blue-600 transition-colors leading-tight mb-1">Alertas Inteligentes de Telegram</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Vincula tu celular y recibe avisos en tiempo real sobre la salud de tu granja.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-blue-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Alertas Inteligentes de Telegram</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">¡Nunca más dejes morir una planta por descuido!
+
+Hemos implementado integración oficial con Telegram. Ahora puedes vincular tu Chat ID en la sección Perfil > Alertas Telegram.
+
+Recibirás mensajes carismáticos directamente en tu celular cuando tus plantas tengan sed, cuando un cuervo aterrice, o cuando estén perfectamente maduras para la cosecha.</p>
             </div>
         </div>
 
-        <!-- 17. V1.3 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-400 transition-all cursor-pointer group"
-             onclick="openNewsModal('Nuevos Cultivos Básicos', 'Expansión de variedad biológica en el mercado inicial:\n\n- Flor Pequeña: Crecimiento balanceado de 1 hora, excelente para quienes revisan el móvil ocasionalmente.\n- Cactus de Cuarzo: Extremadamente lento en su evaporación y requiere poca agua, ideal para dejar descuidado largas horas (pero muy sensible al exceso de riego).\n- Trigo Rápido: Cosechas relámpago de 5 minutos, requiere micro-gestión intensa.', '05-06-2026', 'https://i.ibb.co/mrJyDqV8/Frame-743.png', 'PLANTAS', 'bg-gradient-to-r from-green-400 to-emerald-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-green-500 group-hover:text-white transition-colors">V1.3</span>
+        <!-- V1.3 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-emerald-500 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-emerald-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.3</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">05-06-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/mrJyDqV8/Frame-743.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-green-500 transition-colors leading-tight mb-1">Nuevos Cultivos Básicos</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Llegan la Flor Pequeña, el Trigo Rápido y el Cactus de Cuarzo al mercado.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-green-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Nuevos Cultivos Básicos</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Expansión de variedad biológica en el mercado inicial:
+
+- Flor Pequeña: Crecimiento balanceado de 1 hora, excelente para quienes revisan el móvil ocasionalmente.
+- Cactus de Cuarzo: Extremadamente lento en su evaporación y requiere poca agua, ideal para dejar descuidado largas horas (pero muy sensible al exceso de riego).
+- Trigo Rápido: Cosechas relámpago de 5 minutos, requiere micro-gestión intensa.</p>
             </div>
         </div>
 
-        <!-- 18. V1.2.5 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-400 transition-all cursor-pointer group"
-             onclick="openNewsModal('Balance de la Regadera Quirúrgica', 'Hemos recibido su retroalimentación sobre la dificultad extrema de los primeros riesgos.\n\nLa velocidad de oscilación de la flecha en el minijuego de \'Riego Quirúrgico\' ha sido estabilizada a un multiplicador de 1.0x fijo para los cultivos de granja, eliminando la aleatoriedad injusta. ¡El cálculo preciso ahora es totalmente dependiente de tus reflejos!', '28-05-2026', 'https://i.ibb.co/qYHq54kh/Frame-741.png', 'MECÁNICA', 'bg-gradient-to-r from-blue-300 to-blue-600')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-blue-500 group-hover:text-white transition-colors">V1.2.5</span>
+        <!-- V1.2.5 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-blue-400 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-blue-500 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.2.5</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">28-05-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/qYHq54kh/Frame-741.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-blue-500 transition-colors leading-tight mb-1">Balance de la Regadera Quirúrgica</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Ajustada la velocidad del minijuego de riego para hacerlo un reto justo de reflejos.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-blue-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Balance de la Regadera Quirúrgica</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Hemos recibido su retroalimentación sobre la dificultad extrema de los primeros riesgos.
+
+La velocidad de oscilación de la flecha en el minijuego de 'Riego Quirúrgico' ha sido estabilizada a un multiplicador de 1.0x fijo para los cultivos de granja, eliminando la aleatoriedad injusta. ¡El cálculo preciso ahora es totalmente dependiente de tus reflejos!</p>
             </div>
         </div>
 
-        <!-- 19. V1.2 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-cyan-500 transition-all cursor-pointer group"
-             onclick="openNewsModal(
-                 'Sincronización Climática: Temporadas Dinámicas', 
-                 'El ecosistema de CashGarden ha cobrado vida. A partir de hoy, la evaporación de agua en tus parcelas no es estática, está atada al Sistema Meteorológico global que cambia según el día del mes real.\n\n❄️ Invierno (Días 1-9): Evaporación x0.5. Clima frío, el agua rinde el doble.\n🍂 Otoño (Días 10-19): Evaporación x1.5. Vientos secos, se evapora rápido.\n🌸 Primavera (Días 20-26): Evaporación Normal (x1.0).\n☀️ Verano (Día 27 a Fin de Mes): Evaporación x2.0. ¡Alerta de Sequía Extrema!\n\nRevisa el widget de clima en tu granja o la pestaña Calendario para anticipar el consumo hídrico de tus plantas y evitar deshidrataciones sorpresivas.', 
-                 '20-05-2026', 
-                 'https://i.ibb.co/TqPpc87z/Frame-745.png', 
-                 'TEMPORADAS',
-                 'bg-gradient-to-r from-blue-500 to-cyan-600'
-             )">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-cyan-500 group-hover:text-white transition-colors">V1.2</span>
+        <!-- V1.2 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-cyan-400 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-cyan-500 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.2</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">20-05-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-50 rounded-xl border border-blue-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/TqPpc87z/Frame-745.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-cyan-600 transition-colors leading-tight mb-1">Sincronización Climática: Temporadas</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">La evaporación base ahora se multiplica según el día del mes real. Prepara tus cultivos.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-cyan-500 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Sincronización Climática: Temporadas Dinámicas</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">El ecosistema de CashGarden ha cobrado vida. A partir de hoy, la evaporación de agua en tus parcelas no es estática, está atada al Sistema Meteorológico global que cambia según el día del mes real.
+
+❄️ Invierno (Días 1-9): Evaporación x0.5. Clima frío, el agua rinde el doble.
+🍂 Otoño (Días 10-19): Evaporación x1.5. Vientos secos, se evapora rápido.
+🌸 Primavera (Días 20-26): Evaporación Normal (x1.0).
+☀️ Verano (Día 27 a Fin de Mes): Evaporación x2.0. ¡Alerta de Sequía Extrema!
+
+Revisa el widget de clima en tu granja o la pestaña Calendario para anticipar el consumo hídrico de tus plantas y evitar deshidrataciones sorpresivas.</p>
             </div>
         </div>
 
-        <!-- 20. V1.1 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-800 transition-all cursor-pointer group"
-             onclick="openNewsModal('Optimización en Dispositivos Móviles', 'Hemos reescrito el motor de renderizado de la Granja y el Panel Inferior de Herramientas para que sea 100% responsivo y fluido a 60fps en dispositivos móviles de gama de entrada.\n\nYa no habrá lag al cambiar entre parcelas, y el minijuego de Alquimia no perderá cuadros por segundo.', '10-05-2026', 'https://i.ibb.co/TDK1WJMK/Logo.png', 'RENDIMIENTO', 'bg-gradient-to-r from-gray-700 to-gray-900')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-gray-100 text-gray-500 font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase group-hover:bg-gray-700 group-hover:text-white transition-colors">V1.1</span>
+        <!-- V1.1 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-gray-800 shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-gray-900 text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.1</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">10-05-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <span class="text-3xl">📱</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-gray-800 transition-colors leading-tight mb-1">Rendimiento en Dispositivos Móviles</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">Mejora drástica a los FPS del panel de herramientas y estabilización táctil.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-gray-700 group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Optimización en Dispositivos Móviles</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">Hemos reescrito el motor de renderizado de la Granja y el Panel Inferior de Herramientas para que sea 100% responsivo y fluido a 60fps en dispositivos móviles de gama de entrada.
+
+Ya no habrá lag al cambiar entre parcelas, y el minijuego de Alquimia no perderá cuadros por segundo.</p>
             </div>
         </div>
 
-        <!-- 21. V1.0 -->
-        <div class="bg-white rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-cg_navy transition-all cursor-pointer group"
-             onclick="openNewsModal('Lanzamiento Oficial: V1.0', '¡Bienvenidos a la versión 1.0 de CashGarden!\n\nNuestra visión de crear el primer simulador botánico de habilidad pura (Skill-Based) con recompensas criptográficas y en COP ha cobrado vida.\n\nTodo comienza con una pequeña maceta y un medidor de agua. Cultiva, vende tus semillas, inscribe tus plantas en los torneos Freeroll y demuestra que tienes la máxima precisión en el Ritual de Siembra. ¡Que los campos florezcan!', '01-05-2026', 'https://i.ibb.co/TDK1WJMK/Logo.png', 'LANZAMIENTO', 'bg-gradient-to-r from-cg_navy to-blue-900')">
-            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0">
-                <span class="bg-cg_gold text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.0</span>
+        <!-- V1.0 -->
+        <div class="bg-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-start gap-4 md:gap-6 border-l-4 border-cg_navy shadow-sm hover:shadow-md transition-all">
+            <div class="flex flex-row md:flex-col justify-between w-full md:w-24 items-center md:items-start shrink-0 border-b md:border-b-0 border-gray-100 pb-2 md:pb-0 mt-1">
+                <span class="bg-cg_navy text-white font-black text-[10px] px-2.5 py-1 rounded-md tracking-widest uppercase">V1.0</span>
                 <span class="text-[10px] font-bold text-gray-400 mt-0 md:mt-1">01-05-2026</span>
             </div>
-            <div class="flex flex-row items-center gap-4 w-full md:flex-1">
-                <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform">
-                    <img src="https://i.ibb.co/TDK1WJMK/Logo.png" class="w-full h-full object-contain">
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm md:text-base font-black text-cg_navy group-hover:text-cg_navy transition-colors leading-tight mb-1">Lanzamiento Oficial de CashGarden</h4>
-                    <p class="text-[11px] md:text-xs text-gray-500 font-medium line-clamp-2">¡Bienvenidos a CashGarden! La economía base está activa y los terrenos abiertos.</p>
-                </div>
-            </div>
-            <div class="w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                <button class="w-full md:w-auto bg-gray-50 border border-gray-200 text-gray-600 font-bold text-[10px] px-4 py-2.5 rounded-xl uppercase tracking-widest group-hover:bg-cg_navy group-hover:text-white transition-colors shadow-sm">Leer</button>
+            <div class="flex-1">
+                <h4 class="text-lg md:text-xl font-black text-cg_navy leading-tight mb-2">Lanzamiento Oficial: V1.0</h4>
+                <p class="text-xs md:text-sm text-gray-600 font-medium leading-relaxed whitespace-pre-line">¡Bienvenidos a la versión 1.0 de CashGarden!
+
+Nuestra visión de crear el primer simulador botánico de habilidad pura (Skill-Based) con recompensas criptográficas y en COP ha cobrado vida.
+
+Todo comienza con una pequeña maceta y un medidor de agua. Cultiva, vende tus semillas, inscribe tus plantas en los torneos Freeroll y demuestra que tienes la máxima precisión en el Ritual de Siembra. ¡Que los campos florezcan!</p>
             </div>
         </div>
 
-    </div>
-
-    <!-- VENTANA MODAL PROFESIONAL (FUNCIONES ORIGINALES INTACTAS) -->
-    <div id="news-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-md transition-opacity duration-300" onclick="closeNewsModal()"></div>
-        
-        <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]" id="news-modal-card">
-            
-            <div class="p-6 md:p-8 text-white relative flex flex-col sm:flex-row items-center sm:items-start gap-4" id="modal-header-bg">
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <button onclick="closeNewsModal()" class="absolute top-4 right-4 w-8 h-8 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center text-white transition-colors z-20">
-                    ✕
-                </button>
-                
-                <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 backdrop-blur-sm shrink-0 shadow-inner p-2 relative z-10">
-                    <img id="modal-image" src="" class="w-full h-full object-contain drop-shadow-xl">
-                </div>
-                
-                <div class="relative z-10 text-center sm:text-left flex-1 pr-6">
-                    <div class="flex items-center justify-center sm:justify-start gap-2 mb-2 flex-wrap">
-                        <span class="bg-black/30 border border-white/20 text-white text-[9px] md:text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm" id="modal-category">
-                            CATEGORÍA
-                        </span>
-                        <span class="text-[10px] md:text-xs text-white/90 font-bold bg-black/10 px-2 py-0.5 rounded" id="modal-date">FECHA</span>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-black tracking-tight leading-snug drop-shadow-md" id="modal-title">
-                        Título de la Noticia
-                    </h3>
-                </div>
-            </div>
-
-            <div class="p-5 md:p-8 overflow-y-auto space-y-4 text-carbon font-sans bg-gray-50 flex-1">
-                <div class="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-white p-6 rounded-2xl border border-gray-100 shadow-sm" id="modal-body">
-                    Cuerpo del comunicado...
-                </div>
-            </div>
-
-            <div class="p-4 md:p-5 bg-white border-t border-gray-200 flex justify-end shrink-0">
-                <button onclick="closeNewsModal()" class="w-full sm:w-auto bg-cg_navy hover:bg-black text-white font-black uppercase tracking-widest px-8 py-3.5 rounded-xl shadow-md text-xs transition-all">
-                    Cerrar Comunicado
-                </button>
-            </div>
-        </div>
     </div>
 </div>
-
-<script>
-    function openNewsModal(title, body, date, imageUrl, category, gradientClass) {
-        const modal = document.getElementById('news-modal');
-        const modalCard = document.getElementById('news-modal-card');
-        const headerBg = document.getElementById('modal-header-bg');
-        
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-body').innerText = body;
-        document.getElementById('modal-date').innerText = date;
-        document.getElementById('modal-image').src = imageUrl;
-        document.getElementById('modal-category').innerText = category;
-
-        headerBg.className = 'p-6 md:p-8 text-white relative flex flex-col sm:flex-row items-center sm:items-start gap-4 ' + gradientClass;
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        setTimeout(() => {
-            modalCard.classList.remove('scale-95', 'opacity-0');
-            modalCard.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeNewsModal() {
-        const modal = document.getElementById('news-modal');
-        const modalCard = document.getElementById('news-modal-card');
-        
-        modalCard.classList.remove('scale-100', 'opacity-100');
-        modalCard.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }, 300);
-    }
-</script>

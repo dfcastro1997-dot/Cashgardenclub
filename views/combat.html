@@ -166,19 +166,19 @@
         <div id="rps-choices" class="flex flex-col md:flex-row justify-center gap-4 md:gap-6 mb-4">
             <!-- PIEDRA -->
             <button onclick="window.combatApp.selectRPS('rock')" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-xl p-6 rounded-[2rem] flex flex-col items-center text-center transition-all duration-300 group">
-                <img src="https://i.ibb.co/XZn602PZ/Frame-772.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                <img src="assets/Poderes/piedra.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                 <h4 class="font-black text-cg_navy text-xl md:text-2xl mb-2">Piedra</h4>
             </button>
             
             <!-- PAPEL -->
             <button onclick="window.combatApp.selectRPS('paper')" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-xl p-6 rounded-[2rem] flex flex-col items-center text-center transition-all duration-300 group">
-                <img src="https://i.ibb.co/21vq6V8C/Frame-770.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                <img src="assets/Poderes/papel.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                 <h4 class="font-black text-cg_navy text-xl md:text-2xl mb-2">Papel</h4>
             </button>
             
             <!-- TIJERA -->
             <button onclick="window.combatApp.selectRPS('scissors')" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-xl p-6 rounded-[2rem] flex flex-col items-center text-center transition-all duration-300 group">
-                <img src="https://i.ibb.co/zhMbW6Dn/Frame-771.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                <img src="assets/Poderes/tijera.png" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                 <h4 class="font-black text-cg_navy text-xl md:text-2xl mb-2">Tijera</h4>
             </button>
         </div>
@@ -292,48 +292,49 @@ window.combatApp = {
     swapActiveIdx: null,
     swapReserveIdx: null,
 
+    // Se eliminó la propiedad "image" de todas las habilidades
     SKILLS_DICT: {
         'flower_wheat': [
-            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque con ramas veloces y cortantes.', image: 'https://i.ibb.co/wN1MYB2j/image.png', type: 'attack'}, 
-            {name: 'Hoja Afilada', cost: 1, dmg: 45, desc: 'Lanza proyectiles de hojas que perforan.', image: 'https://i.ibb.co/CsVp7tmc/image.png', type: 'attack'},
-            {name: 'Drenaje', cost: 2, dmg: 75, desc: 'Absorbe la energía vital del enemigo.', image: 'https://i.ibb.co/SwhbvVh3/image.png', type: 'attack'},
-            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Desata una furia de espigas afiladas.', image: 'https://i.ibb.co/6J0zpf4c/image.png', type: 'attack'},
-            {name: 'Lluvia Dorada', cost: 4, dmg: 180, desc: 'ULTIMATE: Furia de cosecha inquebrantable.', image: 'https://i.ibb.co/7tpJXGGM/image.png', type: 'attack'}
+            {name: 'Latigazo', cost: 1, dmg: 40, desc: 'Ataque con ramas veloces y cortantes.', type: 'attack'}, 
+            {name: 'Hoja Afilada', cost: 1, dmg: 45, desc: 'Lanza proyectiles de hojas que perforan.', type: 'attack'},
+            {name: 'Drenaje', cost: 2, dmg: 75, desc: 'Absorbe la energía vital del enemigo.', type: 'attack'},
+            {name: 'Tormenta', cost: 2, dmg: 85, desc: 'Desata una furia de espigas afiladas.', type: 'attack'},
+            {name: 'Lluvia Dorada', cost: 4, dmg: 180, desc: 'ULTIMATE: Furia de cosecha inquebrantable.', type: 'attack'}
         ],
         'flower_cactus': [
-            {name: 'Espina', cost: 1, dmg: 35, desc: 'Dispara una dura púa perforante.', image: 'https://i.ibb.co/g5kbrXZ/image.png', type: 'attack'}, 
-            {name: 'Contraataque', cost: 1, dmg: 40, desc: 'Reacciona y devuelve el daño al instante.', image: 'https://i.ibb.co/CKWyvxpY/image.png', type: 'attack'},
-            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto duro, seco y contundente.', image: 'https://i.ibb.co/xKfw6B74/image.png', type: 'attack'},
-            {name: 'Lluvia Púas', cost: 3, dmg: 110, desc: 'Caen múltiples espinas sobre el área.', image: 'https://i.ibb.co/1YLssytP/image.png', type: 'attack'},
-            {name: 'Terremoto', cost: 4, dmg: 160, desc: 'ULTIMATE: Sismo arrasador en la arena.', image: 'https://i.ibb.co/JWwfpgXw/image.png', type: 'attack'}
+            {name: 'Espina', cost: 1, dmg: 35, desc: 'Dispara una dura púa perforante.', type: 'attack'}, 
+            {name: 'Contraataque', cost: 1, dmg: 40, desc: 'Reacciona y devuelve el daño al instante.', type: 'attack'},
+            {name: 'Golpe', cost: 2, dmg: 75, desc: 'Impacto duro, seco y contundente.', type: 'attack'},
+            {name: 'Lluvia Púas', cost: 3, dmg: 110, desc: 'Caen múltiples espinas sobre el área.', type: 'attack'},
+            {name: 'Terremoto', cost: 4, dmg: 160, desc: 'ULTIMATE: Sismo arrasador en la arena.', type: 'attack'}
         ],
         'flower_bamboo': [
-            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso al enemigo.', image: 'https://i.ibb.co/wh6sWsL4/image.png', type: 'attack'}, 
-            {name: 'Empuje', cost: 2, dmg: 70, desc: 'Fuerte golpe de vara que desestabiliza.', image: 'https://i.ibb.co/Zp0dty16/image.png', type: 'attack'},
-            {name: 'Hojas Navaja', cost: 2, dmg: 80, desc: 'Doble corte profundo e ineludible.', image: 'https://i.ibb.co/WWyLzpFf/image.png', type: 'attack'},
-            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque penetrante directo al núcleo.', image: 'https://i.ibb.co/twkzrsJw/image.png', type: 'attack'},
-            {name: 'Furia Verde', cost: 5, dmg: 220, desc: 'ULTIMATE: Golpe de dragón esmeralda.', image: 'https://i.ibb.co/v6kMrLXj/image.png', type: 'attack'}
+            {name: 'Corte', cost: 1, dmg: 45, desc: 'Tajo rápido y preciso al enemigo.', type: 'attack'}, 
+            {name: 'Empuje', cost: 2, dmg: 70, desc: 'Fuerte golpe de vara que desestabiliza.', type: 'attack'},
+            {name: 'Hojas Navaja', cost: 2, dmg: 80, desc: 'Doble corte profundo e ineludible.', type: 'attack'},
+            {name: 'Estocada', cost: 3, dmg: 130, desc: 'Ataque penetrante directo al núcleo.', type: 'attack'},
+            {name: 'Furia Verde', cost: 5, dmg: 220, desc: 'ULTIMATE: Golpe de dragón esmeralda.', type: 'attack'}
         ],
         'flower_crystal': [
-            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Emite un rayo de luz deslumbrante.', image: 'https://i.ibb.co/4wGQ7XbY/image.png', type: 'attack'}, 
-            {name: 'Destello', cost: 2, dmg: 85, desc: 'Impacto de luz pura en el objetivo.', image: 'https://i.ibb.co/gZRt0qFY/image.png', type: 'attack'},
-            {name: 'Lente', cost: 2, dmg: 90, desc: 'Concentra la energía lumínica letal.', image: 'https://i.ibb.co/XkWNGFT6/image.png', type: 'attack'},
-            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Dispara un cañón de rayos de arcoíris.', image: 'https://i.ibb.co/Xfns9mNP/image.png', type: 'attack'},
-            {name: 'Supernova', cost: 5, dmg: 250, desc: 'ULTIMATE: Gran explosión estelar.', image: 'https://i.ibb.co/B1m1gRk/image.png', type: 'attack'}
+            {name: 'Reflejo', cost: 1, dmg: 50, desc: 'Emite un rayo de luz deslumbrante.', type: 'attack'}, 
+            {name: 'Destello', cost: 2, dmg: 85, desc: 'Impacto de luz pura en el objetivo.', type: 'attack'},
+            {name: 'Lente', cost: 2, dmg: 90, desc: 'Concentra la energía lumínica letal.', type: 'attack'},
+            {name: 'Prisma', cost: 3, dmg: 140, desc: 'Dispara un cañón de rayos de arcoíris.', type: 'attack'},
+            {name: 'Supernova', cost: 5, dmg: 250, desc: 'ULTIMATE: Gran explosión estelar.', type: 'attack'}
         ],
         'flower_moon': [
-            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico que corroe la defensa.', image: 'https://i.ibb.co/BhL05jL/image.png', type: 'attack'}, 
-            {name: 'Marea', cost: 2, dmg: 80, desc: 'Manipula la fuerza gravitacional.', image: 'https://i.ibb.co/n8Rxgqxc/image.png', type: 'attack'},
-            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Sume al oponente en pura oscuridad.', image: 'https://i.ibb.co/35tLtMXg/image.png', type: 'attack'},
-            {name: 'Gravedad', cost: 3, dmg: 120, desc: 'Ejerce inmensa presión aplastante.', image: 'https://i.ibb.co/BVRbSyLq/image.png', type: 'attack'},
-            {name: 'Caída Lunar', cost: 4, dmg: 170, desc: 'ULTIMATE: Impacto de meteoro lunar.', image: 'https://i.ibb.co/Z1JxZzDs/image.png', type: 'attack'}
+            {name: 'Polvo', cost: 1, dmg: 40, desc: 'Polvo cósmico que corroe la defensa.', type: 'attack'}, 
+            {name: 'Marea', cost: 2, dmg: 80, desc: 'Manipula la fuerza gravitacional.', type: 'attack'},
+            {name: 'Eclipse', cost: 2, dmg: 90, desc: 'Sume al oponente en pura oscuridad.', type: 'attack'},
+            {name: 'Gravedad', cost: 3, dmg: 120, desc: 'Ejerce inmensa presión aplastante.', type: 'attack'},
+            {name: 'Caída Lunar', cost: 4, dmg: 170, desc: 'ULTIMATE: Impacto de meteoro lunar.', type: 'attack'}
         ],
         'default': [
-            {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe frontal y veloz básico.', image: 'https://i.ibb.co/CsVp7tmc/image.png', type: 'attack'}, 
-            {name: 'Placaje', cost: 1, dmg: 35, desc: 'Fuerte impacto rudo cuerpo a cuerpo.', image: 'https://i.ibb.co/Zp0dty16/image.png', type: 'attack'}, 
-            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Ataque pesado cargado de energía.', image: 'https://i.ibb.co/xKfw6B74/image.png', type: 'attack'},
-            {name: 'Furia', cost: 3, dmg: 110, desc: 'Secuencia rápida de golpes salvajes.', image: 'https://i.ibb.co/v6kMrLXj/image.png', type: 'attack'},
-            {name: 'Golpe Final', cost: 4, dmg: 150, desc: 'ULTIMATE: Remate demoledor y absoluto.', image: 'https://i.ibb.co/B1m1gRk/image.png', type: 'attack'}
+            {name: 'Embestida', cost: 1, dmg: 30, desc: 'Golpe frontal y veloz básico.', type: 'attack'}, 
+            {name: 'Placaje', cost: 1, dmg: 35, desc: 'Fuerte impacto rudo cuerpo a cuerpo.', type: 'attack'}, 
+            {name: 'Impacto', cost: 2, dmg: 65, desc: 'Ataque pesado cargado de energía.', type: 'attack'},
+            {name: 'Furia', cost: 3, dmg: 110, desc: 'Secuencia rápida de golpes salvajes.', type: 'attack'},
+            {name: 'Golpe Final', cost: 4, dmg: 150, desc: 'ULTIMATE: Remate demoledor y absoluto.', type: 'attack'}
         ]
     },
 
@@ -457,36 +458,24 @@ window.combatApp = {
         const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
         let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
         
-        const DEFAULT_CROW_IMG = 'https://i.ibb.co/DfG3hswj/Frame-750.png';
+        const DEFAULT_CROW_IMG = 'assets/Enemigos/Cuervos/cuervo_base.png';
 
         const createCrow = (baseName, baseHp, baseAtk) => {
             let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
             let finalAtk = Math.floor(baseAtk * envAtkMult);
             
-            let crowIcon = (window.farmApp && window.farmApp.state && window.farmApp.state.images) 
-                ? window.farmApp.state.images.crow 
-                : DEFAULT_CROW_IMG; 
+            let crowIcon = DEFAULT_CROW_IMG; 
 
             if (baseName.includes('Alfa')) {
-                crowIcon = 'https://i.ibb.co/wZNhF2bY/image-removebg-preview-38.png';
+                crowIcon = 'assets/Enemigos/Cuervos/cuervo_alfa.png';
             } else if (baseName.includes('Vigía')) {
-                crowIcon = 'https://i.ibb.co/7NT3Lcr5/image-removebg-preview-39.png';
+                crowIcon = 'assets/Enemigos/Cuervos/cuervo_vigia.png';
             } else if (baseName.includes('Rastrero')) {
-                crowIcon = 'https://i.ibb.co/XfkRpvpm/image-removebg-preview-41.png';
+                crowIcon = 'assets/Enemigos/Cuervos/cuervo_rastrero.png';
             }
 
             return { 
-                name: baseName + namePrefix, 
-                icon: crowIcon || DEFAULT_CROW_IMG, 
-                hp: finalHp, 
-                maxHp: finalHp, 
-                atk: finalAtk, 
-                def: 10, 
-                originalDef: 10, 
-                hasShield: false, 
-                hasBuff: false, 
-                usedHeal: false, 
-                enragedAlertDone: false 
+                name: baseName + namePrefix, icon: crowIcon, hp: finalHp, maxHp: finalHp, atk: finalAtk, def: 10, originalDef: 10, hasShield: false, hasBuff: false, usedHeal: false, enragedAlertDone: false 
             };
         };
 
@@ -630,7 +619,7 @@ window.combatApp = {
         const resModal = document.getElementById('rps-result');
         if(resModal) resModal.classList.remove('hidden');
         
-        const imgs = { 'rock': 'https://i.ibb.co/XZn602PZ/Frame-772.png', 'paper': 'https://i.ibb.co/21vq6V8C/Frame-770.png', 'scissors': 'https://i.ibb.co/zhMbW6Dn/Frame-771.png' };
+        const imgs = { 'rock': 'assets/Poderes/piedra.png', 'paper': 'assets/Poderes/papel.png', 'scissors': 'assets/Poderes/tijera.png' };
         
         document.getElementById('rps-my-img').src = imgs[myChoice];
         document.getElementById('rps-opp-img').src = imgs[oppChoice];
@@ -685,7 +674,7 @@ window.combatApp = {
 
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
-                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'https://i.ibb.co/szXSZjs/Frame-753.png'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; e.enragedAlertDone = false; });
+                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'assets/Plantas/trigo_rapido.png'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; e.enragedAlertDone = false; });
                 this.active = true;
                 this.updateUI();
                 
@@ -1203,6 +1192,7 @@ window.combatApp = {
         const container = document.getElementById('cm-cards-container');
         container.innerHTML = '';
         
+        // Renderizado rediseñado sin imágenes para las habilidades (Estilo UI moderna)
         plant.skills.forEach((skill, sIdx) => {
             const canAfford = this.energy >= skill.cost;
             const btnClass = canAfford ? 'bg-white border-2 border-gray-100 cursor-pointer shadow-sm hover:border-cg_blue hover:shadow-xl hover:-translate-y-1 transition-all' : 'bg-gray-50 border-2 border-gray-100 opacity-50 cursor-not-allowed grayscale';
@@ -1210,21 +1200,16 @@ window.combatApp = {
             const ultBg = isUltimate && canAfford ? 'bg-gradient-to-br from-yellow-50 to-white border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.2)]' : '';
             
             container.innerHTML += `
-                <button ${canAfford ? `onclick="window.combatApp.selectCard(${plantIdx},${sIdx})"` : 'disabled'} class="w-full text-left p-5 md:p-6 rounded-3xl flex flex-col h-full min-h-[200px] overflow-hidden ${btnClass} ${ultBg}">
-                    <div class="flex justify-between items-start w-full relative z-10 mb-4">
-                        <div class="bg-blue-50 text-blue-600 font-black px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-sm border border-blue-100 text-xs sm:text-sm">
-                            <span class="text-blue-700">${skill.cost}</span> ⚡
-                        </div>
-                        <div class="bg-gray-50 rounded-2xl p-2.5 border border-gray-100 shadow-inner">
-                            <img src="${skill.image}" class="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-md shrink-0">
+                <button ${canAfford ? `onclick="window.combatApp.selectCard(${plantIdx},${sIdx})"` : 'disabled'} class="w-full text-left p-5 md:p-6 rounded-2xl flex flex-col h-full min-h-[140px] justify-between ${btnClass} ${ultBg}">
+                    <div class="flex items-center justify-between gap-2 border-b border-gray-100 pb-3 mb-2 w-full">
+                        <h4 class="font-black text-cg_navy text-lg sm:text-xl tracking-tight leading-tight flex-1">${skill.name}</h4>
+                        <div class="bg-blue-50 text-blue-600 font-black px-2.5 py-1 rounded-lg flex items-center shadow-sm border border-blue-100 text-xs sm:text-sm shrink-0">
+                            ${skill.cost} ⚡
                         </div>
                     </div>
-                    <div class="w-full relative z-10 mt-auto flex flex-col gap-2">
-                        <div class="flex items-center justify-between gap-2 border-b border-gray-50 pb-2 mb-1">
-                            <h4 class="font-black text-cg_navy text-lg sm:text-xl tracking-tight leading-none truncate">${skill.name}</h4>
-                            <span class="bg-red-50 text-red-500 font-bold px-2 py-1 rounded-lg text-[10px] sm:text-xs uppercase tracking-wider shrink-0 border border-red-100 shadow-sm">⚔️ ${skill.dmg}</span>
-                        </div>
-                        <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">${skill.desc}</p>
+                    <p class="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed mb-4 flex-1">${skill.desc}</p>
+                    <div class="w-fit bg-red-50 text-red-500 font-black px-3 py-1.5 rounded-lg text-xs uppercase tracking-widest border border-red-100 shadow-sm mt-auto">
+                        ⚔️ DAÑO: ${skill.dmg}
                     </div>
                 </button>
             `;
@@ -1234,11 +1219,12 @@ window.combatApp = {
             <h4 class="font-black text-cg_navy text-sm uppercase tracking-widest text-center">🎒 Tácticas & Consumibles</h4>
         </div>`;
 
+        // Tácticas rediseñadas sin imágenes
         const tacticas = [
-            { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
-            { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
-            { id: 't_escudo', name: 'Escudo Clorofila', cost: 1, dmg: 0, type: 'shield', isBeneficial: true, desc: 'Bloquea el 100% del próximo ataque. Costo: 500🌱', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
-            { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' }
+            { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.' },
+            { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.' },
+            { id: 't_escudo', name: 'Escudo Clorofila', cost: 1, dmg: 0, type: 'shield', isBeneficial: true, desc: 'Bloquea el 100% del próximo ataque. Costo: 500🌱' },
+            { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.' }
         ];
 
         tacticas.forEach(t => {
@@ -1248,17 +1234,16 @@ window.combatApp = {
             if (t.id === 't_potion' && this.combatStats.potionUsed) { disabled = true; dReason = 'Agotado'; }
             if (t.id === 't_escudo' && window.farmApp.state.seedsBalance < 500) { disabled = true; dReason = 'Requiere 500 🌱'; }
 
-            const btnClass = disabled ? 'bg-gray-50 opacity-50 grayscale cursor-not-allowed' : 'bg-orange-50 border-orange-200 hover:border-orange-400 hover:-translate-y-1 shadow-sm cursor-pointer';
+            const btnClass = disabled ? 'bg-gray-50 opacity-50 grayscale cursor-not-allowed border-gray-200' : 'bg-orange-50 border-orange-200 hover:border-orange-400 hover:-translate-y-1 shadow-sm cursor-pointer';
             
             container.innerHTML += `
-                <button ${disabled ? 'disabled' : `onclick="window.combatApp.selectTactic(${plantIdx}, '${t.id}')"`} class="w-full text-left p-4 rounded-2xl flex flex-col border-2 transition-all ${btnClass}">
-                    <div class="flex justify-between items-center w-full mb-2">
-                        <span class="bg-blue-100 text-blue-700 font-black px-2 py-1 rounded-lg text-xs">${t.cost} ⚡</span>
-                        <img src="${t.image}" class="w-10 h-10 object-contain drop-shadow-md">
+                <button ${disabled ? 'disabled' : `onclick="window.combatApp.selectTactic(${plantIdx}, '${t.id}')"`} class="w-full text-left p-4 rounded-xl flex flex-col border-2 transition-all ${btnClass}">
+                    <div class="flex justify-between items-center w-full mb-2 border-b border-orange-100 pb-2">
+                        <h4 class="font-black text-cg_navy text-sm md:text-base leading-tight flex-1">${t.name}</h4>
+                        <span class="bg-blue-100 text-blue-700 font-black px-2 py-1 rounded-lg text-xs shrink-0 ml-2">${t.cost} ⚡</span>
                     </div>
-                    <h4 class="font-black text-cg_navy text-sm leading-tight">${t.name}</h4>
-                    <p class="text-[10px] text-gray-500 font-medium mt-1">${t.desc}</p>
-                    ${disabled ? `<span class="text-red-500 text-[9px] font-black uppercase mt-2 border border-red-200 bg-white px-2 py-1 rounded w-fit">${dReason}</span>` : ''}
+                    <p class="text-[11px] md:text-xs text-gray-600 font-medium leading-relaxed flex-1">${t.desc}</p>
+                    ${disabled ? `<div class="mt-3"><span class="text-red-500 text-[10px] font-black uppercase border border-red-200 bg-red-50 px-2 py-1 rounded">${dReason}</span></div>` : ''}
                 </button>
             `;
         });
@@ -1287,11 +1272,12 @@ window.combatApp = {
     },
 
     selectTactic(plantIdx, tacticId) {
+        // Redefinidas sin imagen para la lógica
         const tacticas = [
-            { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.', image: 'https://i.ibb.co/qYHq54kh/Frame-741.png' },
-            { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.', image: 'https://i.ibb.co/tw72tZxv/Frame-740.png' },
-            { id: 't_escudo', name: 'Escudo Clorofila', cost: 1, dmg: 0, type: 'shield', isBeneficial: true, desc: 'Bloquea el 100% del próximo ataque. Costo: 500🌱', image: 'https://i.ibb.co/pBBDqXXw/Frame-742.png' },
-            { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.', image: 'https://i.ibb.co/BHJVfJhr/Frame-739.png' }
+            { id: 't_potion', name: 'Savia Concentrada', cost: 3, dmg: 0, type: 'heal', isBeneficial: true, desc: 'Cura 50% HP a tu aliado. Límite 1 por combate.' },
+            { id: 't_abono', name: 'Abono Ferocidad', cost: 2, dmg: 0, type: 'buff', isBeneficial: true, desc: 'Ataque x2 para quien la use. Deja Defensa en 0%.' },
+            { id: 't_escudo', name: 'Escudo Clorofila', cost: 1, dmg: 0, type: 'shield', isBeneficial: true, desc: 'Bloquea el 100% del próximo ataque. Costo: 500🌱' },
+            { id: 't_transfusion', name: 'Transfusión', cost: 0, dmg: 0, type: 'transfer', isBeneficial: true, desc: 'Sacrifica 30% HP y lo transfiere a un aliado.' }
         ];
         const t = tacticas.find(x => x.id === tacticId);
 
