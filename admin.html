@@ -214,11 +214,17 @@
                             <div class="space-y-4">
                                 <!-- Búsqueda Autocompletado -->
                                 <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner relative z-30">
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">🎯 ID del Jugador Destino</label>
-                                    <div class="relative">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">🎯 Jugador Destino</label>
+                                        <label class="flex items-center gap-1.5 cursor-pointer">
+                                            <input type="checkbox" id="inj-target-all" class="w-3.5 h-3.5 accent-red-500 rounded cursor-pointer" onchange="toggleTargetAll()">
+                                            <span class="text-[9px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-1.5 py-0.5 rounded border border-red-200">A Todos</span>
+                                        </label>
+                                    </div>
+                                    <div class="relative" id="inj-search-container">
                                         <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 text-lg pointer-events-none">👤</span>
                                         <input type="text" id="inj-search" placeholder="Buscar Nombre o ID..." oninput="handleAutocomplete('inj', this.value)" class="w-full bg-white border border-gray-200 text-cg_navy pl-11 pr-4 py-3 rounded-xl font-bold focus:border-cg_blue outline-none text-sm shadow-sm transition-colors">
-                                        <div id="inj-suggestions" class="suggestions-box hidden"></div>
+                                        <div id="inj-suggestions" class="absolute w-full mt-2 bg-white rounded-xl shadow-xl z-[1000] max-h-48 overflow-y-auto hidden border border-gray-200 divide-y divide-gray-100 hide-scrollbar"></div>
                                     </div>
                                     <input type="hidden" id="inj-target-id">
                                     <div id="inj-selected-ui" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex justify-between items-center shadow-sm">
@@ -851,10 +857,30 @@
             });
         }
 
+        function toggleTargetAll() {
+            const isAll = document.getElementById('inj-target-all').checked;
+            const searchContainer = document.getElementById('inj-search-container');
+            const selectedUi = document.getElementById('inj-selected-ui');
+            
+            if (isAll) {
+                searchContainer.classList.add('hidden');
+                selectedUi.classList.add('hidden');
+                document.getElementById('inj-target-id').value = 'ALL';
+            } else {
+                searchContainer.classList.remove('hidden');
+                if (document.getElementById('inj-selected-name').innerText !== '') {
+                    selectedUi.classList.remove('hidden');
+                }
+                document.getElementById('inj-target-id').value = '';
+            }
+        }
+
         async function executeInjectionInvoice() {
+            const isAll = document.getElementById('inj-target-all').checked;
             const short_id = document.getElementById('inj-target-id').value.trim();
-            if (!short_id) {
-                showAdminAlert("Error", "Falta el ID del jugador destino. Utiliza el buscador arriba.");
+            
+            if (!isAll && (!short_id || short_id === 'ALL')) {
+                showAdminAlert("Error", "Debes buscar y seleccionar un jugador destino, o marcar la casilla 'A Todos'.");
                 return;
             }
 
@@ -867,7 +893,8 @@
             try {
                 let payload = {
                     admin_token: ADMIN_TOKEN,
-                    short_id: short_id,
+                    short_id: isAll ? null : short_id,
+                    target_all: isAll,
                     cart: invoiceCart,
                     gift_msg: giftMsg
                 };
@@ -876,15 +903,16 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                const data = await res.json();
                 
                 if (res.ok) {
-                    showAdminAlert("Lote Procesado", giftMsg ? "El regalo sorpresa fue envíado a la cuenta del usuario." : "Los recursos se inyectaron silenciosamente en la BD.");
+                    showAdminAlert("Lote Procesado", data.message);
                     clearCart();
                     document.getElementById('inj-gift-msg').value = '';
-                    clearSelection('inj');
+                    if(!isAll) clearSelection('inj');
                     fetchData();
                 } else {
-                    showAdminAlert("Error", "No se pudo procesar la factura.");
+                    showAdminAlert("Error", data.error || "No se pudo procesar la factura.");
                 }
             } catch (e) {
                 showAdminAlert("Error de Red", "Fallo al enviar la factura al servidor.");
