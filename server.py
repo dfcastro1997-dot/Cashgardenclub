@@ -1479,17 +1479,9 @@ def pvp_combat_sync():
             
         if 'winner' in update_data and not match.get('winner_username'):
             cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (update_data['winner'], match_id))
-            if update_data['winner'] != 'opponent_abandoned':
-                cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (update_data['winner'],))
-                winner_user = cur.fetchone()
-                if winner_user and winner_user['game_state']:
-                    w_state = json.loads(winner_user['game_state'])
-                    w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + (match['bet_seeds'] * 2)
-                    
-                    # Forzar sincronización obligatoria en el frontend del ganador
-                    w_state['lastTick'] = int(time.time() * 1000) + 10000 
-                    
-                    cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), winner_user['id']))
+            # ELIMINADA LA INYECCIÓN DE SEMILLAS DESDE EL SERVIDOR: 
+            # El frontend ganador ahora procesa su propio botín junto con el guardado del arsenal,
+            # evitando así conflictos de sobreescritura (race conditions) al llamar save_state.
             conn.commit()
             cur.close(); conn.close()
             return jsonify({"status": "game_over", "winner": update_data['winner']})

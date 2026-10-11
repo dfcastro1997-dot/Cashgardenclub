@@ -234,7 +234,7 @@
         <h3 class="text-2xl sm:text-3xl font-black text-cg_navy mb-2 tracking-tight relative z-10">Victoria Épica</h3>
         <p class="text-xs sm:text-sm text-gray-500 mb-6 font-medium leading-relaxed relative z-10">El rival ha sido exterminado. Tus plantas regresan al almacén y has reclamado el botín.</p>
         
-        <!-- FACTURA DE PREMIO Y COMISIÓN -->
+        <!-- FACTURA DE PREMIO Y COMISIÓN (CON ID AÑADIDO PARA OCULTAR EN AMISTOSO) -->
         <div id="combat-victory-invoice" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 relative z-10 shadow-inner text-left">
             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center border-b border-gray-200 pb-2">Factura de Recompensa</p>
             <div class="flex justify-between items-center mb-1">
@@ -1039,7 +1039,7 @@ window.combatApp = {
     },
 
     endCombat(victory) {
-        if (this.combatEnded) return; // <-- FIX: Evita que el WebSocket y el turno final dupliquen las plantas
+        if (this.combatEnded) return; // SEGURO ANTI-DUPLICADOS
         this.combatEnded = true;
 
         this.active = false;
@@ -1050,17 +1050,16 @@ window.combatApp = {
         if (victory) {
             const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
             const grossReward = this.isPvP ? (betAmount * 2) : (window.farmApp.state.pendingCombatReward || 25000);
-            const taxAmount = Math.floor(grossReward * 0.05); // 5% de comisión / tax de quema
+            const taxAmount = Math.floor(grossReward * 0.05); 
             const netReward = grossReward - taxAmount;
             
-            // <-- FIX: El ganador suma localmente las semillas de su botín para no sobreescribir la BD a la baja
+            // EL CLIENTE SE ASIGNA EL PREMIO PARA EVITAR QUE EL SAVE_STATE SOBREESCRIBA LA BASE DE DATOS
             window.farmApp.state.seedsBalance += netReward;
             
             if (this.isPvP) {
                 setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
             }
 
-            // Ganan: Regresan vivas (con la vida que les quedó, mínimo 1 para evitar bug)
             let finalTeam = [...this.playerTeam, ...this.playerReserve];
             finalTeam.forEach(pt => {
                 window.farmApp.state.arsenal.push({
@@ -1068,12 +1067,12 @@ window.combatApp = {
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
                     hp: Math.max(1, pt.hp), 
                     maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
-                    wins: pt.wins + 1, // Suman victoria
+                    wins: pt.wins + 1,
                     lastRecover: Date.now() 
                 });
             });
 
-            // <-- FIX: Ocultar factura si es un duelo amistoso (Apuesta 0) -->
+            // LÓGICA DE OCULTAR FACTURA SI ES AMISTOSO
             const invoiceBox = document.getElementById('combat-victory-invoice');
             if (grossReward > 0) {
                 if (invoiceBox) invoiceBox.classList.remove('hidden');
@@ -1086,15 +1085,14 @@ window.combatApp = {
             
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
-            window.farmApp.saveState();
+            
         } else {
-            // Derrota: Nunca las pierden, quedan en Fatiga Crítica (1 HP)
             let finalTeam = [...this.playerTeam, ...this.playerReserve];
             finalTeam.forEach(pt => {
                 window.farmApp.state.arsenal.push({
                     id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: 1, // Castigo de Fatiga al regresar a base
+                    hp: 1, 
                     maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
                     wins: pt.wins,
                     lastRecover: Date.now() 
@@ -1103,9 +1101,13 @@ window.combatApp = {
 
             document.getElementById('combat-defeat-modal').classList.remove('hidden');
             document.getElementById('combat-defeat-modal').classList.add('flex');
-            window.farmApp.saveState(); 
         }
         
+        // VACIAR MEMORIA DE COMBATE PARA PREVENIR DUPLICACIONES EN DOBLE LLAMADO
+        this.playerTeam = [];
+        this.playerReserve = [];
+        
+        window.farmApp.saveState(); 
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
     },

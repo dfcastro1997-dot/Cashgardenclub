@@ -3130,7 +3130,28 @@ if (typeof window.farmApp === 'undefined') {
             }
         },
 
+        processArsenalRecovery() {
+            if (!this.state.arsenal) return;
+            const now = Date.now();
+            let updated = false;
+            this.state.arsenal.forEach(plant => {
+                if (plant.hp < plant.maxHp && plant.lastRecover) {
+                    const elapsedMs = now - plant.lastRecover;
+                    const hpToRecover = Math.floor(elapsedMs / 60000);
+                    if (hpToRecover > 0) {
+                        plant.hp = Math.min(plant.maxHp, plant.hp + hpToRecover);
+                        plant.lastRecover += hpToRecover * 60000; 
+                        updated = true;
+                    }
+                } else if (!plant.lastRecover) {
+                    plant.lastRecover = now;
+                }
+            });
+            if (updated) this.saveState();
+        },
+
         openTeamSelection(readyPlots, arsenal) {
+            this.processArsenalRecovery(); // <-- FIX: Regenera la vida de las plantas antes de pelear
             this.state.selectedCombatants = [];
             const list = document.getElementById('team-selection-list');
             list.innerHTML = '';
