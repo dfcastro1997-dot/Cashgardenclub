@@ -607,10 +607,33 @@ window.combatApp = {
         document.getElementById('rps-waiting').classList.remove('hidden');
         document.getElementById('rps-desc').innerText = "Elección fijada. Esperando rival...";
         
-        // Emisión instantánea
+        // 1. Emisión instantánea por Socket
         window.socket.emit('rps_action', { match_id: this.matchId, choice: choice });
         
-        // Si el oponente ya había elegido y la red nos mandó la data, resolvemos de inmediato.
+        // 2. SISTEMA DE RESPALDO (HTTP Polling): Evita que se quede cargando infinito si el socket falla
+        const checkOpponentRPS = async () => {
+            if (this.rpsResolved || this.rpsResolving) return;
+            try {
+                const res = await fetch('/api/pvp/combat_sync', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { rps_choice: choice } })
+                });
+                const data = await res.json();
+                const oppRole = this.role === 'challenger' ? 'target' : 'challenger';
+                
+                if (data.state && data.state['rps_' + oppRole]) {
+                    this.oppRpsChoice = data.state['rps_' + oppRole];
+                    this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
+                } else {
+                    setTimeout(checkOpponentRPS, 1500); // Reintentar cada 1.5s si el rival no ha elegido
+                }
+            } catch(e) {
+                setTimeout(checkOpponentRPS, 1500);
+            }
+        };
+        checkOpponentRPS(); // Iniciar respaldo
+        
+        // Si el socket fue súper rápido y ya teníamos la respuesta antes de consultar
         if (this.oppRpsChoice) this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
     },
 
@@ -638,13 +661,19 @@ window.combatApp = {
         resText.innerText = result;
         resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
         
-        // REDUCIDO: De 1200ms a 600ms para que la acción se sienta fluida pero sin marear
         setTimeout(() => {
             const rpsModal = document.getElementById('rps-modal');
             if (!rpsModal) return;
 
             if (result === 'EMPATE') {
                 this.myRpsChoice = null; this.oppRpsChoice = null; this.rpsResolving = false;
+                
+                // LIMPIAR LA BD TRAS EL EMPATE PARA PERMITIR NUEVA ELECCIÓN
+                fetch('/api/pvp/combat_sync', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { rps_clear: true } })
+                });
+
                 document.getElementById('rps-result').classList.add('hidden');
                 document.getElementById('rps-choices').classList.remove('hidden');
                 document.getElementById('rps-desc').innerText = "Empate. Elijan de nuevo rápido.";
@@ -655,7 +684,6 @@ window.combatApp = {
                 
                 if (iWon) {
                     this.currentPvPTurn = this.role;
-                    // Notificamos a la BD silenciosamente sin detener la interfaz
                     fetch('/api/pvp/combat_sync', {
                         method: 'POST', headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { initial_turn: this.role } })
