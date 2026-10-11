@@ -2704,13 +2704,18 @@ if (typeof window.farmApp === 'undefined') {
                 
                 if (arena && arena.status === 'tournament_waiting') {
                     try {
-                        // Respaldo: Si el jugador se registró con una versión antigua y no tiene instanceId, 
-                        // usamos el endpoint general para rescatar su estado.
                         let url = arena.instanceId 
                             ? '/api/tournaments/status/' + arena.instanceId 
                             : '/api/tournaments/global_leaderboard/' + (arena.tournamentId || 1);
                             
                         const res = await fetch(url);
+                        
+                        // Protección Anti-Caídas: Solo analizar si la respuesta es realmente JSON (ok)
+                        if (!res.ok) {
+                            console.warn("Retraso en el servidor de torneos, reintentando luego...");
+                            return;
+                        }
+                        
                         const data = await res.json();
                         
                         // Si ya está corriendo o incluso si ya terminó, forzamos la apertura de la parcela
@@ -2733,7 +2738,7 @@ if (typeof window.farmApp === 'undefined') {
                             this.saveState();
                         }
                     } catch(e) {
-                        console.error("Error sincronizando inicio de torneo:", e);
+                        console.error("Fallo silencioso sincronizando inicio de torneo:", e);
                     }
                 }
             };

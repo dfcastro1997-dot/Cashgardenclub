@@ -1141,8 +1141,8 @@ def global_leaderboard(t_id):
 def check_tournament_status(instance_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    # Ahora trae template_id para el motor
-    cur.execute("SELECT template_id, status, start_time, end_time, players_count FROM tournament_instances WHERE id = %s", (instance_id,))
+    # CORRECCIÓN: Usamos SELECT * para asegurarnos de traer id, prize_pool y todos los campos que el motor necesita.
+    cur.execute("SELECT * FROM tournament_instances WHERE id = %s", (instance_id,))
     inst = cur.fetchone()
     
     if inst:
@@ -1389,6 +1389,10 @@ def admin_add_items():
 
         if gift_msg and len(gift_items) > 0:
             state['pending_gift'] = { "message": gift_msg, "items": gift_items }
+
+        # --- SOLUCIÓN: FORZAR MARCA DE TIEMPO AL FUTURO ---
+        # Garantiza que el frontend del usuario reconozca que esta inyección del Admin es la más reciente
+        state['lastTick'] = now + 10000 
 
         cur.execute("UPDATE users SET game_state = %s, balance = balance + %s WHERE id = %s", (json.dumps(state), total_cop_added, user['id']))
 
