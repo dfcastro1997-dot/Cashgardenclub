@@ -681,7 +681,7 @@ window.combatApp = {
 
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
-                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'assets/Plantas/trigo_rapido.png'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; e.enragedAlertDone = false; });
+                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'assets/Plantas/trigo_rapido.gif'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; e.enragedAlertDone = false; });
                 this.active = true;
                 this.updateUI();
                 

@@ -270,8 +270,14 @@
         </div>
 
         <div class="text-left mb-6">
-            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-1">Apuesta (Semillas 🌱)</label>
-            <input type="number" id="pvp-bet-input" value="1000" min="100" step="100" class="w-full px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 font-black text-cg_gold text-center text-lg outline-none focus:border-cg_gold">
+            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Tipo de Duelo</label>
+            <div class="flex gap-2 mb-3">
+                <button type="button" id="btn-bet-mode" onclick="window.togglePvPBetMode(true)" class="flex-1 bg-cg_gold text-white font-black py-2 rounded-xl text-xs shadow-inner transition-colors">Apuesta</button>
+                <button type="button" id="btn-friendly-mode" onclick="window.togglePvPBetMode(false)" class="flex-1 bg-gray-100 text-gray-500 font-bold py-2 rounded-xl text-xs hover:bg-gray-200 transition-colors">Amistoso</button>
+            </div>
+            <div id="pvp-bet-container">
+                <input type="number" id="pvp-bet-input" value="1000" min="100" step="100" class="w-full px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 font-black text-cg_gold text-center text-lg outline-none focus:border-cg_gold">
+            </div>
         </div>
 
         <button id="pvp-input-btn" onclick="sendPvPChallenge()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">
@@ -738,20 +744,63 @@ if (typeof window.farmApp === 'undefined') {
 
 
 
+        window.togglePvPBetMode = function(isBet) {
+            const betBtn = document.getElementById('btn-bet-mode');
+            const friendlyBtn = document.getElementById('btn-friendly-mode');
+            const betContainer = document.getElementById('pvp-bet-container');
+            const betInput = document.getElementById('pvp-bet-input');
+            
+            if (isBet) {
+                betBtn.classList.replace('bg-gray-100', 'bg-cg_gold');
+                betBtn.classList.replace('text-gray-500', 'text-white');
+                betBtn.classList.replace('font-bold', 'font-black');
+                
+                friendlyBtn.classList.replace('bg-cg_blue', 'bg-gray-100');
+                friendlyBtn.classList.replace('text-white', 'text-gray-500');
+                friendlyBtn.classList.replace('font-black', 'font-bold');
+                
+                betContainer.classList.remove('hidden');
+                if(betInput.value === "0" || betInput.value === "") betInput.value = "1000";
+            } else {
+                friendlyBtn.classList.replace('bg-gray-100', 'bg-cg_blue');
+                friendlyBtn.classList.replace('text-gray-500', 'text-white');
+                friendlyBtn.classList.replace('font-bold', 'font-black');
+                
+                betBtn.classList.replace('bg-cg_gold', 'bg-gray-100');
+                betBtn.classList.replace('text-white', 'text-gray-500');
+                betBtn.classList.replace('font-black', 'font-bold');
+                
+                betContainer.classList.add('hidden');
+                betInput.value = "0";
+            }
+        };
+
+        window.socket.on('incoming_challenge', (data) => {
+            if (!window.isPvPModalOpen) {
+                window.isPvPModalOpen = true;
+                window.currentChallenge = data;
+                document.getElementById('pvp-challenger-name').innerText = data.challenger_name;
+                
+                // Corrección: Muestra si es Amistoso en lugar de NaN
+                let betDisplay = data.bet > 0 ? data.bet.toLocaleString() + " 🌱" : "Amistoso (0 🌱)";
+                document.getElementById('pvp-bet-amount').innerText = betDisplay;
+                
+                document.getElementById('pvp-incoming-modal').classList.remove('hidden');
+                document.getElementById('pvp-incoming-modal').classList.add('flex');
+            }
+        });
+
         window.socket.on('challenge_accepted', async (data) => {
-            // Se cierra la modal del jugador retador al instante
             document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
             
-            // Se cobra la apuesta en la memoria local
-            window.farmApp.state.seedsBalance -= data.bet;
+            // Corrección: Evitar NaN en el cobro de la memoria local
+            window.farmApp.state.seedsBalance -= (data.bet || 0);
             window.farmApp.saveState();
             
             sessionStorage.setItem('pvp_match_id', data.match_id);
-            sessionStorage.setItem('pvp_bet_amount', data.bet);
+            sessionStorage.setItem('pvp_bet_amount', data.bet || 0);
             
-            // Ir de una vez a elegir el escuadrón sin esperar delays
             let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-            
             if (!document.getElementById('team-selection-list')) {
                 await loadView('farm', document.querySelector('.nav-btn-desktop'));
             }
@@ -767,19 +816,21 @@ if (typeof window.farmApp === 'undefined') {
             if (pvpBtn) {
                 pvpBtn.innerText = "Enviar Reto";
                 pvpBtn.disabled = false;
-                pvpBtn.classList.remove('opacity-50', 'cursor-not-allowed'); // Asegurar estado visual
+                pvpBtn.classList.remove('opacity-50', 'cursor-not-allowed'); 
             }
             
-            // Limpia la memoria local del posible choque de match_id anterior
             sessionStorage.removeItem('pvp_match_id');
             sessionStorage.removeItem('pvp_bet_amount');
         });
 
         window.sendPvPChallenge = async function() {
             const targetId = document.getElementById('pvp-target-id').value.trim();
-            const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
+            // Corrección Anti-Errores 500 Backend
+            let betAmount = parseInt(document.getElementById('pvp-bet-input').value);
+            if (isNaN(betAmount)) betAmount = 0;
+
             if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
-            if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
+            if (betAmount > 0 && window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
             
             document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
             document.getElementById('pvp-input-btn').disabled = true;
@@ -794,7 +845,7 @@ if (typeof window.farmApp === 'undefined') {
             if (res.ok) {
                 document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
                 
-                // DISPARO INSTANTÁNEO AL RIVAL
+                // DISPARO INSTANTÁNEO
                 window.socket.emit('pvp_challenge', {
                     target_short_id: targetId,
                     challenger_short_id: sessionStorage.getItem('short_id'),
@@ -817,10 +868,8 @@ if (typeof window.farmApp === 'undefined') {
             
             const matchId = window.currentChallenge.match_id;
             const challengerId = window.currentChallenge.challenger_short_id;
-            // Unifica el nombre de la variable dependiendo de si vino por Socket o por la BD
-            const betAmount = window.currentChallenge.bet || window.currentChallenge.bet_seeds;
+            const betAmount = window.currentChallenge.bet || window.currentChallenge.bet_seeds || 0;
             
-            // Notificación instantánea de respuesta
             if (action === 'accepted') {
                 window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
             } else {
@@ -850,14 +899,15 @@ if (typeof window.farmApp === 'undefined') {
 
 
 
+
     window.farmApp = {
         PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 0], // Arena cuesta 0 porque se paga en Torneosporque se paga en Torneos
 
         TOURNAMENT_CONFIGS: {
-            1: { name: 'Bonsái del Maestro', image: 'assets/Plantas/bonsai.png', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
-            3: { name: 'Orquídea Lunar', image: 'assets/Plantas/orquidea_lunar.png', durationHours: 6, startScore: 10000, evapPerHour: 55, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 1.2 },
-            4: { name: 'Rosa de Ceniza', image: 'assets/Plantas/rosa_ceniza.png', durationHours: 8, startScore: 10000, evapPerHour: 35, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 1.5 },
-            5: { name: 'Loto de Cristal', image: 'assets/Plantas/loto_cristal.png', durationHours: 12, startScore: 10000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 0.8 }
+            1: { name: 'Bonsái del Maestro', image: 'assets/Plantas/bonsai.gif', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
+            3: { name: 'Orquídea Lunar', image: 'assets/Plantas/orquidea_lunar.gif', durationHours: 6, startScore: 10000, evapPerHour: 55, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 1.2 },
+            4: { name: 'Rosa de Ceniza', image: 'assets/Plantas/rosa_ceniza.gif', durationHours: 8, startScore: 10000, evapPerHour: 35, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 1.5 },
+            5: { name: 'Loto de Cristal', image: 'assets/Plantas/loto_cristal.gif', durationHours: 12, startScore: 10000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 0.8 }
         },
 
         calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null },
@@ -956,26 +1006,26 @@ if (typeof window.farmApp === 'undefined') {
                 'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' },
                 'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' },
                 'tool_duel_ticket': { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'assets/Herramientas_y_Servicios/ticket_duelo.png' },
-                'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/trigo_rapido.png' },
+                'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/trigo_rapido.gif' },
                 'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/bambu_tryhard.gif' },
-                'flower_cactus': { name: 'Cactus de Cuarzo', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/cactus_cuarzo.png' },
-                'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/flor_pequena.png' },
-                'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/flor_grande.png' },
-                'flower_crystal': { name: 'Helecho de Cristal', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/helecho_cristal.png' },
-                'flower_moon': { name: 'Lirio Lunar', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/lirio_lunar.png' }
+                'flower_cactus': { name: 'Cactus de Cuarzo', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/cactus_cuarzo.gif' },
+                'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/flor_pequena.gif' },
+                'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/flor_grande.gif' },
+                'flower_crystal': { name: 'Helecho de Cristal', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/helecho_cristal.gif' },
+                'flower_moon': { name: 'Lirio Lunar', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/lirio_lunar.gif' }
             },
             images: {
                 terrain_empty: 'assets/Fondos/terreno_vacio.png',
                 terrain_dry: 'assets/Fondos/terreno_seco.png',
-                plant_wheat: 'assets/Plantas/trigo_rapido.png',
+                plant_wheat: 'assets/Plantas/trigo_rapido.gif',
                 plant_bamboo: 'assets/Plantas/bambu_tryhard.gif',
-                plant_cactus: 'assets/Plantas/cactus_cuarzo.png',
-                plant_small: 'assets/Plantas/flor_pequena.png',
-                plant_big: 'assets/Plantas/flor_grande.png',
-                plant_crystal: 'assets/Plantas/helecho_cristal.png',
-                plant_moon: 'assets/Plantas/lirio_lunar.png',
+                plant_cactus: 'assets/Plantas/cactus_cuarzo.gif',
+                plant_small: 'assets/Plantas/flor_pequena.gif',
+                plant_big: 'assets/Plantas/flor_grande.gif',
+                plant_crystal: 'assets/Plantas/helecho_cristal.gif',
+                plant_moon: 'assets/Plantas/lirio_lunar.gif',
                 crow: 'assets/Enemigos/Cuervos/cuervo_base.png',
-                bonsai: 'assets/Plantas/bonsai.png'
+                bonsai: 'assets/Plantas/bonsai.gif'
             },
             selectedPlotId: null,
             pendingPlotId: null,
@@ -1022,8 +1072,8 @@ if (typeof window.farmApp === 'undefined') {
                     'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_grande.png' },
                     'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' },
                     'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' },
-                    'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/flor_pequena.png' },
-                    'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/flor_grande.png' },
+                    'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/flor_pequena.gif' },
+                    'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/flor_grande.gif' },
                     'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/bambu_tryhard.gif' }
                 };
                 window.farmApp.state.seedsBalance = 35000;
@@ -1252,11 +1302,28 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         updateUI() {
+            // --- FIX GLOBAL DE IMÁGENES DE PLANTAS (PNG a GIF) ---
+            if (this.state.arsenal) {
+                this.state.arsenal.forEach(p => {
+                    if (p.icon && p.icon.includes('assets/Plantas/') && p.icon.endsWith('.png')) {
+                        p.icon = p.icon.replace('.png', '.gif');
+                    }
+                });
+            }
+            if (this.state.plots) {
+                this.state.plots.forEach(p => {
+                    if (p.plant && p.plant.icon && p.plant.icon.includes('assets/Plantas/') && p.plant.icon.endsWith('.png')) {
+                        p.plant.icon = p.plant.icon.replace('.png', '.gif');
+                    }
+                });
+            }
+            // -----------------------------------------------------
+
             const localBalance = document.getElementById('global-seeds-display');
             if(localBalance) localBalance.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             
             this.updateSeasonWidget(); 
-            this.updateAutomationUI(); // <-- CAMBIADO NOMBRE A LA FUNCIÓN
+            this.updateAutomationUI(); 
             this.renderPlots();
             this.updateInventoryUI();
             this.startEnvironmentSimulation();
