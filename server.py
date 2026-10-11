@@ -705,11 +705,10 @@ def save_state():
             db_state = json.loads(db_state_raw) if db_state_raw else {}
             
             incoming_seeds = incoming_state.get('seedsBalance', 0)
-            
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
             
-            # MODIFICADO: Aumentamos el límite de 30000 a 80000 para permitir la cosecha del Lirio Lunar (55k)
-            if incoming_seeds > db_seeds + 80000:
+            # AUMENTAR LÍMITE A 500,000 para soportar ganancias grandes de PvP
+            if incoming_seeds > db_seeds + 500000:
                 incoming_state['seedsBalance'] = db_seeds
                 
             plots = incoming_state.get('plots', [])
