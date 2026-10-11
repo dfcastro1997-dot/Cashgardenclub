@@ -343,6 +343,7 @@ window.combatApp = {
 
         this.matchId = sessionStorage.getItem('pvp_match_id');
         this.isPvP = !!this.matchId;
+        this.combatEnded = false; // <-- FIX: Seguro contra ejecución doble
 
         this.playerTeam = [];
         this.playerReserve = [];
@@ -1038,19 +1039,24 @@ window.combatApp = {
     },
 
     endCombat(victory) {
+        if (this.combatEnded) return; // <-- FIX: Evita que el WebSocket y el turno final dupliquen las plantas
+        this.combatEnded = true;
+
         this.active = false;
         window.farmApp.state.combatLock = false; 
 
         if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
 
         if (victory) {
-            const grossReward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
+            const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
+            const grossReward = this.isPvP ? (betAmount * 2) : (window.farmApp.state.pendingCombatReward || 25000);
             const taxAmount = Math.floor(grossReward * 0.05); // 5% de comisión / tax de quema
             const netReward = grossReward - taxAmount;
             
-            if (!this.isPvP) {
-                window.farmApp.state.seedsBalance += netReward;
-            } else {
+            // <-- FIX: El ganador suma localmente las semillas de su botín para no sobreescribir la BD a la baja
+            window.farmApp.state.seedsBalance += netReward;
+            
+            if (this.isPvP) {
                 setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
             }
 
