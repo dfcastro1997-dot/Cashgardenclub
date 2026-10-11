@@ -935,6 +935,268 @@ window.combatApp = {
         if(relevoBtn) { relevoBtn.disabled = true; relevoBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
 
         if (this.isPvP) {
+            window.socket.emit('combat_action', { match_id: this.matchId, actions: this.actionQueue });
+            fetch('/api/pvp/combat_sync', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { actionQueue: this.actionQueue } })
+            });
+        }
+
+        // ==========================================
+        // TURNO DEL JUGADOR
+        // ==========================================
+        await this.sleep(500); 
+        
+        for (let action of this.actionQueue) {
+            let attacker = this.playerTeam[action.attackerIdx];
+            if (attacker.hp <= 0) continue; 
+            
+            let target = action.skill.isBeneficial ? this.playerTeam[action.targetIdx] : this.enemyTeam[action.targetIdx];
+            
+            if (target.hp <= 0 && !action.skill.isBeneficial) {
+                const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
+                if (aliveEnemies.length === 0) break;
+                target = aliveEnemies[0];
+                action.targetIdx = this.enemyTeam.indexOf(target); 
+            }
+            if (!target || (action.skill.isBeneficial && target.hp <= 0)) continue;
+
+            this.currentAttackerIdx = action.attackerIdx; 
+            this.targetIdx = action.targetIdx;
+            this.updateUI(); 
+            await this.sleep(500); 
+
+            if (action.skill.type === 'heal') {
+                this.showFx("CURACIÓN", "text-green-500");
+                let healAmt = Math.floor(target.maxHp * 0.5);
+                target.hp = Math.min(target.maxHp, target.hp + healAmt);
+                this.showFloatingDamage(action.skill.isBeneficial ? `player-${this.targetIdx}` : `enemy-${this.targetIdx}`, `+${healAmt}`, "text-green-500");
+            } else if (action.skill.type === 'buff') {
+                this.showFx("FEROCIDAD", "text-orange-500");
+                target.hasBuff = true; target.def = 0;
+            } else if (action.skill.type === 'shield') {
+                this.showFx("ESCUDO", "text-blue-500");
+                target.hasShield = true;
+            } else if (action.skill.type === 'transfer') {
+                this.showFx("TRANSFUSIÓN", "text-purple-500");
+                let drain = Math.floor(attacker.maxHp * 0.3);
+                attacker.hp = Math.max(1, attacker.hp - drain);
+                target.hp = Math.min(target.maxHp, target.hp + drain);
+                this.showFloatingDamage(`player-${this.currentAttackerIdx}`, `-${drain}`, "text-red-500");
+                this.showFloatingDamage(action.skill.isBeneficial ? `player-${this.targetIdx}` : `enemy-${this.targetIdx}`, `+${drain}`, "text-green-500");
+            } else {
+                this.showFx(action.skill.name, "text-blue-500");
+                await this.lungeAttacker(`player-${this.currentAttackerIdx}`, `enemy-${this.targetIdx}`);
+                
+                let dmg = action.skill.dmg;
+                if (attacker.hasBuff) { dmg *= 2; attacker.hasBuff = false; attacker.def = attacker.originalDef; }
+
+                if (target.hasShield) {
+                    this.showFx("¡BLOQUEADO!", "text-gray-400");
+                    target.hasShield = false;
+                } else {
+                    let actualDamage = Math.max(1, Math.floor(dmg * (1 - (target.def / 100))));
+                    target.hp -= actualDamage;
+                    this.shakeElement(`enemy-${this.targetIdx}`);
+                    this.shakeScreen(); 
+                    this.showFloatingDamage(`enemy-${this.targetIdx}`, `-${actualDamage}`, "text-red-500");
+                    
+                    if (!this.isPvP) attacker.aggro = (attacker.aggro || 0) + actualDamage;
+                    
+                    if (target.hp <= 0 && !this.isPvP) {
+                        let bestAlly = this.enemyTeam.filter(e => e.hp > 0).sort((a,b) => b.hp - a.hp)[0];
+                        if(bestAlly) {
+                            this.updateUI(); await this.sleep(600);
+                            this.showFx("¡ALMA CARROÑERA!", "text-purple-500");
+                            let healAmt = Math.floor(target.maxHp * 0.3);
+                            bestAlly.hp = Math.min(bestAlly.maxHp, bestAlly.hp + healAmt);
+                            this.showFloatingDamage(`enemy-${this.enemyTeam.indexOf(bestAlly)}`, `+${healAmt}`, "text-purple-500");
+                            await this.sleep(600);
+                        }
+                    }
+                }
+            }
+            this.updateUI(); 
+            await this.sleep(1000); 
+        }
+
+        this.currentAttackerIdx = null; this.targetIdx = null;
+        this.updateUI();
+
+        if (this.isPvP) {
+            let pAlive = this.playerTeam.filter(p => p.hp > 0);
+            let eAlive = this.enemyTeam.filter(e => e.hp > 0);
+            
+            if (eAlive.length === 0) {
+                const winnerName = sessionStorage.getItem('username');
+                window.socket.emit('combat_action', { match_id: this.matchId, winner: winnerName });
+                fetch('/api/pvp/combat_sync', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ match_id: this.matchId, username: winnerName, update_data: { winner: winnerName } })
+                });
+                this.endCombat(true);
+            } else if (pAlive.length === 0) {
+                // Victoria reportada por oponente
+            } else {
+                this.actionQueue = [];
+                this.turn++;
+                this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
+                this.checkPvPTurnLogic();
+            }
+            return;
+        }
+
+        // ==========================================
+        // TURNO DEL ENEMIGO (PvE - Cuervos)
+        // ==========================================
+        this.setInstruction('🦅 TURNO ENEMIGO...');
+        await this.sleep(1000); 
+
+        // OLA DE CALOR (Mecánica de Clima)
+        if (this.turn === 4 && this.isSummer) {
+            this.showFx("OLA DE CALOR", "text-orange-500");
+            this.shakeScreen();
+            await this.sleep(1000);
+            this.playerTeam.concat(this.enemyTeam).forEach((ent, idx) => {
+                if(ent.hp > 0) {
+                    let dmgHeat = Math.floor(ent.maxHp * 0.10);
+                    ent.hp = Math.max(1, ent.hp - dmgHeat);
+                    if(idx < this.playerTeam.length) this.showFloatingDamage(`player-${idx}`, `-${dmgHeat}`, "text-orange-500");
+                    else this.showFloatingDamage(`enemy-${idx - this.playerTeam.length}`, `-${dmgHeat}`, "text-orange-500");
+                }
+            });
+            this.updateUI();
+            await this.sleep(1000);
+        }
+
+        const isBattleCryTurn = (this.turn % 3 === 0);
+        if (isBattleCryTurn) {
+            this.showFx("¡GRITO DE GUERRA!", "text-red-600");
+            this.shakeScreen();
+            await this.sleep(1200); 
+        }
+
+        for (let i = 0; i < this.enemyTeam.length; i++) {
+            let enemy = this.enemyTeam[i];
+            if (enemy.hp <= 0) continue;
+
+            let alivePlayers = this.playerTeam.filter(p => p.hp > 0);
+            if (alivePlayers.length === 0) break;
+
+            // Enrage: Último Aliento
+            let aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
+            let isEnraged = aliveEnemies.length === 1;
+            if (isEnraged && !enemy.enragedAlertDone) {
+                this.showFx("ÚLTIMO ALIENTO", "text-red-600");
+                this.shakeScreen();
+                enemy.enragedAlertDone = true;
+                await this.sleep(1000);
+            }
+
+            // SELECCIÓN DE OBJETIVO
+            let target;
+            if (isBattleCryTurn) {
+                target = alivePlayers.reduce((prev, curr) => (prev.hp > curr.hp ? prev : curr));
+            } else if (enemy.name.includes('Alfa')) {
+                let marked = alivePlayers.filter(p => p.hasMark);
+                if (marked.length > 0) {
+                    target = marked[0];
+                } else {
+                    target = alivePlayers.reduce((prev, curr) => ((prev.aggro||0) > (curr.aggro||0) ? prev : curr));
+                }
+            } else if (enemy.name.includes('Vigía')) {
+                target = alivePlayers.reduce((prev, curr) => (prev.hp > curr.hp ? prev : curr));
+            } else {
+                target = alivePlayers.reduce((prev, curr) => {
+                    if (prev.def === curr.def) return prev.hp < curr.hp ? prev : curr;
+                    return prev.def < curr.def ? prev : curr;
+                });
+            }
+            
+            // LÓGICA DE HABILIDADES
+            let eAction = 'attack';
+            if (enemy.hp / enemy.maxHp <= 0.20 && !enemy.hasShield) eAction = 'shield';
+            else if (enemy.hp / enemy.maxHp <= 0.35 && !enemy.usedHeal) eAction = 'heal';
+            else if (enemy.name.includes('Alfa') && !enemy.hasBuff && (enemy.hp / enemy.maxHp > 0.50) && this.turn % 2 !== 0) eAction = 'buff';
+            else if (enemy.name.includes('Vigía') && !target.hasMark && this.turn % 2 !== 0) eAction = 'mark';
+
+            this.currentAttackerIdx = i;
+
+            if (eAction === 'shield') {
+                this.targetIdx = i;
+                this.updateUI(); await this.sleep(500);
+                this.showFx("EVASIÓN EN BANDADA", "text-blue-400");
+                enemy.hasShield = true;
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            } else if (eAction === 'heal') {
+                this.targetIdx = i;
+                this.updateUI(); await this.sleep(500);
+                this.showFx("CARROÑAR", "text-green-500");
+                let healAmt = Math.floor(enemy.maxHp * 0.5);
+                enemy.hp = Math.min(enemy.maxHp, enemy.hp + healAmt);
+                enemy.usedHeal = true;
+                this.showFloatingDamage(`enemy-${i}`, `+${healAmt}`, "text-green-500");
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            } else if (eAction === 'buff') {
+                this.targetIdx = i;
+                this.updateUI(); await this.sleep(500);
+                this.showFx("FRENESÍ AVIAR", "text-orange-500");
+                enemy.hasBuff = true;
+                enemy.def = 0;
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            } else if (eAction === 'mark') {
+                this.targetIdx = this.playerTeam.indexOf(target);
+                this.updateUI(); await this.sleep(500);
+                this.showFx("MARCA DE PRESA", "text-purple-500");
+                target.hasMark = true;
+                this.updateUI(); await this.sleep(1000);
+                continue;
+            }
+            
+            // EJECUCIÓN DEL ATAQUE
+            this.targetIdx = this.playerTeam.indexOf(target);
+            this.updateUI(); 
+            await this.sleep(500); 
+            
+            this.showFx(isBattleCryTurn ? "ATAQUE FEROZ" : "PICOTAZO", isBattleCryTurn ? "text-red-500" : "text-gray-600");
+            await this.lungeAttacker(`enemy-${this.currentAttackerIdx}`, `player-${this.targetIdx}`);
+
+            let baseDamage = enemy.atk;
+            if (enemy.hasBuff) { baseDamage *= 2; enemy.hasBuff = false; enemy.def = enemy.originalDef; }
+            if (isBattleCryTurn) { baseDamage *= 2; }
+            if (isEnraged) { baseDamage *= 2; } 
+            
+            if (target.hasShield) {
+                this.showFx("¡BLOQUEADO!", "text-gray-400");
+                target.hasShield = false;
+            } else {
+                const mitigation = this.isSummer ? 0 : (target.def / 100); 
+                const actualDamage = Math.max(1, Math.floor(baseDamage * (1 - mitigation)));
+                
+                target.hp -= actualDamage;
+                this.shakeElement(`player-${this.targetIdx}`);
+                this.shakeScreen(); 
+                this.showFloatingDamage(`player-${this.targetIdx}`, `-${actualDamage}`, "text-red-600");
+            }
+            
+            if (enemy.name.includes('Alfa') && target.hasMark) {
+                target.hasMark = false;
+            }
+
+            this.updateUI(); 
+            await this.sleep(1000); 
+        }
+
+        // Decadencia del Aggro
+        this.playerTeam.forEach(p => { if(p.aggro) p.aggro = Math.floor(p.aggro / 2); });
+
+        this.actionQueue = [];
+        this.currentAttackerIdx = null; this.targetIdx = null;
+        this.checkWinLoss();
+    },
 
     updateEnergyUI() {
         const counter = document.getElementById('cb-energy-counter');
