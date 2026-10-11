@@ -1629,71 +1629,50 @@ def on_combat_action(data):
     emit('combat_update', data, room=f"match_{data.get('match_id')}", include_self=False)
 
 
-# --- NUEVO: SISTEMA DE MATCHMAKING GLOBAL (EMPAREJAMIENTO AUTOMÁTICO) ---
-matchmaking_queue = {}
+# --- NUEVO: SISTEMA DE MATCHMAKING CON NEGOCIACIÓN ---
+matchmaking_queue = {'global': []}
 
 @socketio.on('join_matchmaking')
 def on_join_matchmaking(data):
     short_id = data.get('short_id')
     username = data.get('username')
-    bet = int(data.get('bet', 0))
     sid = request.sid
     
-    # Prevenir que el mismo jugador se registre dos veces (Limpiar rastro viejo)
-    for b in list(matchmaking_queue.keys()):
-        matchmaking_queue[b] = [p for p in matchmaking_queue[b] if p.get('short_id') != short_id]
+    # Limpiar si el usuario ya estaba en la fila para evitar clones
+    matchmaking_queue['global'] = [p for p in matchmaking_queue['global'] if p.get('short_id') != short_id]
         
-    if bet not in matchmaking_queue:
-        matchmaking_queue[bet] = []
+    if len(matchmaking_queue['global']) > 0:
+        # Hay alguien esperando, hacemos match
+        opponent = matchmaking_queue['global'].pop(0)
         
-    # Buscar oponente seguro (Aquel que haya apostado la misma cantidad exacta)
-    if len(matchmaking_queue[bet]) > 0:
-        opponent = matchmaking_queue[bet].pop(0)
-        
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT id, game_state FROM users WHERE short_id = %s", (short_id,))
-        p1 = cur.fetchone()
-        cur.execute("SELECT id, game_state FROM users WHERE short_id = %s", (opponent['short_id'],))
-        p2 = cur.fetchone()
-        
-        if p1 and p2:
-            cur.execute("INSERT INTO pvp_matches (challenger_id, target_id, bet_seeds, status) VALUES (%s, %s, %s, 'accepted') RETURNING id", (p1['id'], p2['id'], bet))
-            match_id = cur.fetchone()['id']
-            conn.commit()
-            
-            # Notificar instantáneamente a los dos jugadores emparejados
-            emit('matchmaking_found', {'match_id': match_id, 'bet': bet, 'opponent': opponent['username']}, room=f"user_{short_id}")
-            emit('matchmaking_found', {'match_id': match_id, 'bet': bet, 'opponent': username}, room=f"user_{opponent['short_id']}")
-            
-        cur.close()
-        conn.close()
+        # El jugador que acaba de llegar propondrá la apuesta, el que estaba esperando la recibirá
+        emit('match_found_negotiation', {'role': 'proposer', 'opponent_id': opponent['short_id'], 'opponent_name': opponent['username']}, room=f"user_{short_id}")
+        emit('match_found_negotiation', {'role': 'waiter', 'opponent_id': short_id, 'opponent_name': username}, room=f"user_{opponent['short_id']}")
     else:
-        matchmaking_queue[bet].append({'short_id': short_id, 'username': username, 'sid': sid})
+        # No hay nadie, lo metemos a la fila
+        matchmaking_queue['global'].append({'short_id': short_id, 'username': username, 'sid': sid})
         
     broadcast_matchmaking_count()
 
 @socketio.on('cancel_matchmaking')
 def on_cancel_matchmaking(data):
     short_id = data.get('short_id')
-    for b in list(matchmaking_queue.keys()):
-        matchmaking_queue[b] = [p for p in matchmaking_queue[b] if p.get('short_id') != short_id]
+    matchmaking_queue['global'] = [p for p in matchmaking_queue['global'] if p.get('short_id') != short_id]
     broadcast_matchmaking_count()
 
 @socketio.on('get_matchmaking_count')
 def on_get_mm_count():
-    count = sum(len(q) for q in matchmaking_queue.values())
+    count = len(matchmaking_queue['global'])
     emit('matchmaking_count', {'count': count})
 
 @socketio.on('disconnect')
 def test_disconnect():
     sid = request.sid
-    for b in list(matchmaking_queue.keys()):
-        matchmaking_queue[b] = [p for p in matchmaking_queue[b] if p.get('sid') != sid]
+    matchmaking_queue['global'] = [p for p in matchmaking_queue['global'] if p.get('sid') != sid]
     broadcast_matchmaking_count()
 
 def broadcast_matchmaking_count():
-    count = sum(len(q) for q in matchmaking_queue.values())
+    count = len(matchmaking_queue['global'])
     socketio.emit('matchmaking_count', {'count': count})
 
 
