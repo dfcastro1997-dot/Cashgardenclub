@@ -3110,29 +3110,36 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('team-count-badge').innerText = `${count} / 3 Seleccionadas`;
             
             let totalReward = 0;
+            const isPvP = !!sessionStorage.getItem('pvp_match_id');
 
-            const REWARDS = {
-                'flower_crystal': 15000, 
-                'flower_wheat': 12000,   
-                'flower_bamboo': 10000,  
-                'flower_small': 10000,   
-                'flower_cactus': 7000,   
-                'flower_big': 6000,      
-                'flower_moon': 5000,     
-                'default': 8000
-            };
+            // Si es PvP, el premio potencial es el pozo total (apuesta tuya + apuesta del rival)
+            if (isPvP) {
+                const bet = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
+                totalReward = bet * 2; 
+            } else {
+                const REWARDS = {
+                    'flower_crystal': 15000, 
+                    'flower_wheat': 12000,   
+                    'flower_bamboo': 10000,  
+                    'flower_small': 10000,   
+                    'flower_cactus': 7000,   
+                    'flower_big': 6000,      
+                    'flower_moon': 5000,     
+                    'default': 8000
+                };
 
-            this.state.selectedCombatants.forEach(c => {
-                let pid = 'default';
-                if (c.type === 'arsenal') {
-                    const ap = this.state.arsenal.find(a => a.id === c.idTag);
-                    if (ap) pid = ap.plantId;
-                } else if (c.type === 'plot') {
-                    const p = this.state.plots.find(plot => plot.id == c.idTag);
-                    if (p && p.plant) pid = p.plant.id;
-                }
-                totalReward += (REWARDS[pid] || REWARDS['default']);
-            });
+                this.state.selectedCombatants.forEach(c => {
+                    let pid = 'default';
+                    if (c.type === 'arsenal') {
+                        const ap = this.state.arsenal.find(a => a.id === c.idTag);
+                        if (ap) pid = ap.plantId;
+                    } else if (c.type === 'plot') {
+                        const p = this.state.plots.find(plot => plot.id == c.idTag);
+                        if (p && p.plant) pid = p.plant.id;
+                    }
+                    totalReward += (REWARDS[pid] || REWARDS['default']);
+                });
+            }
 
             this.state.pendingCombatReward = totalReward;
 
@@ -3142,7 +3149,8 @@ if (typeof window.farmApp === 'undefined') {
             
             if (count > 0) {
                 statsBox.classList.remove('opacity-50', 'grayscale');
-                let rewardColor = totalReward >= 30000 ? 'text-red-500' : (totalReward >= 20000 ? 'text-orange-500' : 'text-green-600');
+                // En PvP se destaca el premio en Dorado
+                let rewardColor = isPvP ? 'text-cg_gold' : (totalReward >= 30000 ? 'text-red-500' : (totalReward >= 20000 ? 'text-orange-500' : 'text-green-600'));
                 
                 rewardText.className = `text-xl md:text-2xl font-black ${rewardColor}`;
                 rewardText.innerText = `+${totalReward.toLocaleString()} 🌱`;

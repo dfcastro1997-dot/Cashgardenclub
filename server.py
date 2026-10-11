@@ -1485,6 +1485,10 @@ def pvp_combat_sync():
                 if winner_user and winner_user['game_state']:
                     w_state = json.loads(winner_user['game_state'])
                     w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + (match['bet_seeds'] * 2)
+                    
+                    # Forzar sincronización obligatoria en el frontend del ganador
+                    w_state['lastTick'] = int(time.time() * 1000) + 10000 
+                    
                     cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), winner_user['id']))
             conn.commit()
             cur.close(); conn.close()
