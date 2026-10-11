@@ -606,8 +606,10 @@ window.combatApp = {
         document.getElementById('rps-waiting').classList.remove('hidden');
         document.getElementById('rps-desc').innerText = "Elección fijada. Esperando rival...";
         
+        // Emisión instantánea
         window.socket.emit('rps_action', { match_id: this.matchId, choice: choice });
         
+        // Si el oponente ya había elegido y la red nos mandó la data, resolvemos de inmediato.
         if (this.oppRpsChoice) this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
     },
 
@@ -635,6 +637,7 @@ window.combatApp = {
         resText.innerText = result;
         resText.className = `text-lg font-black uppercase tracking-widest mt-2 ${result === 'EMPATE' ? 'text-gray-500' : (iWon ? 'text-green-500' : 'text-red-500')}`;
         
+        // REDUCIDO: De 1200ms a 600ms para que la acción se sienta fluida pero sin marear
         setTimeout(() => {
             const rpsModal = document.getElementById('rps-modal');
             if (!rpsModal) return;
@@ -643,7 +646,7 @@ window.combatApp = {
                 this.myRpsChoice = null; this.oppRpsChoice = null; this.rpsResolving = false;
                 document.getElementById('rps-result').classList.add('hidden');
                 document.getElementById('rps-choices').classList.remove('hidden');
-                document.getElementById('rps-desc').innerText = "Empate. Elijan de nuevo.";
+                document.getElementById('rps-desc').innerText = "Empate. Elijan de nuevo rápido.";
             } else {
                 rpsModal.classList.replace('flex', 'hidden');
                 this.phase = 'P_SELECT';
@@ -651,14 +654,18 @@ window.combatApp = {
                 
                 if (iWon) {
                     this.currentPvPTurn = this.role;
-                    this.syncPvPState_DB({ initial_turn: this.role });
+                    // Notificamos a la BD silenciosamente sin detener la interfaz
+                    fetch('/api/pvp/combat_sync', {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { initial_turn: this.role } })
+                    });
                     this.startMyTurn();
                 } else {
                     this.currentPvPTurn = this.role === 'challenger' ? 'target' : 'challenger';
                     this.checkPvPTurnLogic();
                 }
             }
-        }, 1200); 
+        }, 600); 
     },
 
     async syncPvPState_DB(updateData = null) {

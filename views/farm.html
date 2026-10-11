@@ -728,103 +728,112 @@ if (typeof window.farmApp === 'undefined') {
     };
 
 
-    window.sendPvPChallenge = async function() {
-        const targetId = document.getElementById('pvp-target-id').value.trim();
-        const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
-        if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
-        if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
-        document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
-        document.getElementById('pvp-input-btn').disabled = true;
 
-        const res = await fetch('/api/pvp/challenge', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
-        });
-        const data = await res.json();
-        
-        if (res.ok) {
-            document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+
+        window.socket.on('challenge_accepted', async (data) => {
+            // Se cierra la modal del jugador retador al instante
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
             
-            // POLLING SEGURO Y ULTRA RÁPIDO (No bloquea la página)
-            const pollStatus = async () => {
-                const modalEl = document.getElementById('pvp-input-modal');
-                if (!modalEl || modalEl.classList.contains('hidden')) return; // Si se cerró la ventana, detener el bucle
-                
-                try {
-                    const sRes = await fetch(`/api/pvp/status/${data.match_id}`);
-                    const sData = await sRes.json();
-                    
-                    if (sData.status === 'accepted') {
-                        document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
-                        window.farmApp.state.seedsBalance -= betAmount;
-                        window.farmApp.saveState();
-                        
-                        sessionStorage.setItem('pvp_match_id', data.match_id);
-                        sessionStorage.setItem('pvp_bet_amount', betAmount);
-                        
-                        const openSelection = () => {
-                            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                            window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
-                        };
-
-                        if (!document.getElementById('team-selection-list')) {
-                            await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                            setTimeout(openSelection, 50); 
-                        } else {
-                            openSelection();
-                        }
-                        return; // Terminar bucle
-                    } else if (sData.status === 'rejected') {
-                        alert("El jugador ha rechazado tu reto.");
-                        document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
-                        document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
-                        document.getElementById('pvp-input-btn').disabled = false;
-                        return; // Terminar bucle
-                    }
-                } catch(e) {}
-                
-                setTimeout(pollStatus, 300); // Reintentar fluidamente
-            };
-            setTimeout(pollStatus, 300);
-            
-        } else {
-            alert(data.error);
-            document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
-            document.getElementById('pvp-input-btn').disabled = false;
-        }
-    };
-
-    window.respondPvP = async function(action) {
-        document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
-        window.isPvPModalOpen = false;
-        
-        // No usamos 'await' aquí para que la interfaz cargue de inmediato
-        fetch('/api/pvp/accept', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ match_id: window.currentChallenge.match_id, action: action })
-        });
-
-        if (action === 'accepted') {
-            window.farmApp.state.seedsBalance -= window.currentChallenge.bet_seeds;
+            // Se cobra la apuesta en la memoria local
+            window.farmApp.state.seedsBalance -= data.bet;
             window.farmApp.saveState();
             
-            sessionStorage.setItem('pvp_match_id', window.currentChallenge.match_id);
-            sessionStorage.setItem('pvp_bet_amount', window.currentChallenge.bet_seeds);
+            sessionStorage.setItem('pvp_match_id', data.match_id);
+            sessionStorage.setItem('pvp_bet_amount', data.bet);
             
-            const openSelection = () => {
-                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
-            };
-
+            // Ir de una vez a elegir el escuadrón sin esperar delays
+            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+            
             if (!document.getElementById('team-selection-list')) {
                 await loadView('farm', document.querySelector('.nav-btn-desktop'));
-                setTimeout(openSelection, 50); // Transición ultra rápida
-            } else {
-                openSelection();
             }
-        }
-    };
+            window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+        });
+
+        window.socket.on('challenge_rejected', () => {
+            alert("El jugador ha rechazado tu reto.");
+            const pvpModal = document.getElementById('pvp-input-modal');
+            if (pvpModal) pvpModal.classList.replace('flex', 'hidden');
+            
+            const pvpBtn = document.getElementById('pvp-input-btn');
+            if (pvpBtn) {
+                pvpBtn.innerText = "Enviar Reto";
+                pvpBtn.disabled = false;
+                pvpBtn.classList.remove('opacity-50', 'cursor-not-allowed'); // Asegurar estado visual
+            }
+            
+            // Limpia la memoria local del posible choque de match_id anterior
+            sessionStorage.removeItem('pvp_match_id');
+            sessionStorage.removeItem('pvp_bet_amount');
+        });
+
+        window.sendPvPChallenge = async function() {
+            const targetId = document.getElementById('pvp-target-id').value.trim();
+            const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
+            if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
+            if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
+            
+            document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
+            document.getElementById('pvp-input-btn').disabled = true;
+
+            const res = await fetch('/api/pvp/challenge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+                
+                // === NUEVO: Ahora dependemos 100% de los WebSockets para una respuesta instantánea ===
+                // El socket.on('challenge_accepted') y socket.on('challenge_rejected') capturarán 
+                // la decisión del rival al milisegundo, sin necesidad de hacer polling manual.
+                
+            } else {
+                alert(data.error);
+                document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                document.getElementById('pvp-input-btn').disabled = false;
+            }
+        };
+
+        window.respondPvP = async function(action) {
+            document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
+            window.isPvPModalOpen = false;
+            
+            const matchId = window.currentChallenge.match_id;
+            const challengerId = window.currentChallenge.challenger_short_id;
+            const betAmount = window.currentChallenge.bet_seeds;
+            
+            // Envío instantáneo por WebSocket al oponente
+            if (action === 'accepted') {
+                window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
+            } else {
+                window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
+            }
+
+            // Petición silenciosa a BD para oficializarlo en backend
+            fetch('/api/pvp/accept', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ match_id: matchId, action: action })
+            });
+
+            if (action === 'accepted') {
+                window.farmApp.state.seedsBalance -= betAmount;
+                window.farmApp.saveState();
+                
+                sessionStorage.setItem('pvp_match_id', matchId);
+                sessionStorage.setItem('pvp_bet_amount', betAmount);
+                
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                if (!document.getElementById('team-selection-list')) {
+                    await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                }
+                window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+            }
+        };
+
+
 
 
     window.farmApp = {
