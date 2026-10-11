@@ -413,6 +413,26 @@ window.combatApp = {
         
         window.farmApp.saveState();
 
+        // --- APLICAR FONDO DE COMBATE SEGÚN TEMPORADA ---
+        const todayDate = new Date();
+        const currentDay = todayDate.getDate();
+        let bgImg = '';
+        
+        if (currentDay >= 1 && currentDay <= 9) bgImg = 'Fondo_Combate_Invi.gif';
+        else if (currentDay >= 10 && currentDay <= 19) bgImg = 'Fondo_Combate_Oto.gif';
+        else if (currentDay >= 20 && currentDay <= 26) bgImg = 'Fondo_Combate_Pri.gif';
+        else bgImg = 'Fondo_Combate_Ver.gif'; // Días 27 en adelante
+        
+        const bf = document.getElementById('battlefield-container');
+        if (bf) {
+            bf.classList.remove('combat-bg-pattern'); // Quitamos el patrón punteado de CSS
+            bf.style.backgroundImage = `url('assets/Fondos/${bgImg}')`;
+            bf.style.backgroundSize = 'cover';
+            bf.style.backgroundPosition = 'center';
+            bf.style.backgroundRepeat = 'no-repeat';
+        }
+        // ------------------------------------------------
+
         this.active = false;
         this.turn = 1;
         this.energy = 5;
