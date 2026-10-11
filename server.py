@@ -690,7 +690,6 @@ def save_state():
     
     conn = get_db_connection()
     cur = conn.cursor()
-    # MODIFICADO: Incluir telegram_chat_id en la selección FOR UPDATE
     cur.execute("SELECT id, game_state, session_token, telegram_chat_id FROM users WHERE username = %s FOR UPDATE", (username,))
     user = cur.fetchone()
     
@@ -704,6 +703,18 @@ def save_state():
             db_state_raw = user['game_state']
             db_state = json.loads(db_state_raw) if db_state_raw else {}
             
+            db_tick = db_state.get('lastTick', 0)
+            in_tick = incoming_state.get('lastTick', 0)
+            
+            # --- PROTECCIÓN MAESTRA ANTI-SOBREESCRITURA ---
+            # Si la base de datos es más reciente que el cliente (ej. Admin o PvP inyectaron), 
+            # forzamos a que los balances del cliente NO sobreescriban la BD.
+            if db_tick > in_tick:
+                incoming_state['seedsBalance'] = db_state.get('seedsBalance', 0)
+                incoming_state['lastTick'] = db_tick
+                if 'inventory' in db_state: incoming_state['inventory'] = db_state['inventory']
+                if 'arsenal' in db_state: incoming_state['arsenal'] = db_state['arsenal']
+
             incoming_seeds = incoming_state.get('seedsBalance', 0)
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
             
@@ -723,7 +734,6 @@ def save_state():
                     cur.execute("UPDATE tournament_players SET current_score = %s WHERE user_id = %s AND instance_id = %s", (t_score, user['id'], t_instance))
                 
             incoming_state_str = json.dumps(incoming_state)
-            # MODIFICADO: Pasar el chat_id a la validación
             validated_state_str = process_server_tick(incoming_state_str, user.get('telegram_chat_id'))
         except Exception:
             validated_state_str = process_server_tick(incoming_state_str, user.get('telegram_chat_id'))
@@ -1141,12 +1151,16 @@ def global_leaderboard(t_id):
 def check_tournament_status(instance_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    # CORRECCIÓN: Usamos SELECT * para asegurarnos de traer id, prize_pool y todos los campos que el motor necesita.
     cur.execute("SELECT * FROM tournament_instances WHERE id = %s", (instance_id,))
     inst = cur.fetchone()
     
     if inst:
         inst = process_tournament_lifecycle(inst, conn, cur)
+        # FIX: Convertimos Decimal a Float para que JSON lo pueda parsear sin error 500
+        if 'prize_pool_cop' in inst and inst['prize_pool_cop'] is not None:
+            inst['prize_pool_cop'] = float(inst['prize_pool_cop'])
+        if 'entry_fee_cop' in inst and inst['entry_fee_cop'] is not None:
+            inst['entry_fee_cop'] = float(inst['entry_fee_cop'])
         
     cur.close(); conn.close()
     return jsonify(inst if inst else {})

@@ -607,16 +607,24 @@ window.combatApp = {
         document.getElementById('rps-waiting').classList.remove('hidden');
         document.getElementById('rps-desc').innerText = "Elección fijada. Esperando rival...";
         
-        // 1. Emisión instantánea por Socket
         window.socket.emit('rps_action', { match_id: this.matchId, choice: choice });
         
-        // 2. SISTEMA DE RESPALDO (HTTP Polling): Evita que se quede cargando infinito si el socket falla
+        // Guardamos la decisión 1 sola vez
+        fetch('/api/pvp/combat_sync', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { rps_choice: choice } })
+        });
+
+        // Marcador para matar bucles de empates viejos
+        this.currentRpsRound = (this.currentRpsRound || 0) + 1;
+        const myRound = this.currentRpsRound;
+        
         const checkOpponentRPS = async () => {
-            if (this.rpsResolved || this.rpsResolving) return;
+            if (this.rpsResolved || this.currentRpsRound !== myRound) return;
             try {
                 const res = await fetch('/api/pvp/combat_sync', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { rps_choice: choice } })
+                    body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: null }) // Solo lectura
                 });
                 const data = await res.json();
                 const oppRole = this.role === 'challenger' ? 'target' : 'challenger';
@@ -625,7 +633,7 @@ window.combatApp = {
                     this.oppRpsChoice = data.state['rps_' + oppRole];
                     this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
                 } else {
-                    setTimeout(checkOpponentRPS, 1500); // Reintentar cada 1.5s si el rival no ha elegido
+                    setTimeout(checkOpponentRPS, 1500); 
                 }
             } catch(e) {
                 setTimeout(checkOpponentRPS, 1500);
@@ -633,7 +641,6 @@ window.combatApp = {
         };
         checkOpponentRPS(); // Iniciar respaldo
         
-        // Si el socket fue súper rápido y ya teníamos la respuesta antes de consultar
         if (this.oppRpsChoice) this.resolveRPS(this.myRpsChoice, this.oppRpsChoice);
     },
 
@@ -666,9 +673,12 @@ window.combatApp = {
             if (!rpsModal) return;
 
             if (result === 'EMPATE') {
-                this.myRpsChoice = null; this.oppRpsChoice = null; this.rpsResolving = false;
+                this.myRpsChoice = null; 
+                this.oppRpsChoice = null; 
+                this.rpsResolving = false;
+                this.currentRpsRound++; // Detiene la busqueda anterior
                 
-                // LIMPIAR LA BD TRAS EL EMPATE PARA PERMITIR NUEVA ELECCIÓN
+                // Limpiar la BD para volver a elegir
                 fetch('/api/pvp/combat_sync', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ match_id: this.matchId, username: sessionStorage.getItem('username'), update_data: { rps_clear: true } })
