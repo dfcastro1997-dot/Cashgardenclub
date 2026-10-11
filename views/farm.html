@@ -783,13 +783,24 @@ if (typeof window.farmApp === 'undefined') {
             }
         };
 
+
+        // === NUEVO: PREVENIR PÉRDIDA DE INVITACIONES SI EL SOCKET SE DESCONECTA ===
+        window.socket.on('connect', () => {
+            const shortId = sessionStorage.getItem('short_id');
+            if (shortId) {
+                window.socket.emit('register_user', { short_id: shortId });
+            }
+        });
+        
+        // --- AÑADIR .off() A ESTOS TRES EVENTOS ---
+        
+        window.socket.off('incoming_challenge');
         window.socket.on('incoming_challenge', (data) => {
             if (!window.isPvPModalOpen) {
                 window.isPvPModalOpen = true;
                 window.currentChallenge = data;
                 document.getElementById('pvp-challenger-name').innerText = data.challenger_name;
                 
-                // Corrección: Muestra si es Amistoso en lugar de NaN
                 let betDisplay = data.bet > 0 ? data.bet.toLocaleString() + " 🌱" : "Amistoso (0 🌱)";
                 document.getElementById('pvp-bet-amount').innerText = betDisplay;
                 
@@ -798,10 +809,11 @@ if (typeof window.farmApp === 'undefined') {
             }
         });
 
+        window.socket.off('challenge_accepted');
         window.socket.on('challenge_accepted', async (data) => {
             document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
             
-            // Corrección: Evitar NaN en el cobro de la memoria local
+            // Al no estar duplicado, ahora solo cobrará 1 sola vez
             window.farmApp.state.seedsBalance -= (data.bet || 0);
             window.farmApp.saveState();
             
@@ -815,6 +827,7 @@ if (typeof window.farmApp === 'undefined') {
             window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
         });
 
+        window.socket.off('challenge_rejected');
         window.socket.on('challenge_rejected', () => {
             alert("El jugador ha rechazado tu reto.");
             const pvpModal = document.getElementById('pvp-input-modal');
@@ -829,8 +842,9 @@ if (typeof window.farmApp === 'undefined') {
             
             sessionStorage.removeItem('pvp_match_id');
             sessionStorage.removeItem('pvp_bet_amount');
-            window.isPvPModalOpen = false; // <-- FIX: Liberar el seguro del modal
+            window.isPvPModalOpen = false;
         });
+
 
         window.sendPvPChallenge = async function() {
             const targetId = document.getElementById('pvp-target-id').value.trim();
@@ -1196,6 +1210,12 @@ if (typeof window.farmApp === 'undefined') {
                 arsenal: this.state.arsenal || [],
                 lastTick: this.state.lastTick
             };
+
+            // SEGURO PVP: Si acabamos de pelear, instruimos al backend de no sobreescribir nuestro balance
+            if (this.state.skipSeedsSave) {
+                stateObj.skipSeedsSave = true;
+                this.state.skipSeedsSave = false; // Se limpia para la próxima guardada
+            }
             
             // ¡VITAL! Evita que se borre el regalo al auto-guardar
             if (this.state.pending_gift) {

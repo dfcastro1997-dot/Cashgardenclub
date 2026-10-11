@@ -707,9 +707,13 @@ def save_state():
             incoming_seeds = incoming_state.get('seedsBalance', 0)
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
             
-            # AUMENTAR LÍMITE A 500,000 para soportar ganancias grandes de PvP
-            if incoming_seeds > db_seeds + 500000:
+            # SI EL FRONTEND PIDE OMITIR EL GUARDADO DE SEMILLAS (Por fin de PvP), RESPETAR EL DE LA BD
+            if incoming_state.get('skipSeedsSave'):
                 incoming_state['seedsBalance'] = db_seeds
+                del incoming_state['skipSeedsSave']
+            else:
+                if incoming_seeds > db_seeds + 500000:
+                    incoming_state['seedsBalance'] = db_seeds
                 
             plots = incoming_state.get('plots', [])
             if len(plots) > 8 and plots[8].get('status') in ['tournament', 'tournament_waiting']:
@@ -1442,8 +1446,6 @@ def pvp_combat_sync():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # SOLUCIÓN DE VELOCIDAD: Solo bloqueamos la fila (FOR UPDATE) si vamos a GUARDAR un ataque.
-    # Si solo estamos leyendo si el rival atacó, leemos libremente sin bloquear.
     if update_data:
         cur.execute("SELECT * FROM pvp_matches WHERE id = %s FOR UPDATE", (match_id,))
     else:
@@ -1477,13 +1479,39 @@ def pvp_combat_sync():
             state['turn'] = update_data['initial_turn']
             
         if 'winner' in update_data and not match.get('winner_username'):
-            cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (update_data['winner'], match_id))
-            # ELIMINADA LA INYECCIÓN DE SEMILLAS DESDE EL SERVIDOR: 
-            # El frontend ganador ahora procesa su propio botín junto con el guardado del arsenal,
-            # evitando así conflictos de sobreescritura (race conditions) al llamar save_state.
+            winner_name = update_data['winner']
+            # Determinar ganador real si fue por abandono
+            if winner_name == 'opponent_abandoned':
+                cur.execute("SELECT username FROM users WHERE id = %s", (match['challenger_id'],))
+                c_name = cur.fetchone()['username']
+                cur.execute("SELECT username FROM users WHERE id = %s", (match['target_id'],))
+                t_name = cur.fetchone()['username']
+                winner_name = t_name if username == c_name else c_name
+
+            cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s RETURNING bet_seeds", (winner_name, match_id))
+            updated_match = cur.fetchone()
+            
+            # INYECCIÓN DEL PREMIO DIRECTAMENTE EN LA BD
+            if updated_match:
+                bet_amount = updated_match.get('bet_seeds', 0)
+                if bet_amount > 0:
+                    gross_reward = bet_amount * 2
+                    tax = int(gross_reward * 0.05)
+                    net_reward = gross_reward - tax
+                    
+                    cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (winner_name,))
+                    w_user = cur.fetchone()
+                    if w_user and w_user['game_state']:
+                        try:
+                            w_state = json.loads(w_user['game_state'])
+                            w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + net_reward
+                            cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), w_user['id']))
+                        except Exception:
+                            pass
+            
             conn.commit()
             cur.close(); conn.close()
-            return jsonify({"status": "game_over", "winner": update_data['winner']})
+            return jsonify({"status": "game_over", "winner": winner_name})
             
         cur.execute("UPDATE pvp_matches SET match_data = %s WHERE id = %s", (json.dumps(state), match_id))
         conn.commit()
