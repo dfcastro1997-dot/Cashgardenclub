@@ -257,22 +257,23 @@
     </div>
 </div>
 
-<!-- MODAL INPUT DE ID PVP -->
+<!-- MODAL INPUT DE ID PVP / MATCHMAKING -->
 <div id="pvp-input-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePvPModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border-4 border-cg_blue">
-        <div class="text-4xl mb-2">🔍</div>
-        <h3 class="text-xl font-black text-cg_navy mb-4">Buscar Oponente</h3>
-        
-        <div class="text-left mb-4">
-            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">ID del Jugador (4 Dígitos)</label>
-            <input type="text" id="pvp-target-id" maxlength="4" placeholder="Ej: 1234" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 font-black text-cg_navy text-center tracking-[0.5em] text-lg outline-none focus:border-cg_blue">
-        </div>
+        <div class="text-4xl mb-2">⚔️</div>
+        <h3 class="text-xl font-black text-cg_navy mb-4">Arena de Combate</h3>
 
+        <!-- Pestañas de modo -->
+        <div class="flex gap-2 mb-5 bg-gray-100 p-1.5 rounded-xl">
+            <button id="tab-matchmaking" onclick="window.togglePvPSearchMode('matchmaking')" class="flex-1 bg-white text-cg_blue shadow-sm font-black py-2.5 rounded-lg text-[10px] sm:text-xs uppercase tracking-widest transition-all">Emparejar</button>
+            <button id="tab-private" onclick="window.togglePvPSearchMode('private')" class="flex-1 text-gray-500 hover:text-cg_navy font-bold py-2.5 rounded-lg text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:bg-gray-200">Privado (ID)</button>
+        </div>
+        
         <div class="text-left mb-6">
-            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Tipo de Duelo</label>
+            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Apuesta del Duelo</label>
             <div class="flex gap-2 mb-3">
-                <button type="button" id="btn-bet-mode" onclick="window.togglePvPBetMode(true)" class="flex-1 bg-cg_gold text-white font-black py-2 rounded-xl text-xs shadow-inner transition-colors">Apuesta</button>
+                <button type="button" id="btn-bet-mode" onclick="window.togglePvPBetMode(true)" class="flex-1 bg-cg_gold text-white font-black py-2 rounded-xl text-xs shadow-inner transition-colors">Semillas</button>
                 <button type="button" id="btn-friendly-mode" onclick="window.togglePvPBetMode(false)" class="flex-1 bg-gray-100 text-gray-500 font-bold py-2 rounded-xl text-xs hover:bg-gray-200 transition-colors">Amistoso</button>
             </div>
             <div id="pvp-bet-container">
@@ -280,9 +281,28 @@
             </div>
         </div>
 
-        <button id="pvp-input-btn" onclick="sendPvPChallenge()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">
-            Enviar Reto
-        </button>
+        <!-- MODO MATCHMAKING (Global) -->
+        <div id="mode-matchmaking-container" class="mb-2 block">
+            <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl mb-4 text-center">
+                <p class="text-[10px] text-blue-800 font-black uppercase tracking-widest">Jugadores Buscando Rival</p>
+                <p id="mm-count" class="text-3xl font-black text-cg_blue mt-1">0</p>
+            </div>
+            <button id="btn-search-mm" onclick="startMatchmaking()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">
+                Buscar Oponente 🔍
+            </button>
+        </div>
+
+        <!-- MODO PRIVADO (Por ID) -->
+        <div id="mode-private-container" class="mb-2 hidden">
+            <div class="text-left mb-4">
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">ID del Jugador (4 Dígitos)</label>
+                <input type="text" id="pvp-target-id" maxlength="4" placeholder="Ej: 1234" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 font-black text-cg_navy text-center tracking-[0.5em] text-lg outline-none focus:border-cg_blue">
+            </div>
+            <button id="pvp-input-btn" onclick="sendPvPChallenge()" class="w-full bg-gray-800 hover:bg-black text-white font-black py-4 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">
+                Enviar Reto
+            </button>
+        </div>
+
     </div>
 </div>
 
@@ -729,7 +749,15 @@ if (typeof window.farmApp === 'undefined') {
     window.selectPvP = function() {
             document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
             
-            // Limpia y habilita el botón por si se quedó trabado antes
+            // Resetea y habilita por defecto el Matchmaking
+            window.togglePvPSearchMode('matchmaking');
+            
+            const btn = document.getElementById('btn-search-mm');
+            if (btn) {
+                btn.innerHTML = 'Buscar Oponente 🔍';
+                btn.disabled = false;
+            }
+
             const pvpBtn = document.getElementById('pvp-input-btn');
             if (pvpBtn) {
                 pvpBtn.innerText = "Enviar Reto";
@@ -739,6 +767,148 @@ if (typeof window.farmApp === 'undefined') {
             
             document.getElementById('pvp-input-modal').classList.remove('hidden');
             document.getElementById('pvp-input-modal').classList.add('flex');
+            
+            // Solicitamos conteo actual al servidor
+            window.socket.emit('get_matchmaking_count');
+        };
+
+        window.closePvPModal = function() {
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+            const sid = sessionStorage.getItem('short_id');
+            if (sid) window.socket.emit('cancel_matchmaking', { short_id: sid });
+        };
+
+        window.togglePvPSearchMode = function(mode) {
+            const tabMM = document.getElementById('tab-matchmaking');
+            const tabPriv = document.getElementById('tab-private');
+            const contMM = document.getElementById('mode-matchmaking-container');
+            const contPriv = document.getElementById('mode-private-container');
+
+            if (mode === 'matchmaking') {
+                tabMM.className = "flex-1 bg-white text-cg_blue shadow-sm font-black py-2.5 rounded-lg text-[10px] sm:text-xs uppercase tracking-widest transition-all";
+                tabPriv.className = "flex-1 text-gray-500 hover:text-cg_navy font-bold py-2.5 rounded-lg text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:bg-gray-200";
+                contMM.classList.remove('hidden');
+                contMM.classList.add('block');
+                contPriv.classList.add('hidden');
+                contPriv.classList.remove('block');
+                window.socket.emit('get_matchmaking_count');
+            } else {
+                tabPriv.className = "flex-1 bg-white text-cg_blue shadow-sm font-black py-2.5 rounded-lg text-[10px] sm:text-xs uppercase tracking-widest transition-all";
+                tabMM.className = "flex-1 text-gray-500 hover:text-cg_navy font-bold py-2.5 rounded-lg text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:bg-gray-200";
+                contPriv.classList.remove('hidden');
+                contPriv.classList.add('block');
+                contMM.classList.add('hidden');
+                contMM.classList.remove('block');
+                
+                // Si nos pasamos a privado, nos salimos de la fila global para no colisionar
+                const sid = sessionStorage.getItem('short_id');
+                if (sid) window.socket.emit('cancel_matchmaking', { short_id: sid });
+                
+                const btn = document.getElementById('btn-search-mm');
+                if (btn) {
+                    btn.innerHTML = 'Buscar Oponente 🔍';
+                    btn.disabled = false;
+                }
+            }
+        };
+
+        window.startMatchmaking = function() {
+            let betAmount = parseInt(document.getElementById('pvp-bet-input').value);
+            if (isNaN(betAmount)) betAmount = 0;
+            
+            if (betAmount > 0 && window.farmApp && window.farmApp.state.seedsBalance < betAmount) {
+                return alert("No tienes suficientes semillas para esta apuesta.");
+            }
+
+            const btn = document.getElementById('btn-search-mm');
+            btn.innerHTML = '<span class="animate-pulse">Buscando... ⏳</span>';
+            btn.disabled = true;
+
+            window.socket.emit('join_matchmaking', {
+                short_id: sessionStorage.getItem('short_id'),
+                username: sessionStorage.getItem('username'),
+                bet: betAmount
+            });
+        };
+
+        window.socket.on('matchmaking_count', (data) => {
+            const el = document.getElementById('mm-count');
+            if (el) el.innerText = data.count;
+        });
+
+        window.socket.on('matchmaking_found', async (data) => {
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+            
+            const btn = document.getElementById('btn-search-mm');
+            if(btn){
+                btn.innerHTML = 'Buscar Oponente 🔍';
+                btn.disabled = false;
+            }
+
+            // Flujo seguro idéntico a cuando te aceptan un reto privado
+            if(window.farmApp) {
+                window.farmApp.state.seedsBalance -= (data.bet || 0);
+                window.farmApp.saveState();
+                
+                sessionStorage.setItem('pvp_match_id', data.match_id);
+                sessionStorage.setItem('pvp_bet_amount', data.bet || 0);
+                
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                if (!document.getElementById('team-selection-list')) {
+                    await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                }
+                
+                // Redirigir al jugador a la zona de selección de combate con aviso táctico
+                alert(`¡Rival Encontrado!\nTe enfrentarás a la granja de: ${data.opponent}`);
+                window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+            }
+        });
+
+        // -------------------------------------------------------------
+        // Función clásica de envío por ID (Conservada)
+        window.sendPvPChallenge = async function() {
+            const targetId = document.getElementById('pvp-target-id').value.trim();
+            
+            let betAmount = parseInt(document.getElementById('pvp-bet-input').value);
+            if (isNaN(betAmount)) betAmount = 0;
+
+            if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
+            if (betAmount > 0 && window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
+            
+            document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
+            document.getElementById('pvp-input-btn').disabled = true;
+
+            try {
+                const res = await fetch('/api/pvp/challenge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+                    
+                    window.socket.emit('pvp_challenge', {
+                        target_short_id: targetId,
+                        challenger_short_id: sessionStorage.getItem('short_id'),
+                        challenger_name: sessionStorage.getItem('username'),
+                        bet: betAmount,
+                        match_id: data.match_id
+                    });
+                    
+                } else {
+                    alert(data.error);
+                    document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                    document.getElementById('pvp-input-btn').disabled = false;
+                    document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            } catch(e) {
+                alert("Error de red. El servidor podría estarse actualizando o reiniciando, intenta nuevamente.");
+                document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                document.getElementById('pvp-input-btn').disabled = false;
+                document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         };
 
 
@@ -845,53 +1015,6 @@ if (typeof window.farmApp === 'undefined') {
             window.isPvPModalOpen = false;
         });
 
-
-        window.sendPvPChallenge = async function() {
-            const targetId = document.getElementById('pvp-target-id').value.trim();
-            
-            // Corrección Anti-Errores 500 Backend por datos vacíos o no numéricos
-            let betAmount = parseInt(document.getElementById('pvp-bet-input').value);
-            if (isNaN(betAmount)) betAmount = 0;
-
-            if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
-            if (betAmount > 0 && window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
-            
-            document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
-            document.getElementById('pvp-input-btn').disabled = true;
-
-            try {
-                const res = await fetch('/api/pvp/challenge', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
-                });
-                const data = await res.json();
-                
-                if (res.ok) {
-                    document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
-                    
-                    // DISPARO INSTANTÁNEO POR SOCKET
-                    window.socket.emit('pvp_challenge', {
-                        target_short_id: targetId,
-                        challenger_short_id: sessionStorage.getItem('short_id'),
-                        challenger_name: sessionStorage.getItem('username'),
-                        bet: betAmount,
-                        match_id: data.match_id
-                    });
-                    
-                } else {
-                    alert(data.error);
-                    document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
-                    document.getElementById('pvp-input-btn').disabled = false;
-                    document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
-                }
-            } catch(e) {
-                alert("Error de red. El servidor podría estarse actualizando o reiniciando, intenta nuevamente.");
-                document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
-                document.getElementById('pvp-input-btn').disabled = false;
-                document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        };
 
         window.respondPvP = async function(action) {
             document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
