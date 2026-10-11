@@ -1149,20 +1149,16 @@ if (typeof window.farmApp === 'undefined') {
             
             const matchId = window.currentChallenge.match_id;
             const challengerId = window.currentChallenge.challenger_short_id;
+            const challengerName = window.currentChallenge.challenger_name;
             const betAmount = window.currentChallenge.bet || window.currentChallenge.bet_seeds || 0;
             
             if (action === 'accepted') {
                 window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
-            } else {
-                window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
-            }
+                fetch('/api/pvp/accept', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ match_id: matchId, action: 'accepted' })
+                });
 
-            fetch('/api/pvp/accept', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ match_id: matchId, action: action })
-            });
-
-            if (action === 'accepted') {
                 window.farmApp.state.seedsBalance -= betAmount;
                 window.farmApp.saveState();
                 
@@ -1174,6 +1170,53 @@ if (typeof window.farmApp === 'undefined') {
                     await loadView('farm', document.querySelector('.nav-btn-desktop'));
                 }
                 window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+
+            } else {
+                // Para CUALQUIER tipo de rechazo, liberamos primero al oponente original
+                window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
+                fetch('/api/pvp/accept', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ match_id: matchId, action: 'rejected' })
+                });
+
+                // Si eligió RENEGOCIAR, le abrimos el modal de propuesta invirtiendo los roles
+                if (action === 'renegotiate') {
+                    setTimeout(() => {
+                        const modal = document.createElement('div');
+                        modal.id = 'mm-propose-modal';
+                        modal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in';
+                        modal.innerHTML = `
+                            <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+                            <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border-4 border-cg_gold">
+                                <div class="text-5xl mb-4 drop-shadow-md">🤝</div>
+                                <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Renegociar Apuesta</h3>
+                                <p class="text-sm text-gray-500 mb-4 font-medium">Propón un nuevo monto a:<br><strong class="text-cg_navy text-lg">${challengerName || 'Rival'}</strong></p>
+                                <div class="text-left mb-6">
+                                    <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Semillas a Apostar</label>
+                                    <input type="number" id="mm-proposed-bet" value="${betAmount > 0 ? betAmount : 1000}" min="0" step="100" class="w-full px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 font-black text-cg_gold text-center text-lg outline-none focus:border-cg_gold shadow-inner">
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <button id="btn-propose-bet" onclick="sendProposedBet('${challengerId}')" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95">
+                                        Proponer Nuevo Reto
+                                    </button>
+                                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-500 font-black py-3.5 rounded-xl transition-all uppercase tracking-widest text-xs">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(modal);
+                    }, 300);
+
+                // Si eligió RECHAZAR Y BUSCAR, volvemos a la cola de Matchmaking automáticamente
+                } else if (action === 'rejected_search') {
+                    setTimeout(() => {
+                        document.getElementById('pvp-input-modal').classList.remove('hidden');
+                        document.getElementById('pvp-input-modal').classList.add('flex');
+                        window.togglePvPSearchMode('matchmaking');
+                        if (window.startMatchmaking) window.startMatchmaking();
+                    }, 400);
+                }
             }
         };
 

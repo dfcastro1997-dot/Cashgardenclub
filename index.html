@@ -382,9 +382,13 @@
                 <p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Apuesta del duelo</p>
                 <p class="text-2xl font-black text-cg_gold" id="pvp-bet-amount">0 🌱</p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="respondPvP('rejected')" class="flex-1 bg-gray-100 text-gray-500 font-black py-3.5 rounded-xl transition-all hover:bg-red-100 hover:text-red-500 text-xs uppercase tracking-widest">Rechazar</button>
-                <button onclick="respondPvP('accepted')" class="flex-[2] bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Aceptar Duelo</button>
+            <div class="flex flex-col gap-2">
+                <button onclick="respondPvP('accepted')" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Aceptar Duelo</button>
+                <div class="flex gap-2">
+                    <button onclick="respondPvP('renegotiate')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 font-black py-3 rounded-xl transition-all text-[9px] uppercase tracking-widest shadow-sm">Renegociar</button>
+                    <button onclick="respondPvP('rejected_search')" class="flex-1 bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200 font-black py-3 rounded-xl transition-all text-[9px] uppercase tracking-widest shadow-sm">Rechazar y Buscar</button>
+                </div>
+                <button onclick="respondPvP('rejected')" class="w-full mt-2 text-gray-400 hover:text-red-500 text-[10px] font-bold underline transition-colors">Cancelar y Cerrar</button>
             </div>
         </div>
     </div>
