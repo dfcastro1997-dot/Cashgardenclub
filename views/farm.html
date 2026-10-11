@@ -811,7 +811,51 @@ if (typeof window.farmApp === 'undefined') {
             if (el) el.innerText = data.count;
         });
 
+        // --- MANEJO DE NEGOCIACIÓN DE MATCHMAKING ---
         window.socket.on('match_found_negotiation', (data) => {
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+
+            if (data.role === 'proposer') {
+                const modal = document.createElement('div');
+                modal.id = 'mm-propose-modal';
+                modal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in';
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+                    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border-4 border-cg_gold">
+                        <div class="text-5xl mb-4 drop-shadow-md">🤝</div>
+                        <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">¡Rival Encontrado!</h3>
+                        <p class="text-sm text-gray-500 mb-4 font-medium">Fija la apuesta para combatir contra:<br><strong class="text-cg_navy text-lg">${data.opponent_name}</strong></p>
+                        <div class="text-left mb-6">
+                            <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Semillas a Apostar</label>
+                            <input type="number" id="mm-proposed-bet" value="1000" min="0" step="100" class="w-full px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 font-black text-cg_gold text-center text-lg outline-none focus:border-cg_gold shadow-inner">
+                            <p class="text-[9px] text-gray-400 mt-2 text-center">Pon 0 para jugar en modo Amistoso</p>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button id="btn-propose-bet" onclick="sendProposedBet('${data.opponent_id}')" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95">
+                                Proponer y Retar
+                            </button>
+                            <button onclick="cancelMatchmakingNegotiation('${data.opponent_id}')" class="w-full bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-500 font-black py-3.5 rounded-xl transition-all uppercase tracking-widest text-xs">
+                                Cancelar Duelo
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } else {
+                const modal = document.createElement('div');
+                modal.id = 'mm-wait-modal';
+                modal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in';
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+                    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border-4 border-cg_blue">
+                        <div class="text-5xl mb-4 drop-shadow-md animate-bounce">⏳</div>
+                        <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">¡Rival Encontrado!</h3>
+                        <p class="text-sm text-gray-500 mb-6 font-medium">Esperando que <strong class="text-cg_navy">${data.opponent_name}</strong> defina la apuesta de este combate...</p>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+        });
 
         // Generador visual de modales de error
         const showPvPError = (msg) => {
