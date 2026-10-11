@@ -1478,35 +1478,13 @@ def pvp_combat_sync():
             state['turn'] = update_data['initial_turn']
             
         if 'winner' in update_data and not match.get('winner_username'):
-            actual_winner = update_data['winner']
-            cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (actual_winner, match_id))
-            
-            # --- NUEVO: PAGO DE RECOMPENSA DESDE EL SERVIDOR ---
-            # Si el oponente abandonó, el ganador es el otro jugador
-            if actual_winner == 'opponent_abandoned':
-                winner_id = match['target_id'] if role == 'challenger' else match['challenger_id']
-                cur.execute("SELECT id, game_state FROM users WHERE id = %s FOR UPDATE", (winner_id,))
-            else:
-                cur.execute("SELECT id, game_state FROM users WHERE username = %s FOR UPDATE", (actual_winner,))
-                
-            winner_user = cur.fetchone()
-            if winner_user and winner_user['game_state']:
-                w_state = json.loads(winner_user['game_state'])
-                
-                # Calcular pozo y comisión (Si es Amistoso, el premio y descuento es 0)
-                gross_reward = match['bet_seeds'] * 2
-                tax = int(gross_reward * 0.05)
-                net_reward = gross_reward - tax
-                
-                w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + net_reward
-                w_state['lastTick'] = int(time.time() * 1000) + 10000 # Truco: Forzamos la actualización frontend
-                
-                cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), winner_user['id']))
-            # ---------------------------------------------------
-            
+            cur.execute("UPDATE pvp_matches SET winner_username = %s WHERE id = %s", (update_data['winner'], match_id))
+            # ELIMINADA LA INYECCIÓN DE SEMILLAS DESDE EL SERVIDOR: 
+            # El frontend ganador ahora procesa su propio botín junto con el guardado del arsenal,
+            # evitando así conflictos de sobreescritura (race conditions) al llamar save_state.
             conn.commit()
             cur.close(); conn.close()
-            return jsonify({"status": "game_over", "winner": actual_winner})
+            return jsonify({"status": "game_over", "winner": update_data['winner']})
             
         cur.execute("UPDATE pvp_matches SET match_data = %s WHERE id = %s", (json.dumps(state), match_id))
         conn.commit()
