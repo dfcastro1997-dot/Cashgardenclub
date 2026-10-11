@@ -235,7 +235,7 @@
         <p class="text-xs sm:text-sm text-gray-500 mb-6 font-medium leading-relaxed relative z-10">El rival ha sido exterminado. Tus plantas regresan al almacén y has reclamado el botín.</p>
         
         <!-- FACTURA DE PREMIO Y COMISIÓN -->
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 relative z-10 shadow-inner text-left">
+        <div id="combat-victory-invoice" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 relative z-10 shadow-inner text-left">
             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center border-b border-gray-200 pb-2">Factura de Recompensa</p>
             <div class="flex justify-between items-center mb-1">
                 <span class="text-xs font-bold text-gray-600">Premio Bruto:</span>
@@ -668,6 +668,7 @@ window.combatApp = {
         }, 600); 
     },
 
+
     async syncPvPState_DB(updateData = null) {
         try {
             const res = await fetch('/api/pvp/combat_sync', {
@@ -681,7 +682,15 @@ window.combatApp = {
 
             if (!this.active && state.challenger_team && state.target_team) {
                 this.enemyTeam = state[oppRole + '_team'];
-                this.enemyTeam.forEach(e => { e.maxHp = e.hp; e.icon = e.icon || 'assets/Plantas/trigo_rapido.gif'; e.originalDef = e.def; e.hasShield = false; e.hasBuff = false; e.usedHeal = false; e.enragedAlertDone = false; });
+                this.enemyTeam.forEach(e => { 
+                    if (!e.maxHp) e.maxHp = e.hp; // <-- FIX: Sólo asigna maxHp si no existía, preservando la vida máxima real
+                    e.icon = e.icon || 'assets/Plantas/trigo_rapido.gif'; 
+                    e.originalDef = e.def; 
+                    e.hasShield = false; 
+                    e.hasBuff = false; 
+                    e.usedHeal = false; 
+                    e.enragedAlertDone = false; 
+                });
                 this.active = true;
                 this.updateUI();
                 
@@ -1028,6 +1037,74 @@ window.combatApp = {
         this.checkWinLoss();
     },
 
+    endCombat(victory) {
+        this.active = false;
+        window.farmApp.state.combatLock = false; 
+
+        if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
+
+        if (victory) {
+            const grossReward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
+            const taxAmount = Math.floor(grossReward * 0.05); // 5% de comisión / tax de quema
+            const netReward = grossReward - taxAmount;
+            
+            if (!this.isPvP) {
+                window.farmApp.state.seedsBalance += netReward;
+            } else {
+                setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
+            }
+
+            // Ganan: Regresan vivas (con la vida que les quedó, mínimo 1 para evitar bug)
+            let finalTeam = [...this.playerTeam, ...this.playerReserve];
+            finalTeam.forEach(pt => {
+                window.farmApp.state.arsenal.push({
+                    id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                    plantId: pt.plantId, name: pt.name, icon: pt.icon,
+                    hp: Math.max(1, pt.hp), 
+                    maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                    wins: pt.wins + 1, // Suman victoria
+                    lastRecover: Date.now() 
+                });
+            });
+
+            // <-- FIX: Ocultar factura si es un duelo amistoso (Apuesta 0) -->
+            const invoiceBox = document.getElementById('combat-victory-invoice');
+            if (grossReward > 0) {
+                if (invoiceBox) invoiceBox.classList.remove('hidden');
+                document.getElementById('combat-victory-gross').innerText = `${grossReward.toLocaleString()} 🌱`;
+                document.getElementById('combat-victory-tax').innerText = `-${taxAmount.toLocaleString()} 🌱`;
+                document.getElementById('combat-victory-net').innerText = `+${netReward.toLocaleString()} 🌱`;
+            } else {
+                if (invoiceBox) invoiceBox.classList.add('hidden');
+            }
+            
+            document.getElementById('combat-victory-modal').classList.remove('hidden');
+            document.getElementById('combat-victory-modal').classList.add('flex');
+            window.farmApp.saveState();
+        } else {
+            // Derrota: Nunca las pierden, quedan en Fatiga Crítica (1 HP)
+            let finalTeam = [...this.playerTeam, ...this.playerReserve];
+            finalTeam.forEach(pt => {
+                window.farmApp.state.arsenal.push({
+                    id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                    plantId: pt.plantId, name: pt.name, icon: pt.icon,
+                    hp: 1, // Castigo de Fatiga al regresar a base
+                    maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                    wins: pt.wins,
+                    lastRecover: Date.now() 
+                });
+            });
+
+            document.getElementById('combat-defeat-modal').classList.remove('hidden');
+            document.getElementById('combat-defeat-modal').classList.add('flex');
+            window.farmApp.saveState(); 
+        }
+        
+        sessionStorage.removeItem('pvp_match_id');
+        sessionStorage.removeItem('pvp_bet_amount');
+    },
+
+
     checkPvPTurnLogic() {
         if (this.currentPvPTurn === this.role) {
             this.startMyTurn();
@@ -1369,66 +1446,6 @@ window.combatApp = {
             if(btn) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
             if(clearBtn) { clearBtn.disabled = false; clearBtn.classList.remove('opacity-50', 'cursor-not-allowed'); }
         }
-    },
-
-    endCombat(victory) {
-        this.active = false;
-        window.farmApp.state.combatLock = false; 
-
-        if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
-
-        if (victory) {
-            const grossReward = this.isPvP ? (parseInt(sessionStorage.getItem('pvp_bet_amount')) * 2) : (window.farmApp.state.pendingCombatReward || 25000);
-            const taxAmount = Math.floor(grossReward * 0.05); // 5% de comisión / tax de quema
-            const netReward = grossReward - taxAmount;
-            
-            if (!this.isPvP) {
-                window.farmApp.state.seedsBalance += netReward;
-            } else {
-                setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
-            }
-
-            // Ganan: Regresan vivas (con la vida que les quedó, mínimo 1 para evitar bug)
-            let finalTeam = [...this.playerTeam, ...this.playerReserve];
-            finalTeam.forEach(pt => {
-                window.farmApp.state.arsenal.push({
-                    id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                    plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: Math.max(1, pt.hp), 
-                    maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
-                    wins: pt.wins + 1, // Suman victoria
-                    lastRecover: Date.now() 
-                });
-            });
-
-            document.getElementById('combat-victory-gross').innerText = `${grossReward.toLocaleString()} 🌱`;
-            document.getElementById('combat-victory-tax').innerText = `-${taxAmount.toLocaleString()} 🌱`;
-            document.getElementById('combat-victory-net').innerText = `+${netReward.toLocaleString()} 🌱`;
-            
-            document.getElementById('combat-victory-modal').classList.remove('hidden');
-            document.getElementById('combat-victory-modal').classList.add('flex');
-            window.farmApp.saveState();
-        } else {
-            // Derrota: Nunca las pierden, quedan en Fatiga Crítica (1 HP)
-            let finalTeam = [...this.playerTeam, ...this.playerReserve];
-            finalTeam.forEach(pt => {
-                window.farmApp.state.arsenal.push({
-                    id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                    plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: 1, // Castigo de Fatiga al regresar a base
-                    maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
-                    wins: pt.wins,
-                    lastRecover: Date.now() 
-                });
-            });
-
-            document.getElementById('combat-defeat-modal').classList.remove('hidden');
-            document.getElementById('combat-defeat-modal').classList.add('flex');
-            window.farmApp.saveState(); 
-        }
-        
-        sessionStorage.removeItem('pvp_match_id');
-        sessionStorage.removeItem('pvp_bet_amount');
     },
 
     updateUI() {

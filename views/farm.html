@@ -744,6 +744,14 @@ if (typeof window.farmApp === 'undefined') {
 
 
 
+        // === NUEVO: PREVENIR PÉRDIDA DE INVITACIONES SI EL SOCKET SE DESCONECTA ===
+        window.socket.on('connect', () => {
+            const shortId = sessionStorage.getItem('short_id');
+            if (shortId) {
+                window.socket.emit('register_user', { short_id: shortId });
+            }
+        });
+        
         window.togglePvPBetMode = function(isBet) {
             const betBtn = document.getElementById('btn-bet-mode');
             const friendlyBtn = document.getElementById('btn-friendly-mode');
@@ -821,11 +829,13 @@ if (typeof window.farmApp === 'undefined') {
             
             sessionStorage.removeItem('pvp_match_id');
             sessionStorage.removeItem('pvp_bet_amount');
+            window.isPvPModalOpen = false; // <-- FIX: Liberar el seguro del modal
         });
 
         window.sendPvPChallenge = async function() {
             const targetId = document.getElementById('pvp-target-id').value.trim();
-            // Corrección Anti-Errores 500 Backend
+            
+            // Corrección Anti-Errores 500 Backend por datos vacíos o no numéricos
             let betAmount = parseInt(document.getElementById('pvp-bet-input').value);
             if (isNaN(betAmount)) betAmount = 0;
 
@@ -835,27 +845,34 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
             document.getElementById('pvp-input-btn').disabled = true;
 
-            const res = await fetch('/api/pvp/challenge', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
-            });
-            const data = await res.json();
-            
-            if (res.ok) {
-                document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
-                
-                // DISPARO INSTANTÁNEO
-                window.socket.emit('pvp_challenge', {
-                    target_short_id: targetId,
-                    challenger_short_id: sessionStorage.getItem('short_id'),
-                    challenger_name: sessionStorage.getItem('username'),
-                    bet: betAmount,
-                    match_id: data.match_id
+            try {
+                const res = await fetch('/api/pvp/challenge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
                 });
+                const data = await res.json();
                 
-            } else {
-                alert(data.error);
+                if (res.ok) {
+                    document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+                    
+                    // DISPARO INSTANTÁNEO POR SOCKET
+                    window.socket.emit('pvp_challenge', {
+                        target_short_id: targetId,
+                        challenger_short_id: sessionStorage.getItem('short_id'),
+                        challenger_name: sessionStorage.getItem('username'),
+                        bet: betAmount,
+                        match_id: data.match_id
+                    });
+                    
+                } else {
+                    alert(data.error);
+                    document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                    document.getElementById('pvp-input-btn').disabled = false;
+                    document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            } catch(e) {
+                alert("Error de red. El servidor podría estarse actualizando o reiniciando, intenta nuevamente.");
                 document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
                 document.getElementById('pvp-input-btn').disabled = false;
                 document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
