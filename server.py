@@ -654,7 +654,7 @@ def sync_user(username):
 
         # Buscar si alguien lo está retando en este momento
         cur.execute('''
-            SELECT p.id as match_id, u.username as challenger_name, p.bet_seeds 
+            SELECT p.id as match_id, u.username as challenger_name, u.short_id as challenger_short_id, p.bet_seeds 
             FROM pvp_matches p JOIN users u ON p.challenger_id = u.id 
             WHERE p.target_id = %s AND p.status = 'pending' LIMIT 1
         ''', (user_data['id'],))

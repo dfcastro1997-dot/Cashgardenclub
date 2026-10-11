@@ -720,12 +720,20 @@ if (typeof window.farmApp === 'undefined') {
         window.farmApp.openTeamSelection(readyPlots, arsenal);
     };
 
-    // ESTA ERA LA FUNCIÓN QUE FALTABA
     window.selectPvP = function() {
-        document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
-        document.getElementById('pvp-input-modal').classList.remove('hidden');
-        document.getElementById('pvp-input-modal').classList.add('flex');
-    };
+            document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
+            
+            // Limpia y habilita el botón por si se quedó trabado antes
+            const pvpBtn = document.getElementById('pvp-input-btn');
+            if (pvpBtn) {
+                pvpBtn.innerText = "Enviar Reto";
+                pvpBtn.disabled = false;
+                pvpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            document.getElementById('pvp-input-modal').classList.remove('hidden');
+            document.getElementById('pvp-input-modal').classList.add('flex');
+        };
 
 
 
@@ -786,14 +794,20 @@ if (typeof window.farmApp === 'undefined') {
             if (res.ok) {
                 document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
                 
-                // === NUEVO: Ahora dependemos 100% de los WebSockets para una respuesta instantánea ===
-                // El socket.on('challenge_accepted') y socket.on('challenge_rejected') capturarán 
-                // la decisión del rival al milisegundo, sin necesidad de hacer polling manual.
+                // DISPARO INSTANTÁNEO AL RIVAL
+                window.socket.emit('pvp_challenge', {
+                    target_short_id: targetId,
+                    challenger_short_id: sessionStorage.getItem('short_id'),
+                    challenger_name: sessionStorage.getItem('username'),
+                    bet: betAmount,
+                    match_id: data.match_id
+                });
                 
             } else {
                 alert(data.error);
                 document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
                 document.getElementById('pvp-input-btn').disabled = false;
+                document.getElementById('pvp-input-btn').classList.remove('opacity-50', 'cursor-not-allowed');
             }
         };
 
@@ -803,16 +817,16 @@ if (typeof window.farmApp === 'undefined') {
             
             const matchId = window.currentChallenge.match_id;
             const challengerId = window.currentChallenge.challenger_short_id;
-            const betAmount = window.currentChallenge.bet_seeds;
+            // Unifica el nombre de la variable dependiendo de si vino por Socket o por la BD
+            const betAmount = window.currentChallenge.bet || window.currentChallenge.bet_seeds;
             
-            // Envío instantáneo por WebSocket al oponente
+            // Notificación instantánea de respuesta
             if (action === 'accepted') {
                 window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
             } else {
                 window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
             }
 
-            // Petición silenciosa a BD para oficializarlo en backend
             fetch('/api/pvp/accept', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ match_id: matchId, action: action })
