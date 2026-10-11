@@ -1067,7 +1067,8 @@ if (typeof window.farmApp === 'undefined') {
         };
 
 
-        // === NUEVO: PREVENIR PÉRDIDA DE INVITACIONES SI EL SOCKET SE DESCONECTA ===
+        // === PREVENIR PÉRDIDA DE INVITACIONES SI EL SOCKET SE DESCONECTA ===
+        window.socket.off('connect');
         window.socket.on('connect', () => {
             const shortId = sessionStorage.getItem('short_id');
             if (shortId) {
@@ -1075,10 +1076,15 @@ if (typeof window.farmApp === 'undefined') {
             }
         });
         
-        // --- AÑADIR .off() A ESTOS TRES EVENTOS ---
-        
+        // --- LIMPIEZA DE EVENTOS DUPLICADOS Y MANEJO CORRECTO DEL MODAL ---
         window.socket.off('incoming_challenge');
         window.socket.on('incoming_challenge', (data) => {
+            // FORZAR CIERRE de las pantallas de espera de Matchmaking
+            const waitModal = document.getElementById('mm-wait-modal');
+            if(waitModal) waitModal.remove(); 
+            const proposeModal = document.getElementById('mm-propose-modal');
+            if(proposeModal) proposeModal.remove();
+
             if (!window.isPvPModalOpen) {
                 window.isPvPModalOpen = true;
                 window.currentChallenge = data;
@@ -1087,16 +1093,22 @@ if (typeof window.farmApp === 'undefined') {
                 let betDisplay = data.bet > 0 ? data.bet.toLocaleString() + " 🌱" : "Amistoso (0 🌱)";
                 document.getElementById('pvp-bet-amount').innerText = betDisplay;
                 
-                document.getElementById('pvp-incoming-modal').classList.remove('hidden');
-                document.getElementById('pvp-incoming-modal').classList.add('flex');
+                const pvpModal = document.getElementById('pvp-incoming-modal');
+                pvpModal.classList.remove('hidden');
+                pvpModal.classList.add('flex');
+                // Elevar el modal principal por encima de cualquier otro elemento atascado
+                pvpModal.style.zIndex = "1050"; 
             }
         });
 
         window.socket.off('challenge_accepted');
         window.socket.on('challenge_accepted', async (data) => {
+            const waitResModal = document.getElementById('mm-wait-response-modal');
+            if(waitResModal) waitResModal.remove();
+            
             document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
             
-            // Al no estar duplicado, ahora solo cobrará 1 sola vez
+            // Cobrar semilla
             window.farmApp.state.seedsBalance -= (data.bet || 0);
             window.farmApp.saveState();
             
