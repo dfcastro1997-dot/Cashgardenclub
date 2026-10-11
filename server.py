@@ -1523,6 +1523,11 @@ def pvp_combat_sync():
                         try:
                             w_state = json.loads(w_user['game_state'])
                             w_state['seedsBalance'] = w_state.get('seedsBalance', 0) + net_reward
+                            
+                            # --- SOLUCIÓN: FORZAR MARCA DE TIEMPO AL FUTURO ---
+                            # Esto obliga a la granja del ganador a aceptar el nuevo saldo y evita que lo borre al auto-guardar
+                            w_state['lastTick'] = int(time.time() * 1000) + 10000 
+                            
                             cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(w_state), w_user['id']))
                         except Exception:
                             pass
