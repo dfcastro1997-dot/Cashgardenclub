@@ -9,6 +9,11 @@
     <!-- Librería para leer Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- LIBRERÍA TOM SELECT PARA AUTOCOMPLETADO DE DROPDOWNS -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -43,6 +48,32 @@
             position: absolute; width: 100%; top: 100%; left: 0; background: white;
             border: 1px solid #E5E7EB; border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;
+        }
+
+        /* AJUSTES TOM SELECT PARA MANTENER LA ESTÉTICA DE TAILWIND */
+        .ts-control { 
+            border-radius: 0.75rem !important; 
+            border-color: #D1D5DB !important; 
+            padding: 0.625rem 0.75rem !important; 
+            font-weight: 700 !important; 
+            font-size: 0.875rem !important; 
+            color: #1C2634 !important; 
+            background-color: #fff !important; 
+        }
+        .ts-wrapper.focus .ts-control { 
+            border-color: #2996DA !important; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; 
+        }
+        .ts-dropdown { 
+            border-radius: 0.75rem !important; 
+            border-color: #E5E7EB !important; 
+            font-weight: 700 !important; 
+            font-size: 0.875rem !important; 
+            color: #1C2634 !important;
+        }
+        .ts-dropdown .active {
+            background-color: #EFF6FF !important; 
+            color: #1C2634 !important;
         }
     </style>
 </head>
@@ -1197,9 +1228,14 @@
                 <option value="tool_pot_small">🪴 Maceta Pequeña</option>
                 <option value="tool_water">🚿 Regadera</option>
             `;
+            
             selects.forEach(id => { 
                 const el = document.getElementById(id);
-                if (el) el.innerHTML = optionsHtml; 
+                if (el) {
+                    // Si ya existía un autocompletado, lo destruimos para actualizar la lista
+                    if (el.tomselect) el.tomselect.destroy();
+                    el.innerHTML = optionsHtml; 
+                }
             });
 
             try {
@@ -1247,6 +1283,18 @@
                     });
                 }
             } catch(e) {}
+
+            // INICIALIZAR AUTOCOMPLETADO
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    new TomSelect(el, {
+                        create: false,
+                        maxOptions: null, // Muestra todos los resultados al buscar
+                        sortField: { field: "text", direction: "asc" }
+                    });
+                }
+            });
         }
 
         async function saveTreeConfig() {
