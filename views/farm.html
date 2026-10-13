@@ -1977,6 +1977,20 @@ if (typeof window.farmApp === 'undefined') {
                         }
                     }
                     
+                    // --- NUEVO: TERRENO SEGÚN CATEGORÍA DE LA PLANTA ---
+                    let plantCategoryName = 'Planta Estándar';
+                    let currentPlantName = plot.plant ? plot.plant.name : 'Planta';
+                    
+                    if (plot.plant && this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id]) {
+                        let cat = this.state.dynamicPlants[plot.plant.id].category;
+                        if (cat) plantCategoryName = cat;
+                        if (cat && cat.startsWith('Plantas ')) {
+                            let typeName = cat.replace('Plantas ', '').trim();
+                            if (typeName === 'Ígneas') typeName = 'Igneo'; // Excepción para coincidir con la imagen
+                            currentTerrain = `assets/Fondos/terreno_${typeName}.png`;
+                        }
+                    }
+                    
                     // Usa directamente el ícono dinámico que guardamos al plantar
                     const currentPlantImg = plot.plant && plot.plant.icon ? plot.plant.icon : (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big);
 
@@ -2063,8 +2077,9 @@ if (typeof window.farmApp === 'undefined') {
 
                     el.innerHTML = `
                         ${localToastHTML}
-                        <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white px-1.5 sm:px-2 py-1 rounded text-[8px] sm:text-[9px] font-black text-gray-500 border border-gray-200 flex items-center gap-1 uppercase shadow-sm z-20 pointer-events-none">
-                            <img src="${potImg}" class="w-3 h-3 object-contain"> ${potName}
+                        <div class="absolute top-2 sm:top-3 left-2 sm:left-3 flex flex-col items-start gap-1 z-20 pointer-events-none">
+                            <span class="bg-white/90 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded text-[7px] sm:text-[8px] font-black text-cg_blue border border-blue-200 uppercase shadow-sm tracking-widest">${plantCategoryName}</span>
+                            <span class="bg-white/90 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black text-cg_navy border border-gray-200 shadow-sm leading-tight">${currentPlantName}</span>
                         </div>
 
                         <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 65px; left: 12px;" class="absolute w-7 h-7 sm:w-8 sm:h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-xs sm:text-sm font-serif pointer-events-auto cursor-pointer sm:bottom-[75px] sm:left-4">
