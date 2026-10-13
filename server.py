@@ -1567,10 +1567,12 @@ def admin_add_items():
                 qty = int(raw['qty'])
                 if 'inventory' not in state: state['inventory'] = {}
                 if item_id not in state['inventory']:
-                    state['inventory'][item_id] = {
-                        'qty': 0, 'type': 'seed' if 'flower' in item_id else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
-                        'name': item_id.replace('_', ' ').title(), 'image': 'assets/Fondos/logo.png'
-                    }
+                        state['inventory'][item_id] = {
+                            'qty': 0, 
+                            'type': 'seed' if ('flower' in item_id or 'dyn_' in item_id) else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
+                            'name': item_id.replace('_', ' ').title(), 
+                            'image': 'assets/Fondos/logo.png'
+                        }
                 state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
                 gift_items.append({"icon": icons.get(item_id, '📦'), "text": lbl})
                 
@@ -2164,30 +2166,32 @@ def donate_tree():
                 
                 if target_state:
                     if prize and 'items' in prize:
-                        for item in prize['items']:
-                            p_id = item['id']
-                            p_qty = item['qty']
-                            p_name, p_img = items_ref.get(p_id, ('Premio', 'assets/Fondos/logo.png'))
-                            
-                            emoji = emoji_ref.get(p_id, '✨')
-                            extra_items.append({"icon": emoji, "text": f"{p_qty}x {p_name}"})
-                            
+                            for item in prize['items']:
+                                p_id = item['id']
+                                p_qty = item['qty']
+                                p_name, p_img = items_ref.get(p_id, ('Premio', 'assets/Fondos/logo.png'))
+                                
+                                emoji = emoji_ref.get(p_id, '✨')
+                                extra_items.append({"icon": emoji, "text": f"{p_qty}x {p_name}"})
+                                
+                                if 'inventory' not in target_state: target_state['inventory'] = {}
+                                if p_id not in target_state['inventory']:
+                                    # CORRECCIÓN AQUÍ: Se añade 'dyn_' para reconocer plantas dinámicas
+                                    typ = 'seed' if ('flower' in p_id or 'dyn_' in p_id) else 'pot' if 'pot' in p_id else 'defense' if 'scarecrow' in p_id else 'water'
+                                    req = 'small' if ('small' in p_id or 'wheat' in p_id) else 'big'
+                                    target_state['inventory'][p_id] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': p_name, 'image': p_img}
+                                target_state['inventory'][p_id]['qty'] = int(target_state['inventory'][p_id].get('qty', 0)) + p_qty
+                        
+                        for m in milestones:
+                            rid = m['id']
                             if 'inventory' not in target_state: target_state['inventory'] = {}
-                            if p_id not in target_state['inventory']:
-                                typ = 'seed' if 'flower' in p_id else 'pot' if 'pot' in p_id else 'defense' if 'scarecrow' in p_id else 'water'
-                                req = 'small' if 'small' in p_id or 'wheat' in p_id else 'big'
-                                target_state['inventory'][p_id] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': p_name, 'image': p_img}
-                            target_state['inventory'][p_id]['qty'] = int(target_state['inventory'][p_id].get('qty', 0)) + p_qty
-                    
-                    for m in milestones:
-                        rid = m['id']
-                        if 'inventory' not in target_state: target_state['inventory'] = {}
-                        if rid not in target_state['inventory']:
-                            r_name, r_img = items_ref.get(rid, ('Premio', 'assets/Fondos/logo.png'))
-                            typ = 'seed' if 'flower' in rid else 'pot' if 'pot' in rid else 'defense' if 'scarecrow' in rid else 'water'
-                            req = 'small' if 'small' in rid or 'wheat' in rid else 'big'
-                            target_state['inventory'][rid] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': r_name, 'image': r_img}
-                        target_state['inventory'][rid]['qty'] = int(target_state['inventory'][rid].get('qty', 0)) + int(m.get('qty', 1))
+                            if rid not in target_state['inventory']:
+                                r_name, r_img = items_ref.get(rid, ('Premio', 'assets/Fondos/logo.png'))
+                                # CORRECCIÓN AQUÍ: Se añade 'dyn_' para reconocer plantas dinámicas
+                                typ = 'seed' if ('flower' in rid or 'dyn_' in rid) else 'pot' if 'pot' in rid else 'defense' if 'scarecrow' in rid else 'water'
+                                req = 'small' if ('small' in rid or 'wheat' in rid) else 'big'
+                                target_state['inventory'][rid] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': r_name, 'image': r_img}
+                            target_state['inventory'][rid]['qty'] = int(target_state['inventory'][rid].get('qty', 0)) + int(m.get('qty', 1))
 
                     target_state['seedsBalance'] = int(target_state.get('seedsBalance', 0)) + seed_reward
                     extra_items.append({"icon": "🌱", "text": f"+{seed_reward:,} Semillas"})
