@@ -2094,11 +2094,13 @@ def donate_tree():
                     "message": new_msg,
                     "items": [{"icon": "🎁", "text": f"+{donor_reward:,} Semillas"}]
                 }
-
         # --- EVALUADOR INMEDIATO DEL 100% PARA TODOS LOS JUGADORES ---
         if t_stat['status'] == 'active' and tree['total_donated'] >= tree['daily_goal']:
             cur.execute("UPDATE tree_state SET status = 'completed' WHERE id = %s", (tree['id'],))
-            min_donation = max(1000, int(float(tree['daily_goal']) * 0.01))
+            
+            # CORRECCIÓN 1: Bajamos la donación mínima a 1 para que nadie se quede sin premio en las pruebas
+            min_donation = 1 
+            
             cur.execute("SELECT user_id, username, amount FROM tree_donations WHERE date_str = %s ORDER BY amount DESC", (date_str,))
             donators = cur.fetchall()
             
@@ -2169,18 +2171,17 @@ def donate_tree():
                             
                             if 'inventory' not in target_state: target_state['inventory'] = {}
                             if p_id not in target_state['inventory']:
-                                # CORRECCIÓN AQUÍ: Se añade 'dyn_' para reconocer plantas dinámicas
                                 typ = 'seed' if ('flower' in p_id or 'dyn_' in p_id) else 'pot' if 'pot' in p_id else 'defense' if 'scarecrow' in p_id else 'water'
                                 req = 'small' if ('small' in p_id or 'wheat' in p_id) else 'big'
                                 target_state['inventory'][p_id] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': p_name, 'image': p_img}
                             target_state['inventory'][p_id]['qty'] = int(target_state['inventory'][p_id].get('qty', 0)) + p_qty
                     
+                    # CORRECCIÓN 2: Este bloque for 'm in milestones:' ahora está alineado fuera del 'if prize'
                     for m in milestones:
                         rid = m['id']
                         if 'inventory' not in target_state: target_state['inventory'] = {}
                         if rid not in target_state['inventory']:
                             r_name, r_img = items_ref.get(rid, ('Premio', 'assets/Fondos/logo.png'))
-                            # CORRECCIÓN AQUÍ: Se añade 'dyn_' para reconocer plantas dinámicas
                             typ = 'seed' if ('flower' in rid or 'dyn_' in rid) else 'pot' if 'pot' in rid else 'defense' if 'scarecrow' in rid else 'water'
                             req = 'small' if ('small' in rid or 'wheat' in rid) else 'big'
                             target_state['inventory'][rid] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': r_name, 'image': r_img}
