@@ -2355,6 +2355,7 @@ if (typeof window.farmApp === 'undefined') {
             let name, img, scoreText, limitText, penaltyText, rulesTitle;
             let pAtk = 0, pDef = 0, pHp = 0;
             let isCombatPlant = false;
+            let limitTitle = "Rango de Supervivencia:";
 
             if (plotId === 8 && plot.status === 'tournament') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
@@ -2369,27 +2370,48 @@ if (typeof window.farmApp === 'undefined') {
                 document.getElementById('welcome-penalty-container').classList.remove('hidden');
             } else if (plot.status === 'planted' && plot.plant) {
                 const PLANT_RULES = {
-                    'flower_wheat': { range: '60% y 100%', penalty: 'Inundación inmediata (Plaga automática)' },
-                    'flower_bamboo': { range: '50% y 90%', penalty: 'Evaporación brutal y rápida deshidratación' },
-                    'flower_small': { range: '30% y 90%', penalty: 'Pudrición (Pausa el crecimiento)' },
-                    'flower_cactus': { range: '20% y 80%', penalty: 'Pudrición instantánea (Riesgo de contagio)' },
-                    'flower_big': { range: '50% y 70%', penalty: 'Pudrición + 30 Minutos de castigo extra' },
-                    'flower_crystal': { range: '40% y 80%', penalty: 'Pudrición temporal' },
-                    'flower_moon': { range: '40% y 90%', penalty: 'Atrae cuervos si se seca' }
+                    'flower_wheat': { penalty: 'Inundación inmediata (Plaga automática)' },
+                    'flower_bamboo': { penalty: 'Evaporación brutal y rápida deshidratación' },
+                    'flower_small': { penalty: 'Pudrición (Pausa el crecimiento)' },
+                    'flower_cactus': { penalty: 'Pudrición instantánea (Riesgo de contagio)' },
+                    'flower_big': { penalty: 'Pudrición + 30 Minutos de castigo extra' },
+                    'flower_crystal': { penalty: 'Pudrición temporal' },
+                    'flower_moon': { penalty: 'Atrae cuervos si se seca' }
                 };
-                const rule = PLANT_RULES[plot.plant.id] || { range: '0% y 100%', penalty: 'Ninguno' };
+                const rule = PLANT_RULES[plot.plant.id] || { penalty: 'Ninguno' };
                 name = plot.plant.name;
                 img = plot.plant.icon; 
                 
                 scoreText = `<strong class="text-cg_blue">Planta de Cultivo Estándar</strong>. Presta atención al riego.`;
-                limitText = `Mantén el agua estrictamente entre ${rule.range}.`;
+                
+                // --- CÁLCULO DE CONSUMO DE AGUA EN TIEMPO REAL ---
+                let baseEvapRate = 40;
+                if (plot.plant.id === 'flower_bamboo') baseEvapRate = 800;
+                else if (plot.plant.id === 'flower_cactus') baseEvapRate = 10;
+                else if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id] && this.state.dynamicPlants[plot.plant.id].water_evap) {
+                    baseEvapRate = this.state.dynamicPlants[plot.plant.id].water_evap;
+                }
+                
+                const seasonMultiplier = this.getSeasonData(Date.now()).mult;
+                const finalEvapRate = baseEvapRate * seasonMultiplier;
+                
+                let exhaustionText = "Ya está seca.";
+                if (plot.water > 0) {
+                    const hoursLeft = plot.water / finalEvapRate;
+                    const exhaustionTime = new Date(Date.now() + hoursLeft * 3600000);
+                    exhaustionText = `a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</strong> se agotará el agua por el consumo de tu planta.`;
+                }
+
+                limitTitle = "Consumo de Agua:";
+                limitText = `Consume ${finalEvapRate}% por hora. Por lo tanto, ${exhaustionText}`;
+                // ----------------------------------------------------
+                
                 penaltyText = `Si excedes el rango, sufrirás: <strong class="text-red-600">${rule.penalty}</strong>.`;
                 rulesTitle = "INFORMACIÓN DE LA PLANTA";
                 
                 document.getElementById('welcome-water-system').classList.add('hidden');
                 document.getElementById('welcome-penalty-container').classList.add('hidden');
                 
-                // Mapear Estadísticas de Combate
                 // Mapear Estadísticas de Combate
                 isCombatPlant = true;
                 const pid = plot.plant.id;
@@ -2411,7 +2433,11 @@ if (typeof window.farmApp === 'undefined') {
             document.getElementById('welcome-plant-img').src = img;
             document.getElementById('welcome-plant-name').innerText = name;
             document.getElementById('welcome-plant-desc').innerHTML = scoreText;
-            document.getElementById('welcome-plant-limit').innerText = limitText;
+            
+            // Actualización del título y texto del límite
+            const limitEl = document.getElementById('welcome-plant-limit');
+            limitEl.parentElement.innerHTML = `<strong class="font-black">${limitTitle}</strong> <span id="welcome-plant-limit">${limitText}</span>`;
+            
             document.getElementById('welcome-plant-penalty').innerHTML = `<strong class="font-black">Riesgo de Daño:</strong> ${penaltyText}`;
             document.getElementById('welcome-plant-rules-title').innerText = rulesTitle;
             
