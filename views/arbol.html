@@ -1,0 +1,471 @@
+<div class="max-w-[1400px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
+    <!-- CABECERA -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-green-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-[10px] font-extrabold text-green-600 uppercase tracking-widest bg-green-50 border border-green-200 px-2 py-0.5 rounded-md">Evento Comunitario Diario</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-green-900 tracking-tight">El Árbol de la Vida</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Dona tus semillas sobrantes. Si la comunidad alcanza el 100% antes de medianoche, el árbol entregará los frutos en tiempo real.</p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-3">
+            <div class="bg-red-50 border border-red-200 p-3 sm:p-4 rounded-xl flex items-center gap-3 shadow-inner shrink-0 w-full sm:w-auto justify-center">
+                <span class="text-2xl animate-bounce">⏳</span>
+                <div class="flex flex-col text-center sm:text-left">
+                    <span id="tree-timer-label" class="text-[10px] font-black text-red-600 uppercase tracking-widest">Cierre de Ciclo</span>
+                    <span id="tree-timer" class="text-lg sm:text-xl font-black text-red-800 tracking-wider">--:--:--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRID REDISEÑADO PARA MÓVIL Y ESCRITORIO -->
+    <div class="flex flex-col lg:grid lg:grid-cols-4 gap-6 lg:gap-8">
+        
+        <!-- ZONA CENTRAL: EL ÁRBOL Y DONACIÓN (En Móvil aparece PRIMERO con order-1) -->
+        <div class="order-1 lg:order-2 lg:col-span-2 bg-gradient-to-b from-green-50 to-white rounded-[2rem] border border-green-200 p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-sm">
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-400 via-transparent to-transparent pointer-events-none"></div>
+            
+            <div class="relative flex flex-col items-center justify-center w-full min-h-[250px] md:min-h-[300px]">
+                
+                <!-- Próximo Número de Donador (Encima del Árbol) -->
+                <div class="absolute top-2 sm:top-4 bg-white/90 border border-green-200 px-4 py-1.5 rounded-full shadow-sm z-20 flex items-center gap-2 backdrop-blur-sm">
+                    <span class="text-[10px] sm:text-xs font-black text-green-800 uppercase tracking-widest">Próximo Donador:</span>
+                    <span id="next-donor-badge" class="bg-green-500 text-white px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold shadow-inner">#1</span>
+                </div>
+
+                <img id="tree-visual" src="assets/Plantas/arbol_primavera.gif" class="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl transition-all duration-1000 opacity-50 scale-90 z-10" alt="Arbol">
+                
+                <!-- BANDA ROJA DE ÁRBOL FINALIZADO -->
+                <div id="tree-completed-banner" class="absolute z-20 bg-red-600/95 backdrop-blur-sm border-2 border-red-400 p-4 rounded-2xl shadow-[0_0_30px_rgba(220,38,38,0.5)] hidden flex-col items-center gap-1 animate-fade-in pointer-events-none w-full sm:w-[90%] md:w-[85%] text-center transform -translate-y-4">
+                    <span class="text-sm sm:text-base font-black text-white uppercase tracking-widest drop-shadow-md">Árbol Finalizado</span>
+                    
+                    <!-- Contenedor para mostrar los 3 ganadores -->
+                    <div id="tree-winners-showcase" class="w-full mt-2 mb-2 flex flex-col gap-1.5 pointer-events-auto"></div>
+
+                    <span class="text-[10px] sm:text-xs font-bold text-red-200 uppercase tracking-wider mt-1">Próximo en:</span>
+                    <span id="tree-banner-timer" class="text-2xl sm:text-3xl font-black text-white drop-shadow-lg tracking-wider">--:--:--</span>
+                </div>
+            </div>
+            
+            <div class="w-full mt-8 relative z-10">
+                <div class="flex justify-between items-end mb-2 px-1">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Progreso Global</span>
+                        <span id="tree-donated" class="text-xl font-black text-green-700">0 🌱</span>
+                    </div>
+                    <div class="flex flex-col text-right">
+                        <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Meta Diaria</span>
+                        <span id="tree-goal" class="text-sm font-black text-gray-600">0 🌱</span>
+                    </div>
+                </div>
+                <!-- BARRA HORIZONTAL PRINCIPAL -->
+                <div class="w-full bg-green-100 h-6 sm:h-8 rounded-full border border-green-300 relative shadow-inner overflow-hidden">
+                    <div id="tree-progress" class="h-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-1000 w-0"></div>
+                    <span id="tree-pct-text" class="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-black text-white drop-shadow-md z-10">0%</span>
+                </div>
+            </div>
+
+            <!-- CONTROLES DE DONACIÓN -->
+            <div id="donation-controls" class="w-full max-w-md mt-8 flex flex-col gap-3 relative z-10">
+                <p class="text-center text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest" id="my-donation-text">Tu Aporte: 0 🌱 (Requiere <span id="min-req-text">0</span> para premios)</p>
+                <div class="flex bg-white rounded-xl shadow-sm border border-green-200 overflow-hidden h-14 focus-within:ring-2 focus-within:ring-green-500 transition-all">
+                    <!-- El step y placeholder se ajustan por JS -->
+                    <input type="number" id="donate-input" placeholder="Cantidad..." min="1" step="100" class="flex-1 bg-transparent px-4 font-black text-green-700 text-lg outline-none text-center">
+                    <button onclick="window.treeApp.donate()" id="btn-donate" class="bg-green-600 hover:bg-green-700 text-white font-black px-6 md:px-8 transition-colors uppercase tracking-widest text-xs md:text-sm shadow-inner active:scale-95">
+                        Donar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- MENSAJE DE COMPLETADO -->
+            <div id="completed-msg" class="w-full max-w-md mt-8 flex-col items-center gap-2 relative z-10 hidden animate-fade-in">
+                <div class="bg-green-100 border border-green-400 p-5 rounded-2xl text-center shadow-md w-full relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl opacity-20">✨</div>
+                    <h4 class="font-black text-green-800 uppercase tracking-widest text-base mb-1">¡El Árbol ha florecido!</h4>
+                    <p class="text-xs text-green-700 font-bold">La meta diaria fue superada y los cofres ya fueron entregados. Vuelve mañana para un nuevo ciclo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA IZQUIERDA: HITOS VERTICALES (En Móvil aparece DE SEGUNDO con order-2) -->
+        <div class="order-2 lg:order-1 lg:col-span-1 flex flex-col gap-6 h-fit">
+            
+            <!-- Primera Caja: Fases de Botín -->
+            <div class="bg-white rounded-[2rem] border border-gray-200 p-6 shadow-sm flex flex-col relative overflow-hidden h-fit">
+                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest border-b border-gray-100 pb-3 mb-5 flex items-center gap-2"><span>🎁</span> Fases de Botín</h4>
+                
+                <div class="flex-1 relative flex flex-col justify-between py-2 min-h-[300px]">
+                    <!-- Línea conectora base -->
+                    <div class="absolute left-[38px] top-6 bottom-8 w-1 bg-gray-100 rounded-full z-0 transform -translate-x-1/2"></div>
+                    <!-- Línea de llenado dinámico (No cruza del último círculo) -->
+                    <div id="tree-vertical-progress" class="absolute left-[38px] top-6 w-1 bg-green-500 rounded-full z-0 transition-all duration-1000 shadow-[0_0_10px_rgba(34,197,94,0.6)] transform -translate-x-1/2" style="height: 0%; max-height: calc(100% - 50px);"></div>
+                    
+                    <div id="milestones-container" class="relative z-10 flex flex-col justify-between h-full gap-4">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Segunda Caja: Premios por donador -->
+            <div class="bg-white rounded-[2rem] border border-blue-200 p-6 shadow-sm flex flex-col relative overflow-hidden h-fit">
+                <h4 class="text-[11px] sm:text-xs font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-3 mb-4 flex items-center gap-2"><span>🎯</span> Premios N° Donador</h4>
+                <p class="text-[10px] text-gray-500 mb-3 font-medium">Si eres el donador número <strong class="text-blue-500">1, 10, 25, 50, 75 o 99</strong> recibirás inmediatamente:</p>
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 shadow-inner text-center">
+                    <span class="text-xl">🎁</span>
+                    <span class="text-[11px] sm:text-xs font-black text-blue-800" id="donor-prize-text">2% del Botín Total</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: RANKING (Aparece de TERCERO) -->
+        <div class="order-3 lg:order-3 lg:col-span-1 bg-white rounded-[2rem] p-6 border border-yellow-200 shadow-sm flex flex-col relative overflow-hidden h-[600px] lg:h-auto">
+            <div class="absolute -right-10 -top-10 text-9xl opacity-[0.03] pointer-events-none">🏆</div>
+            <h4 class="text-xs font-black text-yellow-600 uppercase tracking-widest border-b border-yellow-100 pb-3 mb-4 flex items-center gap-2">
+                <span>👑</span> Guardianes Top 10
+            </h4>
+            
+            <!-- Explicación de premios extra -->
+            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 p-3.5 rounded-xl mb-4 shadow-sm shrink-0">
+                <p class="text-[9px] font-black text-yellow-700 uppercase tracking-widest mb-1.5 flex items-center gap-1"><span>💎</span> Beneficios VIP del Ranking:</p>
+                <ul class="text-[9px] sm:text-[10px] text-yellow-800 font-bold space-y-1.5">
+                    <!-- Se inyecta por JS desde BD -->
+                </ul>
+            </div>
+
+            <div id="tree-top-list" class="flex-1 overflow-y-auto space-y-2 hide-scrollbar relative z-10 pb-4">
+                <p class="text-xs text-gray-400 font-bold text-center mt-10">Cargando guardianes...</p>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+window.treeApp = {
+    timerInterval: null,
+    syncInterval: null,
+    lastStatus: 'active',
+    currentGoal: 0,
+    currentDonated: 0,
+    dynamicPlants: [],
+    
+    // Mapeo Base Herramientas
+    imgMap: {
+        'tool_pot_small': 'assets/Herramientas_y_Servicios/maceta_pequena.png',
+        'tool_pot_big': 'assets/Herramientas_y_Servicios/maceta_grande.png',
+        'tool_water': 'assets/Herramientas_y_Servicios/regadera.png',
+        'tool_duel_ticket': 'assets/Herramientas_y_Servicios/ticket_duelo.png'
+    },
+    
+    async init() {
+        try {
+            const dpRes = await fetch('/api/plants');
+            if(dpRes.ok) {
+                this.dynamicPlants = await dpRes.json();
+                this.dynamicPlants.forEach(p => {
+                    this.imgMap[p.id] = p.image_url;
+                });
+            }
+        } catch(e) {}
+        
+        await this.fetchTreeData();
+        this.startTimer();
+        this.syncInterval = setInterval(() => this.fetchTreeData(), 5000);
+    },
+
+    async fetchTreeData() {
+        const username = sessionStorage.getItem('username');
+        if(!username) return;
+
+        try {
+            const res = await fetch(`/api/tree?username=${username}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            
+            this.currentGoal = data.goal;
+            this.currentDonated = data.donated;
+            this.updateUI(data);
+            
+            if (data.status === 'completed' && this.lastStatus === 'active') {
+                if (window.farmApp && window.farmApp.state) {
+                    window.farmApp.state.isSaving = false; 
+                }
+                if (window.syncUserData) window.syncUserData();
+            }
+            this.lastStatus = data.status;
+
+        } catch(e) {}
+    },
+
+    updateUI(data) {
+        const pct = Math.min(100, (data.donated / data.goal) * 100);
+        const minReqBase = Math.max(1000, data.goal * 0.01);
+        
+        // --- ÁRBOL SEGÚN TEMPORADA ---
+        const d = new Date();
+        const day = d.getDate();
+        let treeImage = 'assets/Plantas/arbol_primavera.gif'; 
+        
+        if (day >= 1 && day <= 9) treeImage = 'assets/Plantas/arbol_invierno.gif';      
+        else if (day >= 10 && day <= 19) treeImage = 'assets/Plantas/arbol_otono.gif';    
+        else if (day >= 20 && day <= 26) treeImage = 'assets/Plantas/arbol_primavera.gif';
+        else treeImage = 'assets/Plantas/arbol_verano.gif';                               
+        
+        const treeVisualDom = document.getElementById('tree-visual');
+        if (treeVisualDom && treeVisualDom.src.indexOf(treeImage) === -1) {
+            treeVisualDom.src = treeImage;
+        }
+        // ------------------------------------
+
+        document.getElementById('tree-donated').innerText = `${data.donated.toLocaleString()} 🌱`;
+        document.getElementById('tree-goal').innerText = `${data.goal.toLocaleString()} 🌱`;
+        document.getElementById('tree-progress').style.width = `${pct}%`;
+        
+        document.getElementById('tree-vertical-progress').style.height = `calc((100% - 50px) * ${pct / 100})`;
+        document.getElementById('tree-pct-text').innerText = `${Math.floor(pct)}%`;
+
+        document.getElementById('next-donor-badge').innerText = '#' + (data.donors_count + 1);
+        document.getElementById('donor-prize-text').innerText = `${Math.floor(data.goal * 0.02).toLocaleString()} 🌱 (2%)`;
+
+        const myDonText = document.getElementById('my-donation-text');
+        if (myDonText) {
+            if (data.user_donation >= minReqBase) {
+                myDonText.innerHTML = `Tu Aporte: <span class="text-green-600 font-black">${data.user_donation.toLocaleString()} 🌱</span> (✅ Elegible)`;
+            } else {
+                myDonText.innerHTML = `Tu Aporte: <span class="text-gray-600">${data.user_donation.toLocaleString()} 🌱</span> (Faltan <span class="text-red-500 font-black">${(minReqBase - data.user_donation).toLocaleString()}</span> para premios)`;
+            }
+        }
+
+        const remainingToGoal = Math.max(0, data.goal - data.donated);
+        let minAllowed = 1000;
+        if (remainingToGoal > 0 && remainingToGoal < 1000) {
+            minAllowed = remainingToGoal;
+        }
+        
+        const inputEl = document.getElementById('donate-input');
+        if (inputEl) {
+            inputEl.min = minAllowed;
+            inputEl.placeholder = `Mínimo ${minAllowed.toLocaleString()} 🌱`;
+            if (inputEl.value && parseInt(inputEl.value) > remainingToGoal && remainingToGoal > 0) {
+                inputEl.value = remainingToGoal; 
+            }
+        }
+
+        if (pct >= 100) {
+            treeVisualDom.classList.add('scale-125', 'opacity-100', 'drop-shadow-[0_0_40px_rgba(34,197,94,0.8)]');
+            treeVisualDom.classList.remove('opacity-50', 'scale-90', 'scale-110');
+            document.getElementById('tree-progress').classList.add('animate-pulse');
+        } else if (pct >= 50) {
+            treeVisualDom.classList.add('scale-110', 'opacity-100');
+            treeVisualDom.classList.remove('scale-125', 'opacity-50', 'scale-90', 'drop-shadow-[0_0_40px_rgba(34,197,94,0.8)]');
+            document.getElementById('tree-progress').classList.remove('animate-pulse');
+        } else {
+            treeVisualDom.classList.add('opacity-50', 'scale-90');
+            treeVisualDom.classList.remove('scale-125', 'opacity-100', 'scale-110', 'drop-shadow-[0_0_40px_rgba(34,197,94,0.8)]');
+            document.getElementById('tree-progress').classList.remove('animate-pulse');
+        }
+
+        let vipPrizes = data.vip_prizes || [];
+        const vipList = document.querySelector('ul.text-yellow-800');
+        if(vipList && vipPrizes.length >= 3) {
+            const getPrizeStringClean = (rank) => {
+                const prize = vipPrizes.find(p=>p.rank === rank);
+                if(!prize || !prize.items || prize.items.length === 0) return 'Sin premio';
+                return prize.items.map(i => i.name).join(' + ');
+            };
+            
+            vipList.innerHTML = `
+                <li class="flex items-center justify-between">
+                    <span class="flex items-center gap-1">🥇 1ro: <span class="bg-white px-1.5 py-0.5 rounded shadow-sm border border-yellow-100 text-[9px] sm:text-[10px] whitespace-normal break-words text-left flex-1">${getPrizeStringClean(1)}</span></span>
+                    <span class="font-black text-green-600 shrink-0">+10% Botín</span>
+                </li>
+                <li class="flex items-center justify-between mt-2">
+                    <span class="flex items-center gap-1">🥈 2do: <span class="bg-white px-1.5 py-0.5 rounded shadow-sm border border-yellow-100 text-[9px] sm:text-[10px] whitespace-normal break-words text-left flex-1">${getPrizeStringClean(2)}</span></span>
+                    <span class="font-black text-green-600 shrink-0">+5% Botín</span>
+                </li>
+                <li class="flex items-center justify-between mt-2">
+                    <span class="flex items-center gap-1">🥉 3ro: <span class="bg-white px-1.5 py-0.5 rounded shadow-sm border border-yellow-100 text-[9px] sm:text-[10px] whitespace-normal break-words text-left flex-1">${getPrizeStringClean(3)}</span></span>
+                    <span class="font-black text-green-600 shrink-0">+2% Botín</span>
+                </li>
+            `;
+        }
+
+        if (data.status === 'completed') {
+            document.getElementById('donation-controls').classList.add('hidden');
+            document.getElementById('completed-msg').classList.remove('hidden');
+            document.getElementById('completed-msg').classList.add('flex');
+            document.getElementById('tree-timer-label').innerText = "Próximo Árbol en";
+            
+            document.getElementById('tree-completed-banner').classList.remove('hidden');
+            document.getElementById('tree-completed-banner').classList.add('flex');
+            
+            const winnersContainer = document.getElementById('tree-winners-showcase');
+            if (winnersContainer) {
+                let wHtml = '';
+                data.top.slice(0, 3).forEach((u, i) => {
+                    let badge = i === 0 ? '🥇' : (i === 1 ? '🥈' : '🥉');
+                    let p = vipPrizes.find(vp => vp.rank === i + 1);
+                    let prizeText = (p && p.items && p.items.length > 0) ? p.items.map(it => it.icon + ' ' + it.name).join(' + ') : '🎁 Premio';
+                    
+                    wHtml += `<div class="bg-white/10 border border-white/20 rounded-lg p-2 flex justify-between items-center text-white text-[10px] sm:text-xs shadow-sm cursor-default mb-1">
+                        <span class="font-black truncate text-left">${badge} ${u.username}</span>
+                        <span class="font-bold bg-white/20 px-2 py-1 rounded ml-2 shrink-0 max-w-[60%] sm:max-w-[70%] break-words whitespace-normal text-right leading-tight">${prizeText} +${i===0?'10':(i===1?'5':'2')}%</span>
+                    </div>`;
+                });
+                winnersContainer.innerHTML = wHtml;
+            }
+
+        } else {
+            document.getElementById('donation-controls').classList.remove('hidden');
+            document.getElementById('completed-msg').classList.add('hidden');
+            document.getElementById('completed-msg').classList.remove('flex');
+            document.getElementById('tree-timer-label').innerText = "Cierre de Ciclo";
+            
+            document.getElementById('tree-completed-banner').classList.add('hidden');
+            document.getElementById('tree-completed-banner').classList.remove('flex');
+        }
+
+        const msContainer = document.getElementById('milestones-container');
+        let html = '';
+        data.rewards.forEach(r => {
+            let imgSrc = this.imgMap[r.id] || 'assets/Fondos/logo.png';
+            html += `
+                <div class="flex items-center gap-3 relative z-10 bg-white p-2.5 rounded-xl shadow-sm border border-gray-100 transition-all duration-500 milestone-item w-full">
+                    <div class="w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 z-20 transition-colors duration-500 milestone-circle bg-gray-100 border-gray-300 relative">
+                        <span class="text-[11px] font-black text-gray-400 milestone-text">${r.pct}%</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="text-[10px] md:text-[11px] font-black text-cg_navy leading-tight truncate">${r.name}</span>
+                    </div>
+                    <img src="${imgSrc}" class="w-8 h-8 object-contain shrink-0 drop-shadow-md">
+                </div>
+            `;
+        });
+        msContainer.innerHTML = html;
+        
+        const children = msContainer.children;
+        data.rewards.forEach((r, i) => {
+            const el = children[i];
+            if (pct >= r.pct) {
+                el.classList.remove('opacity-60', 'grayscale');
+                el.classList.add('border-green-400', 'ring-2', 'ring-green-100', 'scale-105');
+                const circle = el.querySelector('.milestone-circle');
+                circle.classList.replace('bg-gray-100', 'bg-green-100');
+                circle.classList.replace('border-gray-300', 'border-green-500');
+                const span = el.querySelector('.milestone-text');
+                span.classList.replace('text-gray-400', 'text-green-600');
+            }
+        });
+
+        const topList = document.getElementById('tree-top-list');
+        if(data.top.length === 0) {
+            topList.innerHTML = '<p class="text-xs text-gray-400 font-bold text-center mt-10">Sé el primero en donar a la causa.</p>';
+        } else {
+            let topHtml = '';
+            data.top.forEach((u, i) => {
+                let badge = i === 0 ? '👑' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : ''));
+                let style = i < 3 ? 'bg-gradient-to-r from-yellow-50 to-white border-yellow-300 ring-2 ring-yellow-100' : 'bg-gray-50 border-gray-100';
+                let textCol = i < 3 ? 'text-yellow-700' : 'text-gray-400';
+                topHtml += `
+                    <div class="flex justify-between items-center px-3 py-3 rounded-xl border ${style} shadow-sm transition-transform hover:scale-[1.02]">
+                        <div class="flex items-center gap-2 overflow-hidden w-full pr-2">
+                            <span class="font-black ${textCol} w-4">${i+1}.</span>
+                            <span class="font-black text-cg_navy truncate flex-1">${u.username} ${badge}</span>
+                        </div>
+                        <span class="font-black text-green-600 bg-white px-2.5 py-1 rounded shadow-sm border border-green-200 text-[10px] shrink-0">${u.amount.toLocaleString()} 🌱</span>
+                    </div>`;
+            });
+            topList.innerHTML = topHtml;
+        }
+    },
+
+    async donate() {
+        const btn = document.getElementById('btn-donate');
+        let amount = parseInt(document.getElementById('donate-input').value);
+        
+        if (isNaN(amount) || amount <= 0) return alert("El monto ingresado es inválido.");
+
+        const remaining = Math.max(0, this.currentGoal - this.currentDonated);
+        let minAllowed = 1000;
+        if (remaining > 0 && remaining < 1000) minAllowed = remaining;
+
+        if (amount < minAllowed) return alert(`La donación mínima en este momento es de ${minAllowed.toLocaleString()} 🌱.`);
+        if (window.farmApp && window.farmApp.state.seedsBalance < amount) return alert("No tienes suficientes semillas en tu balance para esta donación.");
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="animate-spin text-lg">⏳</span>';
+
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        
+        try {
+            const res = await fetch('/api/tree/donate', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: username, session_token: token, amount: amount })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.isSynced = true;
+                    window.farmApp.state.seedsBalance = data.new_seeds;
+                    window.farmApp.saveState();
+                }
+                const balEl = document.getElementById('global-seeds-display');
+                if (balEl) balEl.innerText = data.new_seeds.toLocaleString() + " 🌱";
+                document.getElementById('donate-input').value = '';
+                
+                if (data.gift) {
+                    if (window.farmApp && window.farmApp.state) window.farmApp.state.pending_gift = data.gift;
+                    const gModal = document.getElementById('gift-modal');
+                    if (gModal) {
+                        document.getElementById('gift-msg-text').innerText = `"${data.gift.message}"`;
+                        document.getElementById('gift-items-list').innerHTML = data.gift.items.map(item => `
+                            <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-cg_navy">
+                                <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
+                                <span>${item.text}</span>
+                            </li>
+                        `).join('');
+                        gModal.classList.remove('hidden'); gModal.classList.add('flex');
+                    }
+                }
+                await this.fetchTreeData(); 
+            } else alert(data.error);
+        } catch(e) { alert("Error de red al procesar la donación."); }
+        finally { btn.disabled = false; btn.innerHTML = 'Donar'; }
+    },
+
+    startTimer() {
+        if(this.timerInterval) clearInterval(this.timerInterval);
+        const el = document.getElementById('tree-timer');
+        this.timerInterval = setInterval(() => {
+            const now = new Date();
+            const endOfDay = new Date(now);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+            let diff = endOfDay - now;
+            if (diff < 0) diff = 0;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            const timeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            if(el) el.innerText = timeStr;
+            const bannerTimer = document.getElementById('tree-banner-timer');
+            if (bannerTimer) bannerTimer.innerText = timeStr;
+        }, 1000);
+    }
+};
+
+if (!window.oldLoadViewTree) {
+    window.oldLoadViewTree = window.loadView;
+    window.loadView = async function(v, b) {
+        if (window.treeApp && window.treeApp.syncInterval) clearInterval(window.treeApp.syncInterval);
+        if (window.treeApp && window.treeApp.timerInterval) clearInterval(window.treeApp.timerInterval);
+        if (window.oldLoadViewTree) await window.oldLoadViewTree(v, b);
+    };
+}
+window.treeApp.init();
+</script>

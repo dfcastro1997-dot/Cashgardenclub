@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CASHGARDEN CLUB - Arena Competitiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cg_yellow: '#FDE062',     
+                        cg_gold: '#ED9925',       
+                        cg_cyan: '#64D7FF',       
+                        cg_blue: '#2996DA',       
+                        cg_navy: '#1C2634',       
+                        cg_silver: '#CDD2D6',     
+                        cg_bronze: '#B46B43',     
+                        bone: '#FAFAFA'           
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CDD2D6; border-radius: 10px; }
+        body { font-family: 'Inter', sans-serif; touch-action: manipulation; }
+        button, a, input { touch-action: manipulation; }
+        
+        /* Asegurar que en iOS la barra inferior no quede tapada por la barra del sistema */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+    </style>
+</head>
+<body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('assets/Fondos/login_bg.jpg');">
+        <!-- Capa oscura -->
+        <div class="absolute inset-0 bg-gray-900/30"></div>
+        
+        <!-- Tarjeta de Login (Ajustada para móvil y con scroll interno si es necesario) -->
+        <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md p-6 sm:p-8 relative z-10 border border-white/50 transform transition-all max-h-[95vh] overflow-y-auto" style="scrollbar-width: none;">
+            
+            <div class="flex flex-col items-center justify-center mb-5 sm:mb-6 relative">
+                <div class="absolute inset-0 bg-white rounded-full blur-2xl opacity-60 w-24 h-24 mx-auto"></div>
+                <img src="assets/Fondos/logo.png" alt="CashGarden Logo" class="h-20 sm:h-24 w-auto relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
+            </div>
+            
+            <form id="auth-form" class="space-y-3 sm:space-y-4 relative z-10">
+                <div class="text-center mb-1">
+                    <p class="text-[9px] sm:text-[10px] text-cg_navy font-black bg-gray-100/80 inline-block px-3 py-1.5 rounded-full border border-gray-200 shadow-sm uppercase tracking-widest">🌱 Simulador Skill-Based</p>
+                </div>
+                
+                <h3 id="form-title" class="text-center font-black text-cg_navy text-xl sm:text-2xl hidden mb-3">Crear tu Cuenta</h3>
+                
+                <div class="space-y-2.5 sm:space-y-3">
+                    <!-- Usuario -->
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">👤</span>
+                        </div>
+                        <input type="text" id="username" placeholder="Tu usuario o correo" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
+                    </div>
+                    
+                    <!-- Contraseña -->
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">🔒</span>
+                        </div>
+                        <input type="password" id="password" placeholder="Tu contraseña secreta" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
+                    </div>
+
+                    <!-- Confirmar Contraseña (Oculto en Login) -->
+                    <div id="confirm-password-container" class="relative group hidden">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">🛡️</span>
+                        </div>
+                        <input type="password" id="confirm_password" placeholder="Repite tu contraseña" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
+                    </div>
+                </div>
+                
+                <!-- CHECKBOXES LEGALES Y CAPTCHA -->
+                <div id="register-extras-container" class="hidden flex-col gap-2 mt-2">
+                    <label class="flex items-start gap-2.5 cursor-pointer p-2 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
+                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
+                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Acepto los <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a> y confirmo ser <strong>mayor de 18 años</strong>.</span>
+                    </label>
+                    
+                    <label class="flex items-start gap-2.5 cursor-pointer p-2 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
+                        <input type="checkbox" id="chk-privacy" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
+                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Autorizo el <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
+                    </label>
+
+                    <!-- Simulador Visual de Captcha -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between shadow-sm mt-1">
+                        <label class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1">
+                            <input type="checkbox" id="chk-captcha" class="w-5 h-5 sm:w-6 sm:h-6 text-green-500 rounded border-gray-300 focus:ring-green-500 cursor-pointer transition-all">
+                            <span class="text-xs sm:text-sm font-bold text-gray-700">No soy un robot</span>
+                        </label>
+                        <div class="flex flex-col items-center justify-center">
+                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="h-6 sm:h-8 w-auto object-contain opacity-90" alt="reCAPTCHA">
+                            <span class="text-[6px] sm:text-[7px] text-gray-400 mt-0.5">Privacidad - Términos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="auth-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded-r-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm">
+                    <span class="text-lg">⚠️</span>
+                    <span id="auth-error-msg">Error en la autenticación.</span>
+                </div>
+                
+                <div class="pt-2 sm:pt-3">
+                    <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-gradient-to-r from-cg_blue to-blue-600 hover:from-blue-600 hover:to-blue-800 text-white font-black text-sm sm:text-base py-3.5 sm:py-4 rounded-xl shadow-[0_8px_15px_rgba(41,150,218,0.25)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
+                        <span>Ingresar a la Granja</span> <span>➔</span>
+                    </button>
+                    
+                    <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-sm sm:text-base py-3.5 sm:py-4 rounded-xl shadow-[0_8px_15px_rgba(237,153,37,0.25)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
+                        <span>Crear Cuenta</span> <span>➔</span>
+                    </button>
+                </div>
+                
+                <div class="text-center mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200/60">
+                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-[11px] sm:text-xs font-black text-gray-500 hover:text-cg_blue transition-colors focus:outline-none">
+                        ¿No tienes cuenta? <span class="text-cg_blue underline decoration-2 underline-offset-4">Regístrate gratis</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- BOTÓN DISCRETO ADMIN -->
+        <button onclick="openAdminLogin()" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-[10px] text-white/20 hover:text-white/80 transition-colors uppercase tracking-[0.3em] z-[250]">Admin</button>
+
+        <!-- MODAL DE ACCESO ADMIN -->
+        <div id="admin-login-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+            <div class="bg-gray-900 border border-gray-700 rounded-3xl p-8 w-full max-w-sm relative shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center animate-fade-in">
+                <button onclick="document.getElementById('admin-login-modal').classList.replace('flex', 'hidden')" class="absolute top-4 right-5 text-gray-500 hover:text-white font-bold text-xl">✕</button>
+                <div class="text-4xl mb-4">👁️</div>
+                <h3 class="text-white font-black text-xl mb-1 uppercase tracking-widest">Acceso Clasificado</h3>
+                <p class="text-gray-500 text-xs mb-6">Identifícate para entrar al mainframe.</p>
+                
+                <input type="text" id="admin-user" placeholder="Usuario" class="w-full bg-gray-800 border border-gray-600 text-white px-4 py-3 rounded-xl mb-3 outline-none focus:border-red-500 text-center font-black">
+                <input type="password" id="admin-pass" placeholder="Clave" class="w-full bg-gray-800 border border-gray-600 text-white px-4 py-3 rounded-xl mb-6 outline-none focus:border-red-500 text-center font-black">
+                
+                <button onclick="verifyAdmin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all">Ingresar al Sistema</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="dashboard-screen" class="hidden h-screen w-full flex-col bg-bone relative">
+        <!-- CAPA DE FONDO TRANSPARENTE DEL DASHBOARD -->
+        <div class="absolute inset-0 z-0 opacity-10 bg-cover bg-center bg-no-repeat pointer-events-none fixed" style="background-image: url('assets/Fondos/dashboard_bg.jpg');"></div>
+        
+        <!-- TOP NAVBAR -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-[150]">
+            <div class="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 shrink-0">
+                    <img src="assets/Fondos/logo.png" alt="CashGarden Logo" class="h-8 sm:h-10 w-auto">
+                </div>
+                
+                <nav class="hidden lg:flex items-center gap-2 h-full">
+                    <button onclick="loadView('farm', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
+                        <span>Granja</span>
+                    </button>
+                    <button onclick="loadView('shop', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                        <span>Mercado</span>
+                    </button>
+                    <button onclick="loadView('nutrients', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                        <span>Torneos</span>
+                    </button>
+                    <button onclick="loadView('arbol', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-green-600 transition-all">
+                        <span>Árbol</span>
+                    </button>
+                    <button onclick="loadView('instructions', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                        <span>Instrucciones</span>
+                    </button>
+                </nav>
+
+                <!-- RECURSOS Y USUARIO (Responsive) -->
+                <div class="flex items-center gap-2 sm:gap-5 shrink-0">
+                    <div class="flex items-center gap-1.5 sm:gap-3 bg-gray-50 p-1 sm:p-1.5 rounded-xl border border-gray-100">
+                        <div onclick="showSeedsHistory()" class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-green-200 shadow-sm relative cursor-pointer hover:bg-green-50 hover:border-green-400 transition-colors group">
+                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 group-hover:text-green-600 hidden sm:inline transition-colors">SEMILLAS</span>
+                            <span id="global-seeds-display" class="text-[11px] sm:text-sm font-extrabold text-green-600 transition-all duration-300">0 🌱</span>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full animate-bounce shadow-md">i</span>
+                        </div>
+                        <div class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
+                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 hidden sm:inline">COP</span>
+                            <span id="global-balance" class="text-[11px] sm:text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
+                        </div>
+                    </div>
+                    <div class="w-px h-6 sm:h-8 bg-gray-200 hidden md:block"></div>
+                    
+                    <div class="relative">
+                            <button onclick="toggleUserMenu(event)" class="flex items-center gap-2 sm:gap-3 focus:outline-none hover:opacity-80 transition-opacity">
+                                <div id="profile-avatar" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-cg_navy border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-xs sm:text-sm">US</div>
+                                <div class="hidden md:block text-left">
+                                    <p class="text-sm font-bold text-cg_navy leading-tight flex items-center gap-1"><span id="profile-name">Usuario</span> <span class="text-[10px] text-gray-400">▼</span></p>
+                                </div>
+                            </button>
+                            
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[999] transition-all">
+                            <div class="p-4 border-b border-gray-50 bg-gray-50/50">
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tu Cuenta</p>
+                                <p class="text-sm font-black text-cg_navy truncate" id="dropdown-username">usuario@cashgarden.com</p>
+                            </div>
+                            <div class="py-2">
+                                <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors flex items-center gap-3">
+                                    <span class="text-lg">🏦</span> Billetera Wompi
+                                </button>
+                                                                                                
+                                <button onclick="loadView('arsenal'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors flex items-center gap-3">
+                                    <span class="text-lg">🛡️</span> Mi Arsenal
+                                </button>
+                                
+                                <button onclick="openTelegramModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-blue-500 transition-colors flex items-center gap-3">
+                                    <span class="text-lg">✈️</span> Alertas Telegram
+                                </button>
+
+                                <div class="px-5 py-3 flex flex-col gap-3 bg-gray-50/50">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-gray-600 flex items-center gap-3">
+                                            <span class="text-lg" id="music-icon">🔊</span> Música
+                                        </span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="music-toggle" class="sr-only peer" checked onchange="toggleMusic()">
+                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cg_blue"></div>
+                                        </label>
+                                    </div>
+                                    <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.3" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-cg_blue" oninput="changeMusicVolume(this.value)">
+                                </div>
+
+
+                            </div>
+                            <div class="py-2 border-t border-gray-100">
+                                <button onclick="logout()" class="w-full text-left px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-3">
+                                    <span class="text-lg">🚪</span> Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN APP CONTENT -->
+        <main id="app-content" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 pb-24 lg:pb-10 relative"></main>
+
+        <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
+            <button onclick="loadView('nutrients', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🏆</span>
+                <span class="text-[10px] font-bold tracking-wide">Torneos</span>
+            </button>
+            
+            <button onclick="loadView('arbol', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-green-600 transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🌲</span>
+                <span class="text-[10px] font-bold tracking-wide">Árbol</span>
+            </button>
+            
+            <div onclick="loadView('farm', this)" class="nav-btn-mobile group flex flex-col items-center justify-end w-full h-full text-cg_navy transition-colors pb-1.5 relative cursor-pointer">
+                <div class="absolute -top-7 flex justify-center w-full">
+                    <div class="w-16 h-16 bg-white hover:bg-gray-50 rounded-2xl flex items-center justify-center border-[3px] border-gray-200 shadow-[0_8px_20px_rgba(0,0,0,0.12)] transform group-hover:scale-105 group-hover:border-cg_blue/40 transition-all duration-300 z-50">
+                        <img src="assets/Fondos/pala.png" alt="Granja" class="w-10 h-10 object-contain drop-shadow-sm">
+                    </div>
+                </div>
+                <span class="text-[10px] font-black tracking-widest mt-8">GRANJA</span>
+            </div>
+
+            <button onclick="loadView('shop', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🛒</span>
+                <span class="text-[10px] font-bold tracking-wide">Mercado</span>
+            </button>
+
+            <button onclick="loadView('instructions', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📖</span>
+                <span class="text-[10px] font-bold tracking-wide">Guía</span>
+            </button>
+        </nav>
+    </div>
+
+
+
+
+
+    <!-- MODAL DE REGALO SORPRESA -->
+    <div id="gift-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-md"></div>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in text-center p-8">
+            <div class="absolute -top-16 -right-16 w-32 h-32 bg-yellow-100 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-blue-100 rounded-full blur-2xl"></div>
+            
+            <div class="w-24 h-24 bg-gradient-to-br from-cg_gold to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(237,153,37,0.4)] border-4 border-white relative z-10 animate-bounce">
+                <span class="text-5xl drop-shadow-md">🎁</span>
+            </div>
+            
+            <h3 class="text-2xl font-black text-cg_navy mb-2 relative z-10 tracking-tight">¡Un obsequio para ti!</h3>
+            <p id="gift-msg-text" class="text-sm text-gray-600 mb-6 font-medium italic relative z-10 leading-relaxed px-2">"Mensaje del admin"</p>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 relative z-10 shadow-inner text-left max-h-48 overflow-y-auto hide-scrollbar">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center border-b border-gray-200 pb-2">Contenido de la entrega</p>
+                <ul id="gift-items-list" class="space-y-2">
+                    <!-- Items -->
+                </ul>
+            </div>
+            
+            <button onclick="claimGift()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm relative z-10 active:scale-95">
+                Reclamar Recompensas
+            </button>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    <!-- MODAL DE SEGURIDAD / SESIÓN MÚLTIPLE -->
+    <div id="session-expired-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-red-500">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl md:text-4xl">🔒</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Sesión Finalizada</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-6" id="session-expired-msg">Tu sesión ha sido invalidada.</p>
+            <button onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL DE CÓDIGOS -->
+    <div id="codes-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeCodesModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-gray-200">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl md:text-4xl">🎟️</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Canjear Código</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-6">Ingresa tu código promocional o secreto para obtener beneficios.</p>
+            <input type="text" id="secret-code-input" placeholder="Ej: 0000" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cg_blue outline-none font-black text-center text-cg_navy tracking-widest text-lg mb-4">
+            <button onclick="submitSecretCode()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
+                Canjear
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL DE TELEGRAM -->
+    <div id="telegram-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeTelegramModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6 md:p-8 border border-blue-400">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl md:text-4xl">✈️</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-2 leading-tight">Alertas de Cultivo</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-4">Ingresa tu Chat ID de Telegram para que tus plantas te avisen cuando tengan sed o estén en peligro.</p>
+            
+            <a href="https://t.me/userinfobot" target="_blank" class="text-[10px] font-bold text-blue-500 hover:underline mb-4 block">¿No sabes tu Chat ID? Habla con @userinfobot aquí.</a>
+
+            <input type="text" id="telegram-id-input" placeholder="Ej: 123456789" class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 outline-none font-black text-center text-cg_navy tracking-widest text-base mb-4">
+            
+            <button onclick="submitTelegramLink()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm md:text-base">
+                Vincular
+            </button>
+        </div>
+    </div>
+
+    <div id="pvp-incoming-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border-4 border-cg_gold animate-fade-in">
+            <div class="text-5xl mb-4 animate-bounce">⚔️</div>
+            <h3 class="text-xl font-black text-cg_navy mb-1">¡Te han retado!</h3>
+            <p class="text-sm text-gray-500 mb-4">El jugador <strong id="pvp-challenger-name" class="text-cg_navy">---</strong> quiere luchar contigo en la Arena PvP.</p>
+            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl mb-6">
+                <p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Apuesta del duelo</p>
+                <p class="text-2xl font-black text-cg_gold" id="pvp-bet-amount">0 🌱</p>
+            </div>
+            <div class="flex flex-col gap-2">
+                <button onclick="respondPvP('accepted')" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Aceptar Duelo</button>
+                <div class="flex gap-2">
+                    <button onclick="respondPvP('renegotiate')" class="flex-1 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 font-black py-3 rounded-xl transition-all text-[9px] uppercase tracking-widest shadow-sm">Renegociar</button>
+                    <button onclick="respondPvP('rejected_search')" class="flex-1 bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200 font-black py-3 rounded-xl transition-all text-[9px] uppercase tracking-widest shadow-sm">Rechazar y Buscar</button>
+                </div>
+                <button onclick="respondPvP('rejected')" class="w-full mt-2 text-gray-400 hover:text-red-500 text-[10px] font-bold underline transition-colors">Cancelar y Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- MODAL HISTORIAL DE SEMILLAS -->
+    <div id="seeds-history-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeSeedsHistory()"></div>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden animate-fade-in text-center p-6 border border-green-200 max-h-[85vh]">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3 shrink-0">
+                <h3 class="text-xl font-black text-cg_navy tracking-tight flex items-center gap-2"><span class="text-2xl">🌱</span> Movimientos</h3>
+                <button onclick="closeSeedsHistory()" class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors">✕</button>
+            </div>
+            <div class="flex-1 overflow-y-auto space-y-2.5 hide-scrollbar text-left" id="seeds-history-list">
+                <!-- Se inyecta por JS -->
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- BANNER DE COOKIES -->
+    <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-[1000] bg-cg_navy/95 backdrop-blur-xl border-t border-gray-700 text-white p-4 sm:p-6 transform translate-y-full transition-transform duration-700 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div class="flex items-start sm:items-center gap-4">
+            <span class="text-3xl sm:text-4xl drop-shadow-md">🍪</span>
+            <p class="text-xs sm:text-sm font-medium leading-relaxed max-w-3xl">
+                Utilizamos cookies propias y de terceros para mejorar tu experiencia táctica en la Granja, analizar el tráfico, y proteger tus transacciones. Al continuar navegando, aceptas nuestra <a href="#" class="text-cg_cyan hover:underline font-bold">Política de Cookies</a>.
+            </p>
+        </div>
+        <div class="flex gap-3 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
+            <button onclick="acceptCookies()" class="flex-1 sm:flex-none bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 sm:py-2.5 px-4 rounded-xl transition-colors uppercase tracking-widest text-[10px] sm:text-xs">Solo Esenciales</button>
+            <button onclick="acceptCookies()" class="flex-1 sm:flex-none bg-cg_blue hover:bg-blue-600 text-white font-black py-3 sm:py-2.5 px-6 rounded-xl transition-colors uppercase tracking-widest text-[10px] sm:text-xs shadow-md">Aceptar Todo</button>
+        </div>
+    </div>
+
+    <script>
+        // --- SISTEMA DE AUDIO DE FONDO ---
+        window.bgMusic = new Audio('assets/Sonidos/Fondo.mp3');
+        window.bgMusic.loop = true;
+        window.bgMusic.volume = 0.3; // Volumen inicial sincronizado con la barra
+
+        function startBackgroundMusic() {
+            const toggle = document.getElementById('music-toggle');
+            if (toggle && !toggle.checked) return; // No reproducir si el switch está apagado
+            
+            window.bgMusic.play().catch(e => console.warn("Autoplay bloqueado. Iniciará al interactuar."));
+            
+            // Respaldo al hacer el primer clic
+            document.body.addEventListener('click', () => {
+                if (window.bgMusic.paused && !document.getElementById('dashboard-screen').classList.contains('hidden') && document.getElementById('music-toggle').checked) {
+                    window.bgMusic.play().catch(() => {});
+                }
+            }, { once: true });
+        }
+
+        // --- FUNCIONES DE CONTROL DE AUDIO ---
+        function toggleMusic() {
+            const toggle = document.getElementById('music-toggle');
+            const icon = document.getElementById('music-icon');
+            if (toggle.checked) {
+                window.bgMusic.play().catch(() => {});
+                icon.innerText = '🔊';
+            } else {
+                window.bgMusic.pause();
+                icon.innerText = '🔇';
+            }
+        }
+
+        function changeMusicVolume(val) {
+            window.bgMusic.volume = parseFloat(val);
+            const icon = document.getElementById('music-icon');
+            if (window.bgMusic.volume === 0) {
+                icon.innerText = '🔇';
+            } else if (document.getElementById('music-toggle').checked) {
+                icon.innerText = '🔊';
+            }
+        }
+
+        // --- NUEVA LÓGICA DE TEMPORADA GLOBAL PARA FONDOS DESDE EL INICIO ---
+        function applySeasonalBackgrounds() {
+            const day = new Date().getDate();
+            let suffix = '_ver'; // Verano por defecto (27 al final del mes)
+            if (day >= 1 && day <= 9) suffix = '_invi';      // Invierno
+            else if (day >= 10 && day <= 19) suffix = '_oto'; // Otoño
+            else if (day >= 20 && day <= 26) suffix = '_pri'; // Primavera
+            
+            // 1. Aplicar al Login
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) {
+                // Forzamos el !important en línea si es necesario y nos aseguramos de que el path sea correcto
+                loginScreen.style.setProperty('background-image', `url('assets/Fondos/login_bg${suffix}.jpg')`, 'important');
+            }
+            
+            // 2. Aplicar al Dashboard
+            const dashboardBg = document.querySelector('#dashboard-screen .bg-cover');
+            if (dashboardBg) {
+                dashboardBg.style.setProperty('background-image', `url('assets/Fondos/dashboard_bg${suffix}.jpg')`, 'important');
+            }
+        }
+        
+        // Ejecutar inmediatamente al abrir la página y re-ejecutar tras cargar el DOM
+        applySeasonalBackgrounds();
+        document.addEventListener('DOMContentLoaded', applySeasonalBackgrounds);
+        // --------------------------------------------------------------------
+
+        let isLoginMode = true;
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('btn-login').classList.toggle('hidden', !isLoginMode);
+            document.getElementById('btn-register').classList.toggle('hidden', isLoginMode);
+            
+            document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
+            document.getElementById('confirm-password-container').classList.toggle('hidden', isLoginMode);
+            document.getElementById('register-extras-container').classList.toggle('hidden', isLoginMode);
+
+            document.getElementById('btn-toggle-mode').innerHTML = isLoginMode 
+                ? "¿No tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Regístrate gratis</span>" 
+                : "¿Ya tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Ingresa aquí</span>";
+            
+            document.getElementById('auth-error').classList.add('hidden');
+            validateRegistrationForm(); 
+        }
+
+        document.querySelectorAll('#chk-terms, #chk-privacy, #chk-captcha, #password, #confirm_password').forEach(el => {
+            el.addEventListener('input', validateRegistrationForm);
+            el.addEventListener('change', validateRegistrationForm);
+        });
+
+        function validateRegistrationForm() {
+            if (isLoginMode) return;
+            const pass = document.getElementById('password').value;
+            const passConfirm = document.getElementById('confirm_password').value;
+            const chkTerms = document.getElementById('chk-terms').checked;
+            const chkPrivacy = document.getElementById('chk-privacy').checked;
+            const chkCaptcha = document.getElementById('chk-captcha').checked;
+            
+            const btnReg = document.getElementById('btn-register');
+            
+            if (pass.length > 3 && pass === passConfirm && chkTerms && chkPrivacy && chkCaptcha) {
+                btnReg.disabled = false;
+                btnReg.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnReg.disabled = true;
+                btnReg.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        async function handleAuth(action) {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+            
+            if (!user || !pass) {
+                showError("Por favor completa todos los campos.");
+                return;
+            }
+
+            if (action === 'register') {
+                const passConfirm = document.getElementById('confirm_password').value;
+                if (pass !== passConfirm) {
+                    showError("Las contraseñas no coinciden.");
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch(`/api/${action}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    sessionStorage.setItem('username', data.user.username);
+                    sessionStorage.setItem('session_token', data.user.session_token); 
+                    updateProfileUI(data.user);
+                    
+                    document.getElementById('login-screen').classList.add('opacity-0');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
+                        document.getElementById('dashboard-screen').classList.add('flex');
+                        loadView('farm', document.querySelector('.nav-btn-desktop')); 
+                        
+                        startBackgroundMusic(); // <-- INICIA MÚSICA DE FONDO
+                    }, 300);
+                } else {
+                    showError(data.error || 'Ocurrió un error');
+                }
+            } catch (err) {
+                showError('Error de conexión con el servidor.');
+            }
+        }
+
+        function checkCookies() {
+            if(!localStorage.getItem('cookiesAccepted')) {
+                setTimeout(() => {
+                    document.getElementById('cookie-banner').classList.remove('translate-y-full');
+                }, 1500); 
+            }
+        }
+
+        function acceptCookies() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            document.getElementById('cookie-banner').classList.add('translate-y-full');
+        }
+
+        const oldOnload = window.onload;
+        window.onload = async () => {
+            checkCookies(); 
+            if(oldOnload) await oldOnload();
+        };
+
+        window.socket = io('https://cashgardenclub-production.up.railway.app');
+
+        function updateProfileUI(userData) {
+            const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
+            const shortId = userData.short_id || '0000';
+            
+            document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span>`;
+            document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
+            document.getElementById('profile-avatar').innerText = name.substring(0, 2).toUpperCase();
+            
+            const balance = userData.balance || 0;
+            document.getElementById('global-balance').innerText = "$" + balance.toLocaleString();
+            
+            if(window.farmApp) window.farmApp.state.balance = balance;
+
+            sessionStorage.setItem('short_id', shortId);
+            window.socket.emit('register_user', { short_id: shortId });
+        }
+
+        window.socket.on('incoming_challenge', (data) => {
+            if (!window.isPvPModalOpen) {
+                window.isPvPModalOpen = true;
+                window.currentChallenge = data;
+                document.getElementById('pvp-challenger-name').innerText = data.challenger_name;
+                document.getElementById('pvp-bet-amount').innerText = data.bet + " 🌱";
+                document.getElementById('pvp-incoming-modal').classList.remove('hidden');
+                document.getElementById('pvp-incoming-modal').classList.add('flex');
+            }
+        });
+
+        // FIX: Sincronización instantánea de regalos y modal cuando cualquier jugador llena el Árbol
+        window.socket.on('tree_completed_event', () => {
+            if (window.syncUserData) {
+                window.syncUserData();
+            }
+        });
+
+
+        window.socket.on('challenge_accepted', async (data) => {
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+            window.farmApp.state.seedsBalance -= data.bet;
+            window.farmApp.saveState();
+            
+            sessionStorage.setItem('pvp_match_id', data.match_id);
+            sessionStorage.setItem('pvp_bet_amount', data.bet);
+            
+            const openSelection = () => {
+                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+            };
+            if (!document.getElementById('team-selection-list')) {
+                await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                setTimeout(openSelection, 10);
+            } else { openSelection(); }
+        });
+
+        window.socket.on('challenge_rejected', () => {
+            alert("El jugador ha rechazado tu reto.");
+            document.getElementById('pvp-input-modal').classList.replace('flex', 'hidden');
+            document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+            document.getElementById('pvp-input-btn').disabled = false;
+        });
+
+        window.sendPvPChallenge = async function() {
+            const targetId = document.getElementById('pvp-target-id').value.trim();
+            const betAmount = parseInt(document.getElementById('pvp-bet-input').value) || 0;
+            if (targetId.length !== 4) return alert("El ID debe tener 4 dígitos.");
+            if (window.farmApp.state.seedsBalance < betAmount) return alert("No tienes suficientes semillas.");
+            
+            document.getElementById('pvp-input-btn').innerText = "Esperando que el rival acepte... ⏳";
+            document.getElementById('pvp-input-btn').disabled = true;
+
+            const res = await fetch('/api/pvp/challenge', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: sessionStorage.getItem('username'), target_short_id: targetId, bet: betAmount })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                window.socket.emit('pvp_challenge', {
+                    target_short_id: targetId,
+                    challenger_short_id: sessionStorage.getItem('short_id'),
+                    challenger_name: sessionStorage.getItem('username'),
+                    bet: betAmount,
+                    match_id: data.match_id
+                });
+            } else {
+                alert(data.error);
+                document.getElementById('pvp-input-btn').innerText = "Enviar Reto";
+                document.getElementById('pvp-input-btn').disabled = false;
+            }
+        };
+
+        window.respondPvP = async function(action) {
+            document.getElementById('pvp-incoming-modal').classList.replace('flex', 'hidden');
+            window.isPvPModalOpen = false;
+            
+            const matchId = window.currentChallenge.match_id;
+            const challengerId = window.currentChallenge.challenger_short_id;
+            const betAmount = window.currentChallenge.bet;
+            
+            if (action === 'accepted') {
+                window.socket.emit('pvp_accept', { challenger_short_id: challengerId, match_id: matchId, bet: betAmount });
+            } else {
+                window.socket.emit('pvp_reject', { challenger_short_id: challengerId });
+            }
+
+            fetch('/api/pvp/accept', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ match_id: matchId, action: action })
+            });
+
+            if (action === 'accepted') {
+                window.farmApp.state.seedsBalance -= betAmount;
+                window.farmApp.saveState();
+                sessionStorage.setItem('pvp_match_id', matchId);
+                sessionStorage.setItem('pvp_bet_amount', betAmount);
+                
+                const openSelection = () => {
+                    let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+                    window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+                };
+                if (!document.getElementById('team-selection-list')) {
+                    await loadView('farm', document.querySelector('.nav-btn-desktop'));
+                    setTimeout(openSelection, 10);
+                } else { openSelection(); }
+            }
+        };
+
+        async function syncUserData() {
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            if (!username || !token) return; 
+            
+            if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
+                return;
+            }
+
+            // --- NUEVO: ACTUALIZAR EL FONDO DEL DASHBOARD GLOBAL SEGÚN LA TEMPORADA ---
+            if (window.farmApp && typeof window.farmApp.getSeasonData === 'function') {
+                const season = window.farmApp.getSeasonData(Date.now());
+                const dashboardScreen = document.getElementById('dashboard-screen');
+                if (dashboardScreen) {
+                    const bgLayer = dashboardScreen.querySelector('.bg-cover');
+                    if (bgLayer) {
+                        bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
+                    }
+                }
+            }
+            // --------------------------------------------------------------------------
+            
+            try {
+                const response = await fetch(`/api/sync/${username}?token=${token}`);
+                
+                if (window.farmApp && window.farmApp.state && window.farmApp.state.isSaving) {
+                    return;
+                }
+                
+                if (response.status === 401) {
+                    sessionStorage.removeItem('session_token');
+                    showSessionExpiredModal("Tu sesión ha expirado por seguridad o iniciaste sesión en otro dispositivo.");
+                    return;
+                }
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const dbBalance = data.user.real_balance_cop || data.user.balance;
+                    
+                    if (data.user.pending_challenge && !window.isPvPModalOpen) {
+                        window.isPvPModalOpen = true;
+                        window.currentChallenge = data.user.pending_challenge;
+                        document.getElementById('pvp-challenger-name').innerText = data.user.pending_challenge.challenger_name;
+                        document.getElementById('pvp-bet-amount').innerText = data.user.pending_challenge.bet_seeds + " 🌱";
+                        document.getElementById('pvp-incoming-modal').classList.remove('hidden');
+                        document.getElementById('pvp-incoming-modal').classList.add('flex');
+                    }
+
+                    if (data.user.game_state) {
+                        try {
+                            const state = JSON.parse(data.user.game_state);
+
+                            // ---- DETECTOR DE REGALOS EN VIVO ----
+                            if (state.pending_gift) {
+                                // Pasarlo a la memoria de la granja para que no se borre
+                                if (window.farmApp && window.farmApp.state) {
+                                    window.farmApp.state.pending_gift = state.pending_gift;
+                                }
+                                const gModal = document.getElementById('gift-modal');
+                                // Mostrar el modal solo si está oculto
+                                if (gModal && gModal.classList.contains('hidden')) {
+                                    document.getElementById('gift-msg-text').innerText = `"${state.pending_gift.message}"`;
+                                    document.getElementById('gift-items-list').innerHTML = state.pending_gift.items.map(item => `
+                                        <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-cg_navy">
+                                            <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
+                                            <span>${item.text}</span>
+                                        </li>
+                                    `).join('');
+                                    gModal.classList.remove('hidden');
+                                    gModal.classList.add('flex');
+                                }
+                            }
+                            // ------------------------------------------
+
+                            const seedsEl = document.getElementById('global-seeds-display');
+                            if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
+                            
+                            if (window.farmApp && window.farmApp.state) {
+                                if ((state.lastTick || 0) > (window.farmApp.state.lastTick || 0)) {
+                                    window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
+                                    window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
+                                    window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
+                                    if (state.plots) {
+                                        if (state.plots.length === 6) {
+                                            const arenaPlot = state.plots[5];
+                                            arenaPlot.id = 8; 
+                                            state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
+                                            state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                            state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                            state.plots.push(arenaPlot);
+                                        }
+                                        window.farmApp.state.plots = state.plots;
+                                    }
+                                    if (state.inventory) {
+                                        Object.keys(state.inventory).forEach(k => {
+                                            if (window.farmApp.state.inventory[k]) {
+                                                window.farmApp.state.inventory[k].qty = state.inventory[k].qty || 0;
+                                            } else {
+                                                window.farmApp.state.inventory[k] = state.inventory[k];
+                                            }
+                                        });
+                                    }                                    
+                                    window.farmApp.state.lastTick = state.lastTick;
+                                    window.farmApp.updateUI();
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                    
+                    if ((window.farmApp && window.farmApp.state.balance !== dbBalance)) {
+                        document.getElementById('global-balance').innerText = "$" + dbBalance.toLocaleString();
+                        const balEl = document.getElementById('global-balance');
+                        balEl.classList.add('text-green-500', 'scale-125');
+                        setTimeout(() => balEl.classList.remove('text-green-500', 'scale-125'), 1000);
+
+                        if (window.farmApp) { window.farmApp.state.balance = dbBalance; }
+                        
+                        const walletDisplay = document.getElementById('wallet-balance-display');
+                        if (walletDisplay) {
+                            walletDisplay.innerText = "$" + dbBalance.toLocaleString() + " COP";
+                            const cashoutAmount = document.getElementById('cashout-amount');
+                            if(cashoutAmount) cashoutAmount.max = dbBalance;
+                        }
+                    }
+                }
+            } catch (e) { console.error("Error sincronizando saldo:", e); }
+        }
+
+        function showError(msg) {
+            document.getElementById('auth-error-msg').innerText = msg;
+            document.getElementById('auth-error').classList.remove('hidden');
+        }
+
+        function showSessionExpiredModal(msg) {
+            document.getElementById('session-expired-msg').innerText = msg;
+            document.getElementById('session-expired-modal').classList.remove('hidden');
+            document.getElementById('session-expired-modal').classList.add('flex');
+        }
+
+        window.onload = async () => {
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            if (username && token) {
+                 try {
+                    const response = await fetch(`/api/sync/${username}?token=${token}`);
+                    if (response.status === 401) {
+                        showSessionExpiredModal("Tu sesión es inválida o ha expirado. Por favor, inicia sesión nuevamente.");
+                        return; 
+                    }
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateProfileUI(data.user);
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-screen').classList.remove('hidden');
+                        document.getElementById('dashboard-screen').classList.add('flex');
+                        loadView('farm', document.querySelector('.nav-btn-desktop'));
+                        
+                        startBackgroundMusic(); // <-- INICIA MÚSICA DE FONDO
+                    } else if (response.status >= 500) {
+                        showSessionExpiredModal("El servidor se está actualizando. Vuelve a intentar en unos segundos.");
+                    } else {
+                        logout(); 
+                    }
+                } catch (e) {
+                    console.error("Error validando sesión (posible caída temporal):", e);
+                    showSessionExpiredModal("No pudimos conectar con el servidor. Se está aplicando una actualización.");
+                }
+            } else if (username) {
+                logout();
+            }
+        };
+
+        function logout() { 
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('session_token'); 
+            
+            const sessionModal = document.getElementById('session-expired-modal');
+            if (sessionModal) {
+                sessionModal.classList.remove('flex');
+                sessionModal.classList.add('hidden');
+            }
+            
+            window.location.replace(window.location.pathname); 
+        }
+        
+
+
+        window.claimGift = function() {
+            document.getElementById('gift-modal').classList.add('hidden');
+            document.getElementById('gift-modal').classList.remove('flex');
+            if (window.farmApp && window.farmApp.state) {
+                delete window.farmApp.state.pending_gift;
+                window.farmApp.state.isSynced = true;
+                // Asigna una marca de tiempo superior para asegurar que la BD borre el regalo inmediatamente
+                window.farmApp.state.lastTick = Date.now() + 3000;
+                window.farmApp.saveState();
+                window.farmApp.updateUI();
+            }
+        };
+
+
+
+
+
+
+
+
+        const viewCache = {};
+
+        async function loadView(viewName, clickedBtn = null) {
+            if (window.farmApp && window.farmApp.state && window.farmApp.state.simulationInterval) {
+                clearInterval(window.farmApp.state.simulationInterval);
+            }
+            
+            const contentDiv = document.getElementById('app-content');
+            
+            if (!viewCache[viewName]) {
+                contentDiv.innerHTML = '<div class="flex justify-center mt-32"><div class="w-12 h-12 border-4 border-gray-200 border-t-cg_gold rounded-full animate-spin"></div></div>';
+            }
+            
+            try {
+                let html = viewCache[viewName];
+                
+                if (!html) {
+                    const response = await fetch(`views/${viewName}.html`);
+                    html = await response.text();
+                    viewCache[viewName] = html;
+                }
+                
+                contentDiv.innerHTML = html;
+                
+                const scripts = contentDiv.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    
+                    try {
+                        if (oldScript.innerHTML) {
+                            newScript.text = oldScript.innerHTML;
+                        }
+                        if (oldScript.parentNode) {
+                            oldScript.parentNode.replaceChild(newScript, oldScript);
+                        }
+                    } catch (scriptErr) {
+                        console.error("Error evaluando script dinámico en la vista:", scriptErr);
+                    }
+                });
+
+                if (clickedBtn) {
+                    document.querySelectorAll('.nav-btn-desktop, .nav-btn-mobile').forEach(btn => {
+                        if(btn.classList.contains('nav-btn-desktop')) {
+                            btn.classList.remove('text-cg_gold', 'border-cg_gold');
+                            btn.classList.add('text-gray-500', 'border-transparent');
+                        } else {
+                            btn.classList.remove('text-cg_gold');
+                            btn.classList.add('text-gray-400');
+                        }
+                    });
+                    
+                    const desktopEquivalent = document.querySelector(`.nav-btn-desktop[onclick*="loadView('${viewName}')"]`);
+                    const mobileEquivalent = document.querySelector(`.nav-btn-mobile[onclick*="loadView('${viewName}')"]`);
+                    
+                    if (desktopEquivalent) {
+                        desktopEquivalent.classList.remove('text-gray-500', 'border-transparent');
+                        desktopEquivalent.classList.add('text-cg_gold', 'border-cg_gold');
+                    }
+                    if (mobileEquivalent) {
+                        mobileEquivalent.classList.remove('text-gray-400');
+                        mobileEquivalent.classList.add('text-cg_gold');
+                    }
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function toggleUserMenu(event) {
+            if(event) event.stopPropagation();
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+
+        function openTelegramModal() {
+            document.getElementById('telegram-id-input').value = '';
+            document.getElementById('telegram-modal').classList.remove('hidden');
+            document.getElementById('telegram-modal').classList.add('flex');
+        }
+
+        function closeTelegramModal() {
+            document.getElementById('telegram-modal').classList.add('hidden');
+            document.getElementById('telegram-modal').classList.remove('flex');
+        }
+
+        async function submitTelegramLink() {
+            const chatId = document.getElementById('telegram-id-input').value.trim();
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            
+            if (!chatId || !username || !token) return;
+
+            try {
+                const response = await fetch('/api/telegram/link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, session_token: token, telegram_chat_id: chatId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert("Telegram vinculado exitosamente. Tus plantitas te hablarán pronto.");
+                    closeTelegramModal();
+                } else {
+                    alert(data.error || "Error al vincular Telegram.");
+                }
+            } catch (err) {
+                alert("Error de conexión con el servidor.");
+            }
+        }
+
+
+        function openCodesModal() {
+            document.getElementById('secret-code-input').value = '';
+            document.getElementById('codes-modal').classList.remove('hidden');
+            document.getElementById('codes-modal').classList.add('flex');
+        }
+
+        function closeCodesModal() {
+            document.getElementById('codes-modal').classList.add('hidden');
+            document.getElementById('codes-modal').classList.remove('flex');
+        }
+
+        function submitSecretCode() {
+            const code = document.getElementById('secret-code-input').value.trim();
+            
+            if (!window.farmApp || !window.farmApp.dev) {
+                alert("Debes estar en la pestaña 'Granja' para poder usar códigos.");
+                return;
+            }
+            
+            switch (code) {
+                case '0000':
+                    window.farmApp.dev.addSeeds(50000);
+                    break;
+                case '1111':
+                    window.farmApp.dev.addCOP(50000);
+                    break;
+                case '2222':
+                    window.farmApp.dev.addTime(1);
+                    break;
+                case '3333':
+                    window.farmApp.dev.addTime(2);
+                    break;
+                case '4444':
+                    window.farmApp.dev.addTime(3);
+                    break;
+                case '5555':
+                    window.farmApp.dev.addTime(4);
+                    break;
+                case '6666':
+                    window.farmApp.dev.reset(true); 
+                    break;
+                default:
+                    alert("El código ingresado es inválido o ha expirado.");
+                    return;
+            }
+            
+            closeCodesModal();
+        }
+
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('user-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        let isGlobalSyncing = false;
+        async function runSyncLoop() {
+            if (!isGlobalSyncing && sessionStorage.getItem('session_token')) {
+                isGlobalSyncing = true;
+                await syncUserData(); 
+                isGlobalSyncing = false;
+            }
+            setTimeout(runSyncLoop, 10000); 
+        }
+        setTimeout(runSyncLoop, 1000);
+
+        window.addEventListener('focus', () => {
+            if (!isGlobalSyncing && sessionStorage.getItem('session_token')) syncUserData();
+        });
+
+        // FUNCIONES ADMIN
+        function openAdminLogin() {
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+            document.getElementById('admin-login-modal').classList.add('flex');
+        }
+
+
+
+        let lastKnownSeeds = null;
+        let initialSyncDone = false;
+        
+        setInterval(() => {
+            if (window.farmApp && window.farmApp.state && typeof window.farmApp.state.seedsBalance === 'number') {
+                // 1. Esperamos a que la granja descargue los datos de la base de datos
+                if (!window.farmApp.state.isSynced) return;
+                
+                // 2. Justo al sincronizar, fijamos el balance real y borramos historiales fantasmas
+                if (!initialSyncDone) {
+                    lastKnownSeeds = window.farmApp.state.seedsBalance;
+                    window.farmApp.state.seedsHistory = []; // Obligamos a que inicie 100% vacío
+                    initialSyncDone = true;
+                    return;
+                }
+                
+                // 3. A partir de aquí, registramos solo los cambios reales del usuario
+                if (lastKnownSeeds !== window.farmApp.state.seedsBalance) {
+                    let diff = window.farmApp.state.seedsBalance - lastKnownSeeds;
+                    lastKnownSeeds = window.farmApp.state.seedsBalance;
+                    
+                    let reason = diff > 0 ? "Ingreso de Semillas" : "Gasto / Inversión";
+                    if (diff === -500) reason = "Compra de Escudo";
+                    else if (diff === -5000 || diff === -15000 || diff === -30000 || diff === -50000) reason = "Inscripción a Torneo";
+                    else if (diff > 1000 && diff < 100000) reason = "Recompensa de Cosecha / Arena";
+
+                    if (!window.farmApp.state.seedsHistory) window.farmApp.state.seedsHistory = [];
+                    
+                    window.farmApp.state.seedsHistory.unshift({ amount: diff, reason: reason, time: Date.now() });
+                    
+                    if (window.farmApp.state.seedsHistory.length > 10) {
+                        window.farmApp.state.seedsHistory.pop();
+                    }
+                }
+            }
+        }, 500);
+
+        window.showSeedsHistory = function() {
+            const modal = document.getElementById('seeds-history-modal');
+            const list = document.getElementById('seeds-history-list');
+            list.innerHTML = '';
+
+            const history = (window.farmApp && window.farmApp.state && window.farmApp.state.seedsHistory) ? window.farmApp.state.seedsHistory : [];
+
+            if (history.length === 0) {
+                list.innerHTML = '<p class="text-center text-xs font-bold text-gray-400 py-10 uppercase tracking-widest">No hay movimientos recientes.</p>';
+            } else {
+                history.forEach(tx => {
+                    const isPositive = tx.amount > 0;
+                    const sign = isPositive ? '+' : '';
+                    const colorClass = isPositive ? 'text-green-600 bg-green-50 border-green-100' : 'text-red-500 bg-red-50 border-red-100';
+                    const icon = isPositive ? '📈' : '📉';
+                    
+                    const d = new Date(tx.time);
+                    const timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) + ' - ' + d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+
+                    list.innerHTML += `
+                        <div class="flex justify-between items-center p-3.5 rounded-2xl border ${colorClass} shadow-sm transition-all hover:scale-[1.02]">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl drop-shadow-sm">${icon}</span>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black text-cg_navy uppercase tracking-widest">${tx.reason}</span>
+                                    <span class="text-[9px] font-bold text-gray-500 mt-0.5">${timeStr}</span>
+                                </div>
+                            </div>
+                            <span class="font-black text-sm md:text-base">${sign}${tx.amount.toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeSeedsHistory = function() {
+            const modal = document.getElementById('seeds-history-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+
+
+
+
+
+
+        function verifyAdmin() {
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+            
+            if (u === 'DamianCastro' && p === '12345') {
+                sessionStorage.setItem('admin_logged_in', 'true'); // Guarda la sesión admin
+                document.getElementById('admin-login-modal').classList.replace('flex', 'hidden');
+                document.getElementById('login-screen').classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 300);
+            } else {
+                alert('Acceso denegado. Credenciales incorrectas.');
+            }
+        }
+    </script>
+</body>
+</html>

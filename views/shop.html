@@ -1,0 +1,686 @@
+<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-cg_blue"></span>
+                <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Suministros Agrícolas</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Mercado de Insumos</h2>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Equípate con las mejores herramientas para optimizar tu producción de semillas.</p>
+        </div>
+    </div>
+
+    <!-- TABS DE NAVEGACIÓN -->
+    <div class="flex gap-2 md:gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
+        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
+        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
+        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP</button>
+        <button onclick="window.shopApp.switchTab('exchange')" id="page-tab-exchange" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-purple-500 border-b-4 border-transparent hover:text-purple-600 whitespace-nowrap transition-colors">Casa de Cambio</button>
+    </div>
+
+    <!-- FILTROS (SOLO VISIBLES EN PESTAÑA FLORES) -->
+    <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-4 gap-3 mb-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
+        <select id="filter-category" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+            <option value="all">Todas las Categorías</option>
+            <option value="Planta Estándar">Plantas Estándar</option>
+            <option value="Plantas Ígneas">Plantas Ígneas</option>
+            <option value="Plantas Glaciares">Plantas Glaciares</option>
+            <option value="Plantas Eléctricas">Plantas Eléctricas</option>
+            <option value="Plantas Acuáticas">Plantas Acuáticas</option>
+            <option value="Plantas Rocosas">Plantas Rocosas</option>
+            <option value="Plantas Aéreas">Plantas Aéreas</option>
+            <option value="Plantas Espaciales">Plantas Espaciales</option>
+            <option value="Plantas Alienígenas">Plantas Alienígenas</option>
+            <option value="Plantas Mecha-botánica">Plantas Mecha-botánica</option>
+            <option value="Plantas Radiactivas">Plantas Radiactivas</option>
+            <option value="Plantas Mutantes">Plantas Mutantes</option>
+            <option value="Plantas Jurásicas">Plantas Jurásicas</option>
+            <option value="Plantas Demoníacas">Plantas Demoníacas</option>
+            <option value="Plantas Necróticas">Plantas Necróticas</option>
+            <option value="Plantas Explosivas">Plantas Explosivas</option>
+            <option value="Plantas Cristalinas">Plantas Cristalinas</option>
+        </select>
+        <select id="filter-price" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+            <option value="all">Cualquier Precio</option>
+            <option value="low">Baratas (< 2,000 🌱)</option>
+            <option value="med">Medias (2,000 - 10,000 🌱)</option>
+            <option value="high">Premium (> 10,000 🌱)</option>
+        </select>
+        <select id="filter-pot" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+            <option value="all">Cualquier Maceta</option>
+            <option value="small">Maceta Pequeña</option>
+            <option value="big">Maceta Grande</option>
+        </select>
+        <select id="filter-duration" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+            <option value="all">Cualquier Crecimiento</option>
+            <option value="fast">Rápido (< 1 Hora)</option>
+            <option value="med">Medio (1 - 5 Horas)</option>
+            <option value="slow">Lento (> 5 Horas)</option>
+        </select>
+    </div>
+
+    <!-- CONTENEDORES DE CATÁLOGO -->
+    <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4"></div>
+    <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
+    <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
+    <div id="page-content-exchange" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
+
+    <!-- VENTANA MODAL DE ERROR (FONDOS INSUFICIENTES) -->
+    <div id="purchase-error-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity duration-300" onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center border border-red-500 animate-fade-in">
+            <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
+                <span class="text-3xl md:text-4xl relative z-10 drop-shadow-md">⚠️</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1">Operación Fallida</h3>
+            <p id="purchase-error-text" class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes saldo suficiente para realizar esta compra.</p>
+            <button onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3 md:py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] md:text-xs">
+                Aceptar
+            </button>
+        </div>
+    </div>
+
+    <!-- VENTANA MODAL TEMPORAL DE COMPRA -->
+    <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="purchase-modal-bg"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center transform scale-95 opacity-0 transition-all duration-300 border border-gray-100" id="purchase-modal-card">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
+                <div class="absolute inset-0 rounded-full border border-green-200 animate-ping opacity-50"></div>
+                <img id="purchase-modal-img" src="" class="w-12 h-12 md:w-14 md:h-14 object-contain relative z-10 drop-shadow-md">
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1" id="purchase-modal-title">¡Compra Exitosa!</h3>
+            <p class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6" id="purchase-modal-desc"></p>
+            <div class="bg-gray-50 border border-gray-200 px-4 md:px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 md:gap-3 w-full">
+                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest" id="purchase-modal-label">Inversión:</span>
+                <span class="text-sm md:text-base font-black text-red-500" id="purchase-modal-price"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.shopApp = {
+    state: {
+        seedsBalance: 35000,
+        inventory: {},
+        shopQuantities: {}
+    },
+    
+    catalog: {
+        tools: [
+            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla.', price: 5000 },
+            { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual en el minijuego de riego.', price: 500 },
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: 'Global', desc: 'Protección preventiva contra plagas.', price: 6000 }
+        ],
+        flowers: [
+            // Las plantas estáticas han sido removidas. 
+            // Las plantas dinámicas se inyectarán automáticamente desde la BD.
+        ],
+        iap: [
+            { id: 'iap_water_24h', name: 'Auto-Riego 24H', image: 'assets/Herramientas_y_Servicios/auto_riego.png', duration: '24 Horas', usage: 'Automatización', desc: 'Riego perfecto automatizado.', price_cop: 5000 },
+            { id: 'iap_water_72h', name: 'Auto-Riego 72H', image: 'assets/Herramientas_y_Servicios/auto_riego.png', duration: '3 Días', usage: 'Automatización', desc: 'Riego perfecto automatizado.', price_cop: 12000 },
+            { id: 'iap_harvest_24h', name: 'El Recolector 24H', image: 'assets/Herramientas_y_Servicios/recolector.png', duration: '24 Horas', usage: 'Recolección', desc: 'Cosecha tus plantas en cuanto maduran.', price_cop: 4000 },
+            { id: 'iap_harvest_72h', name: 'El Recolector 72H', image: 'assets/Herramientas_y_Servicios/recolector.png', duration: '3 Días', usage: 'Recolección', desc: 'Cosecha tus plantas en cuanto maduran.', price_cop: 10000 },
+            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '24 Horas', usage: 'Combo Total', desc: 'Auto-riego y recolección unidos.', price_cop: 7500 },
+            { id: 'iap_combo_72h', name: 'Pase Granjero 72H', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '3 Días', usage: 'Combo Total', desc: 'Auto-riego y recolección unidos.', price_cop: 18000 }
+        ],
+        exchange: [
+            { id: 'exc_10k', name: 'Lote N°1', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Inyección rápida de capital vegetal.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote N°2', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Inyección moderada de capital.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote N°3', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Monto élite para expansión seria.', price_cop: 50000, seeds: 22500 }
+        ]
+    },
+
+    async init() {
+        if (window.farmApp && window.farmApp.state) {
+            this.state.seedsBalance = window.farmApp.state.seedsBalance;
+            this.state.inventory = window.farmApp.state.inventory;
+        }
+        
+        // --- CÓDIGO NUEVO: CARGAR PLANTAS DINÁMICAS DESDE LA BD ---
+        try {
+            const res = await fetch('/api/plants');
+            if (res.ok) {
+                const dynamicPlants = await res.json();
+                dynamicPlants.forEach(dp => {
+                    // Evitar duplicados si ya existen en el array
+                    if (!this.catalog.flowers.some(f => f.id === dp.id)) {
+                        this.catalog.flowers.push({
+                            id: dp.id,
+                            name: dp.name,
+                            image: dp.image_url,
+                            duration: dp.grow_time_minutes + ' Minutos',
+                            durationMins: dp.grow_time_minutes,
+                            usage: '1',
+                            desc: 'Especie única criada en nuestros laboratorios.',
+                            category: dp.category || 'Planta Estándar', // <-- FIX: Aquí solo guarda el nombre, no "Categoría: X"
+                            potType: dp.pot_type || 'small',
+                            price: dp.price,
+                            hp: dp.hp,
+                            atk: dp.atk,
+                            def: dp.def,
+                            reward: dp.reward
+                        });
+                    }
+                });
+            }
+        } catch(e) { console.error("Error cargando plantas dinámicas", e); }
+        // -----------------------------------------------------------
+        
+        document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+        this.switchTab('tools');
+    },
+
+    switchTab(tab) {
+        ['tools', 'flowers', 'iap', 'exchange'].forEach(t => {
+            const tabBtn = document.getElementById(`page-tab-${t}`);
+            const contentDiv = document.getElementById(`page-content-${t}`);
+            if (t === tab) {
+                let colorClass = 'text-cg_blue border-cg_blue';
+                if (t === 'iap') colorClass = 'text-green-500 border-green-500';
+                if (t === 'exchange') colorClass = 'text-purple-500 border-purple-500';
+                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-black ${colorClass} border-b-4 whitespace-nowrap transition-colors`;
+                contentDiv.classList.remove('hidden');
+            } else {
+                let hoverClass = 'hover:text-cg_navy';
+                if (t === 'iap') hoverClass = 'hover:text-green-600';
+                if (t === 'exchange') hoverClass = 'hover:text-purple-600';
+                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent ${hoverClass} whitespace-nowrap transition-colors`;
+                contentDiv.classList.add('hidden');
+            }
+        });
+
+        const filters = document.getElementById('flowers-filters');
+        if (tab === 'flowers') {
+            filters.classList.remove('hidden');
+            filters.classList.add('grid');
+        } else {
+            filters.classList.add('hidden');
+            filters.classList.remove('grid');
+        }
+        
+        this.renderShopItems(tab);
+    },
+
+    renderShopItems(tab) {
+        const container = document.getElementById(`page-content-${tab}`);
+        container.innerHTML = '';
+        let items = this.catalog[tab];
+
+        // APLICACIÓN DE FILTROS PARA SEMILLAS Y FLORES
+        if (tab === 'flowers') {
+            const catFilter = document.getElementById('filter-category').value;
+            const priceFilter = document.getElementById('filter-price').value;
+            const potFilter = document.getElementById('filter-pot').value;
+            const durFilter = document.getElementById('filter-duration').value;
+
+            items = items.filter(item => {
+                let match = true;
+                if (catFilter !== 'all' && item.category !== catFilter) match = false;
+                if (priceFilter === 'low' && item.price >= 2000) match = false;
+                if (priceFilter === 'med' && (item.price < 2000 || item.price > 10000)) match = false;
+                if (priceFilter === 'high' && item.price <= 10000) match = false;
+                if (potFilter !== 'all' && item.potType !== potFilter) match = false;
+                
+                if (durFilter === 'fast' && item.durationMins >= 60) match = false;
+                if (durFilter === 'med' && (item.durationMins < 60 || item.durationMins > 300)) match = false;
+                if (durFilter === 'slow' && item.durationMins <= 300) match = false;
+                
+                return match;
+            });
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-10 bg-white border border-gray-200 rounded-3xl text-gray-500 font-bold text-sm shadow-sm">No se encontraron plantas que coincidan con estos filtros.</div>';
+                return;
+            }
+        }
+
+        items.forEach(item => {
+            if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
+            const qty = this.state.shopQuantities[item.id];
+            
+            let currentStock = 0;
+            if(this.state.inventory[item.id]) {
+                currentStock = this.state.inventory[item.id].qty || 0;
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col group';
+            
+            // --- NUEVO: CONFIGURACIÓN DE LA ETIQUETA SUPERIOR IZQUIERDA POR CATEGORÍA ---
+            let tag = '';
+            let tagStyle = '';
+            
+            if (tab === 'flowers') {
+                tag = item.category ? item.category : 'Semilla';
+                tagStyle = 'bg-cg_blue text-white border-blue-400';
+            } else if (tab === 'tools') {
+                tag = 'Herramienta';
+                tagStyle = 'bg-white text-gray-600 border-gray-200';
+            } else if (tab === 'exchange') {
+                tag = 'Cambio COP';
+                tagStyle = 'bg-white text-gray-600 border-gray-200';
+            } else {
+                tag = 'Servicio Premium';
+                tagStyle = 'bg-white text-gray-600 border-gray-200';
+            }
+            // ----------------------------------------------------------------------------
+            
+            let actionArea = '';
+            let stockBadge = '';
+
+            if (tab === 'iap') {
+                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} COP</button>`;
+            } else if (tab === 'exchange') {
+                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
+            } else {
+                if (item.id !== 'tool_scarecrow') {
+                    stockBadge = `
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
+                            <span class="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
+                            <span class="text-xs md:text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
+                        </div>
+                    `;
+                }
+                
+                if (item.price_cop) {
+                    actionArea = `
+                        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
+                            <button onclick="window.shopApp.buyPremiumSeed('${item.id}', ${item.price_cop})" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-1">
+                                Comprar por $${item.price_cop.toLocaleString()} COP
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionArea = `
+                        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
+                            <div class="flex items-center bg-gray-50 rounded-xl w-full sm:flex-1 border border-gray-200 shadow-inner h-10 md:h-12 overflow-hidden">
+                                <button onclick="window.shopApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">-</button>
+                                <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
+                                <button onclick="window.shopApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">+</button>
+                            </div>
+                            <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="w-full sm:w-auto bg-cg_blue hover:bg-cg_navy text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
+                                ${(item.price * qty).toLocaleString()} 🌱
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+
+            let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} COP</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
+            
+            // Renderizado de Estadísticas de Combate y Cosecha si es Flor
+            let statsHtml = '';
+            let harvestHtml = '';
+            let reqPotHtml = '';
+            
+            if (tab === 'flowers' && item.hp) {
+                let reqSize = item.potType === 'small' ? 'Maceta Pequeña' : 'Maceta Grande';
+                reqPotHtml = `<div class="bg-indigo-50 border border-indigo-100 rounded-lg p-2 mb-2 text-center shadow-sm">
+                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">🏺 Requiere: ${reqSize}</span>
+                </div>`;
+
+                harvestHtml = `
+                <div class="bg-green-50 rounded-lg p-2 border border-green-200 mb-3 flex items-center justify-between shadow-sm">
+                    <span class="text-[10px] font-black text-green-700 uppercase tracking-widest">Cosecha Estimada</span>
+                    <span class="font-black text-green-600 text-sm drop-shadow-sm">+${item.reward.toLocaleString()} 🌱</span>
+                </div>`;
+                
+                statsHtml = `
+                <div class="grid grid-cols-3 gap-2 text-center mb-3">
+                    <div class="bg-red-50 rounded-lg p-1.5 border border-red-100">
+                        <span class="block text-[8px] font-bold text-red-400 uppercase leading-none">Vida</span>
+                        <span class="font-black text-red-600 text-xs leading-none">${item.hp}</span>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-1.5 border border-orange-100">
+                        <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none">Ataque</span>
+                        <span class="font-black text-orange-600 text-xs leading-none">${item.atk}</span>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-1.5 border border-blue-100">
+                        <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none">Defensa</span>
+                        <span class="font-black text-blue-600 text-xs leading-none">${item.def}%</span>
+                    </div>
+                </div>`;
+            }
+
+            card.innerHTML = `
+                <div class="bg-gradient-to-b from-gray-50 to-white h-40 md:h-48 flex items-center justify-center p-4 md:p-6 relative shrink-0 border-b border-gray-100">
+                    <span class="absolute top-3 left-3 ${tagStyle} text-[9px] md:text-[10px] font-black px-2 md:px-2.5 py-1 rounded-md shadow-sm border uppercase tracking-wider z-20">${tag}</span>
+                    ${stockBadge}
+                    <img src="${item.image}" class="h-28 md:h-36 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                </div>
+                <div class="p-4 md:p-5 flex flex-col flex-1">
+                    <h4 class="font-black text-cg_navy text-base md:text-lg leading-tight mb-2">${item.name}</h4>
+                    <div class="flex justify-between items-center text-[9px] md:text-[10px] font-bold text-gray-500 mb-3 bg-gray-50 p-2 md:p-2.5 rounded-lg border border-gray-100">
+                        ${durationHtml}
+                        <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
+                    </div>
+                    ${reqPotHtml}
+                    ${harvestHtml}
+                    ${statsHtml}
+                    <p class="text-[11px] md:text-xs text-gray-500 mb-4 leading-relaxed flex-1">${item.desc}</p>
+                    <div class="mt-auto pt-3 border-t border-gray-100">
+                        ${actionArea}
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    },
+
+    changeShopQty(itemId, delta, tab) {
+        let current = this.state.shopQuantities[itemId];
+        let next = current + delta;
+        if (next >= 1 && next <= 99) {
+            this.state.shopQuantities[itemId] = next;
+            this.renderShopItems(tab);
+        }
+    },
+
+    async buyItem(itemId, unitPrice, tab) {
+        if (this.isProcessingBuy) return;
+        this.isProcessingBuy = true;
+        setTimeout(() => { this.isProcessingBuy = false; }, 600); // Bloqueo de 600ms para evitar doble compra accidental
+        
+        const qty = this.state.shopQuantities[itemId];
+        const total = unitPrice * qty;
+        
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory;
+
+        if (farmState.seedsBalance >= total) {
+            
+            if (itemId === 'tool_scarecrow') {
+                if (window.farmApp && window.farmApp.state) {
+                    const now = Date.now();
+                    const durationMs = 24 * 3600000; 
+                    
+                    window.farmApp.state.plots.forEach(plot => {
+                         if (plot.status !== 'locked' && plot.status !== 'arena_locked') {
+                            plot.scarecrowEndTime = Math.max(plot.scarecrowEndTime || 0, now) + (durationMs * qty);
+                            plot.hasCrow = false;
+                            plot.crowLeavingAt = 0;
+                            
+                            if (plot.plant && plot.status === 'planted') {
+                                if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
+                                else if (plot.plant.id === 'flower_bamboo' && plot.water > 90) plot.water = 90;
+                                else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
+                                else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
+                                else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
+                                else if (plot.plant.id === 'flower_crystal' && plot.water > 80) plot.water = 80;
+                                else if (plot.plant.id === 'flower_moon' && plot.water > 90) plot.water = 90;
+                            }
+                         }
+                    });
+                    
+                    window.farmApp.state.seedsBalance -= total;
+                    this.state.seedsBalance = window.farmApp.state.seedsBalance; 
+                    window.farmApp.saveState(); 
+                    
+                    let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                    this.showPurchaseModal(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
+                    document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                    return;
+                }
+            }
+
+            if (!targetInventory[itemId]) {
+                let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                targetInventory[itemId] = { 
+                    name: catItem.name, 
+                    type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                    reqSize: catItem.potType || (itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') ? 'small' : (itemId.includes('big') || itemId.includes('moon') ? 'big' : null)),                    qty: 0, 
+                    image: catItem.image 
+                };
+            }
+
+            let addedQty = qty;
+            if (itemId === 'tool_water') addedQty = 10 * qty;
+            targetInventory[itemId].qty += addedQty;
+
+            farmState.seedsBalance -= total;
+            this.state.seedsBalance = farmState.seedsBalance;
+            document.getElementById('global-seeds-display').innerText = farmState.seedsBalance.toLocaleString() + " 🌱";
+            
+            if (window.farmApp && window.farmApp.state) {
+                window.farmApp.state.inventory = targetInventory;
+                window.farmApp.updateInventoryUI();
+                window.farmApp.saveState();
+            } else {
+                this.saveState();
+            }
+
+            this.renderShopItems(tab);
+            
+            let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+            this.showPurchaseModal(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
+            
+        } else {
+            const errorModal = document.getElementById('purchase-error-modal');
+            if (errorModal) {
+                document.getElementById('purchase-error-text').innerText = "No tienes Semillas (🌱) suficientes para realizar esta compra.";
+                errorModal.classList.remove('hidden');
+                errorModal.classList.add('flex');
+            }
+        }
+    },
+
+    async buyExchange(packageId) {
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return alert("Debes iniciar sesión para realizar cambios.");
+        
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    window.farmApp.state.seedsBalance = data.new_seeds;
+                    window.farmApp.saveState();
+                }
+                
+                const balEl = document.getElementById('global-seeds-display');
+                if (balEl) balEl.innerText = data.new_seeds.toLocaleString() + " 🌱";
+                const copEl = document.getElementById('global-balance');
+                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
+
+                if(window.syncUserData) window.syncUserData(); 
+
+                let catItem = this.catalog.exchange.find(i => i.id === packageId);
+                this.showPurchaseModal(catItem.image, "Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()} COP`, 'Debitado:');
+            } else {
+                const errorModal = document.getElementById('purchase-error-modal');
+                if (errorModal) {
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.";
+                    errorModal.classList.remove('hidden');
+                    errorModal.classList.add('flex');
+                } else {
+                    alert("Error: " + data.error);
+                }
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar el cambio.");
+        }
+    },
+
+    async buyPremiumSeed(itemId, priceCop) {
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return alert("Debes iniciar sesión para realizar compras.");
+        
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, package_id: itemId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    
+                    if (!window.farmApp.state.inventory[itemId]) {
+                        let catItem = this.catalog.flowers.find(i => i.id === itemId);
+                        window.farmApp.state.inventory[itemId] = { 
+                            name: catItem.name, 
+                            type: 'seed', 
+                            reqSize: catItem.potType || 'big', 
+                            qty: 0, 
+                            image: catItem.image 
+                        };
+                    }
+                    window.farmApp.state.inventory[itemId].qty += 1;
+                    window.farmApp.saveState();
+                }
+                
+                const copEl = document.getElementById('global-balance');
+                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
+
+                if(window.syncUserData) window.syncUserData(); 
+
+                let catItem = this.catalog.flowers.find(i => i.id === itemId);
+                this.showPurchaseModal(catItem.image, catItem.name, 1, `-$${priceCop.toLocaleString()} COP`, 'Debitado:');
+                
+                this.renderShopItems('flowers');
+            } else {
+                const errorModal = document.getElementById('purchase-error-modal');
+                if (errorModal) {
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente.";
+                    errorModal.classList.remove('hidden');
+                    errorModal.classList.add('flex');
+                } else {
+                    alert("Error: " + data.error);
+                }
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar la compra premium.");
+        }
+    },
+
+    showPurchaseModal(imgUrl, itemName, qty, pricePaidStr, labelStr) {
+        const modal = document.getElementById('purchase-success-modal');
+        const bg = document.getElementById('purchase-modal-bg');
+        const card = document.getElementById('purchase-modal-card');
+        
+        document.getElementById('purchase-modal-img').src = imgUrl;
+        document.getElementById('purchase-modal-desc').innerText = `Has adquirido ${qty.toLocaleString()}x ${itemName} para tu inventario.`;
+        document.getElementById('purchase-modal-price').innerText = pricePaidStr;
+        document.getElementById('purchase-modal-label').innerText = labelStr;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        setTimeout(() => {
+            bg.classList.remove('opacity-0');
+            card.classList.remove('scale-95', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+        }, 10);
+
+        setTimeout(() => {
+            bg.classList.add('opacity-0');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        }, 1500); 
+    },
+
+    async buyIAP(packageId) {
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return alert("Debes iniciar sesión para realizar compras.");
+        
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                }
+                
+                const copEl = document.getElementById('global-balance');
+                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
+
+                if(window.syncUserData) window.syncUserData(); 
+
+                if (packageId.startsWith('iap_')) {
+                    const hours = packageId.includes('24h') ? 24 : 72;
+                    const now = Date.now();
+                    
+                    if (window.farmApp) {
+                        if (packageId.includes('water') || packageId.includes('combo')) {
+                            window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
+                            
+                            window.farmApp.state.plots.forEach(plot => {
+                                if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 8) {
+                                    plot.hasCrow = false;
+                                    plot.crowLeavingAt = 0;
+                                    if (plot.plant && plot.status === 'planted') {
+                                        if (plot.plant.id === 'flower_wheat') plot.water = 100;
+                                        else if (plot.plant.id === 'flower_bamboo') plot.water = 90;
+                                        else if (plot.plant.id === 'flower_small') plot.water = 90;
+                                        else if (plot.plant.id === 'flower_big') plot.water = 70;
+                                        else if (plot.plant.id === 'flower_cactus') plot.water = 80;
+                                        else if (plot.plant.id === 'flower_crystal') plot.water = 80;
+                                        else if (plot.plant.id === 'flower_moon') plot.water = 90;
+                                    } else {
+                                        plot.water = 100;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        if (packageId.includes('harvest') || packageId.includes('combo')) {
+                            window.farmApp.state.autoHarvestEndTime = Math.max(now, window.farmApp.state.autoHarvestEndTime || 0) + (hours * 3600000);
+                        }
+                        
+                        if (typeof window.farmApp.updateAutomationUI === 'function') {
+                            window.farmApp.updateAutomationUI();
+                        }
+                        window.farmApp.renderPlots(); 
+                        window.farmApp.saveState(); 
+                    }
+                    
+                    let catItem = this.catalog.iap.find(i => i.id === packageId);
+                    this.showPurchaseModal(catItem.image, catItem.name, 1, `-$${catItem.price_cop.toLocaleString()} COP`, 'Debitado:');
+                }
+            } else {
+                const errorModal = document.getElementById('purchase-error-modal');
+                if (errorModal) {
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.";
+                    errorModal.classList.remove('hidden');
+                    errorModal.classList.add('flex');
+                } else {
+                    alert("Error: " + data.error);
+                }
+            }
+        } catch(e) {
+            alert("Error de conexión al procesar la compra.");
+        }
+    }, 
+
+    saveState() {
+        if (window.farmApp && window.farmApp.state) {
+            window.farmApp.state.seedsBalance = this.state.seedsBalance;
+            window.farmApp.saveState(); 
+        }
+    }
+};
+
+window.shopApp.init();
+</script>
+</div>

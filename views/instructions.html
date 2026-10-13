@@ -1,0 +1,810 @@
+<div class="max-w-[1200px] mx-auto space-y-8 animate-fade-in pb-24 relative px-4 md:px-0">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cg_gold animate-pulse"></span>
+                <span class="text-[10px] font-extrabold text-cg_gold uppercase tracking-widest bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-md">Academia CashGarden</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Manual Oficial del Sistema</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Aprende a dominar la simulación agrícola, las mecánicas de combate táctico, los torneos competitivos y el Pase de Batalla para maximizar tus ganancias reales.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 px-4 py-2 rounded-xl text-right">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Versión de Guía</p>
+            <p class="text-sm font-black text-cg_gold animate-pulse">v7.0 - Combate y Automatización</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 1: INTRODUCCIÓN Y ECONOMÍA -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shadow-sm shrink-0">
+                <span class="text-2xl">⚖️</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">1. Bases y Economía</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Los dos pilares del juego</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Semillas -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col relative overflow-hidden group hover:border-green-300 transition-colors">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-100 rounded-full blur-2xl opacity-50"></div>
+                <div class="flex items-center gap-3 mb-3 relative z-10">
+                    <span class="text-3xl drop-shadow-md">🌱</span>
+                    <h4 class="text-lg font-black text-green-700">Semillas (Moneda Virtual)</h4>
+                </div>
+                <ul class="text-sm text-gray-600 space-y-2 relative z-10 list-disc list-inside">
+                    <li>Se obtienen <strong>cosechando plantas</strong> en tu invernadero.</li>
+                    <li>Se usan para comprar herramientas, macetas, tickets de duelo y nuevas semillas.</li>
+                    <li>Sirven para pagar la entrada a los <strong>Torneos Freeroll</strong>.</li>
+                    <li>Son la moneda de apuesta en el <strong>Modo Duelo (PvP)</strong>.</li>
+                    <li>No son retirables por dinero real.</li>
+                </ul>
+            </div>
+            
+            <!-- Dinero Real -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col relative overflow-hidden group hover:border-cg_gold transition-colors">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-100 rounded-full blur-2xl opacity-50"></div>
+                <div class="flex items-center gap-3 mb-3 relative z-10">
+                    <span class="text-3xl drop-shadow-md">💵</span>
+                    <h4 class="text-lg font-black text-cg_gold">Pesos (COP $)</h4>
+                </div>
+                <ul class="text-sm text-gray-600 space-y-2 relative z-10 list-disc list-inside">
+                    <li>Se ganan <strong>exclusivamente ganando Torneos</strong> en la Arena.</li>
+                    <li>Se pueden usar para comprar Asistentes VIP y el Pase de Batalla.</li>
+                    <li>Se pueden intercambiar por lotes gigantes de semillas en el Mercado.</li>
+                    <li><strong>Retirables directamente a tu cuenta Nequi</strong>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: CICLO DE SIEMBRA PASO A PASO -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center border border-green-100 shadow-sm shrink-0">
+                <span class="text-2xl">🔄</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">2. El Ciclo de Cultivo</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Guía visual de primeros pasos</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 relative">
+            <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10 transform -translate-y-1/2"></div>
+            
+            <!-- Paso 1 -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-cg_blue text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">1</div>
+                <img src="assets/Fondos/terreno_vacio.png" class="h-20 mx-auto object-contain drop-shadow-md mb-3">
+                <h4 class="font-black text-cg_navy text-sm mb-1">Terreno Vacío</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Desbloquea parcelas invirtiendo tus semillas acumuladas.</p>
+            </div>
+            
+            <!-- Paso 2 -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-cg_blue text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">2</div>
+                <div class="relative h-20 mb-3 flex items-center justify-center">
+                    <img src="assets/Fondos/terreno_vacio.png" class="absolute h-20 opacity-50 object-contain drop-shadow-sm">
+                    <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="relative h-14 object-contain drop-shadow-md transform -translate-y-2">
+                </div>
+                <h4 class="font-black text-cg_navy text-sm mb-1">Poner Maceta</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Cómpralas en el mercado. Hay pequeñas (5 usos) y grandes (10 usos).</p>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-cg_blue text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">3</div>
+                <div class="relative h-20 mb-3 flex items-center justify-center">
+                    <img src="assets/Fondos/terreno_vacio.png" class="absolute h-20 opacity-50 object-contain drop-shadow-sm">
+                    <img src="assets/Plantas/flor_pequena.gif" class="relative h-16 object-contain drop-shadow-lg transform -translate-y-2">
+                </div>
+                <h4 class="font-black text-cg_navy text-sm mb-1">Sembrar y Regar</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Elige la semilla y calibra el riego con la Regadera para mantenerla viva.</p>
+            </div>
+
+            <!-- Paso 4 -->
+            <div class="bg-green-50 border border-green-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">4</div>
+                <img src="assets/Plantas/flor_grande.gif" class="h-20 mx-auto object-contain drop-shadow-xl mb-3 animate-pulse">
+                <h4 class="font-black text-green-700 text-sm mb-1">Cosechar</h4>
+                <p class="text-[10px] text-green-800 leading-tight">Cobra tus semillas apenas estén listas. ¡Si la abandonas, el cuervo se las comerá!</p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-5 flex flex-col md:flex-row gap-5 items-center md:items-start shadow-sm relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-200 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+            <span class="text-4xl md:text-5xl drop-shadow-md shrink-0 relative z-10">💧</span>
+            <div class="relative z-10 text-center md:text-left">
+                <h4 class="font-black text-blue-900 text-base mb-1">Mecánica de Hidratación Residual</h4>
+                <p class="text-xs md:text-sm text-blue-800 leading-relaxed">
+                    <strong>¡Ojo! El agua no desaparece por arte de magia.</strong> Cuando cosechas o remueves una planta, el agua sobrante se conserva en la tierra de esa parcela. Esta humedad residual se irá evaporando lentamente bajo el sol hasta llegar a 0%. Si vas a sembrar una especie nueva, asegúrate de que el nivel de agua actual de la tierra sea seguro para ella, de lo contrario podría pudrirse apenas la siembres.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: RIEGO QUIRÚRGICO (CALIBRADOR) -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shadow-sm shrink-0">
+                <img src="assets/Herramientas_y_Servicios/regadera.png" class="w-8 h-8 object-contain">
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">3. El Calibrador de Riego</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Tu habilidad define la vida de la planta</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col md:flex-row gap-8 items-center">
+            <div class="flex-1 space-y-4 text-sm text-gray-600 leading-relaxed">
+                <p>Al seleccionar una parcela y usar la <strong>Regadera</strong>, activarás el minijuego de calibración. Consiste en una barra con un puntero que se mueve rápidamente de izquierda a derecha.</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong class="text-blue-600">Franja Azul (Zona Segura):</strong> Indica la cantidad de agua que le falta a tu planta para estar hidratada sin ahogarse.</li>
+                    <li><strong class="text-red-500">Exceso (Pudrición):</strong> Si el puntero cae fuera de la zona azul y supera el límite máximo de agua (100%), tu planta se inundará y se pudrirá instantáneamente.</li>
+                    <li><strong>Estrategia:</strong> Observa la velocidad del puntero. Toca "Fijar Riego" anticipando el movimiento para inyectar el porcentaje exacto.</li>
+                </ul>
+            </div>
+            
+            <div class="w-full md:w-5/12 bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-inner text-center">
+                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest mb-4">Simulación Visual</h4>
+                <div class="relative w-full h-10 bg-red-100 rounded-full mb-6 shadow-inner border border-red-200 overflow-hidden">
+                    <div class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500" style="left: 20%; width: 50%;"></div>
+                    <div class="absolute top-0 left-[20%] h-full flex items-center font-black text-[10px] text-black/40 -translate-x-1/2">20%</div>
+                    <div class="absolute top-0 left-[70%] h-full flex items-center font-black text-[10px] text-black/40 -translate-x-1/2">70%</div>
+                    <div class="absolute top-0 h-full w-2 bg-cg_navy transform -translate-x-1/2 shadow-lg" style="left: 45%;">
+                        <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-[10px] font-bold text-gray-500 mt-2 px-2">
+                    <span class="text-red-500">Peligro (0-20%)</span>
+                    <span class="text-blue-600">¡Fija Aquí!</span>
+                    <span class="text-red-500">Inundación (>70%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 4: CATÁLOGO DE CULTIVOS -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 overflow-hidden">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center border border-green-100 shadow-sm shrink-0">
+                <span class="text-2xl">🌿</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">4. Catálogo de Cultivos Comerciales</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Características y límites vitales</p>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto rounded-2xl border border-gray-100">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Especie y Maceta</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Evaporación Base</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Rango Seguro</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Crecimiento</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Riesgo por Exceso</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Ganancia</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm font-medium text-gray-600 divide-y divide-gray-100">
+                    <!-- Trigo Rápido -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/trigo_rapido.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Trigo Rápido</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">40% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">60% a 100%</span></td>
+                        <td class="p-4"><span class="block font-bold">5 Minutos</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">🦠</span> Inundación</td>
+                        <td class="p-4 text-green-600 font-black">+1,500 🌱</td>
+                    </tr>
+                    
+                    <!-- Bambú Tryhard -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/bambu_tryhard.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Bambú Tryhard</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-[10px]">800% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">50% a 90%</span></td>
+                        <td class="p-4"><span class="block font-bold">10 Minutos</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">☠</span> Evaporación Extrema</td>
+                        <td class="p-4 text-green-600 font-black">+6,500 🌱</td>
+                    </tr>
+
+                    <!-- Cactus de Cuarzo -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/cactus_cuarzo.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Cactus de Cuarzo</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">10% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">20% a 80%</span></td>
+                        <td class="p-4"><span class="block font-bold text-orange-600">30 Minutos</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">🦅</span> Plaga >80%</td>
+                        <td class="p-4 text-green-600 font-black">+3,200 🌱</td>
+                    </tr>
+                    
+                    <!-- Flor Pequeña -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/flor_pequena.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Flor Pequeña</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">40% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">30% a 90%</span></td>
+                        <td class="p-4"><span class="block font-bold">1 Hora</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">⏳</span> Pausa daño</td>
+                        <td class="p-4 text-green-600 font-black">+4,500 🌱</td>
+                    </tr>
+                    
+                    <!-- Helecho de Cristal -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/helecho_cristal.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Helecho de Cristal</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">40% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">40% a 80%</span></td>
+                        <td class="p-4"><span class="block font-bold">2 Horas</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">⏳</span> Pudrición</td>
+                        <td class="p-4 text-green-600 font-black">+10,000 🌱</td>
+                    </tr>
+
+                    <!-- Flor Grande -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/flor_grande.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_grande.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Flor Grande</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">40% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">50% a 70%</span></td>
+                        <td class="p-4"><span class="block font-bold">5 Horas</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">☠</span> +30min Penal.</td>
+                        <td class="p-4 text-green-600 font-black">+26,000 🌱</td>
+                    </tr>
+                    
+                    <!-- Lirio Lunar -->
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/lirio_lunar.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                                <img src="assets/Herramientas_y_Servicios/maceta_grande.png" class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full p-0.5 border border-gray-200">
+                            </div>
+                            <div>
+                                <span class="font-black text-cg_navy block leading-tight">Lirio Lunar</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">40% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">40% a 90%</span></td>
+                        <td class="p-4"><span class="block font-bold">12 Horas</span></td>
+                        <td class="p-4 text-red-500 text-xs font-bold flex items-center gap-1"><span class="text-lg">🦅</span> Atrae cuervos</td>
+                        <td class="p-4 text-green-600 font-black">+55,000 🌱</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 5: PLAGAS Y PROTECCIONES -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center border border-red-100 shadow-sm shrink-0">
+                <span class="text-2xl">🦅</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">5. Amenazas y Plagas</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Contagios y herramientas defensivas</p>
+            </div>
+        </div>
+
+        <h4 class="font-black text-cg_navy text-sm mb-4 uppercase tracking-widest border-b border-gray-100 pb-2">Amenaza Principal: El Cuervo Carroñero</h4>
+        
+        <!-- Tarjeta Detallada del Cuervo -->
+        <div class="bg-red-50/50 border border-red-100 rounded-2xl p-5 flex flex-col shadow-sm mb-6 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-red-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+            
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-5 relative z-10">
+                <img src="assets/Enemigos/Cuervos/cuervo_base.png" class="w-16 h-16 object-contain drop-shadow-md animate-bounce shrink-0">
+                <div class="text-center sm:text-left">
+                    <h4 class="font-black text-red-800 text-base md:text-lg leading-tight mb-1">Comportamiento y Daño</h4>
+                    <p class="text-xs md:text-sm text-red-700 leading-relaxed">Aparece por <strong>Sequía</strong> (0% agua), <strong>Pudrición</strong> (exceso de agua) o <strong>Abandono</strong> (no cosechar tu planta a tiempo). Su impacto depende de cuándo y por qué llegue.</p>
+                </div>
+            </div>
+
+            <ul class="text-xs md:text-sm text-red-800 space-y-3 list-none relative z-10 bg-white/60 p-4 rounded-xl border border-red-100">
+                <li class="flex items-start gap-2">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">⏱️</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-0.5">Periodo de Gracia (10 Min):</strong>
+                        Cuando el cuervo apenas aterriza, el icono parpadeará y te mostrará un contador. Tienes 10 minutos para espantarlo <strong>gratis sin penalidad de tiempo</strong>.
+                    </div>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">⏳</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-0.5">Pudrición o Castigo (15 Min):</strong>
+                        Si la planta se inunda o el cuervo se asienta definitivamente (pasado el periodo de gracia), tendrás que limpiarla manualmente, lo que <strong>pausa el crecimiento de la planta por 15 minutos</strong>.
+                    </div>
+                </li>
+                <li class="flex items-start gap-2 border-t border-red-200/50 pt-3 mt-3">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">📉</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-1">Robo de Cosecha (Por Abandono):</strong>
+                        Si dejas una planta lista al 100% sin recogerla, los cuervos empezarán a comerse las semillas de tus ganancias progresivamente:
+                        <ul class="mt-2 space-y-1.5 text-red-700 font-bold bg-red-50/80 p-3 rounded-lg">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> 0 a 15 mins: 1 Cuervo (Roba -1% de semillas por minuto).</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> 15 a 30 mins: 2 Cuervos (Roban -3% de semillas por minuto).</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> 30 a 45 mins: 3 Cuervos (Roban -5% de semillas por minuto).</li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="flex items-start gap-2 border-t border-red-200/50 pt-3 mt-3">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">🌐</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-0.5">Contagio Global (El Éxodo):</strong>
+                        Si dejas la planta infectada o abandonada por <strong>más de 45 minutos</strong>, la planta colapsará (perderás el 100% de la recompensa) y la bandada de cuervos <strong>invadirá tus demás parcelas sanas</strong> de forma en cadena.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Espantapájaros -->
+        <div class="bg-green-50/50 border border-green-100 rounded-2xl p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 shadow-sm mb-2">
+            <img src="assets/Herramientas_y_Servicios/espantapajaros.png" class="w-14 h-14 object-contain drop-shadow-md shrink-0">
+            <div class="text-center sm:text-left">
+                <h4 class="font-black text-green-800 text-sm md:text-base mb-1">Espantapájaros (Defensa Preventiva)</h4>
+                <p class="text-xs md:text-sm text-green-700 leading-relaxed">Se compra en el Mercado. Brinda protección por <strong>24 horas a la parcela específica donde lo coloques</strong>. Evita que aparezcan cuervos por sequía. Además, si lo aplicas sobre una planta ya podrida, drena el agua y remueve el cuervo al instante <strong>sin los 15 minutos de espera</strong>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 6: PASE DE BATALLA Y AUTOMATIZACIÓN VIP -->
+    <div class="bg-gradient-to-br from-purple-50 to-white rounded-3xl shadow-lg border-2 border-purple-300 p-6 md:p-8 mt-8 relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-80 h-80 bg-purple-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center border border-purple-200 shadow-sm shrink-0">
+                <span class="text-2xl">🤖</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">6. Pase de Batalla y Automatización VIP</h3>
+                <p class="text-xs font-bold text-purple-600 uppercase tracking-widest">Delega el trabajo y asegura ganancias</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            Para aquellos granjeros que no pueden estar pendientes de la simulación cada hora, el Mercado ofrece soluciones automatizadas premium. Estos pases de batalla otorgan ventajas insuperables de automatización durante 24h o 72h. Se adquieren exclusivamente con Saldo Real (COP).
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+            
+            <div class="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-blue-400 transition-colors">
+                <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform">
+                <h4 class="font-black text-blue-900 text-sm mb-2">Asistente Auto-Riego</h4>
+                <p class="text-xs text-blue-800 leading-relaxed mb-2">Suscripción global. Riega automáticamente todas tus plantas al 100% de su rango seguro y bloquea plagas por completo durante su vigencia.</p>
+            </div>
+            
+            <div class="bg-white border border-emerald-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-emerald-400 transition-colors">
+                <img src="assets/Herramientas_y_Servicios/recolector.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform">
+                <h4 class="font-black text-emerald-900 text-sm mb-2">El Recolector</h4>
+                <p class="text-xs text-emerald-800 leading-relaxed mb-2">Suscripción global. Cosecha tus plantas apenas terminan de crecer, depositando tus semillas al instante en tu inventario. Evita robos por abandono.</p>
+            </div>
+            
+            <div class="bg-white border-2 border-purple-400 rounded-2xl p-5 flex flex-col items-center text-center shadow-lg relative overflow-hidden group hover:border-purple-500 transition-colors">
+                <div class="absolute inset-0 bg-purple-100/30"></div>
+                <img src="assets/Herramientas_y_Servicios/combo_vip.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform relative z-10">
+                <h4 class="font-black text-purple-900 text-sm mb-2 relative z-10">Pase Granjero (Combo Total)</h4>
+                <p class="text-xs text-purple-800 leading-relaxed mb-2 relative z-10">Combina el Auto-Riego y el Recolector por un precio especial. Tu Invernadero trabajará de forma autónoma al 100%.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SECCIÓN 7: SISTEMA METEOROLÓGICO -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-200 shadow-sm shrink-0">
+                <span class="text-2xl">📅</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">7. Sistema Meteorológico</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">El clima afecta el consumo de agua</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            El entorno de tu Invernadero no es estático. CashGarden cuenta con un sistema de estaciones globales sincronizadas con la fecha real del mes que alteran drásticamente la evaporación del agua.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+            <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">❄️</span>
+                <div>
+                    <h4 class="font-black text-blue-900 text-sm">Invierno (Días 1 al 9)</h4>
+                    <p class="text-xs text-blue-800 mt-1"><strong>Evaporación: x0.5 (-50%)</strong>. Las plantas consumen agua muy lento.</p>
+                </div>
+            </div>
+            <div class="bg-orange-50/50 border border-orange-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">🍂</span>
+                <div>
+                    <h4 class="font-black text-orange-900 text-sm">Otoño (Días 10 al 19)</h4>
+                    <p class="text-xs text-orange-800 mt-1"><strong>Evaporación: x1.5 (+50%)</strong>. Los vientos secos aceleran el consumo.</p>
+                </div>
+            </div>
+            <div class="bg-pink-50/50 border border-pink-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">🌸</span>
+                <div>
+                    <h4 class="font-black text-pink-900 text-sm">Primavera (Días 20 al 26)</h4>
+                    <p class="text-xs text-pink-800 mt-1"><strong>Evaporación: x1.0 (Normal)</strong>. Clima base estándar.</p>
+                </div>
+            </div>
+            <div class="bg-red-50/50 border border-red-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">☀️</span>
+                <div>
+                    <h4 class="font-black text-red-900 text-sm">Verano (Día 27 a Fin de Mes)</h4>
+                    <p class="text-xs text-red-800 mt-1"><strong>Evaporación: x2.0 (+100%)</strong>. ¡Peligro de Sequía Crítica!.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 8: ARENA DE TORNEOS (COMPLETA Y DETALLADA) -->
+    <div class="bg-white rounded-3xl shadow-lg border-2 border-cg_gold p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-yellow-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-yellow-50 rounded-2xl flex items-center justify-center border border-yellow-200 shadow-sm shrink-0">
+                <span class="text-2xl">🏆</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">8. Torneos Sit & Go (Gana COP)</h3>
+                <p class="text-xs font-bold text-cg_gold uppercase tracking-widest">Habilidad alquímica y precisión pura</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-8 relative z-10">
+            Los Torneos que encuentras en la barra superior son eventos de habilidad pura (Sit & Go P2P) donde compites contra otras personas por dinero real retirables a tu cuenta. No interviene la suerte ni el combate directo; todo depende de tu pulso y cálculo matemático en el <strong>Ritual de Alquimia</strong>.
+        </p>
+
+        <div class="grid grid-cols-1 gap-6 relative z-10">
+            
+            <!-- FASE 1 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-cg_blue transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">1</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Preparación: Alquimia Orgánica</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Al inscribirte, iniciarás el <strong>Ritual de Alquimia</strong>. Tendrás <strong>10 segundos</strong> para deslizar los 4 medidores (Agua, Nutrientes, Luz, Tierra) hacia sus porcentajes exactos que se indican debajo. 
+                            <br><br><strong class="text-red-500 font-bold">La Trampa Oculta:</strong> Mover el slider de Luz afectará el de Agua. Todo está interconectado. Además, a los 5 segundos, la fórmula de la meta se ocultará y jugarás guiado por tu memoria visual. Cualquier error de milímetros restará puntos de tu marcador base (10,000 Pts).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 2 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-orange-400 transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">2</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Espera: Horarios Escalonados</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Para asegurar un ambiente justo y lleno de jugadores, los torneos están programados en bloques de 4 horas con <strong>desfases de 1 hora entre ligas</strong>:
+                        </p>
+                        <ul class="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-700">
+                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">🌱 <strong>Bonsái:</strong> En la hora base (Ej: 12:00)</li>
+                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">🌸 <strong>Orquídea:</strong> +1 Hora (Ej: 1:00)</li>
+                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">🌹 <strong>Rosa:</strong> +2 Horas (Ej: 2:00)</li>
+                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">💎 <strong>Loto:</strong> +3 Horas (Ej: 3:00)</li>
+                        </ul>
+                        <p class="text-xs mt-3 text-gray-500">Mientras el reloj llega a cero, tu planta dirá <span class="bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded border border-blue-200">Sala en Preparación</span> y no perderá puntos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 3 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-red-400 transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">3</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase en Vivo: Supervivencia de Puntos</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            ¡El reloj llegó a cero! La planta ahora es vulnerable. Debes mantener el nivel de agua <strong>estrictamente dentro de su franja segura</strong> usando el Calibrador de Riego.
+                        </p>
+                        <ul class="mt-3 list-disc list-inside text-xs text-gray-700 space-y-1">
+                            <li>El agua se evapora constantemente influenciada por la temporada climatológica actual.</li>
+                            <li>Cada minuto que la planta pase secándose o ahogándose, te drenará puntos permanentemente.</li>
+                            <li><strong class="text-red-600">Castigo de Inundación:</strong> Si excedes el máximo (Ej. 100%), perderás miles de puntos de un solo golpe.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 4 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-cg_gold transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">4</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Finalización: Veredicto y Ganador</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Cuando el temporizador del torneo llega a cero, el servidor detiene la sala. El sistema revisa la tabla de posiciones y evalúa la Precisión de Sintonización Orgánica inicial y el puntaje retenido.
+                            <br><br>
+                            Los 3 primeros lugares se reparten el pozo de dinero real en COP que se sumará a su saldo en la plataforma. Los puestos 4 en adelante reciben un premio consuelo en semillas. <strong>¡Puedes retirar ese saldo COP directamente a tu Nequi desde tu Billetera!</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SECCIÓN 9: HIDRATACIÓN Y ESTADÍSTICAS DE CAMPEONATO -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 overflow-hidden mt-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center border border-cyan-100 shadow-sm shrink-0">
+                <span class="text-2xl">💧</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">9. Hidratación y Estadísticas de Campeonato</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Consumo de agua y daño por especie en torneos</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-gray-100">
+            <table class="w-full text-left border-collapse min-w-[900px]">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Especie de Torneo</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Evaporación Base</th>
+                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Rango Seguro</th>
+                        <th class="p-4 text-[10px] font-black text-red-500 uppercase tracking-widest">Drenaje (Fuera de Rango)</th>
+                        <th class="p-4 text-[10px] font-black text-red-500 uppercase tracking-widest">Castigo por Ahogamiento</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm font-medium text-gray-600 divide-y divide-gray-100">
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/bonsai.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                            </div>
+                            <span class="font-black text-cg_navy">Freeroll Bonsái</span>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">30% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">20% a 100%</span></td>
+                        <td class="p-4 text-orange-600 font-bold">-10 pts / minuto</td>
+                        <td class="p-4 text-red-600 font-black">-500 Pts</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/orquidea_lunar.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                            </div>
+                            <span class="font-black text-cg_navy">Orquídea Lunar</span>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">55% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">20% a 100%</span></td>
+                        <td class="p-4 text-orange-600 font-bold">-20 pts / minuto</td>
+                        <td class="p-4 text-red-600 font-black">-1,000 Pts</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/rosa_ceniza.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                            </div>
+                            <span class="font-black text-cg_navy">Rosa de Ceniza</span>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">35% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">30% a 80%</span></td>
+                        <td class="p-4 text-orange-600 font-bold">-30 pts / minuto</td>
+                        <td class="p-4 text-red-600 font-black">-3,000 Pts</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="p-4 flex items-center gap-3">
+                            <div class="relative">
+                                <img src="assets/Plantas/loto_cristal.gif" class="w-12 h-12 object-contain bg-white rounded-xl border border-gray-200 p-1 group-hover:scale-110 transition-transform shadow-sm">
+                            </div>
+                            <span class="font-black text-cg_navy">Loto de Cristal</span>
+                        </td>
+                        <td class="p-4 text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded font-bold text-[10px]">15% / h</span></td>
+                        <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold text-xs">40% a 60%</span></td>
+                        <td class="p-4 text-orange-600 font-bold">-50 pts / minuto</td>
+                        <td class="p-4 text-red-600 font-black">-5,000 Pts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 10: EL MODO COMBATE (ARENA DE DUELOS) -->
+    <div class="bg-white rounded-3xl shadow-lg border-2 border-red-500 p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center border border-red-200 shadow-sm shrink-0">
+                <span class="text-2xl">⚔️</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">10. Modo Combate: La Arena de Duelos 3v3</h3>
+                <p class="text-xs font-bold text-red-600 uppercase tracking-widest">Estrategia RPG por Turnos</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            Más allá del cultivo pacífico, tu Invernadero puede ser una base militar botánica. Usando el botón <strong>"Duelo"</strong> en la pantalla de la Granja, entrarás a la <strong>Arena de Combate Táctico (3v3)</strong>, un sistema RPG por turnos donde controlas a tu escuadrón botánico. Existen dos formas principales de combatir:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10 mb-8">
+            <!-- PVE (Cuervos) -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-gray-400 transition-colors group">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-3xl drop-shadow-md">🦅</span>
+                    <h4 class="text-lg font-black text-gray-800 group-hover:text-black transition-colors">Campaña (PvE)</h4>
+                </div>
+                <p class="text-xs md:text-sm text-gray-600 leading-relaxed mb-4">
+                    Juegas contra la Inteligencia Artificial (una bandada de cuervos). Requiere gastar un <strong>Ticket de Duelo</strong> (se compra en el mercado). La dificultad y estadísticas de los cuervos se adaptan al poder de tu equipo. Si vences a los cuervos, la recompensa será enorme, pero si pierdes tu equipo muere y pierdes el ticket.
+                </p>
+            </div>
+
+            <!-- PVP (Jugador vs Jugador) -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm relative hover:border-blue-400 transition-colors group">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-3xl drop-shadow-md">👤</span>
+                    <h4 class="text-lg font-black text-blue-900 group-hover:text-blue-700 transition-colors">Duelo Directo (PvP)</h4>
+                </div>
+                <p class="text-xs md:text-sm text-blue-800 leading-relaxed mb-4">
+                    Luchas en tiempo real contra un amigo o rival ingresando su <strong>ID de 4 Dígitos</strong>. Ambos acuerdan una apuesta en semillas (Ej: 5,000 🌱). El ganador se lleva el botín completo. Es un modo a muerte súbita y ultra competitivo, donde el que pierde se queda sin nada.
+                </p>
+                <div class="mt-3 bg-blue-100 px-3 py-2 rounded-lg border border-blue-200 text-xs font-bold text-blue-900">
+                    🔍 Tu ID de 4 dígitos aparece en tu perfil (arriba a la derecha).
+                </div>
+            </div>
+        </div>
+
+        <h4 class="font-black text-cg_navy text-sm mb-4 uppercase tracking-widest border-b border-gray-200 pb-2 relative z-10">Mecánicas de Combate 3v3</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <!-- Formar Escuadrón -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-2xl mt-1">🛡️</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">1. Reclutar el Escuadrón</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Puedes llevar hasta 3 plantas al combate. Las eliges directamente desde las parcelas de tu granja (si ya están listas para cosechar) o desde tu <strong>Almacén Estratégico (Arsenal)</strong>. Si usas una planta en duelo y mueres, la planta se pierde para siempre.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Energía y Acciones -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-2xl mt-1">⚡</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">2. Puntos de Energía</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Ambos jugadores inician con 5 Puntos de Energía. Cada ataque o habilidad de tus plantas consume energía. Al iniciar un nuevo turno, <strong>recuperas 3 puntos de energía</strong> (máximo 15). Debes administrarla para desatar tus habilidades Ultimate.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Mazo de Cartas -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-2xl mt-1">🃏</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">3. Mazo de Habilidades</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Cada especie de planta tiene un mazo único de 5 cartas de ataque (desde habilidades básicas de coste 1, hasta habilidades "Ultimate" demoledoras de coste 4 o 5). Para atacar, tocas a tu planta, eliges la carta, y luego tocas a la planta rival objetivo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Iniciativa (Piedra Papel Tijera) -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-2xl mt-1">✌️</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">4. Iniciativa en PvP</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        En el modo PvP, antes de iniciar el combate ambos jugadores juegan una partida secreta de <strong>Piedra, Papel o Tijera</strong>. El ganador atacará primero en el combate, lo cual es una ventaja táctica inmensa.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- SECCIÓN 11: TELEGRAM -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-200 shadow-sm shrink-0">
+                <span class="text-2xl">✈️</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">11. Alertas Inteligentes por Telegram</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Conecta tus plantas con tu celular</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+            El servidor de CashGarden te permite recibir notificaciones carismáticas directamente en tu celular. Tus plantas te avisarán si tienen sed, si han sido atacadas por un cuervo o si están listas para ser cosechadas. Sigue estos pasos para activarlo:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Paso 1 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 relative">
+                <div class="w-8 h-8 bg-cg_blue text-white rounded-full flex items-center justify-center font-black absolute -top-4 -left-2 shadow-md">1</div>
+                <h4 class="font-black text-cg_navy text-sm mb-2 mt-2">Busca el Bot de ID</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">Abre la aplicación de Telegram y busca en la lupa al bot oficial llamado <strong class="text-blue-500">@userinfobot</strong>.</p>
+            </div>
+            <!-- Paso 2 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 relative">
+                <div class="w-8 h-8 bg-cg_blue text-white rounded-full flex items-center justify-center font-black absolute -top-4 -left-2 shadow-md">2</div>
+                <h4 class="font-black text-cg_navy text-sm mb-2 mt-2">Inicia el Chat</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">Presiona el botón <strong>INICIAR</strong> en la parte inferior del chat (o escribe y envía el comando <code class="bg-gray-200 px-1 rounded text-red-500 font-mono">/start</code>).</p>
+            </div>
+            <!-- Paso 3 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 relative">
+                <div class="w-8 h-8 bg-cg_blue text-white rounded-full flex items-center justify-center font-black absolute -top-4 -left-2 shadow-md">3</div>
+                <h4 class="font-black text-cg_navy text-sm mb-2 mt-2">Copia tu Número ID</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">El bot te responderá con un mensaje. Copia únicamente los números de la línea que dice <strong>Id:</strong> (Ejemplo: <span class="bg-gray-200 px-1 rounded font-mono">123456789</span>).</p>
+            </div>
+            <!-- Paso 4 -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 relative md:col-span-3 flex flex-col sm:flex-row items-center gap-4">
+                <span class="text-3xl shrink-0">🔗</span>
+                <div>
+                    <h4 class="font-black text-blue-900 text-sm mb-1">Paso Final: Vincular en CashGarden</h4>
+                    <p class="text-xs text-blue-800 leading-relaxed">Vuelve al juego, haz clic en el menú desplegable de tu perfil (arriba a la derecha junto a tu usuario), selecciona <strong>✈️ Alertas Telegram</strong>, pega tu número copiado y haz clic en Vincular. ¡A partir de ese momento, el bot oficial de CashGarden te escribirá los reportes!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 12: RETIROS -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 text-center flex flex-col items-center mt-8">
+        <span class="text-4xl mb-3">🏦</span>
+        <h3 class="text-xl font-black text-cg_navy mb-2">12. Dispersión Automática (Retiros)</h3>
+        <p class="text-sm text-gray-600 max-w-xl mx-auto leading-relaxed">
+            CashGarden no es un banco. Los fondos que ganes en los torneos deben ser retirados regularmente. Configura tu número en el menú <strong class="text-cg_navy">Billetera Wompi</strong>. 
+            Los pagos se envían mediante la pasarela segura directamente a <strong>Nequi</strong> una vez superes los $10,000 COP.
+        </p>
+    </div>
+
+</div>

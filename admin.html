@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CashGarden - Mainframe Administrativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Librería para leer Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cg_navy: '#1C2634',       
+                        cg_blue: '#2996DA',
+                        cg_gold: '#ED9925',
+                        bone: '#FAFAFA'           
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; margin: 0; padding: 0; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CDD2D6; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        }
+
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .suggestions-box {
+            position: absolute; width: 100%; top: 100%; left: 0; background: white;
+            border: 1px solid #E5E7EB; border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;
+        }
+    </style>
+</head>
+<body class="text-cg_navy overflow-hidden antialiased bg-gray-50 flex flex-col h-screen">
+
+    <!-- PANTALLA DE LOGIN ADMIN -->
+    <div id="admin-login-screen" class="absolute inset-0 z-[500] flex items-center justify-center bg-gray-900 transition-all duration-500">
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm p-8 text-center border-t-4 border-red-600">
+            <div class="text-5xl mb-4 text-red-500">👁️</div>
+            <h3 class="font-black text-2xl text-cg_navy mb-1 uppercase tracking-widest">Mainframe</h3>
+            <p class="text-gray-500 text-xs mb-8 font-medium">Ingresa credenciales de Acceso Root.</p>
+            
+            <input type="text" id="admin-user" placeholder="Usuario" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl mb-3 outline-none focus:border-red-500 text-center font-black transition-colors">
+            <input type="password" id="admin-pass" placeholder="Clave" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl mb-8 outline-none focus:border-red-500 text-center font-black transition-colors">
+            
+            <button onclick="verifyAdmin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl uppercase tracking-widest shadow-md transition-all active:scale-95 text-sm">Validar Identidad</button>
+            <button onclick="window.location.href='index.html'" class="mt-4 text-xs font-bold text-gray-400 hover:text-cg_navy underline">Volver a la Granja Pública</button>
+        </div>
+    </div>
+
+    <!-- APLICACIÓN ADMIN PRINCIPAL -->
+    <div id="admin-main-app" class="hidden flex-col h-full w-full">
+        
+        <!-- HEADER ADMIN -->
+        <header class="bg-white border-b border-gray-200 shrink-0 shadow-sm z-50">
+            <div class="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center border-2 border-cg_blue shadow-[0_0_15px_rgba(41,150,218,0.3)]">
+                        <img src="assets/Fondos/logo.png" alt="Logo" class="h-7 w-auto object-contain">
+                    </div>
+                    <div>
+                        <h1 class="font-black text-sm sm:text-base leading-tight">CashGarden</h1>
+                        <span class="text-[9px] sm:text-[10px] font-black bg-cg_blue text-white px-2 py-0.5 rounded tracking-widest uppercase shadow-sm">Admin Center</span>
+                    </div>
+                </div>
+                <button onclick="exitAdmin()" class="text-[10px] sm:text-xs font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center gap-2 bg-gray-50 hover:bg-red-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-red-200 shadow-sm">
+                    Salir <span>🚪</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ÁREA DE CONTENIDO SCROLLABLE -->
+        <main class="flex-1 overflow-y-auto w-full relative z-10" id="admin-scroll-area">
+            <div class="max-w-[1400px] mx-auto w-full p-4 sm:p-6 pb-28 space-y-6">
+                
+                <!-- VISTA 1: DASHBOARD & ANALÍTICAS -->
+                <div id="view-dashboard" class="admin-view block animate-fade-in space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
+                        <h2 class="text-2xl font-black text-cg_navy flex items-center gap-2">📊 Panel de Control</h2>
+                        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <button onclick="adminConfirmModal('¿Resetear Árbol?', 'Esto borrará todas las donaciones de hoy y pondrá el árbol en 0%.', resetTree)" class="flex-1 sm:flex-none bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white px-4 py-2.5 rounded-xl text-xs font-black transition-colors shadow-sm">🌳 Reset Árbol</button>
+                            <button onclick="promptInjectTree()" class="flex-1 sm:flex-none bg-green-50 text-green-600 border border-green-200 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl text-xs font-black transition-colors shadow-sm">💉 Inyectar al Árbol</button>
+                            <button onclick="fetchData()" class="w-full sm:w-auto bg-cg_navy hover:bg-black text-white px-6 py-2.5 rounded-xl text-xs font-black transition-colors shadow-sm">Actualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm text-center flex flex-col justify-center">
+                            <span class="block text-3xl sm:text-4xl font-black text-cg_navy mb-1" id="metric-users">0</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">Usuarios<br>Activos</span>
+                        </div>
+                        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm text-center flex flex-col justify-center">
+                            <span class="block text-3xl sm:text-4xl font-black text-green-600 mb-1" id="metric-seeds">0</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">Semillas<br>Promedio</span>
+                        </div>
+                        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm text-center flex flex-col justify-center">
+                            <span class="block text-2xl sm:text-3xl font-black text-cg_gold mb-1" id="metric-cop">$0</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">COP<br>Promedio</span>
+                        </div>
+                        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm text-center flex flex-col justify-center">
+                            <span class="block text-3xl sm:text-4xl font-black text-red-500 mb-1" id="metric-military">0</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">Militares<br>Activos</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200 shadow-sm lg:col-span-2">
+                            <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Nuevos Usuarios Diarios</h3>
+                            <div class="relative h-56 w-full"><canvas id="chartUsers"></canvas></div>
+                        </div>
+                        
+                        <div class="flex flex-col gap-6">
+                            <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-1">
+                                <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 text-center">Distribución de Riqueza (COP)</h3>
+                                <div class="relative h-32 w-full"><canvas id="chartWealth"></canvas></div>
+                            </div>
+                            <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-1">
+                                <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 text-center">Militares vs Pacíficos</h3>
+                                <div class="relative h-32 w-full"><canvas id="chartCombat"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 2: TOPS -->
+                <div id="view-tops" class="admin-view hidden animate-fade-in space-y-6">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h2 class="text-2xl font-black text-cg_navy flex items-center gap-2">🏆 Liderazgo (Tops)</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
+                            <div class="bg-gray-50 border-b border-gray-100 p-4 shrink-0">
+                                <h4 class="text-[11px] font-black text-cg_navy uppercase tracking-widest flex items-center gap-2">🆕 Últimos Registros</h4>
+                            </div>
+                            <div class="p-2 space-y-1 flex-1 overflow-y-auto hide-scrollbar" id="top-recent"></div>
+                        </div>
+                        
+                        <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
+                            <div class="bg-yellow-50 border-b border-yellow-100 p-4 shrink-0">
+                                <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest flex items-center gap-2">💵 Top: Dinero COP</h4>
+                            </div>
+                            <div class="p-2 space-y-1 flex-1 overflow-y-auto hide-scrollbar" id="top-cop"></div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
+                            <div class="bg-green-50 border-b border-green-100 p-4 shrink-0">
+                                <h4 class="text-[11px] font-black text-green-600 uppercase tracking-widest flex items-center gap-2">🌱 Top: Semillas</h4>
+                            </div>
+                            <div class="p-2 space-y-1 flex-1 overflow-y-auto hide-scrollbar" id="top-seeds"></div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
+                            <div class="bg-red-50 border-b border-red-100 p-4 shrink-0">
+                                <h4 class="text-[11px] font-black text-red-600 uppercase tracking-widest flex items-center gap-2">⚔️ Top: Victorias Militar</h4>
+                            </div>
+                            <div class="p-2 space-y-1 flex-1 overflow-y-auto hide-scrollbar" id="top-military"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 3: DIRECTORIO COMPLETO -->
+                <div id="view-directorio" class="admin-view hidden animate-fade-in h-[75vh] min-h-[500px]">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 flex flex-col h-full">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4 shrink-0">
+                            <h2 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio Global</h2>
+                            <div class="relative w-full sm:w-72 shrink-0">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 text-lg pointer-events-none">🔍</span>
+                                <input type="text" id="dir-search" placeholder="Filtrar por nombre o ID..." oninput="filterDirectory()" class="w-full bg-gray-50 border border-gray-200 pl-11 pr-4 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-cg_blue transition-colors shadow-inner">
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 overflow-x-auto rounded-2xl border border-gray-200 shadow-sm relative hide-scrollbar bg-white">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                                <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200 shadow-sm">
+                                    <tr>
+                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">ID Cuenta</th>
+                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
+                                        <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
+                                        <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
+                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Auditar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dir-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
+                                    <tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold animate-pulse">Cargando base de datos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 4: INYECTOR DE RECURSOS (FACTURA Y REGALOS) -->
+                <div id="view-inyector" class="admin-view hidden animate-fade-in max-w-5xl mx-auto w-full">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 sm:p-8">
+                        <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">💉 Inyector / Regalos</h2>
+                        <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Añade elementos a la factura y envíalos en lote (o como obsequio) al usuario destino.</p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            
+                            <!-- Columna: Creador de Factura -->
+                            <div class="space-y-4">
+                                <!-- Búsqueda Autocompletado -->
+                                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 shadow-inner relative z-30">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">🎯 Jugador Destino</label>
+                                        <label class="flex items-center gap-1.5 cursor-pointer">
+                                            <input type="checkbox" id="inj-target-all" class="w-3.5 h-3.5 accent-red-500 rounded cursor-pointer" onchange="toggleTargetAll()">
+                                            <span class="text-[9px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-1.5 py-0.5 rounded border border-red-200">A Todos</span>
+                                        </label>
+                                    </div>
+                                    <div class="relative" id="inj-search-container">
+                                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 text-lg pointer-events-none">👤</span>
+                                        <input type="text" id="inj-search" placeholder="Buscar Nombre o ID..." oninput="handleAutocomplete('inj', this.value)" class="w-full bg-white border border-gray-200 text-cg_navy pl-11 pr-4 py-3 rounded-xl font-bold focus:border-cg_blue outline-none text-sm shadow-sm transition-colors">
+                                        <div id="inj-suggestions" class="absolute w-full mt-2 bg-white rounded-xl shadow-xl z-[1000] max-h-48 overflow-y-auto hidden border border-gray-200 divide-y divide-gray-100 hide-scrollbar"></div>
+                                    </div>
+                                    <input type="hidden" id="inj-target-id">
+                                    <div id="inj-selected-ui" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex justify-between items-center shadow-sm">
+                                        <span class="text-sm font-black text-cg_navy" id="inj-selected-name"></span>
+                                        <button onclick="clearSelection('inj')" class="text-red-500 text-xs font-bold hover:underline bg-white px-2 py-1 rounded shadow-sm border border-red-100">Cambiar</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Controles para agregar al carrito -->
+                                <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-3 z-20 relative">
+                                    <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Añadir a la Factura</h4>
+                                    
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="openCartModal('seeds')" class="bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 py-3 rounded-xl text-xs font-black transition-colors shadow-sm">🌱 Semillas</button>
+                                        <button onclick="openCartModal('cop')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-700 py-3 rounded-xl text-xs font-black transition-colors shadow-sm">💵 COP</button>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <button onclick="openCartModal('item')" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 py-3 rounded-xl text-xs font-black transition-colors shadow-sm">📦 Ítems e Inventario</button>
+                                        <button onclick="openCartModal('arsenal')" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 py-3 rounded-xl text-xs font-black transition-colors shadow-sm">⚔️ Planta al Arsenal</button>
+                                        <button onclick="openCartModal('vip')" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 py-3 rounded-xl text-xs font-black transition-colors shadow-sm">⭐ Desbloqueos VIP</button>
+                                    </div>
+                                </div>
+
+                                <!-- Modificador de Regalo -->
+                                <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl shadow-sm z-20 relative">
+                                    <h4 class="text-[10px] font-black text-cg_blue uppercase tracking-widest border-b border-blue-100 pb-2 mb-2 flex items-center gap-1">🎁 Convertir en Regalo Opcional</h4>
+                                    <textarea id="inj-gift-msg" rows="2" placeholder="Escribe un mensaje aquí para enviarlo como regalo sorpresa. (Si lo dejas vacío, se inyectará silenciosamente en la BD)." class="w-full bg-white border border-blue-200 text-cg_navy px-4 py-3 rounded-xl text-xs font-bold outline-none focus:border-cg_blue shadow-inner resize-none transition-colors"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Columna: Factura Visual -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-2xl flex flex-col overflow-hidden shadow-inner h-full min-h-[350px]">
+                                <div class="bg-white p-4 border-b border-gray-200 flex justify-between items-center shrink-0">
+                                    <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest">🧾 Factura de Ejecución</h4>
+                                    <button onclick="clearCart()" class="text-[10px] text-red-500 font-bold hover:underline bg-red-50 px-2 py-1 rounded border border-red-100">Vaciar</button>
+                                </div>
+                                <div id="cart-list" class="flex-1 p-4 overflow-y-auto space-y-2 hide-scrollbar">
+                                    <p class="text-center text-gray-400 text-xs font-bold mt-10">La factura está vacía.</p>
+                                </div>
+                                <div class="p-4 bg-white border-t border-gray-200 shrink-0 space-y-2">
+                                    <button onclick="adminConfirmModal('¿Procesar Lote?', 'Estos recursos se enviarán al jugador destino en una sola transacción.', executeInjectionInvoice)" id="btn-submit-invoice" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
+                                        Enviar Lote ➔
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 5: INSPECTOR DE GRANJA -->
+                <div id="view-inspector" class="admin-view hidden flex-col gap-6 w-full animate-fade-in max-w-5xl mx-auto">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 sm:p-8 flex flex-col">
+                        <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🔍 Auditoría de Cuentas</h2>
+                        <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Revisa el estado financiero, inventario, arsenal y granja de cualquier jugador en tiempo real.</p>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 mb-8 relative z-20">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 text-lg pointer-events-none">👤</span>
+                                <input type="text" id="insp-search" placeholder="Buscar por Nombre o ID..." oninput="handleAutocomplete('insp', this.value)" class="w-full bg-gray-50 border border-gray-200 pl-11 pr-4 py-3.5 rounded-xl font-bold text-cg_navy outline-none focus:border-cg_blue transition-colors shadow-inner">
+                                <div id="insp-suggestions" class="suggestions-box hidden"></div>
+                                <input type="hidden" id="insp-target-id">
+                                <div id="insp-selected-ui" class="hidden mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl flex justify-between items-center shadow-sm">
+                                    <span class="text-sm font-black text-cg_navy" id="insp-selected-name"></span>
+                                    <button onclick="clearSelection('insp')" class="text-red-500 text-xs font-bold hover:underline bg-white px-2 py-1 rounded shadow-sm border border-red-100">Cambiar</button>
+                                </div>
+                            </div>
+                            <button onclick="inspectFarm()" id="btn-inspect" class="bg-cg_navy hover:bg-black text-white px-8 py-3.5 rounded-xl font-black text-sm transition-colors shadow-md w-full sm:w-auto uppercase tracking-widest opacity-50 cursor-not-allowed h-[50px] sm:h-auto" disabled>Escanear</button>
+                        </div>
+
+                        <div id="inspector-results" class="hidden flex-col gap-6 relative z-10">
+                            <!-- Finanzas -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-green-50 border border-green-100 rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
+                                    <span class="absolute text-5xl opacity-10 right-2 bottom-0">🌱</span>
+                                    <span class="block text-[10px] font-black text-green-800 uppercase tracking-widest mb-1 relative z-10">Balance Semillas</span>
+                                    <span class="text-2xl sm:text-3xl font-black text-green-600 relative z-10" id="res-seeds">0</span>
+                                </div>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
+                                    <span class="absolute text-5xl opacity-10 right-2 bottom-0">💵</span>
+                                    <span class="block text-[10px] font-black text-yellow-800 uppercase tracking-widest mb-1 relative z-10">Saldo Real COP</span>
+                                    <span class="text-2xl sm:text-3xl font-black text-cg_gold relative z-10" id="res-cop">$0</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Grid de Inventario, Parcelas, Arsenal -->
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                
+                                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
+                                    <p class="text-[10px] font-black text-cg_blue uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">📦 Inventario</p>
+                                    <div id="res-inv" class="space-y-2 flex-1 overflow-y-auto max-h-72 pr-1 hide-scrollbar"></div>
+                                </div>
+                                
+                                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
+                                    <p class="text-[10px] font-black text-green-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">🚜 Terrenos</p>
+                                    <div id="res-plots" class="space-y-2 flex-1 overflow-y-auto max-h-72 pr-1 hide-scrollbar"></div>
+                                </div>
+
+                                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col shadow-inner">
+                                    <p class="text-[10px] font-black text-red-600 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">⚔️ Arsenal Militar</p>
+                                    <div id="res-arsenal" class="space-y-2 flex-1 overflow-y-auto max-h-72 pr-1 hide-scrollbar"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 6: GESTOR DE PLANTAS DINÁMICAS -->
+                <div id="view-plantas" class="admin-view hidden animate-fade-in max-w-5xl mx-auto w-full">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 sm:p-8">
+                        <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🌿 Creador de Plantas</h2>
+                        <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Añade o edita plantas nuevas mediante la subida de tu archivo Excel. Aparecerán automáticamente en la tienda de los usuarios.</p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Subida Masiva por Excel -->
+                            <div class="lg:col-span-1 space-y-4 bg-gray-50 p-5 sm:p-6 rounded-2xl border border-gray-200 h-fit flex flex-col items-center justify-center text-center">
+                                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-3xl mb-2 shadow-inner border border-blue-100">
+                                    📊
+                                </div>
+                                <h3 class="text-lg font-black text-cg_navy">Subida Masiva</h3>
+                                <p class="text-[10px] sm:text-xs text-gray-500 mb-4 leading-relaxed font-medium">
+                                    Sube el archivo Excel oficial (<strong>Plantas.xlsx</strong>) para registrar o actualizar el catálogo completo de un solo golpe. 
+                                    El sistema detectará automáticamente los cambios.
+                                </p>
+                                
+                                <input type="file" id="excel-upload" accept=".xlsx, .xls" class="hidden" onchange="handleExcelUpload(event)">
+                                <button onclick="document.getElementById('excel-upload').click()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-xl text-xs uppercase tracking-widest shadow-md transition-all active:scale-95 flex flex-col items-center gap-1">
+                                    <span>Seleccionar Excel</span>
+                                    <span class="text-[8px] font-bold opacity-80 normal-case">.xlsx / .xls</span>
+                                </button>
+                                
+                                <!-- Barra de progreso oculta por defecto -->
+                                <div id="upload-progress-container" class="w-full mt-4 hidden flex-col items-center">
+                                    <div class="flex justify-between w-full text-[10px] font-black text-cg_navy mb-1 uppercase tracking-widest">
+                                        <span id="upload-status-text">Procesando...</span>
+                                        <span id="upload-pct">0%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                                        <div id="upload-progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Lista de Plantas Creadas -->
+                            <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col shadow-inner min-h-[400px]">
+                                <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0"><h4 class="text-xs font-black text-cg_navy uppercase tracking-widest">Base de Datos de Especies</h4></div>
+                                <div class="flex-1 overflow-y-auto p-4 space-y-3" id="dyn-plants-list">
+                                    <p class="text-center text-gray-400 text-xs font-bold mt-10">Cargando especies...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 7: CONFIGURACIÓN DEL ÁRBOL -->
+                <div id="view-arbol" class="admin-view hidden animate-fade-in max-w-5xl mx-auto w-full">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 sm:p-8">
+                        <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🌲 Configuración del Árbol de la Vida</h2>
+                        <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Define los premios VIP del ranking diario y las fases de botín comunitarias (Los cambios aplicarán para el siguiente ciclo si el actual ya tiene donadores).</p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Beneficios VIP -->
+                            <div class="space-y-4">
+                                <h3 class="text-sm font-black text-yellow-600 uppercase tracking-widest border-b border-yellow-200 pb-2">🏆 Premios VIP (Ranking)</h3>
+                                
+                                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-2xl shadow-sm space-y-4">
+                                    <!-- 1er Lugar (2 items max) -->
+                                    <div>
+                                        <label class="text-[10px] font-black text-yellow-800 uppercase">🥇 1er Lugar</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="vip-1-1-id" class="w-full p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="vip-1-1-qty" value="1" min="1" class="w-16 p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="vip-1-2-id" class="w-full p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="vip-1-2-qty" value="1" min="1" class="w-16 p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 2do Lugar (2 items max) -->
+                                    <div>
+                                        <label class="text-[10px] font-black text-yellow-800 uppercase">🥈 2do Lugar</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="vip-2-1-id" class="w-full p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="vip-2-1-qty" value="1" min="1" class="w-16 p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="vip-2-2-id" class="w-full p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="vip-2-2-qty" value="1" min="1" class="w-16 p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+
+                                    <!-- 3er Lugar (2 items max) -->
+                                    <div>
+                                        <label class="text-[10px] font-black text-yellow-800 uppercase">🥉 3er Lugar</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="vip-3-1-id" class="w-full p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="vip-3-1-qty" value="1" min="1" class="w-16 p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="vip-3-2-id" class="w-full p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="vip-3-2-qty" value="1" min="1" class="w-16 p-2.5 rounded-xl border border-yellow-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fases de Botín -->
+                            <div class="space-y-4">
+                                <h3 class="text-sm font-black text-green-600 uppercase tracking-widest border-b border-green-200 pb-2">🎁 Fases de Botín Comunitario</h3>
+                                
+                                <div class="bg-green-50 border border-green-200 p-4 rounded-2xl shadow-sm space-y-3">
+                                    <div>
+                                        <label class="text-[10px] font-black text-green-800 uppercase">Fase 25%</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="mile-25-id" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="mile-25-qty" value="5" min="1" class="w-20 p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-green-800 uppercase">Fase 50%</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="mile-50-id" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="mile-50-qty" value="10" min="1" class="w-20 p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-green-800 uppercase">Fase 75%</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="mile-75-id" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="mile-75-qty" value="3" min="1" class="w-20 p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-green-800 uppercase">Fase 100%</label>
+                                        <div class="flex gap-2 mt-1">
+                                            <select id="mile-100-id" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white cursor-pointer"></select>
+                                            <input type="number" id="mile-100-qty" value="2" min="1" class="w-20 p-2.5 rounded-xl border border-green-300 outline-none font-bold text-sm bg-white text-center">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NUEVA SECCIÓN: GUARDIANES DE TORNEOS -->
+                        <div class="mt-8 border-t border-gray-100 pt-8 space-y-4">
+                            <h3 class="text-lg font-black text-cg_navy flex items-center gap-2 mb-1">⚔️ Guardianes de Torneos (Ligas)</h3>
+                            <p class="text-xs text-gray-500 font-medium mb-6">Asigna las 3 especies dinámicas que defenderán la arena de cada liga como Jefes principales.</p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <!-- T1 -->
+                                <div class="bg-green-50/50 border border-green-200 p-4 rounded-2xl shadow-sm">
+                                    <h4 class="text-[11px] font-black text-green-700 uppercase tracking-widest border-b border-green-100 pb-2 mb-3">Freeroll Novato</h4>
+                                    <div class="space-y-2">
+                                        <select id="t1-e1" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t1-e2" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t1-e3" class="w-full p-2.5 rounded-xl border border-green-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                    </div>
+                                </div>
+                                <!-- T3 -->
+                                <div class="bg-blue-50/50 border border-blue-200 p-4 rounded-2xl shadow-sm">
+                                    <h4 class="text-[11px] font-black text-blue-700 uppercase tracking-widest border-b border-blue-100 pb-2 mb-3">Liga Intermedia</h4>
+                                    <div class="space-y-2">
+                                        <select id="t3-e1" class="w-full p-2.5 rounded-xl border border-blue-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t3-e2" class="w-full p-2.5 rounded-xl border border-blue-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t3-e3" class="w-full p-2.5 rounded-xl border border-blue-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                    </div>
+                                </div>
+                                <!-- T4 -->
+                                <div class="bg-orange-50/50 border border-orange-200 p-4 rounded-2xl shadow-sm">
+                                    <h4 class="text-[11px] font-black text-orange-700 uppercase tracking-widest border-b border-orange-100 pb-2 mb-3">Liga Avanzada</h4>
+                                    <div class="space-y-2">
+                                        <select id="t4-e1" class="w-full p-2.5 rounded-xl border border-orange-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t4-e2" class="w-full p-2.5 rounded-xl border border-orange-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t4-e3" class="w-full p-2.5 rounded-xl border border-orange-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                    </div>
+                                </div>
+                                <!-- T5 -->
+                                <div class="bg-gray-50 border border-gray-300 p-4 rounded-2xl shadow-sm">
+                                    <h4 class="text-[11px] font-black text-gray-700 uppercase tracking-widest border-b border-gray-200 pb-2 mb-3">Liga Élite</h4>
+                                    <div class="space-y-2">
+                                        <select id="t5-e1" class="w-full p-2.5 rounded-xl border border-gray-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t5-e2" class="w-full p-2.5 rounded-xl border border-gray-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                        <select id="t5-e3" class="w-full p-2.5 rounded-xl border border-gray-300 outline-none font-bold text-xs bg-white text-cg_navy"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+                            <button onclick="saveTreeConfig()" class="bg-cg_navy hover:bg-black text-white font-black px-8 py-4 rounded-xl text-sm uppercase tracking-widest shadow-md transition-colors w-full sm:w-auto">Guardar Todo</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- NAVBAR INFERIOR ADMIN (Fixed Bottom) -->
+        <nav class="bg-white border-t border-gray-200 shrink-0 flex justify-evenly items-center h-[75px] pb-safe z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.03)] w-full relative">
+            <button onclick="openAdminTab('dashboard')" id="nav-dashboard" class="admin-nav-btn group flex flex-col items-center justify-center h-full w-full text-cg_blue transition-all duration-300 gap-1 hover:bg-gray-50">
+                <span class="text-[22px] sm:text-[24px] leading-none">📊</span>
+                <span class="text-[9px] font-black tracking-widest uppercase">Métricas</span>
+            </button>
+            
+            <!-- BOTÓN ÁRBOL AL LADO IZQUIERDO DE TOPS -->
+            <button onclick="openAdminTab('arbol')" id="nav-arbol" class="admin-nav-btn group flex flex-col items-center justify-center h-full w-full text-gray-400 hover:text-cg_navy transition-all duration-300 gap-1 hover:bg-gray-50">
+                <span class="text-[22px] sm:text-[24px] leading-none">🌲</span>
+                <span class="text-[9px] font-black tracking-widest uppercase">Árbol</span>
+            </button>
+
+            <button onclick="openAdminTab('tops')" id="nav-tops" class="admin-nav-btn group flex flex-col items-center justify-center h-full w-full text-gray-400 hover:text-cg_navy transition-all duration-300 gap-1 hover:bg-gray-50">
+                <span class="text-[22px] sm:text-[24px] leading-none">🏆</span>
+                <span class="text-[9px] font-black tracking-widest uppercase">Tops</span>
+            </button>
+
+            <!-- Botón Central Inyector -->
+            <div onclick="openAdminTab('inyector')" id="nav-inyector" class="admin-nav-btn group flex flex-col items-center justify-end h-full w-full text-gray-400 transition-colors pb-1.5 hover:bg-gray-50 relative cursor-pointer">
+                <div class="absolute -top-5 flex justify-center w-full">
+                    <div id="nav-center-box" class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border-2 border-gray-200 shadow-md transform transition-all duration-300 z-50 group-hover:scale-105 group-hover:bg-red-50 group-hover:border-red-400">
+                        <span class="text-[24px] leading-none drop-shadow-sm">💉</span>
+                    </div>
+                </div>
+                <span class="text-[9px] font-black tracking-widest uppercase mt-6">Inyector</span>
+            </div>
+
+            <button onclick="openAdminTab('plantas')" id="nav-plantas" class="admin-nav-btn group flex flex-col items-center justify-center h-full w-full text-gray-400 hover:text-cg_navy transition-all duration-300 gap-1 hover:bg-gray-50">
+                <span class="text-[22px] sm:text-[24px] leading-none">🌿</span>
+                <span class="text-[9px] font-black tracking-widest uppercase">Plantas</span>
+            </button>
+
+            <button onclick="openAdminTab('directorio')" id="nav-directorio" class="admin-nav-btn group flex flex-col items-center justify-center h-full w-full text-gray-400 hover:text-cg_navy transition-all duration-300 gap-1 hover:bg-gray-50">
+                <span class="text-[22px] sm:text-[24px] leading-none">👥</span>
+                <span class="text-[9px] font-black tracking-widest uppercase">Cuentas</span>
+            </button>
+
+            <button onclick="openAdminTab('inspector')" id="nav-inspector" class="admin-nav-btn group flex flex-col items-center justify-center h-full w-full text-gray-400 hover:text-cg_navy transition-all duration-300 gap-1 hover:bg-gray-50">
+                <span class="text-[22px] sm:text-[24px] leading-none">🔍</span>
+                <span class="text-[9px] font-black tracking-widest uppercase">Inspector</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ================= MODALES DEL ADMIN ================= -->
+    <div id="admin-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeAdminAlert()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 text-center border border-gray-200 animate-fade-in">
+            <h3 id="admin-alert-title" class="text-lg font-black text-cg_navy mb-2 uppercase tracking-widest">Mensaje</h3>
+            <p id="admin-alert-msg" class="text-sm text-gray-500 mb-6 font-medium leading-relaxed">Contenido</p>
+            <div class="flex gap-3 justify-center" id="admin-alert-buttons"></div>
+        </div>
+    </div>
+
+    <div id="admin-cart-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeCartModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 border border-gray-200 animate-fade-in text-left">
+            <h3 id="cart-modal-title" class="text-lg font-black text-cg_navy mb-4 border-b border-gray-100 pb-2">Añadir Recurso</h3>
+            <div id="cart-modal-body" class="space-y-4 mb-6"></div>
+            <div class="flex gap-2">
+                <button onclick="closeCartModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-colors">Cancelar</button>
+                <button id="btn-cart-add" class="flex-1 bg-cg_blue hover:bg-cg_navy text-white font-black py-3 rounded-xl shadow-md text-xs uppercase tracking-wider transition-colors">Añadir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LÓGICA JAVASCRIPT DEL ADMIN -->
+    <script>
+        const ADMIN_TOKEN = "supersecreto123";
+        let allUsersCache = [];
+        let invoiceCart = [];
+
+        let ITEM_ICONS = {}; 
+        let currentDynamicPlants = []; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                document.getElementById('admin-login-screen').classList.add('hidden');
+                document.getElementById('admin-main-app').classList.remove('hidden');
+                document.getElementById('admin-main-app').classList.add('flex');
+                
+                if (typeof Chart === 'undefined') {
+                    let script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                    script.onload = () => { fetchData(); };
+                    document.head.appendChild(script);
+                } else {
+                    fetchData();
+                }
+            }
+        });
+
+        // ================= MODALES DE CONFIRMACIÓN =================
+        function showAdminAlert(title, msg) {
+            document.getElementById('admin-alert-title').innerText = title;
+            document.getElementById('admin-alert-msg').innerText = msg;
+            document.getElementById('admin-alert-buttons').innerHTML = `<button onclick="closeAdminAlert()" class="bg-cg_navy hover:bg-black text-white font-black py-3 px-8 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md w-full">Aceptar</button>`;
+            document.getElementById('admin-alert-modal').classList.remove('hidden');
+            document.getElementById('admin-alert-modal').classList.add('flex');
+        }
+
+        function adminConfirmModal(title, msg, onConfirmCallback) {
+            document.getElementById('admin-alert-title').innerText = title;
+            document.getElementById('admin-alert-msg').innerText = msg;
+            document.getElementById('admin-alert-buttons').innerHTML = `
+                <button onclick="closeAdminAlert()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider border border-gray-200">Cancelar</button>
+                <button id="admin-btn-confirm-action" class="flex-[2] bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md">Confirmar</button>
+            `;
+            document.getElementById('admin-btn-confirm-action').onclick = () => { closeAdminAlert(); onConfirmCallback(); };
+            document.getElementById('admin-alert-modal').classList.remove('hidden');
+            document.getElementById('admin-alert-modal').classList.add('flex');
+        }
+
+        function closeAdminAlert() {
+            document.getElementById('admin-alert-modal').classList.add('hidden');
+            document.getElementById('admin-alert-modal').classList.remove('flex');
+        }
+
+        function verifyAdmin() {
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+            
+            if (u === 'DamianCastro' && p === '12345') {
+                sessionStorage.setItem('admin_logged_in', 'true');
+                document.getElementById('admin-login-screen').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('admin-login-screen').classList.add('hidden');
+                    document.getElementById('admin-main-app').classList.remove('hidden');
+                    document.getElementById('admin-main-app').classList.add('flex');
+                    
+                    if (typeof Chart === 'undefined') {
+                        let script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                        script.onload = () => { fetchData(); };
+                        document.head.appendChild(script);
+                    } else {
+                        fetchData();
+                    }
+                }, 500);
+            } else {
+                alert('Acceso denegado. Credenciales incorrectas.');
+            }
+        }
+
+        function exitAdmin() {
+            sessionStorage.removeItem('admin_logged_in');
+            window.location.replace('/');
+        }
+
+        function openAdminTab(tab) {
+            ['dashboard', 'tops', 'directorio', 'inyector', 'inspector', 'plantas', 'arbol'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                const content = document.getElementById(`view-${t}`);
+                if(!btn || !content) return;
+
+                if (t === tab) {
+                    if (t === 'inyector') {
+                        btn.classList.replace('text-gray-400', 'text-red-500');
+                        const innerBox = document.getElementById('nav-center-box');
+                        if(innerBox) {
+                            innerBox.classList.replace('border-gray-200', 'border-red-400');
+                            innerBox.classList.add('bg-red-50');
+                            innerBox.classList.remove('bg-white');
+                        }
+                    } else {
+                        btn.classList.add('text-cg_blue');
+                        btn.classList.remove('text-gray-400');
+                    }
+                    content.classList.remove('hidden');
+                    content.classList.add('animate-fade-in'); 
+                } else {
+                    if (t === 'inyector') {
+                        btn.classList.replace('text-red-500', 'text-gray-400');
+                        const innerBox = document.getElementById('nav-center-box');
+                        if(innerBox) {
+                            innerBox.classList.replace('border-red-400', 'border-gray-200');
+                            innerBox.classList.remove('bg-red-50');
+                            innerBox.classList.add('bg-white');
+                        }
+                    } else {
+                        btn.classList.remove('text-cg_blue');
+                        btn.classList.add('text-gray-400');
+                    }
+                    content.classList.add('hidden');
+                    content.classList.remove('animate-fade-in');
+                }
+            });
+            document.getElementById('admin-scroll-area').scrollTop = 0;
+        }
+
+        async function fetchData() {
+            try {
+                await loadDynamicPlants();
+                await loadTreeConfig();
+                
+                const res = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_token: ADMIN_TOKEN })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    allUsersCache = data.users.map(u => {
+                        let totalWins = 0;
+                        if (u.game_state) {
+                            try {
+                                const st = JSON.parse(u.game_state);
+                                if (st.arsenal) st.arsenal.forEach(p => totalWins += (p.wins || 0));
+                            } catch(e){}
+                        }
+                        u.military_wins = totalWins;
+                        return u;
+                    });
+                    
+                    renderDashboard();
+                    renderTops();
+                    renderDirectory(allUsersCache);
+                }
+            } catch (e) {
+                showAdminAlert("Error de Conexión", "No se pudo actualizar la base de datos.");
+            }
+        }
+
+        function renderDashboard() {
+            document.getElementById('metric-users').innerText = allUsersCache.length;
+            const avgS = allUsersCache.length > 0 ? allUsersCache.reduce((s, u) => s + (u.seeds||0), 0) / allUsersCache.length : 0;
+            document.getElementById('metric-seeds').innerText = Math.floor(avgS).toLocaleString();
+            
+            const avgC = allUsersCache.length > 0 ? allUsersCache.reduce((s, u) => s + parseFloat(u.balance||0), 0) / allUsersCache.length : 0;
+            document.getElementById('metric-cop').innerText = '$' + Math.floor(avgC).toLocaleString();
+            
+            const militaryActives = allUsersCache.filter(u => u.military_wins > 0).length;
+            document.getElementById('metric-military').innerText = militaryActives;
+
+            if (typeof Chart !== 'undefined') {
+                if (window.chartU) window.chartU.destroy();
+                if (window.chartW) window.chartW.destroy();
+                if (window.chartC) window.chartC.destroy();
+                
+                const ctxU = document.getElementById('chartUsers');
+                if(ctxU) {
+                    window.chartU = new Chart(ctxU, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Hace 6d', 'Hace 5d', 'Hace 4d', 'Hace 3d', 'Antier', 'Ayer', 'Hoy'],
+                            datasets: [{ label: 'Nuevos Usuarios', data: [2, 5, 3, 10, 15, 8, allUsersCache.length], backgroundColor: '#2996DA', borderRadius: 4 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    });
+                }
+
+                let copPobre = 0, copMedio = 0, copRico = 0;
+                allUsersCache.forEach(u => {
+                    let b = parseFloat(u.balance || 0);
+                    if(b < 10000) copPobre++;
+                    else if(b <= 50000) copMedio++;
+                    else copRico++;
+                });
+
+                const ctxW = document.getElementById('chartWealth');
+                if(ctxW) {
+                    window.chartW = new Chart(ctxW, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['<$10k', '$10k-$50k', '>$50k'],
+                            datasets: [{ data: [copPobre, copMedio, copRico], backgroundColor: ['#E5E7EB', '#ED9925', '#22C55E'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels:{boxWidth:10, font:{size:10}} } } }
+                    });
+                }
+
+                const ctxC = document.getElementById('chartCombat');
+                if(ctxC) {
+                    window.chartC = new Chart(ctxC, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Pacíficos (Granja)', 'Militares (Arena)'],
+                            datasets: [{ data: [allUsersCache.length - militaryActives, militaryActives], backgroundColor: ['#64D7FF', '#EF4444'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{boxWidth:10, font:{size:10}} } } }
+                    });
+                }
+            }
+        }
+
+        function renderTops() {
+            const buildList = (container, arr, valKey, prefix, suffix, isMoney) => {
+                container.innerHTML = '';
+                if(arr.length === 0) { container.innerHTML = '<p class="text-xs text-gray-400 p-3 text-center font-bold">Sin datos suficientes</p>'; return; }
+                arr.slice(0, 10).forEach((u, i) => {
+                    let val = isMoney ? parseFloat(u[valKey]||0).toLocaleString() : Math.floor(u[valKey]||0).toLocaleString();
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center bg-white p-3 border-b border-gray-100 text-xs hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-2 overflow-hidden w-full">
+                                <span class="font-black text-gray-300 w-4">${i+1}.</span>
+                                <span class="font-black text-cg_navy truncate flex-1">${u.username}</span>
+                            </div>
+                            <span class="font-black shrink-0 ${isMoney ? 'text-cg_gold' : 'text-green-600'} bg-gray-50 px-2 py-1 rounded shadow-sm border border-gray-100">${prefix}${val}${suffix}</span>
+                        </div>`;
+                });
+            };
+
+            const rec = [...allUsersCache].sort((a,b) => b.id - a.id);
+            const cop = [...allUsersCache].sort((a,b) => parseFloat(b.balance||0) - parseFloat(a.balance||0));
+            const sds = [...allUsersCache].sort((a,b) => (b.seeds||0) - (a.seeds||0));
+            const mil = [...allUsersCache].sort((a,b) => (b.military_wins||0) - (a.military_wins||0));
+
+            buildList(document.getElementById('top-recent'), rec, 'short_id', '#', '', false);
+            buildList(document.getElementById('top-cop'), cop, 'balance', '$', '', true);
+            buildList(document.getElementById('top-seeds'), sds, 'seeds', '', ' 🌱', false);
+            buildList(document.getElementById('top-military'), mil, 'military_wins', '🏆 ', ' Vic', false);
+        }
+
+        function renderDirectory(arr) {
+            const list = document.getElementById('dir-list');
+            if(!list) return;
+            list.innerHTML = '';
+            if(arr.length === 0) {
+                list.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold">No hay coincidencias.</td></tr>'; return;
+            }
+
+            arr.forEach(u => {
+                let seedsText = u.seeds !== undefined ? u.seeds.toLocaleString() : '--';
+                
+                list.innerHTML += `
+                    <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
+                        <td class="p-3 pl-4">
+                            <span class="bg-gray-100 text-gray-500 font-black px-2 py-1 rounded text-[10px] border border-gray-200 uppercase tracking-widest shadow-sm">#${u.short_id || '----'}</span>
+                        </td>
+                        <td class="p-3 font-black text-cg_navy text-xs">${u.username}</td>
+                        <td class="p-3 text-right font-black text-green-600 text-xs">${seedsText}</td>
+                        <td class="p-3 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance||0).toLocaleString()}</td>
+                        <td class="p-3 pr-4 text-center">
+                            <button onclick="goToAction('${u.short_id}', '${u.username}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-cg_blue hover:text-white hover:border-cg_blue px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Ver</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterDirectory() {
+            const q = document.getElementById('dir-search').value.toLowerCase();
+            const filtered = allUsersCache.filter(u => (u.short_id && u.short_id.includes(q)) || (u.username && u.username.toLowerCase().includes(q)));
+            renderDirectory(filtered);
+        }
+
+        function goToAction(id, name) {
+            selectUser('inj', id, name);
+            selectUser('insp', id, name);
+            openAdminTab('inspector');
+        }
+
+        function handleAutocomplete(prefix, query) {
+            query = query.toLowerCase();
+            const box = document.getElementById(`${prefix}-suggestions`);
+            if (query.length < 1) { box.classList.add('hidden'); return; }
+
+            const filtered = allUsersCache.filter(u => (u.short_id && u.short_id.includes(query)) || (u.username && u.username.toLowerCase().includes(query))).slice(0, 5);
+
+            if (filtered.length > 0) {
+                box.innerHTML = filtered.map(u => `
+                    <div onclick="selectUser('${prefix}', '${u.short_id}', '${u.username}')" class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors border-b border-gray-100 last:border-0">
+                        <span class="text-sm font-black text-cg_navy">${u.username}</span>
+                        <span class="text-[10px] font-black text-gray-500 bg-gray-100 px-2 py-0.5 rounded shadow-sm border border-gray-200">#${u.short_id}</span>
+                    </div>
+                `).join('');
+            } else {
+                box.innerHTML = '<div class="p-3 text-xs text-gray-400 text-center font-bold">No se encontró.</div>';
+            }
+            box.classList.remove('hidden');
+        }
+
+        function selectUser(prefix, short_id, username) {
+            const box = document.getElementById(`${prefix}-suggestions`);
+            if(box) box.classList.add('hidden');
+            
+            const searchInput = document.getElementById(`${prefix}-search`);
+            if(searchInput) {
+                searchInput.value = '';
+                searchInput.classList.add('hidden');
+            }
+            
+            document.getElementById(`${prefix}-target-id`).value = short_id;
+            
+            const ui = document.getElementById(`${prefix}-selected-ui`);
+            if (ui) {
+                document.getElementById(`${prefix}-selected-name`).innerText = `${username} (#${short_id})`;
+                ui.classList.remove('hidden');
+            }
+
+            if (prefix === 'insp') {
+                const btn = document.getElementById('btn-inspect');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                inspectFarm();
+            }
+        }
+
+        function clearSelection(prefix) {
+            document.getElementById(`${prefix}-target-id`).value = '';
+            const searchInput = document.getElementById(`${prefix}-search`);
+            if(searchInput) {
+                searchInput.value = '';
+                searchInput.classList.remove('hidden');
+            }
+            const ui = document.getElementById(`${prefix}-selected-ui`);
+            if (ui) ui.classList.add('hidden');
+
+            if (prefix === 'insp') {
+                const btn = document.getElementById('btn-inspect');
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                document.getElementById('inspector-results').classList.add('hidden');
+            }
+        }
+
+        function getPlantsOptionsHtml() {
+            let options = `<option value="none">--- Ninguno ---</option>`;
+            currentDynamicPlants.forEach(p => {
+                options += `<option value="${p.id}">✨ Semilla: ${p.name}</option>`;
+            });
+            return options;
+        }
+
+        function openCartModal(type) {
+            const body = document.getElementById('cart-modal-body');
+            const btn = document.getElementById('btn-cart-add');
+            
+            let content = '';
+            if (type === 'seeds') {
+                content = `
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad de Semillas 🌱</label>
+                    <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-green-600 px-4 py-3.5 rounded-xl font-black outline-none focus:border-green-500 text-lg text-center shadow-inner">
+                `;
+                btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas');
+            } else if (type === 'cop') {
+                content = `
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad COP 💵</label>
+                    <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-cg_gold px-4 py-3.5 rounded-xl font-black outline-none focus:border-yellow-500 text-lg text-center shadow-inner">
+                `;
+                btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP');
+                
+            } else if (type === 'item') {
+                content = `
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ítem a enviar</label>
+                    <select id="modal-item" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none mb-3 focus:border-cg_blue cursor-pointer shadow-sm">
+                        ${getPlantsOptionsHtml()}
+                        <option value="tool_pot_small">🪴 Maceta Pequeña</option>
+                        <option value="tool_water">🚿 Regadera</option>
+                    </select>
+                    <input type="number" id="modal-qty" placeholder="Cantidad" value="1" min="1" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl font-black outline-none focus:border-cg_blue text-center shadow-inner">
+                `;
+                btn.onclick = () => {
+                    const sel = document.getElementById('modal-item');
+                    if(sel.value === 'none') return showAdminAlert("Error", "Selecciona un ítem válido.");
+                    const qty = document.getElementById('modal-qty').value;
+                    const cleanText = sel.options[sel.selectedIndex].text.split(' ').slice(1).join(' ');
+                    addToCart('item', { id: sel.value, qty: qty }, `${cleanText} (x${qty})`);
+                };
+            } else if (type === 'arsenal') {
+                content = `
+                    <div class="bg-red-50 border border-red-100 p-3 rounded-lg text-[10px] text-red-600 font-bold mb-3 shadow-sm">La planta se creará con salud al 100% lista para pelear.</div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Especie Militar</label>
+                    <select id="modal-arsenal" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none focus:border-red-400 shadow-sm cursor-pointer mb-3">
+                        ${getPlantsOptionsHtml()}
+                    </select>
+                    <input type="number" id="modal-qty" placeholder="Cantidad" value="1" min="1" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-4 py-3.5 rounded-xl font-black outline-none focus:border-red-400 text-center shadow-inner">
+                `;
+                btn.onclick = () => {
+                    const sel = document.getElementById('modal-arsenal');
+                    if(sel.value === 'none') return showAdminAlert("Error", "Selecciona una planta.");
+                    const qty = document.getElementById('modal-qty').value;
+                    const cleanText = sel.options[sel.selectedIndex].text.split(' ').slice(1).join(' ');
+                    addToCart('arsenal', { id: sel.value, qty: qty }, `Planta Arsenal: ${cleanText} (x${qty})`);
+                };
+            } else if (type === 'vip') {
+                content = `
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Privilegio VIP</label>
+                    <select id="modal-vip" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-3.5 rounded-xl text-xs font-bold outline-none focus:border-purple-400 shadow-sm cursor-pointer">
+                        <option value="plot_3">🗺️ Desbloquear Parcela 4</option>
+                        <option value="plot_4">🗺️ Desbloquear Parcela 5</option>
+                        <option value="plot_5">🗺️ Desbloquear Parcela 6</option>
+                        <option value="plot_6">🗺️ Desbloquear Parcela 7</option>
+                        <option value="plot_7">🗺️ Desbloquear Parcela 8</option>
+                        <option value="vip_water_24">🤖 Auto-Riego (+24H)</option>
+                        <option value="vip_water_72">🤖 Auto-Riego (+72H)</option>
+                        <option value="vip_harvest_24">🧺 Recolector (+24H)</option>
+                        <option value="vip_harvest_72">🧺 Recolector (+72H)</option>
+                        <option value="vip_combo_24">👑 Combo Total VIP (+24H)</option>
+                        <option value="vip_combo_72">👑 Combo Total VIP (+72H)</option>
+                    </select>
+                `;
+                btn.onclick = () => {
+                    const sel = document.getElementById('modal-vip');
+                    const cleanText = sel.options[sel.selectedIndex].text.split(' ').slice(1).join(' ');
+                    addToCart('vip', sel.value, `VIP: ${cleanText}`);
+                };
+            }
+
+            document.getElementById('cart-modal-body').innerHTML = content;
+            document.getElementById('admin-cart-modal').classList.remove('hidden');
+            document.getElementById('admin-cart-modal').classList.add('flex');
+        }
+
+        function closeCartModal() {
+            document.getElementById('admin-cart-modal').classList.add('hidden');
+            document.getElementById('admin-cart-modal').classList.remove('flex');
+        }
+
+        function addToCart(type, rawData, label) {
+            if (!rawData || (typeof rawData === 'string' && rawData <= 0) || (rawData.qty && rawData.qty <= 0)) {
+                showAdminAlert("Error", "Cantidad inválida."); return;
+            }
+            invoiceCart.push({ type, rawData, label });
+            renderInvoice();
+            closeCartModal();
+        }
+
+        function clearCart() { invoiceCart = []; renderInvoice(); }
+
+        function renderInvoice() {
+            const list = document.getElementById('cart-list');
+            const btn = document.getElementById('btn-submit-invoice');
+            list.innerHTML = '';
+            
+            if (invoiceCart.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-400 text-xs font-bold mt-10">La factura está vacía.</p>';
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+            
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            invoiceCart.forEach((item, idx) => {
+                let prefix = item.type === 'cop' ? '+$' : (item.type === 'seeds' ? '+' : '');
+                let val = item.type === 'cop' || item.type === 'seeds' ? parseFloat(item.rawData).toLocaleString() : '';
+                let text = val ? `${prefix}${val} ${item.label}` : item.label;
+
+                list.innerHTML += `
+                    <div class="bg-white border border-gray-100 p-3 rounded-xl shadow-sm flex justify-between items-center text-[11px] sm:text-xs font-bold transition-all hover:border-red-200">
+                        <span class="text-cg_navy">${text}</span>
+                        <button onclick="invoiceCart.splice(${idx}, 1); renderInvoice();" class="text-red-400 hover:text-red-600 bg-red-50 w-6 h-6 rounded-md flex items-center justify-center transition-colors shadow-sm">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleTargetAll() {
+            const isAll = document.getElementById('inj-target-all').checked;
+            const searchContainer = document.getElementById('inj-search-container');
+            const selectedUi = document.getElementById('inj-selected-ui');
+            
+            if (isAll) {
+                searchContainer.classList.add('hidden');
+                selectedUi.classList.add('hidden');
+                document.getElementById('inj-target-id').value = 'ALL';
+            } else {
+                searchContainer.classList.remove('hidden');
+                if (document.getElementById('inj-selected-name').innerText !== '') {
+                    selectedUi.classList.remove('hidden');
+                }
+                document.getElementById('inj-target-id').value = '';
+            }
+        }
+
+        async function executeInjectionInvoice() {
+            const isAll = document.getElementById('inj-target-all').checked;
+            const short_id = document.getElementById('inj-target-id').value.trim();
+            
+            if (!isAll && (!short_id || short_id === 'ALL')) {
+                showAdminAlert("Error", "Debes buscar y seleccionar un jugador destino, o marcar la casilla 'A Todos'.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit-invoice');
+            btn.innerHTML = '<span class="animate-pulse">Procesando...</span>';
+            btn.disabled = true;
+
+            const giftMsg = document.getElementById('inj-gift-msg').value.trim();
+
+            try {
+                ITEM_ICONS = {
+                    'tool_pot_small': '🪴', 
+                    'tool_pot_big': '🏺', 
+                    'tool_water': '🚿', 
+                    'tool_duel_ticket': '🎟️'
+                };
+                currentDynamicPlants.forEach(p => ITEM_ICONS[p.id] = '✨'); 
+                
+                let payload = {
+                    admin_token: ADMIN_TOKEN,
+                    short_id: isAll ? null : short_id,
+                    target_all: isAll,
+                    cart: invoiceCart,
+                    gift_msg: giftMsg,
+                    dynamic_plants_data: currentDynamicPlants
+                };
+
+                const res = await fetch('/api/admin/add_items', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showAdminAlert("Lote Procesado", data.message);
+                    clearCart();
+                    document.getElementById('inj-gift-msg').value = '';
+                    if(!isAll) clearSelection('inj');
+                    fetchData();
+                } else {
+                    showAdminAlert("Error", data.error || "No se pudo procesar la factura.");
+                }
+            } catch (e) {
+                showAdminAlert("Error de Red", "Fallo al enviar la factura al servidor.");
+            } finally {
+                btn.innerHTML = "Enviar Lote ➔";
+                btn.disabled = false;
+            }
+        }
+
+        function promptInjectTree() {
+            const amount = prompt("¿Cuántas semillas deseas inyectar directamente a la barra del Árbol de la Vida de hoy?");
+            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
+                adminConfirmModal('¿Inyectar Semillas al Árbol?', `¿Confirmas inyectar ${parseInt(amount).toLocaleString()} semillas a la meta global?`, () => {
+                    executeTreeControl('add', parseInt(amount));
+                });
+            }
+        }
+
+        function resetTree() {
+            executeTreeControl('reset', 0);
+        }
+
+        async function executeTreeControl(action, amount) {
+            try {
+                const res = await fetch('/api/admin/tree_control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_token: ADMIN_TOKEN, action: action, amount: amount })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAdminAlert("Operación Exitosa", data.message);
+                } else {
+                    showAdminAlert("Error", data.error || "No se pudo realizar la acción.");
+                }
+            } catch (e) {
+                showAdminAlert("Error de Red", "Falla contactando al servidor.");
+            }
+        }
+
+        async function loadTreeConfig() {
+            const selects = [
+                'vip-1-1-id', 'vip-1-2-id', 
+                'vip-2-1-id', 'vip-2-2-id', 
+                'vip-3-1-id', 'vip-3-2-id', 
+                'mile-25-id', 'mile-50-id', 'mile-75-id', 'mile-100-id',
+                't1-e1', 't1-e2', 't1-e3',
+                't3-e1', 't3-e2', 't3-e3',
+                't4-e1', 't4-e2', 't4-e3',
+                't5-e1', 't5-e2', 't5-e3'
+            ];
+            const optionsHtml = getPlantsOptionsHtml() + `
+                <option value="tool_pot_small">🪴 Maceta Pequeña</option>
+                <option value="tool_water">🚿 Regadera</option>
+            `;
+            selects.forEach(id => { 
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = optionsHtml; 
+            });
+
+            try {
+                // Cargar Configuración del Árbol
+                const res = await fetch('/api/admin/tree_config?admin_token=' + ADMIN_TOKEN);
+                if (res.ok) {
+                    const conf = await res.json();
+                    if (conf.vip_prizes && conf.vip_prizes.length >= 3) {
+                        const v1 = conf.vip_prizes.find(p=>p.rank===1);
+                        if(v1 && v1.items) {
+                            if(v1.items[0]) { document.getElementById('vip-1-1-id').value = v1.items[0].id; document.getElementById('vip-1-1-qty').value = v1.items[0].qty; }
+                            if(v1.items[1]) { document.getElementById('vip-1-2-id').value = v1.items[1].id; document.getElementById('vip-1-2-qty').value = v1.items[1].qty; }
+                        }
+                        const v2 = conf.vip_prizes.find(p=>p.rank===2);
+                        if(v2 && v2.items) {
+                            if(v2.items[0]) { document.getElementById('vip-2-1-id').value = v2.items[0].id; document.getElementById('vip-2-1-qty').value = v2.items[0].qty; }
+                            if(v2.items[1]) { document.getElementById('vip-2-2-id').value = v2.items[1].id; document.getElementById('vip-2-2-qty').value = v2.items[1].qty; }
+                        }
+                        const v3 = conf.vip_prizes.find(p=>p.rank===3);
+                        if(v3 && v3.items) {
+                            if(v3.items[0]) { document.getElementById('vip-3-1-id').value = v3.items[0].id; document.getElementById('vip-3-1-qty').value = v3.items[0].qty; }
+                            if(v3.items[1]) { document.getElementById('vip-3-2-id').value = v3.items[1].id; document.getElementById('vip-3-2-qty').value = v3.items[1].qty; }
+                        }
+                    }
+                    if (conf.milestones && conf.milestones.length >= 4) {
+                        document.getElementById('mile-25-id').value = conf.milestones[0].id;
+                        document.getElementById('mile-25-qty').value = conf.milestones[0].qty;
+                        document.getElementById('mile-50-id').value = conf.milestones[1].id;
+                        document.getElementById('mile-50-qty').value = conf.milestones[1].qty;
+                        document.getElementById('mile-75-id').value = conf.milestones[2].id;
+                        document.getElementById('mile-75-qty').value = conf.milestones[2].qty;
+                        document.getElementById('mile-100-id').value = conf.milestones[3].id;
+                        document.getElementById('mile-100-qty').value = conf.milestones[3].qty;
+                    }
+                }
+
+                // Cargar Configuración de Guardianes (Torneos)
+                const tRes = await fetch('/api/admin/tournament_config?admin_token=' + ADMIN_TOKEN);
+                if (tRes.ok) {
+                    const tConf = await tRes.json();
+                    ['t1', 't3', 't4', 't5'].forEach(t => {
+                        if (tConf[`${t}-e1`]) document.getElementById(`${t}-e1`).value = tConf[`${t}-e1`];
+                        if (tConf[`${t}-e2`]) document.getElementById(`${t}-e2`).value = tConf[`${t}-e2`];
+                        if (tConf[`${t}-e3`]) document.getElementById(`${t}-e3`).value = tConf[`${t}-e3`];
+                    });
+                }
+            } catch(e) {}
+        }
+
+        async function saveTreeConfig() {
+            const getVipItems = (rank) => {
+                const items = [];
+                const id1 = document.getElementById(`vip-${rank}-1-id`).value;
+                const qty1 = parseInt(document.getElementById(`vip-${rank}-1-qty`).value);
+                if(id1 !== 'none' && !isNaN(qty1)) items.push({ id: id1, qty: qty1 });
+                
+                const id2 = document.getElementById(`vip-${rank}-2-id`).value;
+                const qty2 = parseInt(document.getElementById(`vip-${rank}-2-qty`).value);
+                if(id2 !== 'none' && !isNaN(qty2)) items.push({ id: id2, qty: qty2 });
+                
+                return items;
+            };
+
+            const payload = {
+                admin_token: ADMIN_TOKEN,
+                vip_prizes: [
+                    { rank: 1, items: getVipItems(1) },
+                    { rank: 2, items: getVipItems(2) },
+                    { rank: 3, items: getVipItems(3) }
+                ],
+                milestones: [
+                    { pct: 25, id: document.getElementById('mile-25-id').value, qty: parseInt(document.getElementById('mile-25-qty').value) },
+                    { pct: 50, id: document.getElementById('mile-50-id').value, qty: parseInt(document.getElementById('mile-50-qty').value) },
+                    { pct: 75, id: document.getElementById('mile-75-id').value, qty: parseInt(document.getElementById('mile-75-qty').value) },
+                    { pct: 100, id: document.getElementById('mile-100-id').value, qty: parseInt(document.getElementById('mile-100-qty').value) }
+                ]
+            };
+
+            const tPayload = { admin_token: ADMIN_TOKEN };
+            ['t1', 't3', 't4', 't5'].forEach(t => {
+                tPayload[`${t}-e1`] = document.getElementById(`${t}-e1`).value;
+                tPayload[`${t}-e2`] = document.getElementById(`${t}-e2`).value;
+                tPayload[`${t}-e3`] = document.getElementById(`${t}-e3`).value;
+            });
+
+            try {
+                // Guardar Árbol
+                const res = await fetch('/api/admin/tree_config', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                // Guardar Guardianes
+                await fetch('/api/admin/tournament_config', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(tPayload)
+                });
+
+                if (res.ok) showAdminAlert("Éxito", data.message + "\nConfiguración de Guardianes guardada.");
+                else showAdminAlert("Error", data.error || "Ocurrió un error.");
+            } catch(e) { showAdminAlert("Error", "Fallo al conectar."); }
+        }
+
+        async function inspectFarm() {
+            const short_id = document.getElementById('insp-target-id').value.trim();
+            if (!short_id) { showAdminAlert("Error", "Ingresa un ID válido o búscalo en la lupa."); return; }
+            
+            const btn = document.getElementById('btn-inspect');
+            btn.innerText = "Escaneando...";
+            
+            document.getElementById('res-plots').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Obteniendo paquetes...</p>';
+            document.getElementById('res-inv').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Desencriptando...</p>';
+            document.getElementById('res-arsenal').innerHTML = '<p class="text-center text-gray-400 text-xs p-4 animate-pulse">Cargando arsenal...</p>';
+            
+            document.getElementById('inspector-results').classList.remove('hidden');
+            document.getElementById('inspector-results').classList.add('flex');
+
+            try {
+                const res = await fetch('/api/admin/user_farm/' + short_id, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_token: ADMIN_TOKEN })
+                });
+                const data = await res.json();
+                
+                if (res.ok && data.user.game_state) {
+                    const st = JSON.parse(data.user.game_state);
+                    document.getElementById('res-seeds').innerText = (st.seedsBalance || 0).toLocaleString();
+                    document.getElementById('res-cop').innerText = '$' + parseFloat(data.user.balance || 0).toLocaleString();
+                    
+                    ITEM_ICONS = {
+                        'tool_pot_small': '🪴', 
+                        'tool_pot_big': '🏺', 
+                        'tool_water': '🚿', 
+                        'tool_duel_ticket': '🎟️'
+                    };
+                    currentDynamicPlants.forEach(p => ITEM_ICONS[p.id] = '✨');
+                    
+                    let iHtml = '';
+                    if (st.inventory) {
+                        for (const [k, v] of Object.entries(st.inventory)) {
+                            if (v.qty > 0) {
+                                let ic = ITEM_ICONS[k] || '📦';
+                                iHtml += `
+                                    <div class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs mb-2">
+                                        <span class="text-xl w-6 text-center drop-shadow-sm">${ic}</span>
+                                        <span class="font-bold text-cg_navy flex-1 truncate">${v.name}</span>
+                                        <span class="font-black text-cg_blue px-2 py-1 bg-blue-50 rounded border border-blue-100">x${v.qty}</span>
+                                    </div>`;
+                            }
+                        }
+                    }
+                    document.getElementById('res-inv').innerHTML = iHtml || '<p class="text-xs text-gray-400 p-2 text-center font-bold">Inventario vacío.</p>';
+
+                    let pHtml = '';
+                    if (st.plots) {
+                        st.plots.forEach(p => {
+                            let c = p.status === 'locked' ? 'text-gray-400' : (p.status === 'empty' ? 'text-yellow-600' : 'text-green-600');
+                            let pInfo = p.plant ? `<div class="ml-1 mt-1 text-gray-500 font-bold">↳ ${ITEM_ICONS[p.plant.id]||'🌿'} ${p.plant.name} | <span class="${p.water < 30 ? 'text-red-500' : 'text-cg_blue'}">💧 ${Math.floor(p.water)}%</span></div>` : '';
+                            let bug = p.hasCrow ? '<span class="bg-red-100 border border-red-200 text-red-600 px-1.5 rounded-md text-[8px] font-black uppercase ml-2 shadow-sm animate-pulse">Plaga</span>' : '';
+                            pHtml += `<div class="p-3 bg-white border border-gray-100 rounded-xl shadow-sm mb-2 text-xs"><span class="font-black ${c}">[P${p.id}] ${p.status.toUpperCase()}</span>${bug}${pInfo}</div>`;
+                        });
+                    }
+                    document.getElementById('res-plots').innerHTML = pHtml || '<p class="text-xs text-gray-400 p-2 text-center font-bold">Sin terrenos.</p>';
+
+                    let aHtml = '';
+                    if (st.arsenal && st.arsenal.length > 0) {
+                        st.arsenal.forEach(p => {
+                            aHtml += `
+                                <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm mb-2 text-xs">
+                                    <div class="flex items-center gap-2 overflow-hidden">
+                                        <span class="text-lg drop-shadow-sm">${ITEM_ICONS[p.plantId]||'⚔️'}</span>
+                                        <div class="flex flex-col min-w-0">
+                                            <span class="font-black text-cg_navy truncate">${p.name}</span>
+                                            <span class="text-[9px] font-black text-red-500 mt-0.5">HP: ${p.hp}/${p.maxHp}</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] font-black text-cg_gold bg-yellow-50 px-1.5 py-0.5 rounded border border-yellow-100 shrink-0">🏆 ${p.wins||0}</span>
+                                </div>`;
+                        });
+                    }
+                    document.getElementById('res-arsenal').innerHTML = aHtml || '<p class="text-xs text-gray-400 p-2 text-center font-bold">Arsenal vacío.</p>';
+
+                } else {
+                    showAdminAlert('Datos no encontrados', 'Usuario sin datos guardados o ID incorrecto.');
+                }
+            } catch (e) {
+                showAdminAlert('Error', 'Falla de conexión.');
+            } finally {
+                btn.innerText = "Escanear";
+                btn.disabled = false;
+            }
+        }
+
+        async function loadDynamicPlants() {
+            try {
+                const res = await fetch('/api/plants');
+                if (res.ok) {
+                    const plants = await res.json();
+                    currentDynamicPlants = plants; 
+                    const list = document.getElementById('dyn-plants-list');
+                    list.innerHTML = '';
+                    if (plants.length === 0) { list.innerHTML = '<p class="text-center text-gray-400 text-xs font-bold mt-10">No hay plantas dinámicas creadas.</p>'; return; }
+                    
+                    plants.forEach(p => {
+                        list.innerHTML += `
+                            <div class="flex justify-between items-center bg-gray-50 border border-gray-200 p-3 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <img src="${p.image_url}" class="w-10 h-10 object-contain drop-shadow-sm bg-white rounded-md border border-gray-100 p-1">
+                                    <div>
+                                        <h4 class="font-black text-cg_navy text-sm">${p.name} <span class="text-[9px] bg-cg_blue text-white px-1.5 py-0.5 rounded">${p.category}</span></h4>
+                                        <div class="text-[9px] font-bold text-gray-500 mt-0.5">❤️ ${p.hp} | ⚔️ ${p.atk} | 🛡️ ${p.def} | 🛒 Costo: ${p.price} | 💰 Cosecha: ${p.reward} | ⏱ ${p.grow_time_minutes}m | 🏺 Maceta: ${p.pot_type === 'big' ? 'Grande' : 'Pequeña'} | 💧 Evap: ${p.water_evap || 40}%/h</div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="deleteDynamicPlant('${p.id}')" class="bg-red-50 text-red-500 px-3 py-1.5 rounded-lg text-xs font-bold border border-red-100 shadow-sm">Borrar</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (e) { }
+        }
+
+        async function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const progressContainer = document.getElementById('upload-progress-container');
+            const progressBar = document.getElementById('upload-progress-bar');
+            const progressText = document.getElementById('upload-status-text');
+            const progressPct = document.getElementById('upload-pct');
+            
+            progressContainer.classList.remove('hidden');
+            progressContainer.classList.add('flex');
+            progressBar.style.width = '10%';
+            progressText.innerText = "Leyendo archivo...";
+            progressPct.innerText = "10%";
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (jsonData.length === 0) {
+                        throw new Error("El archivo Excel está vacío.");
+                    }
+
+                    progressBar.style.width = '30%';
+                    progressText.innerText = "Comparando catálogo...";
+                    progressPct.innerText = "30%";
+
+                    let updatedCount = 0;
+                    let addedCount = 0;
+                    let skippedCount = 0;
+
+                    for (let i = 0; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        
+                        if (!row['Nombre de la planta'] || !row['Ubicacion']) continue;
+
+                        const name = row['Nombre de la planta'].toString().trim();
+                        const plantId = 'dyn_' + name.toLowerCase().replace(/\s+/g, '_');
+                        
+                        let imgName = row['Ubicacion'].toString().trim();
+                        if(!imgName.startsWith('assets/Plantas/')) {
+                            imgName = 'assets/Plantas/' + imgName;
+                        }
+
+                        const existingPlant = currentDynamicPlants.find(p => p.id === plantId);
+                        
+                        let hasChanges = true;
+                        if (existingPlant) {
+                            hasChanges = (
+                                existingPlant.category !== (row['Categoria'] || 'Planta Estándar') ||
+                                existingPlant.image_url !== imgName ||
+                                existingPlant.hp != row['Vida'] ||
+                                existingPlant.atk != row['Ataque'] ||
+                                existingPlant.def != row['Defensa'] ||
+                                existingPlant.price != row['Costo'] ||
+                                existingPlant.reward != row['Produccion'] ||
+                                existingPlant.grow_time_minutes != row['Tiempo'] ||
+                                (existingPlant.water_evap || 40) != (row['Evaporacion'] || 40)
+                            );
+                        }
+
+                        if (hasChanges) {
+                            const payload = {
+                                admin_token: ADMIN_TOKEN,
+                                id: plantId,
+                                category: row['Categoria'] || 'Planta Estándar',
+                                name: name,
+                                image_url: imgName,
+                                hp: row['Vida'] || 100,
+                                atk: row['Ataque'] || 50,
+                                def: row['Defensa'] || 20,
+                                price: row['Costo'] || 5000,
+                                reward: row['Produccion'] || 15000,
+                                grow_time_minutes: row['Tiempo'] || 60,
+                                pot_type: 'small', 
+                                water_evap: row['Evaporacion'] || 40
+                            };
+
+                            await fetch('/api/admin/plants', { 
+                                method: 'POST', 
+                                headers: {'Content-Type': 'application/json'}, 
+                                body: JSON.stringify(payload) 
+                            });
+
+                            if (existingPlant) updatedCount++;
+                            else addedCount++;
+                        } else {
+                            skippedCount++;
+                        }
+
+                        let currentPct = 30 + Math.floor((i / jsonData.length) * 60);
+                        progressBar.style.width = `${currentPct}%`;
+                        progressPct.innerText = `${currentPct}%`;
+                    }
+
+                    progressBar.style.width = '100%';
+                    progressText.innerText = "¡Proceso finalizado!";
+                    progressPct.innerText = "100%";
+                    
+                    setTimeout(() => {
+                        showAdminAlert("Subida Exitosa", `Catálogo actualizado.\n\nNuevas: ${addedCount}\nActualizadas: ${updatedCount}\nOmitidas (Sin cambios): ${skippedCount}`);
+                        progressContainer.classList.add('hidden');
+                        progressContainer.classList.remove('flex');
+                        document.getElementById('excel-upload').value = ''; 
+                        loadDynamicPlants(); 
+                    }, 500);
+
+                } catch (error) {
+                    showAdminAlert("Error", "No se pudo leer el archivo. Verifica que sea un Excel válido y contenga las columnas correctas.");
+                    progressContainer.classList.add('hidden');
+                    progressContainer.classList.remove('flex');
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function deleteDynamicPlant(id) {
+            adminConfirmModal("Eliminar Planta", "¿Seguro que quieres borrar esta especie del catálogo de la tienda?", async () => {
+                await fetch('/api/admin/plants', { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ admin_token: ADMIN_TOKEN, id: id }) });
+                loadDynamicPlants();
+            });
+        }
+    </script>
+</body>
+</html>

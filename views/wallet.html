@@ -1,0 +1,349 @@
+<div class="max-w-[1000px] mx-auto space-y-6 md:space-y-8 animate-fade-in px-4 md:px-0 pb-20">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-cg_blue animate-pulse"></span>
+                <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Finanzas y Billetera</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Gestión de Capital (COP)</h2>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Ingresa fondos para tus servicios VIP o retira las ganancias de tus torneos a Nequi.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 px-5 py-3 rounded-2xl text-right shadow-inner">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Saldo Disponible</p>
+            <p class="text-xl md:text-2xl font-black text-green-600" id="wallet-balance-display">$0 COP</p>
+        </div>
+    </div>
+
+    <!-- TABS DE NAVEGACIÓN -->
+    <div class="flex gap-2 md:gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
+        <button onclick="switchWalletTab('deposit')" id="tab-btn-deposit" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Ingresar Dinero</button>
+        <button onclick="switchWalletTab('withdraw')" id="tab-btn-withdraw" class="pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Retirar Ganancias</button>
+    </div>
+
+    <!-- SECCIÓN 1: INGRESAR DINERO (WOMPI) -->
+    <div id="section-deposit" class="bg-white rounded-3xl shadow-soft border border-gray-100 p-5 md:p-8 relative overflow-hidden animate-fade-in block">
+        <div class="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 md:p-5 mb-6 flex gap-3 md:gap-4 text-xs md:text-sm text-blue-800">
+            <div class="shrink-0 text-xl md:text-2xl mt-0.5">🌱</div>
+            <div class="leading-relaxed">
+                <p class="mb-1 font-black">¡Haz crecer tu granja al instante!</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Tus ingresos se reflejarán de manera <strong>inmediata</strong> (Tiempo Real) en tu saldo tras ser aprobados por tu banco. Para mantener nuestros servidores estables, desarrollar nuevas mecánicas y brindarte soporte 24/7, aplicamos un pequeño <strong>aporte de mantenimiento del 5%</strong> al ingresar. ¡Tú haces posible el ecosistema de CashGarden!</p>
+            </div>
+        </div>
+
+        <h3 class="text-sm font-black text-cg_navy uppercase tracking-widest mb-4">Selecciona el monto a ingresar</h3>
+        
+        <!-- Botones de Cantidades -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-6" id="deposit-amount-grid">
+            <button onclick="selectDepositAmount(10000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$10.000</button>
+            <button onclick="selectDepositAmount(20000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$20.000</button>
+            <button onclick="selectDepositAmount(30000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$30.000</button>
+            <button onclick="selectDepositAmount(50000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$50.000</button>
+            <button onclick="selectDepositAmount(100000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$100.000</button>
+            <button onclick="selectDepositAmount(200000)" class="deposit-btn bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-cg_blue hover:text-cg_blue font-black py-4 rounded-xl transition-all">$200.000</button>
+        </div>
+
+        <!-- Campo Libre -->
+        <div class="mb-6">
+            <label class="block text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Otra Cantidad (COP)</label>
+            <input type="number" id="custom-deposit-input" placeholder="Escribe un monto personalizado..." class="w-full px-4 md:px-5 py-3.5 md:py-4 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-cg_navy text-lg transition-all" oninput="handleCustomDeposit()">
+        </div>
+
+        <!-- Resumen de Transacción -->
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 shadow-inner">
+            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Resumen de Operación</h4>
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-bold text-gray-600">Ingreso Solicitado:</span>
+                <span class="text-sm font-black text-cg_navy" id="summary-requested">$0</span>
+            </div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-bold text-red-400">Aporte Mantenimiento / Soporte (5%):</span>
+                <span class="text-xs font-black text-red-500" id="summary-fee">-$0</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                <span class="text-sm font-black text-green-600 uppercase">Recibes en CashGarden:</span>
+                <span class="text-xl md:text-2xl font-black text-green-600" id="summary-total">$0</span>
+            </div>
+        </div>
+
+        <button id="btn-pay-wompi" onclick="processWompiDeposit()" class="w-full bg-cg_blue hover:bg-blue-700 text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none transition-all uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
+            Proceder al Pago ➔
+        </button>
+    </div>
+
+    <!-- SECCIÓN 2: RETIRAR DINERO -->
+    <div id="section-withdraw" class="bg-white rounded-3xl shadow-soft border border-gray-100 p-5 md:p-8 relative overflow-hidden animate-fade-in hidden">
+        <div class="bg-orange-50/80 border border-orange-100 rounded-2xl p-4 md:p-5 mb-6 flex gap-3 md:gap-4 text-xs md:text-sm text-orange-800">
+            <div class="shrink-0 text-xl md:text-2xl mt-0.5">🏦</div>
+            <div class="leading-relaxed">
+                <p class="mb-1 font-black">Dispersión de Ganancias</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Los retiros se procesan de manera segura a través de nuestro portal bancario asociado. El tiempo estimado de entrega a tu cuenta Nequi es de <strong>24 a 48 horas hábiles</strong>. <br>El monto mínimo de retiro es de $10.000 COP. <strong>No aplicamos descuentos adicionales ni impuestos</strong> a las ganancias que retires.</p>
+            </div>
+        </div>
+        
+        <form id="payout-settings-form" class="space-y-5 md:space-y-6">
+            <div>
+                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Retirar (COP)</label>
+                <input type="number" id="cashout-amount" min="10000" placeholder="Mínimo $10.000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-black text-cg_navy text-lg transition-all" required>
+            </div>
+
+            <div>
+                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">N° Celular Nequi o Cuenta Bancaria</label>
+                <input type="tel" id="nequi-phone" placeholder="Ej: 300 000 0000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-bold text-cg_navy transition-all" required>
+            </div>
+            
+            <button type="button" id="btn-withdraw" onclick="processCashout()" class="w-full bg-cg_navy hover:bg-black text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none transition-all mt-2 uppercase tracking-widest">
+                Solicitar Retiro
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- VENTANA MODAL PROFESIONAL PARA ALERTAS (REEMPLAZA AL ALERT NORMAL) -->
+<div id="wallet-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeWalletAlertModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border overflow-hidden animate-fade-in text-center p-6 md:p-8" id="wallet-alert-card">
+        <div id="wallet-alert-icon-container" class="mx-auto mb-4 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-gray-50 border-gray-100">
+            <span class="text-3xl md:text-4xl" id="wallet-alert-icon">⚠️</span>
+        </div>
+        <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-cg_navy" id="wallet-alert-title">Aviso</h3>
+        <p class="text-xs md:text-sm text-gray-500 mb-6 font-medium leading-relaxed" id="wallet-alert-msg">Mensaje descriptivo</p>
+        <button onclick="closeWalletAlertModal()" id="wallet-alert-btn" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm bg-cg_navy hover:bg-black">
+            Aceptar
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentDepositAmount = 0;
+    const FEE_PERCENTAGE = 0.05; // 5% Aporte de Mantenimiento
+
+    function initWallet() {
+        if (!window.farmApp) return;
+        const balance = window.farmApp.state.balance || 0;
+        document.getElementById('wallet-balance-display').innerText = "$" + balance.toLocaleString() + " COP";
+        
+        const maxInput = document.getElementById('cashout-amount');
+        if (maxInput) {
+            maxInput.max = balance;
+        }
+    }
+
+    // Funciones del Modal Profesional
+    function showWalletAlertModal(title, msg, type = 'info') {
+        const modal = document.getElementById('wallet-alert-modal');
+        const card = document.getElementById('wallet-alert-card');
+        const iconCont = document.getElementById('wallet-alert-icon-container');
+        const icon = document.getElementById('wallet-alert-icon');
+        const titleEl = document.getElementById('wallet-alert-title');
+        const btn = document.getElementById('wallet-alert-btn');
+
+        titleEl.innerText = title;
+        document.getElementById('wallet-alert-msg').innerText = msg;
+
+        if (type === 'success') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-green-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "✅";
+            titleEl.className = "text-xl md:text-2xl font-black text-green-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-green-500 hover:bg-green-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm";
+        } else if (type === 'error') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-red-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "❌";
+            titleEl.className = "text-xl md:text-2xl font-black text-red-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm";
+        } else {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-200 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-full border-4 border-gray-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "⚠️";
+            titleEl.className = "text-xl md:text-2xl font-black text-cg_navy mb-2 tracking-tight";
+            btn.className = "w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm";
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeWalletAlertModal() {
+        document.getElementById('wallet-alert-modal').classList.add('hidden');
+        document.getElementById('wallet-alert-modal').classList.remove('flex');
+    }
+
+    function switchWalletTab(tab) {
+        const depBtn = document.getElementById('tab-btn-deposit');
+        const witBtn = document.getElementById('tab-btn-withdraw');
+        const depSec = document.getElementById('section-deposit');
+        const witSec = document.getElementById('section-withdraw');
+
+        if (tab === 'deposit') {
+            depBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors";
+            witBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors";
+            depSec.classList.remove('hidden');
+            witSec.classList.add('hidden');
+        } else {
+            witBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-black text-orange-500 border-b-4 border-orange-500 whitespace-nowrap transition-colors";
+            depBtn.className = "pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors";
+            witSec.classList.remove('hidden');
+            depSec.classList.add('hidden');
+        }
+    }
+
+    function selectDepositAmount(amount) {
+        document.getElementById('custom-deposit-input').value = '';
+        
+        const buttons = document.querySelectorAll('.deposit-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
+            btn.classList.add('border-gray-200', 'text-gray-600', 'bg-gray-50');
+            if (btn.innerText.replace(/\D/g, '') == amount) {
+                btn.classList.add('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
+                btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-gray-50');
+            }
+        });
+
+        currentDepositAmount = amount;
+        updateDepositSummary();
+    }
+
+    function handleCustomDeposit() {
+        const buttons = document.querySelectorAll('.deposit-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
+            btn.classList.add('border-gray-200', 'text-gray-600', 'bg-gray-50');
+        });
+
+        const val = parseInt(document.getElementById('custom-deposit-input').value);
+        if (isNaN(val) || val <= 0) {
+            currentDepositAmount = 0;
+        } else {
+            currentDepositAmount = val;
+        }
+        updateDepositSummary();
+    }
+
+    function updateDepositSummary() {
+        const reqEl = document.getElementById('summary-requested');
+        const feeEl = document.getElementById('summary-fee');
+        const totEl = document.getElementById('summary-total');
+        const btnPay = document.getElementById('btn-pay-wompi');
+
+        if (currentDepositAmount > 0) {
+            const fee = Math.floor(currentDepositAmount * FEE_PERCENTAGE);
+            const netAmount = currentDepositAmount - fee;
+
+            reqEl.innerText = "$" + currentDepositAmount.toLocaleString();
+            feeEl.innerText = "-$" + fee.toLocaleString();
+            totEl.innerText = "$" + netAmount.toLocaleString();
+
+            btnPay.disabled = false;
+            btnPay.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            reqEl.innerText = "$0";
+            feeEl.innerText = "-$0";
+            totEl.innerText = "$0";
+
+            btnPay.disabled = true;
+            btnPay.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    async function processWompiDeposit() {
+        if (currentDepositAmount < 5000) {
+            showWalletAlertModal('Monto Inválido', 'El monto mínimo de recarga es de $5.000 COP.', 'error');
+            return;
+        }
+
+        const btnPay = document.getElementById('btn-pay-wompi');
+        btnPay.innerHTML = '<span class="animate-pulse">Cargando Pasarela...</span>';
+        btnPay.disabled = true;
+
+        const short_id = sessionStorage.getItem('short_id') || '0000';
+        const reference = `REC-${short_id}-${Date.now()}`;
+        const amountInCents = currentDepositAmount * 100;
+        
+        // Llave Pública de Wompi
+        const wompiPublicKey = 'pub_test_lwNtQO2xAWUmv47mSWD2QAiYbE2R7gDP';
+
+        try {
+            // 1. Pedir Firma de Seguridad al Servidor
+            const res = await fetch('/api/wompi/signature', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference: reference, amount_in_cents: amountInCents, currency: 'COP' })
+            });
+            const data = await res.json();
+            
+            if (!res.ok) {
+                showWalletAlertModal('Error de Seguridad', 'No se pudo generar la firma de transacción. Reintenta.', 'error');
+                btnPay.innerText = 'Proceder al Pago ➔';
+                btnPay.disabled = false;
+                return;
+            }
+
+            // 2. Redirección al Web Checkout de Wompi (Optimizado para móviles, no se corta)
+            const redirectUrl = encodeURIComponent(window.location.origin);
+            const wompiUrl = `https://checkout.wompi.co/p/?public-key=${wompiPublicKey}&currency=COP&amount-in-cents=${amountInCents}&reference=${reference}&signature:integrity=${data.signature}&redirect-url=${redirectUrl}`;
+
+            window.location.href = wompiUrl;
+            
+        } catch(e) {
+            showWalletAlertModal('Error de Red', 'Falla conectando con el servidor de pagos. Verifica tu internet.', 'error');
+            btnPay.innerText = 'Proceder al Pago ➔';
+            btnPay.disabled = false;
+        }
+    }
+
+    async function processCashout() {
+        const amount = parseInt(document.getElementById('cashout-amount').value);
+        const phone = document.getElementById('nequi-phone').value;
+        const btnWithdraw = document.getElementById('btn-withdraw');
+        
+        if (!phone || phone.length < 10) { 
+            showWalletAlertModal('Datos Inválidos', 'El número de Nequi o cuenta debe tener al menos 10 dígitos.', 'error');
+            return; 
+        }
+        if (isNaN(amount) || amount < 10000) { 
+            showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 COP.', 'error');
+            return; 
+        }
+        if (amount > (window.farmApp?.state?.balance || 0)) { 
+            showWalletAlertModal('Saldo Insuficiente', 'No tienes saldo COP suficiente para retirar esa cantidad.', 'error');
+            return; 
+        }
+
+        btnWithdraw.innerHTML = '<span class="animate-pulse">Procesando Retiro...</span>';
+        btnWithdraw.disabled = true;
+
+        try {
+            const username = sessionStorage.getItem('username');
+            const token = sessionStorage.getItem('session_token');
+            const res = await fetch('/api/wallet/payout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, amount_cop: amount, phone_nequi: phone })
+            });
+            const data = await res.json();
+            
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance;
+                    window.farmApp.saveState();
+                }
+                showWalletAlertModal('¡Retiro en Proceso!', `Se han descontado $${amount.toLocaleString()} COP. Tu dinero llegará en 24 a 48 horas hábiles.\n\nRef: ${data.reference}`, 'success');
+                document.getElementById('cashout-amount').value = '';
+                initWallet();
+            } else {
+                showWalletAlertModal('Error al Retirar', data.error, 'error');
+            }
+        } catch(e) { 
+            showWalletAlertModal('Error de Red', 'No se pudo conectar con el servidor bancario.', 'error');
+        } finally {
+            btnWithdraw.innerText = 'Solicitar Retiro';
+            btnWithdraw.disabled = false;
+        }
+    }
+
+    // Inicializar saldos apenas cargue
+    setTimeout(initWallet, 100); 
+</script>
