@@ -102,12 +102,17 @@
                         <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Autorizo el <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
                     </label>
 
-                    <!-- Simulador Visual de Captcha -->
+                    <!-- CAPTCHA Interactivo -->
                     <div class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between shadow-sm mt-1">
-                        <label class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1">
-                            <input type="checkbox" id="chk-captcha" class="w-5 h-5 sm:w-6 sm:h-6 text-green-500 rounded border-gray-300 focus:ring-green-500 cursor-pointer transition-all">
+                        <div class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1" onclick="openCaptchaModal()">
+                            <!-- Interfaz visual del checkbox personalizado -->
+                            <div id="captcha-checkbox-ui" class="w-5 h-5 sm:w-6 sm:h-6 bg-white border-2 border-gray-300 rounded flex items-center justify-center transition-all shadow-inner">
+                                <svg id="captcha-checkmark" class="w-4 h-4 text-green-500 hidden animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <!-- Input real oculto (se valida en el form) -->
+                            <input type="checkbox" id="chk-captcha" class="hidden">
                             <span class="text-xs sm:text-sm font-bold text-gray-700">No soy un robot</span>
-                        </label>
+                        </div>
                         <div class="flex flex-col items-center justify-center">
                             <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="h-6 sm:h-8 w-auto object-contain opacity-90" alt="reCAPTCHA">
                             <span class="text-[6px] sm:text-[7px] text-gray-400 mt-0.5">Privacidad - Términos</span>
@@ -400,6 +405,31 @@
         </div>
     </div>
 
+
+    <!-- MODAL DE VERIFICACIÓN CAPTCHA -->
+    <div id="captcha-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeCaptchaModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8">
+            <div class="w-16 h-16 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <span class="text-3xl">🤖</span>
+            </div>
+            <h3 class="text-xl font-black text-cg_navy mb-2 tracking-tight">Control de Seguridad</h3>
+            <p class="text-xs text-gray-500 mb-6 font-medium">Por favor, resuelve la siguiente operación para comprobar que eres un humano.</p>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-5 shadow-inner">
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">¿Cuánto es el resultado de?</span>
+                <span id="captcha-question" class="text-3xl font-black text-cg_blue tracking-widest">0 + 0</span>
+            </div>
+            
+            <input type="number" id="captcha-answer" placeholder="Tu respuesta..." class="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-center text-cg_navy text-lg mb-3 transition-all" onkeypress="if(event.key === 'Enter') verifyCaptcha()">
+            
+            <p id="captcha-error" class="text-[10px] font-bold text-red-500 mb-4 hidden bg-red-50 py-1 rounded border border-red-100">Respuesta incorrecta, intenta de nuevo.</p>
+            
+            <button onclick="verifyCaptcha()" type="button" class="w-full bg-cg_blue hover:bg-blue-600 text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95">
+                Verificar Identidad
+            </button>
+        </div>
+    </div>
 
 
 
@@ -1246,6 +1276,77 @@
                 alert('Acceso denegado. Credenciales incorrectas.');
             }
         }
+
+
+
+
+
+
+
+        // ================= LÓGICA DEL CAPTCHA INTERACTIVO =================
+        let captchaCorrectAnswer = 0;
+
+        function openCaptchaModal() {
+            const chk = document.getElementById('chk-captcha');
+            if(chk.checked) return; // Si ya se verificó, no hacer nada
+            
+            generateCaptcha();
+            document.getElementById('captcha-answer').value = '';
+            document.getElementById('captcha-error').classList.add('hidden');
+            
+            const modal = document.getElementById('captcha-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Enfocar automáticamente el input para mayor comodidad
+            setTimeout(() => document.getElementById('captcha-answer').focus(), 100);
+        }
+
+        function closeCaptchaModal() {
+            document.getElementById('captcha-modal').classList.add('hidden');
+            document.getElementById('captcha-modal').classList.remove('flex');
+        }
+
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            captchaCorrectAnswer = num1 + num2;
+            document.getElementById('captcha-question').innerText = `${num1} + ${num2}`;
+        }
+
+        function verifyCaptcha() {
+            const userAnswer = parseInt(document.getElementById('captcha-answer').value);
+            
+            if (userAnswer === captchaCorrectAnswer) {
+                closeCaptchaModal();
+                
+                // Marcar el checkbox real oculto
+                document.getElementById('chk-captcha').checked = true;
+                
+                // Actualizar la interfaz visual del checkbox a VERDE (Aprobado)
+                const uiBox = document.getElementById('captcha-checkbox-ui');
+                uiBox.classList.remove('bg-white', 'border-gray-300');
+                uiBox.classList.add('bg-green-50', 'border-green-500');
+                document.getElementById('captcha-checkmark').classList.remove('hidden');
+                
+                // Llamar a la validación general del formulario
+                validateRegistrationForm();
+            } else {
+                // Mostrar error y generar una nueva operación
+                document.getElementById('captcha-error').classList.remove('hidden');
+                document.getElementById('captcha-answer').value = '';
+                generateCaptcha();
+                document.getElementById('captcha-answer').focus();
+            }
+        }
+
+
+
+
+
+
+
+
     </script>
 </body>
 </html>
