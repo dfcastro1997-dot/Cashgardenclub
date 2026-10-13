@@ -2941,16 +2941,47 @@ if (typeof window.farmApp === 'undefined') {
                         warningHtml = `<span class="text-[9px] sm:text-[10px] bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-gray-200">Tierra seca (0%)</span>`;
                     }
 
+                    // --- NUEVO: ESTADÍSTICAS Y TIEMPO DE CRECIMIENTO ---
+                    let pHp = 100, pAtk = 40, pDef = 20, pDuration = "1h";
+                    if (this.state.dynamicPlants && this.state.dynamicPlants[seed.id]) {
+                        pHp = this.state.dynamicPlants[seed.id].hp;
+                        pAtk = this.state.dynamicPlants[seed.id].atk;
+                        pDef = this.state.dynamicPlants[seed.id].def;
+                        let mins = this.state.dynamicPlants[seed.id].grow_time_minutes;
+                        pDuration = mins < 60 ? `${mins}m` : `${(mins/60).toFixed(1).replace('.0','')}h`;
+                    } else {
+                        if(seed.id === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; pDuration = "5m"; }
+                        else if(seed.id === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; pDuration = "30m"; } 
+                        else if(seed.id === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; pDuration = "10m"; }
+                        else if(seed.id === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; pDuration = "2h"; } 
+                        else if(seed.id === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; pDuration = "12h"; } 
+                        else if(seed.id === 'flower_small') { pAtk = 40; pDef = 20; pHp = 100; pDuration = "1h"; }
+                        else if(seed.id === 'flower_big') { pAtk = 40; pDef = 20; pHp = 100; pDuration = "5h"; }
+                    }
+
+                    let statsHtml = `
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <span class="text-[9px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase font-black" title="Tiempo de crecimiento">⏳ ${pDuration}</span>
+                            <span class="text-[9px] bg-red-50 text-red-500 px-1.5 py-0.5 rounded border border-red-100 uppercase font-black" title="Vida">❤️ ${pHp}</span>
+                            <span class="text-[9px] bg-orange-50 text-orange-500 px-1.5 py-0.5 rounded border border-orange-100 uppercase font-black" title="Ataque">⚔️ ${pAtk}</span>
+                            <span class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100 uppercase font-black" title="Defensa">🛡️ ${pDef}%</span>
+                        </div>
+                    `;
+                    // ----------------------------------------------------
+
                     list.innerHTML += `
                         <div class="p-3 sm:p-5 bg-white border border-gray-200 rounded-2xl hover:border-cg_blue flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-sm transition-colors">
-                            <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-xl flex items-center justify-center border border-gray-100 p-1.5 sm:p-2 shrink-0">
+                            <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto flex-1">
+                                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-xl flex items-center justify-center border border-gray-100 p-1.5 sm:p-2 shrink-0">
                                     <img src="${seed.image}" class="w-full h-full object-contain">
                                 </div>
-                                <div>
-                                    <h4 class="font-black text-carbon text-sm sm:text-lg leading-tight">${seed.name}</h4>
-                                    <span class="text-[10px] sm:text-xs font-bold text-cg_blue block mt-0.5">Stock: ${seed.qty}</span>
+                                <div class="w-full text-left flex-1">
+                                    <div class="flex justify-between items-start w-full">
+                                        <h4 class="font-black text-cg_navy text-sm sm:text-base leading-tight">${seed.name}</h4>
+                                        <span class="text-[9px] sm:text-[10px] font-bold text-cg_blue ml-2 whitespace-nowrap">Stock: ${seed.qty}</span>
+                                    </div>
                                     ${warningHtml}
+                                    ${statsHtml}
                                 </div>
                             </div>
                             <button onclick="window.farmApp.plantSeed('${seed.id}')" class="bg-cg_blue hover:bg-cg_navy text-white w-full sm:w-auto font-black px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-sm transition-colors text-xs sm:text-sm shrink-0">
