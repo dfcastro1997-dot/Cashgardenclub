@@ -855,12 +855,13 @@
                                     window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
                                     if (state.plots) {
                                         if (state.plots.length === 6) {
-                                            const arenaPlot = state.plots[5];
-                                            arenaPlot.id = 8; 
-                                            state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
                                             state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
                                             state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
-                                            state.plots.push(arenaPlot);
+                                            state.plots.push({ id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                        }
+                                        // Sanitizar Parcela 9 si quedó guardada como Arena
+                                        if (state.plots[8] && (state.plots[8].status === 'arena_locked' || state.plots[8].status === 'tournament' || state.plots[8].status === 'tournament_waiting')) {
+                                            state.plots[8] = { id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
                                         }
                                         window.farmApp.state.plots = state.plots;
                                     }

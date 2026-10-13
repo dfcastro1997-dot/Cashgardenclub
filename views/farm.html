@@ -1211,7 +1211,7 @@ if (typeof window.farmApp === 'undefined') {
 
 
     window.farmApp = {
-        PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 0], // Arena cuesta 0 porque se paga en Torneosporque se paga en Torneos
+        PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 1000000], // Parcela 9 habilitada por 1 Millón
 
         TOURNAMENT_CONFIGS: {
             1: { name: 'Bonsái del Maestro', image: 'assets/Plantas/bonsai.gif', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
@@ -1308,7 +1308,7 @@ if (typeof window.farmApp === 'undefined') {
                 { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
                 { id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } },
-                { id: 8, status: 'arena_locked', tournamentId: 1, score: 10000, tournamentEndTime: 0, pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
+                { id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
             ],
             inventory: {
                 'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
@@ -1572,13 +1572,14 @@ if (typeof window.farmApp === 'undefined') {
                                     this.state.arsenal = s.arsenal ?? (this.state.arsenal || []);
                                     
                                     if (this.state.plots.length === 6) {
-                                        const arenaPlot = this.state.plots[5];
-                                        arenaPlot.id = 8; 
-                                        
-                                        this.state.plots[5] = { id: 5, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
                                         this.state.plots.push({ id: 6, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
                                         this.state.plots.push({ id: 7, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
-                                        this.state.plots.push(arenaPlot);
+                                        this.state.plots.push({ id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } });
+                                    }
+                                    
+                                    // Sanitizar Parcela 9 si era arena al recargar
+                                    if (this.state.plots[8] && (this.state.plots[8].status === 'arena_locked' || this.state.plots[8].status === 'tournament' || this.state.plots[8].status === 'tournament_waiting')) {
+                                        this.state.plots[8] = { id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } };
                                     }
                                     
                                     if (s.inventory) {
@@ -1721,133 +1722,6 @@ if (typeof window.farmApp === 'undefined') {
                         ${plot.toast.msg}
                     </div>
                 ` : '';
-
-                // RENDERIZADO EXCLUSIVO PARA LA PARCELA 6 (TORNEO)
-                if (plot.id === 8) {
-                    if (plot.status === 'arena_locked' || plot.status === 'locked') {
-                        el.className = `rounded-2xl border-2 border-dashed border-cg_gold bg-gradient-to-b from-white to-orange-50 h-56 sm:h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-sm`;
-                        el.innerHTML = `
-                            ${localToastHTML}
-                            <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none opacity-40 grayscale">
-                                <img src="${this.state.images.terrain_dry}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
-                            </div>
-                            <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4 px-2 text-center">
-                                <span class="font-black text-cg_gold uppercase tracking-widest text-[10px] sm:text-[12px] mb-1 bg-white/90 px-3 py-1 rounded shadow-sm backdrop-blur border border-orange-200">Arena de Torneo</span>
-                                <span class="font-bold text-gray-500 text-[9px] sm:text-[10px] bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm mt-2 text-center leading-tight">Inscríbete en la pestaña<br>Torneos para desbloquear</span>
-                            </div>
-                        `;
-                    } else if (plot.status === 'tournament_waiting') {
-                        el.className = `rounded-2xl border-2 border-cg_blue bg-blue-50 h-56 sm:h-64 flex flex-col items-center justify-center relative overflow-hidden shadow-md animate-pulse`;
-                        el.innerHTML = `
-                            <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none opacity-50">
-                                <img src="${this.state.images.terrain_empty}" class="h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
-                            </div>
-                            <div class="relative z-20 flex flex-col items-center justify-center w-full h-full pb-4 px-2 text-center">
-                                <span class="text-3xl mb-2">⏳</span>
-                                <span class="font-black text-cg_navy uppercase tracking-widest text-xs mb-1">Sala en Preparación</span>
-                                <span class="font-bold text-blue-600 text-[10px] bg-white px-3 py-1 rounded-full border border-blue-200 shadow-sm mt-2 leading-tight">Esperando inicio<br>del torneo...</span>
-                            </div>
-                        `;
-                    } else if (plot.status === 'tournament') {
-                        const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
-                        const totalMs = conf.durationHours * 3600000;
-                        const elapsed = now - (plot.tournamentEndTime - totalMs);
-                        const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
-                        const hoursLeft = Math.max(0, (plot.tournamentEndTime - now) / 3600000);
-                        const timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
-                        
-                        const isAlert = plot.water < conf.minWater || plot.water > conf.maxWater || plot.hasCrow;
-                        const borderStyle = isAlert ? 'border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' : 'border-cg_gold bg-gradient-to-b from-white to-yellow-50 shadow-md hover:shadow-lg transition-all';
-                        
-                        let crowHtml = '';
-                        if (plot.hasCrow) {
-                            if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
-                            const timeWithCrow = now - plot.crowArrivedAt;
-                            const gracePeriod = 10 * 60000; 
-                            const isRotting = plot.water > conf.maxWater || plot.isSpoiled;
-
-                            if (plot.isReady) {
-                                const crowsCount = plot.crowsCount || 1;
-                                const currentMult = plot.rewardMultiplier !== undefined ? plot.rewardMultiplier : 1.0;
-                                const lostPct = Math.round((1.0 - currentMult) * 100);
-                                let crowsIcons = Array(crowsCount).fill(`<img src="${this.state.images.crow}" class="w-4 h-4 sm:w-5 sm:h-5 object-contain drop-shadow-md animate-bounce">`).join('');
-                                crowHtml = `
-                                    <button onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();" class="z-50 bg-red-500/95 hover:bg-red-600 border-2 border-red-200 rounded-2xl px-2 py-1 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)] cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                        <div class="flex gap-0.5">${crowsIcons}</div>
-                                        <span class="text-[9px] font-black text-white mt-0.5">-${lostPct}% SEMILLAS</span>
-                                        <div class="absolute right-10 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR Y SALVAR RESTO!</div>
-                                    </button>
-                                `;
-                            } else if (timeWithCrow < gracePeriod && !isRotting) {
-                                const timeLeftMs = gracePeriod - timeWithCrow;
-                                const mins = Math.floor(timeLeftMs / 60000);
-                                const secs = Math.floor((timeLeftMs % 60000) / 1000);
-                                crowHtml = `
-                                    <button onclick="window.farmApp.shooCrowGrace(${plot.id}); event.stopPropagation();" class="z-50 bg-orange-400 hover:bg-orange-500 border-2 border-orange-200 rounded-full w-10 h-10 flex flex-col items-center justify-center shadow-[0_0_15px_rgba(251,146,60,0.8)] animate-pulse cursor-pointer transition-colors group pointer-events-auto relative shrink-0">
-                                        <span class="text-[10px] sm:text-xs">🦅</span>
-                                        <span class="text-[7px] font-black text-white leading-none">${mins}:${secs.toString().padStart(2, '0')}</span>
-                                        <div class="absolute right-12 bg-black text-white text-[9px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">¡ESPANTAR GRATIS!</div>
-                                    </button>
-                                `;
-                            } else {
-                                    crowHtml = `
-                                        </div> <!-- Cierra el contenedor de la esquina superior derecha -->
-                                        <!-- Contenedor central absoluto -->
-                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-                                            <!-- mt-2 (un poco más arriba) y ml-56 (un poco más a la derecha) -->
-                                            <div class="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer mt-2 ml-56" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
-                                                <!-- Imagen del Cuervo Base en tamaño mediano y quieto -->
-                                                <img src="${this.state.images.crow}" alt="Cuervo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
-                                            </div>
-                                        </div>
-                                        <!-- Div oculto para absorber la etiqueta original de cierre -->
-                                        <div class="hidden">
-                                    `;
-                                }
-                        } else {
-                            plot.crowArrivedAt = 0;
-                        }
-
-                        el.className = `rounded-2xl border-2 h-56 sm:h-64 relative overflow-hidden flex flex-col ${borderStyle}`;
-                        el.innerHTML = `
-                            ${localToastHTML}
-                            <div class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-cg_gold text-white px-2 py-1 rounded text-[8px] sm:text-[9px] font-black border border-yellow-300 shadow-sm z-20 uppercase tracking-widest pointer-events-none">
-                                🏆 PUNTOS: ${Math.floor(plot.score).toLocaleString('es-ES')}
-                            </div>
-                            <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 75px; left: 12px;" class="absolute w-7 h-7 sm:w-8 sm:h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-xs sm:text-sm font-serif pointer-events-auto cursor-pointer">
-                                i
-                            </button>
-                            <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
-                                ${crowHtml}
-                            </div>
-                            <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
-                                <div class="relative w-full h-32 sm:h-40 flex items-center justify-center group">
-                                    <img src="${plot.water > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm">
-                                    <img src="${conf.image}" class="absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md transition-all ${isAlert ? 'grayscale brightness-75' : ''}" style="transform: translateY(-20%);">
-                                </div>
-                            </div>
-                            <div class="absolute bottom-0 left-0 w-full bg-white border-t border-yellow-200 px-3 sm:px-4 py-2 flex flex-col gap-1 z-20 rounded-b-2xl cursor-default" onclick="event.stopPropagation()">
-                                <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mb-0.5 sm:mb-1 shadow-inner pointer-events-none">
-                                    <div class="bg-cg_gold h-full transition-all duration-1000" style="width: ${progress}%"></div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs sm:text-sm font-black ${isAlert ? 'text-red-600' : 'text-cg_blue'} pointer-events-none">💧 ${Math.floor(plot.water)}%</span>
-                                    ${plot.isReady ? `
-                                        <button onclick="window.farmApp.harvestTournament()" class="text-[9px] sm:text-[10px] bg-cg_gold hover:bg-orange-500 text-white font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded shadow-sm animate-pulse uppercase tracking-widest">Cosechar Torneo</button>
-                                    ` : `
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="text-[8px] sm:text-[9px] font-bold text-gray-500 mr-1 pointer-events-none">⏳ ${timeLeftText}</span>
-                                            <button onclick="window.farmApp.confirmRemoveBonsai(); event.stopPropagation();" class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white border border-red-100 hover:border-red-500 text-[7px] sm:text-[8px] font-black transition-all uppercase tracking-widest px-1.5 sm:px-2 py-1 rounded-md shadow-sm">Remover</button>
-                                            <button onclick="window.farmApp.openWaterCalibration(); event.stopPropagation();" class="bg-cg_blue hover:bg-cg_navy text-white text-[8px] sm:text-[9px] font-black transition-all uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md shadow-sm">Regar</button>
-                                        </div>
-                                    `}
-                                </div>
-                            </div>
-                        `;
-                    }
-                    grid.appendChild(el);
-                    return; 
-                }
 
                 if (plot.status === 'locked') {
                     const cost = this.PLOT_COSTS[plot.id];
@@ -2184,44 +2058,6 @@ if (typeof window.farmApp === 'undefined') {
             const anyPlantInfected = this.state.plots.some(p => p.status === 'planted' && p.hasCrow);
             
             this.state.plots.forEach(plot => {
-                if (plot.id === 8 && plot.status === 'tournament') {
-                    const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
-                    if (plot.water > 0) {
-                        plot.water = Math.max(0, plot.water - (conf.evapPerHour * seasonMultiplier * deltaHours)); 
-                        changesMade = true;
-                    }
-
-                    if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
-                        plot.hasCrow = false;
-                        plot.crowLeavingAt = 0;
-                        changesMade = true;
-                        if(deltaMS < 60000) this.showPlotToast(plot.id, '🕊️', 'Plaga curada');
-                    }
-
-                    if (anyPlantInfected && !plot.hasCrow && plot.crowLeavingAt <= now) {
-                        plot.hasCrow = true;
-                        if(deltaMS < 60000) this.showPlotToast(plot.id, '🦅', '¡Plaga Contagiada!');
-                        changesMade = true;
-                    }
-
-                    if (plot.hasCrow) {
-                        const mins = deltaMS / 60000;
-                        plot.score = Math.max(0, plot.score - (conf.drainPerMin * mins));
-                        changesMade = true;
-                    }
-
-                    if (plot.water < conf.minWater || plot.water > conf.maxWater) { 
-                        const mins = deltaMS / 60000;
-                        plot.score = Math.max(0, plot.score - (conf.drainPerMin * mins)); 
-                        changesMade = true;
-                    }
-                    if (now >= plot.tournamentEndTime && !plot.isReady) {
-                        plot.isReady = true;
-                        changesMade = true;
-                        if(deltaMS < 60000) this.showPlotToast(plot.id, '🏆', '¡Torneo Finalizado!');
-                    }
-                    return; 
-                }
 
                 if (plot.hasCrow && plot.crowLeavingAt > 0 && now >= plot.crowLeavingAt) {
                     plot.hasCrow = false;
@@ -3046,59 +2882,9 @@ if (typeof window.farmApp === 'undefined') {
         startEnvironmentSimulation() {
             if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
             this.processTick();
-
-            // LÓGICA DE INICIO SINCRONIZADO - SEPARADA PARA EJECUTARLA INMEDIATAMENTE
-            const checkTournamentStart = async () => {
-                const arena = this.state.plots[8];
-                
-                if (arena && arena.status === 'tournament_waiting') {
-                    try {
-                        let url = arena.instanceId 
-                            ? '/api/tournaments/status/' + arena.instanceId 
-                            : '/api/tournaments/global_leaderboard/' + (arena.tournamentId || 1);
-                            
-                        const res = await fetch(url);
-                        
-                        // Protección Anti-Caídas: Solo analizar si la respuesta es realmente JSON (ok)
-                        if (!res.ok) {
-                            console.warn("Retraso en el servidor de torneos, reintentando luego...");
-                            return;
-                        }
-                        
-                        const data = await res.json();
-                        
-                        // Si ya está corriendo o incluso si ya terminó, forzamos la apertura de la parcela
-                        if (data.status === 'running' || data.status === 'completed') {
-                            arena.status = 'tournament';
-                            arena.tournamentEndTime = parseInt(data.end_time);
-                            
-                            // Aseguramos que la imagen y los datos persistan
-                            const conf = this.TOURNAMENT_CONFIGS[arena.tournamentId || 1];
-                            if(!arena.plant) {
-                                arena.plant = { id: 'tournament_' + arena.tournamentId, name: conf.name, icon: conf.image };
-                            }
-                            
-                            // Rescate de puntaje en caso de que esté en 0 o corrupto
-                            if(arena.score === undefined || arena.score <= 0) arena.score = conf.startScore || 10000;
-                            if(arena.water === undefined) arena.water = 50;
-
-                            this.showPlotToast(5, '🔥', '¡EL TORNEO HA INICIADO!');
-                            this.renderPlots();
-                            this.saveState();
-                        }
-                    } catch(e) {
-                        console.error("Fallo silencioso sincronizando inicio de torneo:", e);
-                    }
-                }
-            };
-
-            // Ejecutamos inmediatamente al abrir la granja (sin esperar 10 segundos)
-            checkTournamentStart();
-
-            // Mantenemos la verificación cíclica por si inician estando dentro de la granja
+            
             this.state.simulationInterval = setInterval(() => {
                 this.processTick();
-                checkTournamentStart();
             }, 10000);
         },
 
