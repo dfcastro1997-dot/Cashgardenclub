@@ -658,13 +658,16 @@ window.combatApp = {
             });
             window.farmApp.state.pendingCombatReward = 0;
         } else if (squadValue < 500) {
-            this.enemyTeam = [ createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35), createCrow('Cuervo Vigía', 250, 25) ];
+            // Nivel Bajo: HP Total 350 (En lugar de 650)
+            this.enemyTeam = [ createCrow('C. Rastrero', 100, 25), createCrow('C. Rastrero', 100, 25), createCrow('Cuervo Vigía', 150, 20) ];
             window.farmApp.state.pendingCombatReward = 15000;
         } else if (squadValue >= 1000) {
-            this.enemyTeam = [ createCrow('Cuervo Vigía', 450, 45), createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85) ];
+            // Nivel Alto: HP Total 850 (En lugar de 1650)
+            this.enemyTeam = [ createCrow('Cuervo Vigía', 250, 40), createCrow('Cuervo Alfa', 300, 60), createCrow('Cuervo Alfa', 300, 60) ];
             window.farmApp.state.pendingCombatReward = 60000;
         } else {
-            this.enemyTeam = [ createCrow('C. Rastrero', 250, 45), createCrow('Cuervo Alfa', 450, 75), createCrow('Cuervo Vigía', 300, 35) ];
+            // Nivel Medio: HP Total 530 (En lugar de 1000)
+            this.enemyTeam = [ createCrow('C. Rastrero', 150, 35), createCrow('Cuervo Alfa', 200, 50), createCrow('Cuervo Vigía', 180, 30) ];
             window.farmApp.state.pendingCombatReward = 30000;
         }
 
@@ -1259,7 +1262,8 @@ window.combatApp = {
                             this.updateUI(); await this.sleep(600);
                             this.showFx("¡ALMA CARROÑERA!", "text-purple-500");
                             this.playSound('tactic', 'Transfusión');
-                            let healAmt = Math.floor(target.maxHp * 0.3);
+                            // Reducido del 30% al 15%
+                            let healAmt = Math.floor(target.maxHp * 0.15);
                             bestAlly.hp = Math.min(bestAlly.maxHp, bestAlly.hp + healAmt);
                             this.showFloatingDamage(`enemy-${this.enemyTeam.indexOf(bestAlly)}`, `+${healAmt}`, "text-purple-500");
                             await this.sleep(600);
@@ -1391,7 +1395,8 @@ window.combatApp = {
                 this.updateUI(); await this.sleep(500);
                 this.showFx("CARROÑAR", "text-green-500");
                 this.playSound('tactic', 'Savia Concentrada');
-                let healAmt = Math.floor(enemy.maxHp * 0.5);
+                // Reducido del 50% al 20%
+                let healAmt = Math.floor(enemy.maxHp * 0.2);
                 enemy.hp = Math.min(enemy.maxHp, enemy.hp + healAmt);
                 enemy.usedHeal = true;
                 this.showFloatingDamage(`enemy-${i}`, `+${healAmt}`, "text-green-500");
