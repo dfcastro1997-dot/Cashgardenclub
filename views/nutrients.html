@@ -269,6 +269,7 @@
 <div id="allowed-plants-modal" class="fixed inset-0 z-[700] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeAllowedPlantsModal()"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-4xl relative z-10 flex flex-col overflow-hidden animate-fade-in max-h-[90vh]">
+        <!-- ENCABEZADO -->
         <div class="p-5 md:p-6 border-b border-gray-100 shrink-0 bg-white relative flex justify-between items-center">
             <div>
                 <h3 class="text-xl md:text-2xl font-black text-cg_navy tracking-tight" id="ap-league-name">Plantas Permitidas</h3>
@@ -277,18 +278,32 @@
             <button onclick="closeAllowedPlantsModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition-colors">✕</button>
         </div>
         
-        <!-- Buscador -->
-        <div class="p-4 bg-gray-50 border-b border-gray-200 shrink-0">
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">🔍</span>
-                <input type="text" id="ap-search-input" onkeyup="filterAllowedPlants()" placeholder="Buscar planta por nombre o categoría..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-cg_blue outline-none font-bold text-sm text-cg_navy shadow-inner">
+        <div class="flex-1 overflow-y-auto bg-gray-50 flex flex-col">
+            
+            <!-- TUS PLANTAS DISPONIBLES (NUEVO) -->
+            <div class="p-4 md:p-6 border-b border-gray-200">
+                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest mb-3 flex items-center gap-2"><span>🛡️</span> Tu Escuadrón Disponible</h4>
+                <div id="ap-my-plants-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <!-- Inyectado por JS -->
+                </div>
             </div>
-        </div>
 
-        <div class="p-4 md:p-6 bg-gray-50 flex-1 overflow-y-auto">
-            <div id="ap-plants-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Inyectado por JS -->
+            <!-- BUSCADOR STICKY -->
+            <div class="p-4 bg-white border-b border-gray-200 shrink-0 sticky top-0 z-10 shadow-sm">
+                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest mb-3 flex items-center gap-2"><span>🛒</span> Catálogo del Mercado</h4>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">🔍</span>
+                    <input type="text" id="ap-search-input" onkeyup="filterAllowedPlants()" placeholder="Buscar planta por nombre o categoría..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-cg_blue outline-none font-bold text-sm text-cg_navy shadow-inner">
+                </div>
             </div>
+
+            <!-- LISTA DE PLANTAS DEL MERCADO -->
+            <div class="p-4 md:p-6 flex-1">
+                <div id="ap-plants-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Inyectado por JS -->
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -327,7 +342,6 @@
             const pRes = await fetch('/api/plants');
             if(pRes.ok) window.dynamicPlantsCache = await pRes.json();
 
-            // REACTIVADO: Ahora sí leerá lo que guardaste en el Admin
             const cRes = await fetch('/api/admin/tournament_config?admin_token=supersecreto123');
             if(cRes.ok) window.serverTournamentConfig = await cRes.json();
         } catch(e) {}
@@ -375,12 +389,53 @@
 
         document.getElementById('ap-league-name').innerText = `Catálogo: ${leagueName}`;
         
-        // Almacenar las plantas para el filtro
+        // --- 1. MOSTRAR LAS PLANTAS QUE EL USUARIO YA TIENE (Granja/Arsenal) ---
+        let myPlantsHtml = '';
+        if (window.farmApp && window.farmApp.state) {
+            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+            let arsenal = window.farmApp.state.arsenal || [];
+
+            let validArsenal = arsenal.filter(p => p.plantId && allowedIds.includes(p.plantId));
+            let validPlots = readyPlots.filter(p => p.plant && allowedIds.includes(p.plant.id));
+
+            if (validArsenal.length === 0 && validPlots.length === 0) {
+                myPlantsHtml = '<p class="text-xs col-span-full text-gray-500 font-bold bg-white p-4 rounded-xl border border-gray-200">No tienes plantas listas que cumplan los requisitos. ¡Compra semillas abajo y plántalas!</p>';
+            } else {
+                validArsenal.forEach(p => {
+                    myPlantsHtml += `
+                        <div class="bg-white border border-green-200 rounded-xl p-2 flex flex-col items-center shadow-sm relative">
+                            <span class="absolute top-1 left-1 bg-green-100 text-green-700 text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Arsenal</span>
+                            <img src="${p.icon}" class="w-10 h-10 object-contain drop-shadow-md mb-1 mt-4">
+                            <span class="text-[9px] font-black text-cg_navy text-center leading-tight truncate w-full px-1">${p.name}</span>
+                            <div class="flex gap-1.5 mt-1 text-[7px] font-bold text-gray-500 uppercase">
+                                <span class="text-red-500">❤️ ${p.hp}</span>
+                                <span class="text-orange-500">⚔️ ${p.atk}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                validPlots.forEach(p => {
+                    myPlantsHtml += `
+                        <div class="bg-white border border-blue-200 rounded-xl p-2 flex flex-col items-center shadow-sm relative">
+                            <span class="absolute top-1 left-1 bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Granja</span>
+                            <img src="${p.plant.icon}" class="w-10 h-10 object-contain drop-shadow-md mb-1 mt-4">
+                            <span class="text-[9px] font-black text-cg_navy text-center leading-tight truncate w-full px-1">${p.plant.name}</span>
+                            <span class="text-[8px] text-gray-400 font-bold mt-1 uppercase">Parcela ${p.id + 1}</span>
+                        </div>
+                    `;
+                });
+            }
+        } else {
+            myPlantsHtml = '<p class="text-xs col-span-full text-gray-500 font-bold bg-white p-4 rounded-xl border border-gray-200">Inicia sesión y abre la Granja para ver tu escuadrón.</p>';
+        }
+        document.getElementById('ap-my-plants-list').innerHTML = myPlantsHtml;
+
+        // --- 2. MOSTRAR EL CATÁLOGO PARA COMPRAR ---
         window.currentAllowedPlants = window.dynamicPlantsCache.filter(dp => allowedIds.includes(dp.id));
-        
         document.getElementById('ap-search-input').value = '';
         renderAllowedPlants(window.currentAllowedPlants);
 
+        // Mostrar Modal
         document.getElementById('allowed-plants-modal').classList.remove('hidden');
         document.getElementById('allowed-plants-modal').classList.add('flex');
     }
@@ -406,7 +461,7 @@
             listEl.innerHTML += `
                 <div class="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center shadow-sm hover:border-cg_blue transition-colors relative">
                     <span class="absolute top-2 left-2 bg-gray-100 text-gray-500 text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">${dp.category || 'Estándar'}</span>
-                    <img src="${dp.image_url}" onerror="this.src='assets/Fondos/logo.png'" class="w-16 h-16 object-contain drop-shadow-md mb-3 mt-2">
+                    <img src="${dp.image_url}" onerror="this.src='assets/Fondos/logo.png'" class="w-16 h-16 object-contain drop-shadow-md mb-3 mt-4">
                     <span class="text-sm font-black text-cg_navy text-center leading-tight mb-2">${dp.name}</span>
                     
                     <div class="grid grid-cols-3 gap-1 w-full text-center mb-3">
@@ -424,7 +479,7 @@
                         </div>
                     </div>
 
-                    <button onclick="quickBuyPlant('${dp.id}', ${price}, '${safeName}', '${dp.image_url}', '${dp.pot_type || 'small'}')" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-2 rounded-xl text-xs uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-1 mt-auto">
+                    <button onclick="quickBuyPlant('${dp.id}', ${price}, '${safeName}', '${dp.image_url}', '${dp.pot_type || 'small'}')" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-1 mt-auto">
                         Comprar: ${price.toLocaleString()} 🌱
                     </button>
                 </div>
