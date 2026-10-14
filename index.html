@@ -1384,18 +1384,26 @@
 
         // ================= GALERÍA DE AVATARES =================
         const AVAILABLE_AVATARS = [
-            'assets/Perfil/defecto.png',
-            'assets/Perfil/1.png',
-            'assets/Perfil/2.png',
-            'assets/Perfil/3.jpg',
-            'assets/Perfil/4.jpg'
-            // ⚠️ IMPORTANTE: Añade aquí los nombres exactos de las imágenes (png/jpg) que hayas subido a la carpeta assets/Perfil
+            { src: 'assets/Perfil/defecto.png', name: 'Defecto' },
+            { src: 'assets/Perfil/Astronauta.jpg', name: 'Astronauta' },
+            { src: 'assets/Perfil/Cazador.jpg', name: 'Cazador' },
+            { src: 'assets/Perfil/Granjero.jpg', name: 'Granjero' },
+            { src: 'assets/Perfil/Formal.jpg', name: 'Formal' },
+            { src: 'assets/Perfil/Hockie.jpg', name: 'Hockie' },
+            { src: 'assets/Perfil/Ingeniero.jpg', name: 'Ingeniero' },
+            { src: 'assets/Perfil/Militar.jpg', name: 'Militar' },
+            { src: 'assets/Perfil/Millonario.jpg', name: 'Millonario' },
+            { src: 'assets/Perfil/Payaso.jpg', name: 'Payaso' },
+            { src: 'assets/Perfil/Fiestero.jpg', name: 'Fiestero' }
         ];
 
         window.openAvatarModal = function() {
             const grid = document.getElementById('avatar-grid');
-            grid.innerHTML = AVAILABLE_AVATARS.map(src => `
-                <img src="${src}" onclick="selectAvatar('${src}')" class="w-full aspect-square object-cover rounded-2xl border-4 border-transparent hover:border-cg_blue cursor-pointer shadow-sm transition-all hover:scale-105" onerror="this.style.display='none'">
+            grid.innerHTML = AVAILABLE_AVATARS.map(avatar => `
+                <div class="flex flex-col items-center gap-1.5 mb-2">
+                    <img src="${avatar.src}" onclick="selectAvatar('${avatar.src}')" class="w-full aspect-square object-cover rounded-2xl border-4 border-transparent hover:border-cg_blue cursor-pointer shadow-sm transition-all hover:scale-105" onerror="this.parentElement.style.display='none'">
+                    <span class="text-[10px] font-black text-cg_navy uppercase tracking-widest text-center leading-tight truncate w-full">${avatar.name}</span>
+                </div>
             `).join('');
             
             document.getElementById('avatar-modal').classList.remove('hidden');
