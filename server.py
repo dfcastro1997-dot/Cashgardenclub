@@ -187,6 +187,8 @@ def init_db():
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(50);") # NUEVO
 
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS short_id VARCHAR(4) UNIQUE;")
+    # --- AÑADIR ESTA LÍNEA PARA LOS REFERIDOS ---
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS ref_code VARCHAR(5) UNIQUE;")
     
     # NUEVA TABLA PARA CONEXIONES PVP
     cur.execute('''
@@ -651,6 +653,7 @@ def serve_admin(): return send_from_directory('.', 'admin.html')
 @app.route('/api/register', methods=['POST'])
 def register():
     import random
+    import string # Necesario para el código alfanumérico
     data = request.json
     username = data.get('username')
     password = data.get('password')
@@ -666,16 +669,23 @@ def register():
     hashed_pw = generate_password_hash(password)
     token = str(uuid.uuid4())
     
-    # Generar un ID de 4 dígitos único e irrepetible
+    # Generar un ID de 4 dígitos único para PvP
     while True:
         short_id = str(random.randint(1000, 9999))
         cur.execute("SELECT id FROM users WHERE short_id = %s", (short_id,))
         if not cur.fetchone():
             break
+
+    # --- NUEVO: Generar Código de Referido de 5 caracteres (Letras y Números) ---
+    while True:
+        ref_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        cur.execute("SELECT id FROM users WHERE ref_code = %s", (ref_code,))
+        if not cur.fetchone():
+            break
     
     cur.execute(
-        "INSERT INTO users (username, password_hash, balance, session_token, short_id) VALUES (%s, %s, 0, %s, %s) RETURNING id, username, balance, session_token, short_id", 
-        (username, hashed_pw, token, short_id)
+        "INSERT INTO users (username, password_hash, balance, session_token, short_id, ref_code) VALUES (%s, %s, 0, %s, %s, %s) RETURNING id, username, balance, session_token, short_id, ref_code", 
+        (username, hashed_pw, token, short_id, ref_code)
     )
     new_user = cur.fetchone()
     conn.commit()
@@ -687,6 +697,7 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     import random
+    import string
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
@@ -695,8 +706,19 @@ def login():
     if user and check_password_hash(user['password_hash'], data.get('password')):
         token = str(uuid.uuid4())
         short_id = user.get('short_id')
+        ref_code = user.get('ref_code')
         
-        # --- REPARACIÓN PARA CUENTAS ANTIGUAS SIN ID AL INICIAR SESIÓN ---
+        # Generar ref_code si es una cuenta antigua que no lo tiene
+        if not ref_code:
+            while True:
+                ref_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+                cur.execute("SELECT id FROM users WHERE ref_code = %s", (ref_code,))
+                if not cur.fetchone():
+                    break
+            cur.execute("UPDATE users SET ref_code = %s WHERE id = %s", (ref_code, user['id']))
+            user['ref_code'] = ref_code
+
+        # Reparación para cuentas antiguas sin ID
         if not short_id:
             while True:
                 short_id = str(random.randint(1000, 9999))
@@ -726,13 +748,27 @@ def sync_user(username):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT id, balance, game_state, session_token, telegram_chat_id, short_id FROM users WHERE username = %s", (username,))
+    # --- AÑADIDO: ref_code en la consulta SQL ---
+    cur.execute("SELECT id, balance, game_state, session_token, telegram_chat_id, short_id, ref_code FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
     
     if user_data:
-        # --- REPARACIÓN PARA CUENTAS ANTIGUAS SIN ID ACTIVAS AHORA MISMO ---
+        import random
+        import string
+        
+        # Generar ref_code si es cuenta antigua sincronizando
+        if not user_data.get('ref_code'):
+            while True:
+                new_ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+                cur.execute("SELECT id FROM users WHERE ref_code = %s", (new_ref,))
+                if not cur.fetchone():
+                    break
+            cur.execute("UPDATE users SET ref_code = %s WHERE id = %s", (new_ref, user_data['id']))
+            conn.commit()
+            user_data['ref_code'] = new_ref
+
+        # Reparación para cuentas antiguas sin ID
         if not user_data.get('short_id'):
-            import random
             while True:
                 new_id = str(random.randint(1000, 9999))
                 cur.execute("SELECT id FROM users WHERE short_id = %s", (new_id,))
@@ -741,34 +777,6 @@ def sync_user(username):
             cur.execute("UPDATE users SET short_id = %s WHERE id = %s", (new_id, user_data['id']))
             conn.commit()
             user_data['short_id'] = new_id
-
-        # Buscar si alguien lo está retando en este momento
-        cur.execute('''
-            SELECT p.id as match_id, u.username as challenger_name, u.short_id as challenger_short_id, p.bet_seeds 
-            FROM pvp_matches p JOIN users u ON p.challenger_id = u.id 
-            WHERE p.target_id = %s AND p.status = 'pending' LIMIT 1
-        ''', (user_data['id'],))
-        challenge = cur.fetchone()
-        if challenge:
-            user_data['pending_challenge'] = challenge
-
-        if user_data.get('session_token') and user_data['session_token'] != token:
-            cur.close(); conn.close()
-            return jsonify({"error": "Sesión expirada"}), 401
-            
-        validated_state = process_server_tick(user_data['game_state'], user_data.get('telegram_chat_id'))
-        if validated_state != user_data['game_state']:
-            cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state, username))
-            conn.commit()
-            user_data['game_state'] = validated_state
-
-        user_data['balance'] = float(user_data['balance'] or 0)
-        cur.close(); conn.close()
-        return jsonify({"status": "success", "user": user_data}), 200
-    
-    cur.close(); conn.close()
-    return jsonify({"error": "Usuario no encontrado"}), 404
-
 
 
 @app.route('/api/save_state', methods=['POST'])
