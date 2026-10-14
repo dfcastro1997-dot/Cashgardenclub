@@ -152,7 +152,16 @@ window.shopApp = {
                     }
                 });
             }
-        } catch(e) {}
+        } catch(e) { console.error("Error cargando plantas dinámicas", e); }
+        
+        // --- INYECTAR PLANTAS DE REFERIDOS ---
+        this.catalog.flowers.push(
+            { id: 'flower_drosera', name: 'Drosera Pegajosa', image: 'assets/Plantas/Drosera Pegajosa.gif', duration: 'Recompensa', usage: '1', desc: 'Planta carnívora especial obtenida por invitar a 3 amigos.', category: 'Plantas Mutantes', potType: 'small', price: 0, hp: 100, atk: 50, def: 20, reward: 15000, isReferral: true, reqRefs: 3 },
+            { id: 'flower_nepenthes', name: 'Nepenthes Ácida', image: 'assets/Plantas/Nepenthes Acida.gif', duration: 'Recompensa', usage: '1', desc: 'Planta carnívora corrosiva obtenida por invitar a 5 amigos.', category: 'Plantas Mutantes', potType: 'small', price: 0, hp: 120, atk: 60, def: 25, reward: 25000, isReferral: true, reqRefs: 5 },
+            { id: 'flower_venus', name: 'Venus Trituradora', image: 'assets/Plantas/Venus Trituradora.gif', duration: 'Recompensa', usage: '1', desc: 'Planta carnívora letal obtenida por invitar a 10 amigos.', category: 'Plantas Mutantes', potType: 'big', price: 0, hp: 150, atk: 80, def: 30, reward: 40000, isReferral: true, reqRefs: 10 },
+            { id: 'flower_hidra', name: 'Hidra del Abismo', image: 'assets/Plantas/Hidra del Abismo.gif', duration: 'Recompensa', usage: '1', desc: 'Planta legendaria devoradora obtenida por invitar a 20 amigos.', category: 'Plantas Mutantes', potType: 'big', price: 0, hp: 250, atk: 120, def: 50, reward: 80000, isReferral: true, reqRefs: 20 }
+        );
+        // -------------------------------------
         
         this.updateBalancesUI();
         this.renderShopItems();
@@ -245,6 +254,14 @@ window.shopApp = {
                 actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
             } else if (item._type === 'exchange') {
                 actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
+            } else if (item.isReferral) {
+                // ESTILO EXCLUSIVO DE REFERIDOS
+                actionArea = `
+                    <button onclick="loadView('referrals')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-[10px] md:text-xs h-11 px-2 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                        Requiere ${item.reqRefs} Referidos 🤝
+                    </button>
+                `;
+                premiumBadge = `<div class="absolute -right-6 top-4 bg-orange-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30 cursor-pointer" onclick="loadView('referrals')">REFERIDOS</div>`;
             } else {
                 actionArea = `
                     <div class="flex items-center gap-2 mt-auto">

@@ -647,8 +647,108 @@
         </div>
     </div>
 
-    <!-- LÓGICA JAVASCRIPT DEL ADMIN -->
+<!-- MODAL DESBLOQUEOS REFERIDOS ADMIN -->
+    <div id="admin-referral-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeReferralAdminModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 border-t-4 border-orange-500 animate-fade-in text-left">
+            <h3 class="text-lg font-black text-cg_navy mb-1 border-b border-gray-100 pb-2">Premios de Referidos</h3>
+            <p class="text-xs text-gray-500 mb-4 font-medium">Otorgar al jugador: <strong id="ref-admin-username" class="text-cg_navy"></strong></p>
+            
+            <input type="hidden" id="ref-admin-short-id">
+
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[10px] font-black text-orange-500 uppercase mb-1">1. Desbloquear Avatar</label>
+                    <select id="ref-admin-avatar" class="w-full bg-orange-50 border border-orange-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none focus:border-orange-500 shadow-inner">
+                        <option value="none">--- No Desbloquear Ninguno ---</option>
+                        <option value="assets/Perfil/Cuervo Mercenario.gif">Avatar: Cuervo Mercenario</option>
+                        <option value="assets/Perfil/Granjero Cazacuervos.gif">Avatar: Granjero Cazacuervos</option>
+                        <option value="assets/Perfil/Rey Cuervo Eclipse.gif">Avatar: Rey Cuervo Eclipse</option>
+                        <option value="assets/Perfil/Simbiosis Carnívora.gif">Avatar: Simbiosis Carnívora</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-green-600 uppercase mb-1">2. Entregar Planta Especial</label>
+                    <select id="ref-admin-plant" class="w-full bg-green-50 border border-green-200 text-cg_navy px-3 py-3 rounded-xl text-xs font-bold outline-none focus:border-green-500 shadow-inner">
+                        <option value="none">--- No Entregar Ninguna ---</option>
+                        <option value="flower_drosera">Planta: Drosera Pegajosa (x1)</option>
+                        <option value="flower_nepenthes">Planta: Nepenthes Ácida (x1)</option>
+                        <option value="flower_venus">Planta: Venus Trituradora (x1)</option>
+                        <option value="flower_hidra">Planta: Hidra del Abismo (x1)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeReferralAdminModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-colors">Cancelar</button>
+                <button onclick="executeReferralAdminReward()" id="btn-ref-admin-submit" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 rounded-xl shadow-md text-xs uppercase tracking-wider transition-colors">Otorgar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function openReferralAdminModal(short_id, username) {
+            document.getElementById('ref-admin-short-id').value = short_id;
+            document.getElementById('ref-admin-username').innerText = `${username} (#${short_id})`;
+            document.getElementById('ref-admin-avatar').value = 'none';
+            document.getElementById('ref-admin-plant').value = 'none';
+            document.getElementById('admin-referral-modal').classList.remove('hidden');
+            document.getElementById('admin-referral-modal').classList.add('flex');
+        }
+
+        function closeReferralAdminModal() {
+            document.getElementById('admin-referral-modal').classList.add('hidden');
+            document.getElementById('admin-referral-modal').classList.remove('flex');
+        }
+
+        async function executeReferralAdminReward() {
+            const short_id = document.getElementById('ref-admin-short-id').value;
+            const avatar = document.getElementById('ref-admin-avatar').value;
+            const plant = document.getElementById('ref-admin-plant').value;
+            
+            if (avatar === 'none' && plant === 'none') {
+                showAdminAlert("Aviso", "Selecciona al menos un premio para otorgar.");
+                return;
+            }
+
+            let cart = [];
+            if (avatar !== 'none') {
+                const label = document.getElementById('ref-admin-avatar').options[document.getElementById('ref-admin-avatar').selectedIndex].text;
+                cart.push({ type: 'avatar', rawData: avatar, label: label });
+            }
+            if (plant !== 'none') {
+                const label = document.getElementById('ref-admin-plant').options[document.getElementById('ref-admin-plant').selectedIndex].text;
+                cart.push({ type: 'item', rawData: { id: plant, qty: 1 }, label: label });
+            }
+
+            const btn = document.getElementById('btn-ref-admin-submit');
+            btn.innerText = "Enviando..."; btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/admin/add_items', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        admin_token: ADMIN_TOKEN, short_id: short_id, target_all: false,
+                        cart: cart, gift_msg: "¡Felicitaciones! Has recibido recompensas exclusivas por expandir la comunidad de CashGarden.",
+                        dynamic_plants_data: []
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAdminAlert("Éxito", "Premios de referidos inyectados correctamente al jugador.");
+                    closeReferralAdminModal();
+                } else {
+                    showAdminAlert("Error", data.error || "Fallo al entregar recompensa.");
+                }
+            } catch (e) {
+                showAdminAlert("Error", "Fallo de conexión al enviar el premio.");
+            } finally {
+                btn.innerText = "Otorgar"; btn.disabled = false;
+            }
+        }
+
+
+        
         const ADMIN_TOKEN = "supersecreto123";
         let allUsersCache = [];
         let invoiceCart = [];
@@ -924,8 +1024,9 @@
                         <td class="p-3">${invitedByStr}</td>
                         <td class="p-3 text-right font-black text-green-600 text-xs">${seedsText}</td>
                         <td class="p-3 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance||0).toLocaleString()}</td>
-                        <td class="p-3 pr-4 text-center">
-                            <button onclick="goToAction('${u.short_id}', '${u.username}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-cg_blue hover:text-white hover:border-cg_blue px-3 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Ver</button>
+                        <td class="p-3 pr-4 text-center flex justify-center gap-1">
+                            <button onclick="goToAction('${u.short_id}', '${u.username}')" class="bg-white border border-gray-200 text-gray-600 hover:bg-cg_blue hover:text-white px-2 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Ver</button>
+                            <button onclick="openReferralAdminModal('${u.short_id}', '${u.username}')" class="bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-500 hover:text-white px-2 py-1.5 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest shadow-sm">Premios Ref</button>
                         </td>
                     </tr>
                 `;
@@ -1669,5 +1770,20 @@
             });
         }
     </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>

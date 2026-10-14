@@ -1443,17 +1443,42 @@
             { src: 'assets/Perfil/Militar.jpg', name: 'Militar' },
             { src: 'assets/Perfil/Millonario.jpg', name: 'Millonario' },
             { src: 'assets/Perfil/Payaso.jpg', name: 'Payaso' },
-            { src: 'assets/Perfil/Fiestero.jpg', name: 'Fiestero' }
+            { src: 'assets/Perfil/Fiestero.jpg', name: 'Fiestero' },
+            // Nuevos Avatares de Referidos (Bloqueados por defecto)
+            { src: 'assets/Perfil/Cuervo Mercenario.gif', name: 'Mercenario', isReferral: true },
+            { src: 'assets/Perfil/Granjero Cazacuervos.gif', name: 'Cazacuervos', isReferral: true },
+            { src: 'assets/Perfil/Rey Cuervo Eclipse.gif', name: 'Rey Eclipse', isReferral: true },
+            { src: 'assets/Perfil/Simbiosis Carnívora.gif', name: 'Simbiosis', isReferral: true }
         ];
 
         window.openAvatarModal = function() {
             const grid = document.getElementById('avatar-grid');
-            grid.innerHTML = AVAILABLE_AVATARS.map(avatar => `
-                <div class="flex flex-col items-center gap-1.5 mb-2">
-                    <img src="${avatar.src}" onclick="selectAvatar('${avatar.src}')" class="w-full aspect-square object-cover rounded-2xl border-4 border-transparent hover:border-cg_blue cursor-pointer shadow-sm transition-all hover:scale-105" onerror="this.parentElement.style.display='none'">
-                    <span class="text-[10px] font-black text-cg_navy uppercase tracking-widest text-center leading-tight truncate w-full">${avatar.name}</span>
+            
+            // Leer avatares desbloqueados desde el estado del jugador
+            let unlockedAvatars = [];
+            if (window.farmApp && window.farmApp.state && window.farmApp.state.unlockedAvatars) {
+                unlockedAvatars = window.farmApp.state.unlockedAvatars;
+            }
+
+            grid.innerHTML = AVAILABLE_AVATARS.map(avatar => {
+                const isLocked = avatar.isReferral && !unlockedAvatars.includes(avatar.src);
+                
+                const lockLayer = isLocked ? `
+                    <div class="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center z-10 transition-all hover:bg-black/40 cursor-pointer" onclick="loadView('referrals'); closeAvatarModal();">
+                        <span class="text-4xl drop-shadow-md">🔒</span>
+                    </div>
+                ` : '';
+                
+                const clickAction = isLocked ? `loadView('referrals'); closeAvatarModal();` : `selectAvatar('${avatar.src}')`;
+
+                return `
+                <div class="flex flex-col items-center gap-1.5 mb-2 relative">
+                    ${lockLayer}
+                    <img src="${avatar.src}" onclick="${clickAction}" class="w-full aspect-square object-cover rounded-2xl border-4 border-transparent hover:border-cg_blue cursor-pointer shadow-sm transition-all hover:scale-105" onerror="this.parentElement.style.display='none'">
+                    <span class="text-[10px] font-black ${isLocked ? 'text-orange-500' : 'text-cg_navy'} uppercase tracking-widest text-center leading-tight truncate w-full">${avatar.name}</span>
                 </div>
-            `).join('');
+                `;
+            }).join('');
             
             document.getElementById('avatar-modal').classList.remove('hidden');
             document.getElementById('avatar-modal').classList.add('flex');
@@ -1467,7 +1492,7 @@
         window.selectAvatar = function(src) {
             if (window.farmApp && window.farmApp.state) {
                 window.farmApp.state.profilePic = src;
-                window.farmApp.saveState(); // Se guarda en PostgreSQL automáticamente
+                window.farmApp.saveState(); 
             }
             const avatarImg = document.querySelector('#profile-avatar img');
             if (avatarImg) avatarImg.src = src;

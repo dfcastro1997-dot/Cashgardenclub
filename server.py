@@ -776,8 +776,10 @@ def save_state():
                 if 'arsenal' in db_state: incoming_state['arsenal'] = db_state['arsenal']
                 if 'plots' in db_state: incoming_state['plots'] = db_state['plots']
                 if 'pending_gift' in db_state: incoming_state['pending_gift'] = db_state['pending_gift']
-                # --- SOLUCIÓN: PROTEGER LA FOTO DE PERFIL ---
+                
+                # --- SOLUCIÓN: PROTEGER FOTO DE PERFIL Y AVATARES ---
                 if 'profilePic' in db_state: incoming_state['profilePic'] = db_state['profilePic']
+                if 'unlockedAvatars' in db_state: incoming_state['unlockedAvatars'] = db_state['unlockedAvatars']
 
             incoming_seeds = incoming_state.get('seedsBalance', 0)
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)
@@ -1545,7 +1547,9 @@ def admin_add_items():
     names = {
         'flower_wheat': 'Trigo Rápido', 'flower_bamboo': 'Bambú Tryhard', 'flower_cactus': 'Cactus de Cuarzo',
         'flower_small': 'Flor Pequeña', 'flower_crystal': 'Helecho Cristal', 'flower_big': 'Flor Grande',
-        'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón'
+        'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón',
+        'flower_drosera': 'Drosera Pegajosa', 'flower_nepenthes': 'Nepenthes Ácida',
+        'flower_venus': 'Venus Trituradora', 'flower_hidra': 'Hidra del Abismo'
     }
     img_icons = {
         'flower_wheat': 'assets/Plantas/trigo_rapido.png', 
@@ -1554,7 +1558,11 @@ def admin_add_items():
         'flower_small': 'assets/Plantas/flor_pequena.png', 
         'flower_crystal': 'assets/Plantas/helecho_cristal.png', 
         'flower_big': 'assets/Plantas/flor_grande.png', 
-        'flower_moon': 'assets/Plantas/lirio_lunar.png'
+        'flower_moon': 'assets/Plantas/lirio_lunar.png',
+        'flower_drosera': 'assets/Plantas/Drosera Pegajosa.gif',
+        'flower_nepenthes': 'assets/Plantas/Nepenthes Acida.gif',
+        'flower_venus': 'assets/Plantas/Venus Trituradora.gif',
+        'flower_hidra': 'assets/Plantas/Hidra del Abismo.gif'
     }
 
     # --- AÑADIDO: Cargar atributos de plantas dinámicas ---
@@ -1637,80 +1645,14 @@ def admin_add_items():
                     if parts[1] in ['water', 'combo']: state['autoWaterEndTime'] = max(state.get('autoWaterEndTime', 0), now) + ms_to_add
                     if parts[1] in ['harvest', 'combo']: state['autoHarvestEndTime'] = max(state.get('autoHarvestEndTime', 0), now) + ms_to_add
                 gift_items.append({"icon": "⭐", "text": lbl})
-
-        if gift_msg and len(gift_items) > 0:
-            state['pending_gift'] = { "message": gift_msg, "items": gift_items }
-
-        state['lastTick'] = now + 10000 
-
-        cur.execute("UPDATE users SET game_state = %s, balance = balance + %s WHERE id = %s", (json.dumps(state), total_cop_added, user['id']))
-
-    for user in users_to_update:
-        state = json.loads(user['game_state'] or '{}')
-        gift_items = []
-        total_cop_added = 0.0
-
-        for item in cart:
-            t = item.get('type')
-            raw = item.get('rawData')
-            lbl = item.get('label', '')
-            
-            if t == 'seeds':
-                qty = int(raw)
-                state['seedsBalance'] = state.get('seedsBalance', 0) + qty
-                gift_items.append({"icon": "🌱", "text": f"+{qty} Semillas"})
                 
-            elif t == 'cop':
-                qty = float(raw)
-                total_cop_added += qty
-                gift_items.append({"icon": "💵", "text": f"+${int(qty)} COP"})
-                
-            elif t == 'item':
-                item_id = raw['id']
-                qty = int(raw['qty'])
-                if 'inventory' not in state: state['inventory'] = {}
-                if item_id not in state['inventory']:
-                        state['inventory'][item_id] = {
-                            'qty': 0, 
-                            'type': 'seed' if ('flower' in item_id or 'dyn_' in item_id) else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
-                            'name': item_id.replace('_', ' ').title(), 
-                            'image': 'assets/Fondos/logo.png'
-                        }
-                state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
-                gift_items.append({"icon": icons.get(item_id, '📦'), "text": lbl})
-                
-            elif t == 'arsenal':
-                if 'arsenal' not in state: state['arsenal'] = []
-                pid = raw['id']
-                qty = int(raw['qty'])
-                patk, pdef, php = 40, 20, 100
-                if pid == 'flower_wheat': patk, pdef, php = 34, 15, 100
-                elif pid == 'flower_cactus': patk, pdef, php = 34, 35, 150
-                elif pid == 'flower_bamboo': patk, pdef, php = 50, 20, 100
-                elif pid == 'flower_crystal': patk, pdef, php = 100, 8, 60
-                elif pid == 'flower_moon': patk, pdef, php = 60, 25, 200
-                
-                for _ in range(qty):
-                    state['arsenal'].append({
-                        'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
-                        'plantId': pid, 'name': names.get(pid, pid.replace('_', ' ').title()), 'icon': img_icons.get(pid, 'assets/Fondos/logo.png'),
-                        'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
-                    })
-                gift_items.append({"icon": icons.get(pid, '⚔️'), "text": lbl})
-
-            elif t == 'vip':
-                unlock_vip = raw
-                if unlock_vip.startswith('plot_'):
-                    plot_idx = int(unlock_vip.split('_')[1])
-                    if 'plots' in state and len(state['plots']) > plot_idx:
-                        if state['plots'][plot_idx]['status'] in ['locked', 'arena_locked']:
-                            state['plots'][plot_idx]['status'] = 'empty'
-                elif unlock_vip.startswith('vip_'):
-                    parts = unlock_vip.split('_')
-                    ms_to_add = int(parts[2]) * 3600000
-                    if parts[1] in ['water', 'combo']: state['autoWaterEndTime'] = max(state.get('autoWaterEndTime', 0), now) + ms_to_add
-                    if parts[1] in ['harvest', 'combo']: state['autoHarvestEndTime'] = max(state.get('autoHarvestEndTime', 0), now) + ms_to_add
-                gift_items.append({"icon": "⭐", "text": lbl})
+            elif t == 'avatar':
+                if 'unlockedAvatars' not in state:
+                    state['unlockedAvatars'] = []
+                avatar_src = raw
+                if avatar_src not in state['unlockedAvatars']:
+                    state['unlockedAvatars'].append(avatar_src)
+                gift_items.append({"icon": "🖼️", "text": lbl})
 
         if gift_msg and len(gift_items) > 0:
             state['pending_gift'] = { "message": gift_msg, "items": gift_items }

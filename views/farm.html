@@ -1543,7 +1543,8 @@ if (typeof window.farmApp === 'undefined') {
                 inventory: this.state.inventory,
                 arsenal: this.state.arsenal || [],
                 lastTick: this.state.lastTick,
-                profilePic: this.state.profilePic // <-- Añadido para que se guarde en la BD
+                profilePic: this.state.profilePic,
+                unlockedAvatars: this.state.unlockedAvatars || [] // <-- AÑADIDO
             };
 
             // SEGURO PVP: Si acabamos de pelear, instruimos al backend de no sobreescribir nuestro balance
@@ -1648,9 +1649,12 @@ if (typeof window.farmApp === 'undefined') {
                                         });
                                     }
                                     
-                                    // --- SOLUCIÓN: RECUPERAR FOTO DE PERFIL ---
+                                    // --- SOLUCIÓN: RECUPERAR FOTO Y AVATARES ---
                                     if (s.profilePic) {
                                         this.state.profilePic = s.profilePic;
+                                    }
+                                    if (s.unlockedAvatars) {
+                                        this.state.unlockedAvatars = s.unlockedAvatars;
                                     }
                                     // ------------------------------------------
                                     
