@@ -668,6 +668,29 @@
                     body: JSON.stringify({ username: user, password: pass, referred_by: refBy })
                 });
 
+                const data = await response.json();
+
+                if (response.ok) {
+                    sessionStorage.setItem('username', data.user.username);
+                    sessionStorage.setItem('session_token', data.user.session_token);
+                    if (data.user.short_id) sessionStorage.setItem('short_id', data.user.short_id);
+
+                    updateProfileUI(data.user);
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    document.getElementById('dashboard-screen').classList.add('flex');
+                    loadView('farm', document.querySelector('.nav-btn-desktop'));
+                    startBackgroundMusic();
+                } else {
+                    showError(data.error || "Error en la autenticación.");
+                    if (btnLogin) btnLogin.disabled = false;
+                }
+            } catch (error) {
+                showError("Error de conexión con el servidor.");
+                if (btnLogin) btnLogin.disabled = false;
+            }
+        }
+
         function checkCookies() {
             if(!localStorage.getItem('cookiesAccepted')) {
                 setTimeout(() => {
