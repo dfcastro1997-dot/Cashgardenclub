@@ -236,14 +236,14 @@ window.shopApp = {
             
             if (tab === 'flowers') { tag = item.category ? item.category : 'Semilla'; tagStyle = 'bg-cg_blue text-white border-blue-400'; } 
             else if (tab === 'tools') { tag = 'Herramienta'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
-            else if (tab === 'exchange') { tag = 'Cambio COP'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
+            else if (tab === 'exchange') { tag = 'Cambio Créditos'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
             else { tag = 'Servicio Premium'; tagStyle = 'bg-white text-gray-600 border-gray-200'; }
             
             let actionArea = '';
             let stockBadge = '';
 
             if (tab === 'iap') {
-                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} COP</button>`;
+                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} CRÉDITOS</button>`;
             } else if (tab === 'exchange') {
                 actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
             } else {
@@ -260,7 +260,7 @@ window.shopApp = {
                     actionArea = `
                         <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
                             <button onclick="window.shopApp.buyPremiumSeed('${item.id}', ${item.price_cop})" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-1">
-                                Comprar por $${item.price_cop.toLocaleString()} COP
+                                Comprar por $${item.price_cop.toLocaleString()} CRÉDITOS
                             </button>
                         </div>
                     `;
@@ -280,7 +280,7 @@ window.shopApp = {
                 }
             }
 
-            let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} COP</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
+            let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} CRÉDITOS</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
             
             let statsHtml = '';
             let harvestHtml = '';
@@ -465,11 +465,11 @@ window.shopApp = {
                 if(window.syncUserData) window.syncUserData(); 
 
                 let catItem = this.catalog.exchange.find(i => i.id === packageId);
-                this.showPurchaseModal(catItem.image, "Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()} COP`, 'Debitado:');
+                this.showPurchaseModal(catItem.image, "Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()} CRÉDITOS`, 'Debitado:');
             } else {
                 const errorModal = document.getElementById('purchase-error-modal');
                 if (errorModal) {
-                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.";
+                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo de Créditos Insuficiente. Completa torneos o encuestas.";
                     errorModal.classList.remove('hidden');
                     errorModal.classList.add('flex');
                 } else {

@@ -209,7 +209,7 @@
                             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full animate-bounce shadow-md">i</span>
                         </div>
                         <div class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
-                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 hidden sm:inline">COP</span>
+                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 hidden sm:inline">CRÉDITOS</span>
                             <span id="global-balance" class="text-[11px] sm:text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
                         </div>
                     </div>
@@ -898,7 +898,7 @@
                         
                         const walletDisplay = document.getElementById('wallet-balance-display');
                         if (walletDisplay) {
-                            walletDisplay.innerText = "$" + dbBalance.toLocaleString() + " COP";
+                            walletDisplay.innerText = "$" + dbBalance.toLocaleString() + " CRÉDITOS";
                             const cashoutAmount = document.getElementById('cashout-amount');
                             if(cashoutAmount) cashoutAmount.max = dbBalance;
                         }

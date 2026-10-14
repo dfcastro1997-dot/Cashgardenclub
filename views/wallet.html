@@ -5,12 +5,12 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-cg_blue animate-pulse"></span>
                 <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Finanzas y Billetera</span>
             </div>
-            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Gestión de Capital (COP)</h2>
+            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Gestión de Capital (CRÉDITOS)</h2>
             <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Ingresa fondos para tus servicios VIP o retira las ganancias de tus torneos a Nequi.</p>
         </div>
         <div class="bg-gray-50 border border-gray-200 px-5 py-3 rounded-2xl text-right shadow-inner">
             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Saldo Disponible</p>
-            <p class="text-xl md:text-2xl font-black text-green-600" id="wallet-balance-display">$0 COP</p>
+            <p class="text-xl md:text-2xl font-black text-green-600" id="wallet-balance-display">$0 CRÉDITOS</p>
         </div>
     </div>
 
@@ -44,7 +44,7 @@
 
         <!-- Campo Libre -->
         <div class="mb-6">
-            <label class="block text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Otra Cantidad (COP)</label>
+            <label class="block text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Otra Cantidad (CRÉDITOS)</label>
             <input type="number" id="custom-deposit-input" placeholder="Escribe un monto personalizado..." class="w-full px-4 md:px-5 py-3.5 md:py-4 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-cg_navy text-lg transition-all" oninput="handleCustomDeposit()">
         </div>
 
@@ -76,13 +76,13 @@
             <div class="shrink-0 text-xl md:text-2xl mt-0.5">🏦</div>
             <div class="leading-relaxed">
                 <p class="mb-1 font-black">Dispersión de Ganancias</p>
-                <p class="text-[11px] md:text-xs opacity-90 font-medium">Los retiros se procesan de manera segura a través de nuestro portal bancario asociado. El tiempo estimado de entrega a tu cuenta Nequi es de <strong>24 a 48 horas hábiles</strong>. <br>El monto mínimo de retiro es de $10.000 COP. <strong>No aplicamos descuentos adicionales ni impuestos</strong> a las ganancias que retires.</p>
+                <p class="text-[11px] md:text-xs opacity-90 font-medium">Los retiros se procesan de manera segura a través de nuestro portal bancario asociado. El tiempo estimado de entrega a tu cuenta Nequi es de <strong>24 a 48 horas hábiles</strong>. <br>El monto mínimo de retiro es de $10.000 CRÉDITOS. <strong>No aplicamos descuentos adicionales ni impuestos</strong> a las ganancias que retires.</p>
             </div>
         </div>
         
         <form id="payout-settings-form" class="space-y-5 md:space-y-6">
             <div>
-                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Retirar (COP)</label>
+                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Retirar (CRÉDITOS)</label>
                 <input type="number" id="cashout-amount" min="10000" placeholder="Mínimo $10.000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-black text-cg_navy text-lg transition-all" required>
             </div>
 
@@ -120,7 +120,7 @@
     function initWallet() {
         if (!window.farmApp) return;
         const balance = window.farmApp.state.balance || 0;
-        document.getElementById('wallet-balance-display').innerText = "$" + balance.toLocaleString() + " COP";
+        document.getElementById('wallet-balance-display').innerText = "$" + balance.toLocaleString() + " CRÉDITOS";
         
         const maxInput = document.getElementById('cashout-amount');
         if (maxInput) {
@@ -249,7 +249,7 @@
 
     async function processWompiDeposit() {
         if (currentDepositAmount < 5000) {
-            showWalletAlertModal('Monto Inválido', 'El monto mínimo de recarga es de $5.000 COP.', 'error');
+            showWalletAlertModal('Monto Inválido', 'El monto mínimo de recarga es de $5.000 CRÉDITOS.', 'error');
             return;
         }
 
@@ -303,11 +303,11 @@
             return; 
         }
         if (isNaN(amount) || amount < 10000) { 
-            showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 COP.', 'error');
+            showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 CRÉDITOS.', 'error');
             return; 
         }
         if (amount > (window.farmApp?.state?.balance || 0)) { 
-            showWalletAlertModal('Saldo Insuficiente', 'No tienes saldo COP suficiente para retirar esa cantidad.', 'error');
+            showWalletAlertModal('Saldo Insuficiente', 'No tienes saldo suficiente para retirar esa cantidad.', 'error');
             return; 
         }
 
@@ -330,7 +330,7 @@
                     window.farmApp.state.balance = data.new_balance;
                     window.farmApp.saveState();
                 }
-                showWalletAlertModal('¡Retiro en Proceso!', `Se han descontado $${amount.toLocaleString()} COP. Tu dinero llegará en 24 a 48 horas hábiles.\n\nRef: ${data.reference}`, 'success');
+                showWalletAlertModal('¡Retiro en Proceso!', `Se han descontado $${amount.toLocaleString()} CRÉDITOS. Tu dinero llegará en 24 a 48 horas hábiles.\n\nRef: ${data.reference}`, 'success');
                 document.getElementById('cashout-amount').value = '';
                 initWallet();
             } else {
