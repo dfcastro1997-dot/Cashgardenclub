@@ -165,26 +165,33 @@ window.shopApp = {
                 const dynamicPlants = await res.json();
                 dynamicPlants.forEach(dp => {
                     if (!this.catalog.flowers.some(f => f.id === dp.id)) {
+                        
+                        // IDENTIFICAR SI ES PLANTA DE REFERIDOS PARA DARLE EL ESTILO ESPECIAL
+                        let isReferral = false;
+                        let reqRefs = 0;
+                        let durationTxt = dp.grow_time_minutes + ' Minutos';
+                        let descTxt = 'Especie única de rendimiento variable cultivada en laboratorios.';
+
+                        if (dp.name === 'Drosera Pegajosa') { isReferral = true; reqRefs = 3; durationTxt = 'Recompensa'; descTxt = 'Planta carnívora especial obtenida por invitar a 3 amigos.'; }
+                        else if (dp.name === 'Nepenthes Ácida') { isReferral = true; reqRefs = 5; durationTxt = 'Recompensa'; descTxt = 'Planta carnívora corrosiva obtenida por invitar a 5 amigos.'; }
+                        else if (dp.name === 'Venus Trituradora') { isReferral = true; reqRefs = 10; durationTxt = 'Recompensa'; descTxt = 'Planta carnívora letal obtenida por invitar a 10 amigos.'; }
+                        else if (dp.name === 'Hidra del Abismo') { isReferral = true; reqRefs = 20; durationTxt = 'Recompensa'; descTxt = 'Planta legendaria devoradora obtenida por invitar a 20 amigos.'; }
+
                         this.catalog.flowers.push({
                             id: dp.id, name: dp.name, image: dp.image_url,
-                            duration: dp.grow_time_minutes + ' Minutos', durationMins: dp.grow_time_minutes,
-                            usage: '1', desc: 'Especie única de rendimiento variable cultivada en laboratorios.',
+                            duration: durationTxt, durationMins: dp.grow_time_minutes,
+                            usage: '1', desc: descTxt,
                             category: dp.category || 'Planta Estándar', potType: dp.pot_type || 'small',
-                            price: dp.price, hp: dp.hp, atk: dp.atk, def: dp.def, reward: dp.reward
+                            price: dp.price, hp: dp.hp, atk: dp.atk, def: dp.def, reward: dp.reward,
+                            isReferral: isReferral, reqRefs: reqRefs
                         });
                     }
                 });
             }
         } catch(e) { console.error("Error cargando plantas dinámicas", e); }
         
-        // --- INYECTAR PLANTAS DE REFERIDOS ---
-        this.catalog.flowers.push(
-            { id: 'flower_drosera', name: 'Drosera Pegajosa', image: 'assets/Plantas/Drosera Pegajosa.gif', duration: 'Recompensa', usage: '1', desc: 'Planta carnívora especial obtenida por invitar a 3 amigos.', category: 'Plantas Mutantes', potType: 'small', price: 0, hp: 100, atk: 50, def: 20, reward: 15000, isReferral: true, reqRefs: 3 },
-            { id: 'flower_nepenthes', name: 'Nepenthes Ácida', image: 'assets/Plantas/Nepenthes Ácida.gif', duration: 'Recompensa', usage: '1', desc: 'Planta carnívora corrosiva obtenida por invitar a 5 amigos.', category: 'Plantas Mutantes', potType: 'small', price: 0, hp: 120, atk: 60, def: 25, reward: 25000, isReferral: true, reqRefs: 5 },
-            { id: 'flower_venus', name: 'Venus Trituradora', image: 'assets/Plantas/Venus Trituradora.gif', duration: 'Recompensa', usage: '1', desc: 'Planta carnívora letal obtenida por invitar a 10 amigos.', category: 'Plantas Mutantes', potType: 'big', price: 0, hp: 150, atk: 80, def: 30, reward: 40000, isReferral: true, reqRefs: 10 },
-            { id: 'flower_hidra', name: 'Hidra del Abismo', image: 'assets/Plantas/Hidra del Abismo.gif', duration: 'Recompensa', usage: '1', desc: 'Planta legendaria devoradora obtenida por invitar a 20 amigos.', category: 'Plantas Mutantes', potType: 'big', price: 0, hp: 250, atk: 120, def: 50, reward: 80000, isReferral: true, reqRefs: 20 }
-        );
-        // -------------------------------------
+        // SE ELIMINÓ EL BLOQUE "INYECTAR PLANTAS DE REFERIDOS" MANUAL.
+        // AHORA LAS TOMA DIRECTAMENTE DE LA BASE DE DATOS (EXCEL) SIN DUPLICARLAS.
         
         this.updateBalancesUI();
         this.renderShopItems();
