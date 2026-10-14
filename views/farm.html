@@ -3619,32 +3619,45 @@ if (typeof window.farmApp === 'undefined') {
             const isPvP = !!sessionStorage.getItem('pvp_match_id');
             const isTourney = !!sessionStorage.getItem('pve_tournament_id');
 
+            // ===== REEMPLAZAR DENTRO DE updateTeamBtn() =====
             if (isPvP) {
                 const bet = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
                 totalReward = bet * 2; 
             } else if (!isTourney) {
-                const REWARDS = {
-                    'flower_crystal': 15000, 
-                    'flower_wheat': 12000,   
-                    'flower_bamboo': 10000,  
-                    'flower_small': 10000,   
-                    'flower_cactus': 7000,   
-                    'flower_big': 6000,      
-                    'flower_moon': 5000,     
-                    'default': 8000
-                };
-
+                // Calcular squadValue para reflejar el mismo rango de recompensas que combat.html
+                let squadValue = 0;
+                
                 this.state.selectedCombatants.forEach(c => {
+                    let pHp = 100, pAtk = 40, pDef = 20;
                     let pid = 'default';
+                    
                     if (c.type === 'arsenal') {
                         const ap = this.state.arsenal.find(a => a.id === c.idTag);
-                        if (ap) pid = ap.plantId;
+                        if (ap) { pHp = ap.maxHp || ap.hp; pAtk = ap.atk; pDef = ap.def; pid = ap.plantId; }
                     } else if (c.type === 'plot') {
                         const p = this.state.plots.find(plot => plot.id == c.idTag);
-                        if (p && p.plant) pid = p.plant.id;
+                        if (p && p.plant) {
+                            pid = p.plant.id;
+                            if (this.state.dynamicPlants && this.state.dynamicPlants[pid]) {
+                                pHp = this.state.dynamicPlants[pid].hp;
+                                pAtk = this.state.dynamicPlants[pid].atk;
+                                pDef = this.state.dynamicPlants[pid].def;
+                            } else {
+                                if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
+                                else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
+                                else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
+                                else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
+                                else if(pid === 'flower_wheat' || pid === 'flower_small' || pid === 'flower_big') { pAtk = 40; pDef = 20; pHp = 100; }
+                            }
+                        }
                     }
-                    totalReward += (REWARDS[pid] || REWARDS['default']);
+                    squadValue += (pHp + pAtk + pDef);
                 });
+
+                // Determinar recompensa máxima posible (Base + Bono HP Total)
+                if (squadValue < 500) { totalReward = 500 + 2000; } 
+                else if (squadValue >= 1000) { totalReward = 2000 + 6000; } 
+                else { totalReward = 1000 + 4000; }
             }
 
             this.state.pendingCombatReward = totalReward;
@@ -3660,14 +3673,15 @@ if (typeof window.farmApp === 'undefined') {
                     rewardText.className = `text-xl md:text-2xl font-black text-cg_gold`;
                     rewardText.innerText = `Clasificatoria`;
                 } else {
-                    let rewardColor = isPvP ? 'text-cg_gold' : (totalReward >= 30000 ? 'text-red-500' : (totalReward >= 20000 ? 'text-orange-500' : 'text-green-600'));
+                    let rewardColor = isPvP ? 'text-cg_gold' : (totalReward >= 6000 ? 'text-red-500' : (totalReward >= 4000 ? 'text-orange-500' : 'text-green-600'));
                     rewardText.className = `text-xl md:text-2xl font-black ${rewardColor}`;
-                    rewardText.innerText = `+${totalReward.toLocaleString()} 🌱`;
+                    rewardText.innerText = isPvP ? `+${totalReward.toLocaleString()} 🌱` : `Hasta +${totalReward.toLocaleString()} 🌱`;
                 }
 
                 btn.disabled = false;
                 btn.className = "flex-[2] bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 sm:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-[10px] sm:text-xs";
             } else {
+            // ==============================================================
                 statsBox.classList.add('opacity-50', 'grayscale');
                 rewardText.className = "text-xl md:text-2xl font-black text-gray-500";
                 rewardText.innerText = "+0 🌱";

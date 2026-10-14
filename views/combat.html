@@ -1649,6 +1649,10 @@ window.combatApp = {
         let squadValue = 0;
         this.playerTeam.forEach(p => squadValue += (p.maxHp + p.atk + p.def));
         
+        // ===== REEMPLAZAR ESTE BLOQUE EN LA FUNCIÓN init() =====
+        let pveBaseReward = 0;
+        let pveMaxBonus = 0;
+
         if (this.isBotMode) {
             // MODO BOT (IA Entrenador con Plantas Reales)
             const botId = Math.floor(100 + Math.random() * 900) + String.fromCharCode(65 + Math.random() * 26) + String.fromCharCode(65 + Math.random() * 26);
@@ -1663,12 +1667,10 @@ window.combatApp = {
                 enemyIcon.className = "hidden min-[420px]:flex w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-orange-100 border-2 border-orange-400 items-center justify-center text-lg sm:text-2xl shadow-md shrink-0";
             }
 
-            // Seleccionamos 3 plantas al azar del catálogo de la base de datos (o default si no cargó)
             const dPlants = window.farmApp && window.farmApp.state.dynamicPlants 
                 ? Object.values(window.farmApp.state.dynamicPlants) 
                 : [];
             
-            // Si el jugador es fuerte (squadValue alto), filtramos plantas de tier alto para el bot
             let pool = dPlants;
             if (squadValue >= 1000 && dPlants.length > 5) pool = dPlants.filter(p => p.hp >= 150 || p.atk >= 70);
             else if (squadValue < 500 && dPlants.length > 5) pool = dPlants.filter(p => p.hp <= 120 && p.atk <= 50);
@@ -1676,45 +1678,30 @@ window.combatApp = {
             if (pool.length < 3) pool = this.PLANT_CATALOG.map(c => ({ id: c[0], name: c[1], image_url: 'assets/Plantas/'+c[2], hp: c[3], atk: c[4], def: c[5] }));
 
             this.enemyTeam = [];
-            
-            // --- ESCALADO PROPORCIONAL DINÁMICO ---
-            // Obtenemos el poder promedio de una planta del jugador
             const playerAvgPower = squadValue / Math.max(1, this.playerTeam.length);
 
             for(let i=0; i<3; i++) {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
-                
-                // Poder base de la planta elegida para el bot
                 const basePower = (rP.hp || 100) + (rP.atk || 40) + (rP.def || 20);
-                
-                // Multiplicador para igualar la fuerza del jugador (y un +5% a +15% extra para que sea un reto real)
                 const multiplier = Math.max(1, playerAvgPower / basePower) * (1.05 + Math.random() * 0.10);
 
                 const bHp = Math.floor((rP.hp || 100) * multiplier);
                 const bAtk = Math.floor((rP.atk || 40) * multiplier);
-                // Limitamos la defensa al 75% máximo para evitar bots invulnerables
                 const bDef = Math.min(75, Math.floor((rP.def || 20) * multiplier));
 
                 this.enemyTeam.push(buildPlantObj(rP.id || rP.catKey, rP.name, rP.image_url || rP.icon, false, `e_${i}`, bHp, 0, bAtk, bDef));
             }
-
-            // Recompensa del Bot en semillas
-            window.farmApp.state.pendingCombatReward = squadValue >= 1000 ? 70000 : (squadValue < 500 ? 18000 : 35000);
-
         } else {
             // MODO PVE: 3 CUERVOS ENEMIGOS ORIGINAL
             const d = new Date(); const hour = d.getHours(); const day = d.getDate();
             const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
             let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
             
-            // --- ESCALADO PROPORCIONAL DINÁMICO ---
             const playerAvgPower = squadValue / Math.max(1, this.playerTeam.length);
-            // Usamos una curva suave (0.85) para evitar que a niveles muy altos se vuelva imposible
             const powerMultiplier = Math.max(0.5, Math.pow(playerAvgPower / 150, 0.85)) * (0.90 + Math.random() * 0.20);
 
             const DEFAULT_CROW_IMG = 'assets/Enemigos/Cuervos/cuervo_base.png';
             const createCrow = (baseName, baseHp, baseAtk) => {
-                // Aplicamos el multiplicador al HP y Ataque base
                 let scaledHp = baseHp * powerMultiplier;
                 let scaledAtk = baseAtk * powerMultiplier;
 
@@ -1731,18 +1718,31 @@ window.combatApp = {
                 };
             };
 
-            // Ajustamos las estadísticas base (se multiplicarán por la fuerza del jugador)
             if (squadValue < 500) {
                 this.enemyTeam = [ createCrow('C. Rastrero', 150, 25), createCrow('C. Rastrero', 150, 25), createCrow('Cuervo Vigía', 200, 20) ];
-                window.farmApp.state.pendingCombatReward = 15000;
             } else if (squadValue >= 1000) {
                 this.enemyTeam = [ createCrow('Cuervo Vigía', 300, 35), createCrow('Cuervo Alfa', 400, 60), createCrow('Cuervo Alfa', 400, 60) ];
-                window.farmApp.state.pendingCombatReward = 60000;
             } else {
                 this.enemyTeam = [ createCrow('C. Rastrero', 180, 30), createCrow('Cuervo Alfa', 350, 50), createCrow('Cuervo Vigía', 250, 25) ];
-                window.farmApp.state.pendingCombatReward = 30000;
             }
         }
+
+        // --- OPCIÓN 4: REDUCCIÓN DRÁSTICA Y BOTÍN CONDICIONADO AL HP ---
+        // Se definen los techos de ganancia máxima (2.5k, 5k y 8k semillas)
+        if (squadValue < 500) {
+            pveBaseReward = 500;
+            pveMaxBonus = 2000;
+        } else if (squadValue >= 1000) {
+            pveBaseReward = 2000;
+            pveMaxBonus = 6000;
+        } else {
+            pveBaseReward = 1000;
+            pveMaxBonus = 4000;
+        }
+
+        this.pveBaseReward = pveBaseReward;
+        this.pveMaxBonus = pveMaxBonus;
+        // ==============================================================
 
         this.active = true;
         this.showPlantsDeck();
@@ -3808,9 +3808,34 @@ window.combatApp = {
 
         const finalTeam = [...this.playerTeam, ...this.playerReserve];
 
+        // ===== REEMPLAZAR DENTRO DE endCombat(victory) =====
         if (victory) {
             const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
-            const grossReward = this.isPvP ? (betAmount * 2) : (window.farmApp.state.pendingCombatReward || 30000);
+            let grossReward = 0;
+            let survivalBonus = 0;
+
+            if (this.isPvP) {
+                grossReward = betAmount * 2;
+            } else {
+                // Cálculo de HP restante de todo el equipo (incluyendo reservas)
+                let currentHpSum = 0;
+                let maxHpSum = 0;
+                const fullTeam = [...this.playerTeam, ...this.playerReserve];
+                
+                fullTeam.forEach(p => {
+                    if (p.hp > 0) {
+                        currentHpSum += p.hp;
+                    }
+                    maxHpSum += p.maxHp;
+                });
+
+                // Calcula porcentaje de vida sobrante y aplica el bono
+                const hpPercent = maxHpSum > 0 ? (currentHpSum / maxHpSum) : 0;
+                survivalBonus = Math.floor((this.pveMaxBonus || 0) * hpPercent);
+                
+                grossReward = (this.pveBaseReward || 0) + survivalBonus;
+            }
+
             const taxAmount = Math.floor(grossReward * 0.05);
             const netReward = grossReward - taxAmount;
 
@@ -3836,7 +3861,14 @@ window.combatApp = {
             const invoiceBox = document.getElementById('combat-victory-invoice');
             if (grossReward > 0) {
                 if (invoiceBox) invoiceBox.classList.remove('hidden');
-                document.getElementById('combat-victory-gross').innerText = `${grossReward.toLocaleString()} 🌱`;
+                
+                const grossEl = document.getElementById('combat-victory-gross');
+                if (!this.isPvP) {
+                    grossEl.innerHTML = `<span class="text-[9px] text-gray-400 font-normal mr-1 border border-gray-600 px-1 rounded shadow-inner">Base: ${this.pveBaseReward} + Bono HP: ${survivalBonus}</span> ${grossReward.toLocaleString()} 🌱`;
+                } else {
+                    grossEl.innerText = `${grossReward.toLocaleString()} 🌱`;
+                }
+                
                 document.getElementById('combat-victory-tax').innerText = `-${taxAmount.toLocaleString()} 🌱`;
                 document.getElementById('combat-victory-net').innerText = `+${netReward.toLocaleString()} 🌱`;
             } else if (invoiceBox) {
@@ -3845,6 +3877,7 @@ window.combatApp = {
 
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
+        // ==============================================================
         } else {
             if (this.isPvP) window.farmApp.state.skipSeedsSave = true;
 
