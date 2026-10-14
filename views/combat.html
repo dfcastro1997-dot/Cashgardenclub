@@ -1676,12 +1676,29 @@ window.combatApp = {
             if (pool.length < 3) pool = this.PLANT_CATALOG.map(c => ({ id: c[0], name: c[1], image_url: 'assets/Plantas/'+c[2], hp: c[3], atk: c[4], def: c[5] }));
 
             this.enemyTeam = [];
+            
+            // --- ESCALADO PROPORCIONAL DINÁMICO ---
+            // Obtenemos el poder promedio de una planta del jugador
+            const playerAvgPower = squadValue / Math.max(1, this.playerTeam.length);
+
             for(let i=0; i<3; i++) {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
-                this.enemyTeam.push(buildPlantObj(rP.id || rP.catKey, rP.name, rP.image_url || rP.icon, false, `e_${i}`, rP.hp, 0, rP.atk, rP.def));
+                
+                // Poder base de la planta elegida para el bot
+                const basePower = (rP.hp || 100) + (rP.atk || 40) + (rP.def || 20);
+                
+                // Multiplicador para igualar la fuerza del jugador (y un +5% a +15% extra para que sea un reto real)
+                const multiplier = Math.max(1, playerAvgPower / basePower) * (1.05 + Math.random() * 0.10);
+
+                const bHp = Math.floor((rP.hp || 100) * multiplier);
+                const bAtk = Math.floor((rP.atk || 40) * multiplier);
+                // Limitamos la defensa al 75% máximo para evitar bots invulnerables
+                const bDef = Math.min(75, Math.floor((rP.def || 20) * multiplier));
+
+                this.enemyTeam.push(buildPlantObj(rP.id || rP.catKey, rP.name, rP.image_url || rP.icon, false, `e_${i}`, bHp, 0, bAtk, bDef));
             }
 
-            // Recompensa del Bot en semillas (ligeramente superior a cuervos normales)
+            // Recompensa del Bot en semillas
             window.farmApp.state.pendingCombatReward = squadValue >= 1000 ? 70000 : (squadValue < 500 ? 18000 : 35000);
 
         } else {
@@ -1690,10 +1707,19 @@ window.combatApp = {
             const isNight = hour >= 18 || hour < 6; const isWinter = day >= 1 && day <= 9; this.isSummer = day >= 27; 
             let envAtkMult = isNight ? 1.3 : 1.0; let envHpMult = isNight ? 0.8 : 1.0; let envHpFlat = isWinter ? 50 : 0; let namePrefix = isNight ? ' Nocturno' : '';
             
+            // --- ESCALADO PROPORCIONAL DINÁMICO ---
+            const playerAvgPower = squadValue / Math.max(1, this.playerTeam.length);
+            // Usamos una curva suave (0.85) para evitar que a niveles muy altos se vuelva imposible
+            const powerMultiplier = Math.max(0.5, Math.pow(playerAvgPower / 150, 0.85)) * (0.90 + Math.random() * 0.20);
+
             const DEFAULT_CROW_IMG = 'assets/Enemigos/Cuervos/cuervo_base.png';
             const createCrow = (baseName, baseHp, baseAtk) => {
-                let finalHp = Math.floor((baseHp * envHpMult) + envHpFlat);
-                let finalAtk = Math.floor(baseAtk * envAtkMult);
+                // Aplicamos el multiplicador al HP y Ataque base
+                let scaledHp = baseHp * powerMultiplier;
+                let scaledAtk = baseAtk * powerMultiplier;
+
+                let finalHp = Math.floor((scaledHp * envHpMult) + envHpFlat);
+                let finalAtk = Math.floor(scaledAtk * envAtkMult);
                 let crowIcon = DEFAULT_CROW_IMG; 
 
                 if (baseName.includes('Alfa')) crowIcon = 'assets/Enemigos/Cuervos/cuervo_alfa.png';
@@ -1705,14 +1731,15 @@ window.combatApp = {
                 };
             };
 
+            // Ajustamos las estadísticas base (se multiplicarán por la fuerza del jugador)
             if (squadValue < 500) {
-                this.enemyTeam = [ createCrow('C. Rastrero', 200, 35), createCrow('C. Rastrero', 200, 35), createCrow('Cuervo Vigía', 250, 25) ];
+                this.enemyTeam = [ createCrow('C. Rastrero', 150, 25), createCrow('C. Rastrero', 150, 25), createCrow('Cuervo Vigía', 200, 20) ];
                 window.farmApp.state.pendingCombatReward = 15000;
             } else if (squadValue >= 1000) {
-                this.enemyTeam = [ createCrow('Cuervo Vigía', 450, 45), createCrow('Cuervo Alfa', 600, 85), createCrow('Cuervo Alfa', 600, 85) ];
+                this.enemyTeam = [ createCrow('Cuervo Vigía', 300, 35), createCrow('Cuervo Alfa', 400, 60), createCrow('Cuervo Alfa', 400, 60) ];
                 window.farmApp.state.pendingCombatReward = 60000;
             } else {
-                this.enemyTeam = [ createCrow('C. Rastrero', 250, 45), createCrow('Cuervo Alfa', 450, 75), createCrow('Cuervo Vigía', 300, 35) ];
+                this.enemyTeam = [ createCrow('C. Rastrero', 180, 30), createCrow('Cuervo Alfa', 350, 50), createCrow('Cuervo Vigía', 250, 25) ];
                 window.farmApp.state.pendingCombatReward = 30000;
             }
         }
