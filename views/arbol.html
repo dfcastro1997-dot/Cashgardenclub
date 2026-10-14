@@ -4,7 +4,7 @@
         <div>
             <div class="flex items-center gap-2 mb-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                <span class="text-[10px] font-extrabold text-green-600 uppercase tracking-widest bg-green-50 border border-green-200 px-2 py-0.5 rounded-md">Evento Comunitario Diario</span>
+                <span class="text-[10px] font-extrabold text-green-600 uppercase tracking-widest bg-green-50 border border-green-200 px-2 py-0.5 rounded-md shadow-sm">Evento Comunitario Diario</span>
             </div>
             <h2 class="text-3xl md:text-4xl font-black text-green-900 tracking-tight">El Árbol de la Vida</h2>
             <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Dona tus semillas sobrantes. Si la comunidad alcanza el 100% antes de medianoche, el árbol entregará los frutos en tiempo real.</p>
@@ -12,10 +12,10 @@
         
         <div class="flex flex-col sm:flex-row gap-3">
             <div class="bg-red-50 border border-red-200 p-3 sm:p-4 rounded-xl flex items-center gap-3 shadow-inner shrink-0 w-full sm:w-auto justify-center">
-                <span class="text-2xl animate-bounce">⏳</span>
+                <span class="text-2xl md:text-3xl animate-bounce">⏳</span>
                 <div class="flex flex-col text-center sm:text-left">
                     <span id="tree-timer-label" class="text-[10px] font-black text-red-600 uppercase tracking-widest">Cierre de Ciclo</span>
-                    <span id="tree-timer" class="text-lg sm:text-xl font-black text-red-800 tracking-wider">--:--:--</span>
+                    <span id="tree-timer" class="text-xl sm:text-2xl font-black text-red-800 tracking-wider">--:--:--</span>
                 </div>
             </div>
         </div>
@@ -25,13 +25,13 @@
     <div class="flex flex-col lg:grid lg:grid-cols-4 gap-6 lg:gap-8">
         
         <!-- ZONA CENTRAL: EL ÁRBOL Y DONACIÓN (En Móvil aparece PRIMERO con order-1) -->
-        <div class="order-1 lg:order-2 lg:col-span-2 bg-gradient-to-b from-green-50 to-white rounded-[2rem] border border-green-200 p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-sm">
+        <div class="order-1 lg:order-2 lg:col-span-2 bg-gradient-to-b from-green-50 to-white rounded-[2rem] border border-green-200 p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
             <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-400 via-transparent to-transparent pointer-events-none"></div>
             
             <div class="relative flex flex-col items-center justify-center w-full min-h-[250px] md:min-h-[300px]">
                 
                 <!-- Próximo Número de Donador (Encima del Árbol) -->
-                <div class="absolute top-2 sm:top-4 bg-white/90 border border-green-200 px-4 py-1.5 rounded-full shadow-sm z-20 flex items-center gap-2 backdrop-blur-sm">
+                <div class="absolute top-2 sm:top-4 bg-white/90 border border-green-200 px-4 py-1.5 rounded-full shadow-sm z-20 flex items-center gap-2 backdrop-blur-sm transition-transform hover:scale-105">
                     <span class="text-[10px] sm:text-xs font-black text-green-800 uppercase tracking-widest">Próximo Donador:</span>
                     <span id="next-donor-badge" class="bg-green-500 text-white px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold shadow-inner">#1</span>
                 </div>
@@ -46,7 +46,7 @@
                     <div id="tree-winners-showcase" class="w-full mt-2 mb-2 flex flex-col gap-1.5 pointer-events-auto"></div>
 
                     <span class="text-[10px] sm:text-xs font-bold text-red-200 uppercase tracking-wider mt-1">Próximo en:</span>
-                    <span id="tree-banner-timer" class="text-2xl sm:text-3xl font-black text-white drop-shadow-lg tracking-wider">--:--:--</span>
+                    <span id="tree-banner-timer" class="text-2xl sm:text-3xl font-black text-white drop-shadow-lg tracking-wider font-mono">--:--:--</span>
                 </div>
             </div>
             
@@ -54,24 +54,24 @@
                 <div class="flex justify-between items-end mb-2 px-1">
                     <div class="flex flex-col">
                         <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Progreso Global</span>
-                        <span id="tree-donated" class="text-xl font-black text-green-700">0 🌱</span>
+                        <span id="tree-donated" class="text-xl md:text-2xl font-black text-green-700">0 🌱</span>
                     </div>
                     <div class="flex flex-col text-right">
                         <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Meta Diaria</span>
-                        <span id="tree-goal" class="text-sm font-black text-gray-600">0 🌱</span>
+                        <span id="tree-goal" class="text-sm md:text-base font-black text-gray-600">0 🌱</span>
                     </div>
                 </div>
                 <!-- BARRA HORIZONTAL PRINCIPAL -->
                 <div class="w-full bg-green-100 h-6 sm:h-8 rounded-full border border-green-300 relative shadow-inner overflow-hidden">
-                    <div id="tree-progress" class="h-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-1000 w-0"></div>
-                    <span id="tree-pct-text" class="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-black text-white drop-shadow-md z-10">0%</span>
+                    <div id="tree-progress" class="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-1000 w-0"></div>
+                    <span id="tree-pct-text" class="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-black text-white drop-shadow-md z-10 tracking-widest">0%</span>
                 </div>
             </div>
 
             <!-- CONTROLES DE DONACIÓN -->
             <div id="donation-controls" class="w-full max-w-md mt-8 flex flex-col gap-3 relative z-10">
                 <p class="text-center text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest" id="my-donation-text">Tu Aporte: 0 🌱 (Requiere <span id="min-req-text">0</span> para premios)</p>
-                <div class="flex bg-white rounded-xl shadow-sm border border-green-200 overflow-hidden h-14 focus-within:ring-2 focus-within:ring-green-500 transition-all">
+                <div class="flex bg-white rounded-xl shadow-sm border-2 border-green-200 overflow-hidden h-14 focus-within:ring-2 focus-within:ring-green-500 focus-within:border-green-500 transition-all">
                     <!-- El step y placeholder se ajustan por JS -->
                     <input type="number" id="donate-input" placeholder="Cantidad..." min="1" step="100" class="flex-1 bg-transparent px-4 font-black text-green-700 text-lg outline-none text-center">
                     <button onclick="window.treeApp.donate()" id="btn-donate" class="bg-green-600 hover:bg-green-700 text-white font-black px-6 md:px-8 transition-colors uppercase tracking-widest text-xs md:text-sm shadow-inner active:scale-95">
@@ -85,7 +85,7 @@
                 <div class="bg-green-100 border border-green-400 p-5 rounded-2xl text-center shadow-md w-full relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 text-6xl opacity-20">✨</div>
                     <h4 class="font-black text-green-800 uppercase tracking-widest text-base mb-1">¡El Árbol ha florecido!</h4>
-                    <p class="text-xs text-green-700 font-bold">La meta diaria fue superada y los cofres ya fueron entregados. Vuelve mañana para un nuevo ciclo.</p>
+                    <p class="text-xs md:text-sm text-green-700 font-bold">La meta diaria fue superada y los cofres ya fueron entregados. Vuelve mañana para un nuevo ciclo.</p>
                 </div>
             </div>
         </div>
@@ -94,14 +94,14 @@
         <div class="order-2 lg:order-1 lg:col-span-1 flex flex-col gap-6 h-fit">
             
             <!-- Primera Caja: Fases de Botín -->
-            <div class="bg-white rounded-[2rem] border border-gray-200 p-6 shadow-sm flex flex-col relative overflow-hidden h-fit">
+            <div class="bg-white rounded-[2rem] border border-gray-200 p-6 shadow-sm flex flex-col relative overflow-hidden h-fit hover:shadow-md transition-shadow">
                 <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest border-b border-gray-100 pb-3 mb-5 flex items-center gap-2"><span>🎁</span> Fases de Botín</h4>
                 
                 <div class="flex-1 relative flex flex-col justify-between py-2 min-h-[300px]">
                     <!-- Línea conectora base -->
-                    <div class="absolute left-[38px] top-6 bottom-8 w-1 bg-gray-100 rounded-full z-0 transform -translate-x-1/2"></div>
+                    <div class="absolute left-[38px] top-6 bottom-8 w-1.5 bg-gray-100 rounded-full z-0 transform -translate-x-1/2"></div>
                     <!-- Línea de llenado dinámico (No cruza del último círculo) -->
-                    <div id="tree-vertical-progress" class="absolute left-[38px] top-6 w-1 bg-green-500 rounded-full z-0 transition-all duration-1000 shadow-[0_0_10px_rgba(34,197,94,0.6)] transform -translate-x-1/2" style="height: 0%; max-height: calc(100% - 50px);"></div>
+                    <div id="tree-vertical-progress" class="absolute left-[38px] top-6 w-1.5 bg-green-500 rounded-full z-0 transition-all duration-1000 shadow-[0_0_12px_rgba(34,197,94,0.6)] transform -translate-x-1/2" style="height: 0%; max-height: calc(100% - 50px);"></div>
                     
                     <div id="milestones-container" class="relative z-10 flex flex-col justify-between h-full gap-4">
                         <!-- Generado por JS -->
@@ -110,11 +110,12 @@
             </div>
             
             <!-- Segunda Caja: Premios por donador -->
-            <div class="bg-white rounded-[2rem] border border-blue-200 p-6 shadow-sm flex flex-col relative overflow-hidden h-fit">
-                <h4 class="text-[11px] sm:text-xs font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-3 mb-4 flex items-center gap-2"><span>🎯</span> Premios N° Donador</h4>
-                <p class="text-[10px] text-gray-500 mb-3 font-medium">Si eres el donador número <strong class="text-blue-500">1, 10, 25, 50, 75 o 99</strong> recibirás inmediatamente:</p>
-                <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 shadow-inner text-center">
-                    <span class="text-xl">🎁</span>
+            <div class="bg-white rounded-[2rem] border border-blue-200 p-6 shadow-sm flex flex-col relative overflow-hidden h-fit hover:border-blue-300 transition-colors">
+                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+                <h4 class="text-[11px] sm:text-xs font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-3 mb-4 flex items-center gap-2 relative z-10"><span>🎯</span> N° Donador Especial</h4>
+                <p class="text-[10px] md:text-xs text-gray-500 mb-3 font-medium relative z-10">Si eres el donador <strong class="text-blue-500">#1, 10, 25, 50, 75 o 99</strong> recibirás inmediatamente:</p>
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 shadow-inner text-center relative z-10 group hover:bg-blue-100 transition-colors">
+                    <span class="text-2xl md:text-3xl group-hover:scale-110 transition-transform">🎁</span>
                     <span class="text-[11px] sm:text-xs font-black text-blue-800" id="donor-prize-text">2% del Botín Total</span>
                 </div>
             </div>
@@ -122,7 +123,7 @@
         </div>
 
         <!-- COLUMNA DERECHA: RANKING (Aparece de TERCERO) -->
-        <div class="order-3 lg:order-3 lg:col-span-1 bg-white rounded-[2rem] p-6 border border-yellow-200 shadow-sm flex flex-col relative overflow-hidden h-[600px] lg:h-auto">
+        <div class="order-3 lg:order-3 lg:col-span-1 bg-white rounded-[2rem] p-6 border border-yellow-200 shadow-sm flex flex-col relative overflow-hidden h-[600px] lg:h-auto hover:shadow-md transition-shadow">
             <div class="absolute -right-10 -top-10 text-9xl opacity-[0.03] pointer-events-none">🏆</div>
             <h4 class="text-xs font-black text-yellow-600 uppercase tracking-widest border-b border-yellow-100 pb-3 mb-4 flex items-center gap-2">
                 <span>👑</span> Guardianes Top 10
@@ -136,11 +137,26 @@
                 </ul>
             </div>
 
-            <div id="tree-top-list" class="flex-1 overflow-y-auto space-y-2 hide-scrollbar relative z-10 pb-4">
+            <div id="tree-top-list" class="flex-1 overflow-y-auto space-y-2.5 hide-scrollbar relative z-10 pb-4">
                 <p class="text-xs text-gray-400 font-bold text-center mt-10">Cargando guardianes...</p>
             </div>
         </div>
         
+    </div>
+</div>
+
+<!-- VENTANA MODAL PROFESIONAL PARA ALERTAS (Remplaza a los alert() nativos) -->
+<div id="tree-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm transition-opacity duration-300" onclick="closeTreeAlert()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border overflow-hidden animate-fade-in text-center p-6 md:p-8" id="tree-alert-card">
+        <div id="tree-alert-icon-container" class="mx-auto mb-4 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-gray-50 border-gray-100">
+            <span class="text-3xl md:text-4xl relative z-10 drop-shadow-md" id="tree-alert-icon">⚠️</span>
+        </div>
+        <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-cg_navy" id="tree-alert-title">Aviso</h3>
+        <p class="text-xs md:text-sm text-gray-500 mb-6 font-medium leading-relaxed" id="tree-alert-msg">Mensaje</p>
+        <button onclick="closeTreeAlert()" id="tree-alert-btn" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm bg-cg_navy hover:bg-black active:scale-95">
+            Aceptar
+        </button>
     </div>
 </div>
 
@@ -332,14 +348,14 @@ window.treeApp = {
         data.rewards.forEach(r => {
             let imgSrc = this.imgMap[r.id] || 'assets/Fondos/logo.png';
             html += `
-                <div class="flex items-center gap-3 relative z-10 bg-white p-2.5 rounded-xl shadow-sm border border-gray-100 transition-all duration-500 milestone-item w-full">
-                    <div class="w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 z-20 transition-colors duration-500 milestone-circle bg-gray-100 border-gray-300 relative">
+                <div class="flex items-center gap-3 relative z-10 bg-white p-2.5 rounded-xl shadow-sm border border-gray-100 transition-all duration-500 milestone-item w-full hover:border-green-200">
+                    <div class="w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 z-20 transition-colors duration-500 milestone-circle bg-gray-100 border-gray-300 relative shadow-inner">
                         <span class="text-[11px] font-black text-gray-400 milestone-text">${r.pct}%</span>
                     </div>
                     <div class="flex flex-col flex-1 min-w-0">
                         <span class="text-[10px] md:text-[11px] font-black text-cg_navy leading-tight truncate">${r.name}</span>
                     </div>
-                    <img src="${imgSrc}" class="w-8 h-8 object-contain shrink-0 drop-shadow-md">
+                    <img src="${imgSrc}" class="w-8 h-8 object-contain shrink-0 drop-shadow-md group-hover:scale-110 transition-transform">
                 </div>
             `;
         });
@@ -350,7 +366,7 @@ window.treeApp = {
             const el = children[i];
             if (pct >= r.pct) {
                 el.classList.remove('opacity-60', 'grayscale');
-                el.classList.add('border-green-400', 'ring-2', 'ring-green-100', 'scale-105');
+                el.classList.add('border-green-400', 'ring-2', 'ring-green-100', 'scale-105', 'bg-green-50/30');
                 const circle = el.querySelector('.milestone-circle');
                 circle.classList.replace('bg-gray-100', 'bg-green-100');
                 circle.classList.replace('border-gray-300', 'border-green-500');
@@ -368,31 +384,88 @@ window.treeApp = {
                 let badge = i === 0 ? '👑' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : ''));
                 let style = i < 3 ? 'bg-gradient-to-r from-yellow-50 to-white border-yellow-300 ring-2 ring-yellow-100' : 'bg-gray-50 border-gray-100';
                 let textCol = i < 3 ? 'text-yellow-700' : 'text-gray-400';
+                
+                // Extraer el avatar del usuario si es el local, o usar un fallback predeterminado.
+                // Idealmente el backend lo enviaría, pero si no, este es el fallback visual.
+                let avatarSrc = 'assets/Perfil/defecto.png';
+                let isMe = u.username === sessionStorage.getItem('username');
+                if (isMe && window.farmApp && window.farmApp.state.profilePic) {
+                    avatarSrc = window.farmApp.state.profilePic;
+                }
+
                 topHtml += `
                     <div class="flex justify-between items-center px-3 py-3 rounded-xl border ${style} shadow-sm transition-transform hover:scale-[1.02]">
-                        <div class="flex items-center gap-2 overflow-hidden w-full pr-2">
-                            <span class="font-black ${textCol} w-4">${i+1}.</span>
-                            <span class="font-black text-cg_navy truncate flex-1">${u.username} ${badge}</span>
+                        <div class="flex items-center gap-3 overflow-hidden w-full pr-2">
+                            <span class="font-black ${textCol} w-4 text-center shrink-0">${i+1}.</span>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 ${isMe ? 'border-cg_blue' : 'border-gray-200'} overflow-hidden shrink-0 bg-white shadow-inner">
+                                <img src="${avatarSrc}" class="w-full h-full object-cover" onerror="this.src='assets/Perfil/defecto.png'">
+                            </div>
+                            <div class="flex flex-col min-w-0 flex-1">
+                                <span class="font-black text-cg_navy truncate text-xs sm:text-sm">${u.username} ${badge}</span>
+                                ${isMe ? '<span class="text-[8px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase tracking-wider w-fit font-bold mt-0.5">Tú</span>' : ''}
+                            </div>
                         </div>
-                        <span class="font-black text-green-600 bg-white px-2.5 py-1 rounded shadow-sm border border-green-200 text-[10px] shrink-0">${u.amount.toLocaleString()} 🌱</span>
+                        <span class="font-black text-green-600 bg-white px-2.5 py-1.5 rounded-lg shadow-sm border border-green-200 text-[10px] sm:text-xs shrink-0">${u.amount.toLocaleString()} 🌱</span>
                     </div>`;
             });
             topList.innerHTML = topHtml;
         }
     },
 
+    // --- MODALES PERSONALIZADOS ---
+    showTreeAlert(title, msg, type = 'info') {
+        const modal = document.getElementById('tree-alert-modal');
+        const card = document.getElementById('tree-alert-card');
+        const iconCont = document.getElementById('tree-alert-icon-container');
+        const icon = document.getElementById('tree-alert-icon');
+        const titleEl = document.getElementById('tree-alert-title');
+        const btn = document.getElementById('tree-alert-btn');
+
+        titleEl.innerText = title;
+        document.getElementById('tree-alert-msg').innerText = msg;
+
+        if (type === 'error') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-red-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "❌";
+            titleEl.className = "text-xl md:text-2xl font-black text-red-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95";
+        } else if (type === 'success') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-green-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "✅";
+            titleEl.className = "text-xl md:text-2xl font-black text-green-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-green-500 hover:bg-green-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95";
+        } else {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-200 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-full border-4 border-gray-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "⚠️";
+            titleEl.className = "text-xl md:text-2xl font-black text-cg_navy mb-2 tracking-tight";
+            btn.className = "w-full bg-cg_navy hover:bg-black text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95";
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    },
+
+    closeTreeAlert() {
+        document.getElementById('tree-alert-modal').classList.add('hidden');
+        document.getElementById('tree-alert-modal').classList.remove('flex');
+    },
+    // ------------------------------
+
     async donate() {
         const btn = document.getElementById('btn-donate');
         let amount = parseInt(document.getElementById('donate-input').value);
         
-        if (isNaN(amount) || amount <= 0) return alert("El monto ingresado es inválido.");
+        if (isNaN(amount) || amount <= 0) return this.showTreeAlert('Monto Inválido', 'El monto ingresado no es válido.', 'error');
 
         const remaining = Math.max(0, this.currentGoal - this.currentDonated);
         let minAllowed = 1000;
         if (remaining > 0 && remaining < 1000) minAllowed = remaining;
 
-        if (amount < minAllowed) return alert(`La donación mínima en este momento es de ${minAllowed.toLocaleString()} 🌱.`);
-        if (window.farmApp && window.farmApp.state.seedsBalance < amount) return alert("No tienes suficientes semillas en tu balance para esta donación.");
+        if (amount < minAllowed) return this.showTreeAlert('Donación Mínima', `La donación mínima en este momento es de ${minAllowed.toLocaleString()} 🌱.`, 'error');
+        if (window.farmApp && window.farmApp.state.seedsBalance < amount) return this.showTreeAlert('Fondos Insuficientes', 'No tienes suficientes semillas en tu balance para esta donación.', 'error');
 
         btn.disabled = true;
         btn.innerHTML = '<span class="animate-spin text-lg">⏳</span>';
@@ -430,10 +503,12 @@ window.treeApp = {
                         `).join('');
                         gModal.classList.remove('hidden'); gModal.classList.add('flex');
                     }
+                } else {
+                    this.showTreeAlert('Aporte Registrado', `Has donado ${amount.toLocaleString()} 🌱 al Árbol de la Vida. ¡Gracias por tu aporte a la comunidad!`, 'success');
                 }
                 await this.fetchTreeData(); 
-            } else alert(data.error);
-        } catch(e) { alert("Error de red al procesar la donación."); }
+            } else this.showTreeAlert('Error en Donación', data.error, 'error');
+        } catch(e) { this.showTreeAlert('Error de Red', 'No se pudo procesar la donación. Verifica tu conexión.', 'error'); }
         finally { btn.disabled = false; btn.innerHTML = 'Donar'; }
     },
 
@@ -457,6 +532,10 @@ window.treeApp = {
     }
 };
 
+window.closeTreeAlert = function() {
+    window.treeApp.closeTreeAlert();
+};
+
 if (!window.oldLoadViewTree) {
     window.oldLoadViewTree = window.loadView;
     window.loadView = async function(v, b) {
@@ -467,3 +546,4 @@ if (!window.oldLoadViewTree) {
 }
 window.treeApp.init();
 </script>
+</div>
