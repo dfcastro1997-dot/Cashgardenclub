@@ -1600,6 +1600,20 @@ window.combatApp = {
                     this.animateOpponentActions(data.actions);
                 }
                 if (data.emote) {
+                    const myUser = sessionStorage.getItem('username');
+                    // Ignorar si el emote fue emitido por uno mismo
+                    if (data.emote.sender && myUser && data.emote.sender === myUser) {
+                        return;
+                    }
+                    // Evitar procesar paquetes duplicados que lleguen en ráfaga
+                    const emoteHash = `${data.emote.emoji}_${data.emote.text}_${data.emote.id || ''}`;
+                    const now = Date.now();
+                    if (this._lastRecvEmote === emoteHash && now - (this._lastRecvEmoteTime || 0) < 1200) {
+                        return;
+                    }
+                    this._lastRecvEmote = emoteHash;
+                    this._lastRecvEmoteTime = now;
+
                     this.sendEmote(data.emote.emoji, data.emote.text, true);
                 }
                 if (data.winner) {
@@ -2974,6 +2988,15 @@ window.combatApp = {
         const w = document.getElementById('cb-emote-wheel');
         if (w) w.classList.add('hidden');
 
+        // Cooldown para evitar que el jugador spamee emotes locales
+        if (!isEnemy) {
+            const now = Date.now();
+            if (this.lastEmoteTime && now - this.lastEmoteTime < 2000) {
+                return;
+            }
+            this.lastEmoteTime = now;
+        }
+
         const targetTeam = isEnemy ? this.enemyTeam : this.playerTeam;
         const targetPrefix = isEnemy ? 'enemy' : 'player';
         const aliveIdx = targetTeam.findIndex(u => u.hp > 0);
@@ -2981,12 +3004,18 @@ window.combatApp = {
 
         this.showSpeechBubble(domId, emoji, text, isEnemy);
 
-        // Si es PvP y hay socket activo, emitir al rival via combat_action
-        if (this.isPvP && window.socket) {
+        // ¡CRUCIAL!: Sólo emitir al socket si el emote es propio (!isEnemy).
+        // NUNCA emitir si isEnemy es true, ya que proviene del rival y crearía un bucle infinito de retransmisión.
+        if (!isEnemy && this.isPvP && window.socket) {
             try {
                 window.socket.emit('combat_action', {
                     match_id: this.matchId,
-                    emote: { emoji: emoji, text: text }
+                    emote: { 
+                        emoji: emoji, 
+                        text: text,
+                        sender: sessionStorage.getItem('username') || ('user_' + Math.random().toString(36).substring(2, 6)),
+                        id: Date.now() + '_' + Math.random().toString(36).substring(2, 5)
+                    }
                 });
             } catch(err) {}
         }
@@ -3013,6 +3042,12 @@ window.combatApp = {
         const root = document.getElementById('combat-root');
         if (!tgt || !layer || !root) return;
 
+        // Limpiar cualquier burbuja previa en el escenario para que no se apilen ni queden pegadas
+        const oldBubbles = layer.querySelectorAll('.cb-speech-bubble');
+        oldBubbles.forEach(b => {
+            try { b.remove(); } catch(e) {}
+        });
+
         const sprite = tgt.querySelector('.cb-unit-sprite') || tgt;
         const r = sprite.getBoundingClientRect();
         const rr = root.getBoundingClientRect();
@@ -3033,12 +3068,16 @@ window.combatApp = {
         layer.appendChild(bubble);
         this.playSound('attack');
 
+        // Desvanecer y eliminar con seguridad tras 2.2 segundos
         setTimeout(() => {
+            if (!bubble.parentNode) return;
             bubble.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
             bubble.style.opacity = '0';
             bubble.style.transform = 'translateY(-20px)';
-            setTimeout(() => bubble.remove(), 350);
-        }, 2400 / this.speedMultiplier);
+            setTimeout(() => {
+                if (bubble.parentNode) bubble.remove();
+            }, 350);
+        }, 2200);
     },
 
     // ---- Nivel I: proyectil veloz con estela ----

@@ -16,10 +16,13 @@
 
             <!-- Contenedor agrupado para PC (Duelo + Árbol + Clima) -->
             <div class="col-span-3 sm:col-span-1 flex gap-2 w-full sm:w-auto">
+                
                 <!-- BOTÓN DUELO -->
-                <button onclick="intentarDuelo()" class="flex-1 sm:w-auto sm:min-w-[120px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3">
+                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[120px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3">
                     <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
                     <span class="text-[10px] sm:text-xs uppercase tracking-widest">Duelo</span>
+                    <!-- Nuevo badge contador -->
+                    <span id="mm-count-badge" class="absolute -top-2 -right-2 bg-cg_blue text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md animate-pulse">0</span>
                 </button>
                 
                 <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Escritorio) -->
@@ -831,6 +834,10 @@ if (typeof window.farmApp === 'undefined') {
         window.socket.on('matchmaking_count', (data) => {
             const el = document.getElementById('mm-count');
             if (el) el.innerText = data.count;
+            
+            // Nueva línea para actualizar el botón exterior
+            const badge = document.getElementById('mm-count-badge');
+            if (badge) badge.innerText = data.count;
         });
 
         // --- MANEJO DE NEGOCIACIÓN DE MATCHMAKING ---
