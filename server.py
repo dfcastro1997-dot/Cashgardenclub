@@ -778,6 +778,37 @@ def sync_user(username):
             conn.commit()
             user_data['short_id'] = new_id
 
+        # Buscar si alguien lo está retando en este momento
+        cur.execute('''
+            SELECT p.id as match_id, u.username as challenger_name, u.short_id as challenger_short_id, p.bet_seeds 
+            FROM pvp_matches p JOIN users u ON p.challenger_id = u.id 
+            WHERE p.target_id = %s AND p.status = 'pending' LIMIT 1
+        ''', (user_data['id'],))
+        challenge = cur.fetchone()
+        if challenge:
+            user_data['pending_challenge'] = challenge
+
+        # Validar token de sesión (Múltiples ventanas)
+        if user_data.get('session_token') and user_data['session_token'] != token:
+            cur.close()
+            conn.close()
+            return jsonify({"error": "Sesión expirada"}), 401
+            
+        # Procesar crecimiento de plantas y plagas
+        validated_state = process_server_tick(user_data['game_state'], user_data.get('telegram_chat_id'))
+        if validated_state != user_data['game_state']:
+            cur.execute("UPDATE users SET game_state = %s WHERE username = %s", (validated_state, username))
+            conn.commit()
+            user_data['game_state'] = validated_state
+
+        user_data['balance'] = float(user_data['balance'] or 0)
+        cur.close()
+        conn.close()
+        return jsonify({"status": "success", "user": user_data}), 200
+    
+    cur.close()
+    conn.close()
+    return jsonify({"error": "Usuario no encontrado"}), 404
 
 @app.route('/api/save_state', methods=['POST'])
 def save_state():
