@@ -156,7 +156,7 @@
         return Math.max(50, healCost);
     }
 
-    let pendingHealPlantId = null;
+    window.pendingHealPlantId = null;
 
     function healArsenalPlant(plantId) {
         if (!window.farmApp || !window.farmApp.state.arsenal) return;
@@ -167,7 +167,7 @@
         const cost = calculateHealCost(plant);
         
         if (window.farmApp.state.seedsBalance >= cost) {
-            pendingHealPlantId = plantId;
+            window.pendingHealPlantId = plantId;
             document.getElementById('confirm-heal-text').innerHTML = `¿Pagar <strong class="text-green-600">${cost.toLocaleString()} 🌱</strong> para restaurar la salud de ${plant.name} al 100%?`;
             
             const btn = document.getElementById('btn-confirm-heal');
@@ -184,20 +184,20 @@
             setTimeout(() => {
                 modal.classList.remove('flex');
                 modal.classList.add('hidden');
-            }, 3000); // Auto-cierre a los 3 segundos
+            }, 3000);
         }
     }
 
     function cancelHeal() {
-        pendingHealPlantId = null;
+        window.pendingHealPlantId = null;
         const modal = document.getElementById('confirm-heal-modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
 
     function executeHeal(cost) {
-        if (!pendingHealPlantId) return;
-        const plant = window.farmApp.state.arsenal.find(p => p.id === pendingHealPlantId);
+        if (!window.pendingHealPlantId) return;
+        const plant = window.farmApp.state.arsenal.find(p => p.id === window.pendingHealPlantId);
         if (!plant) return;
 
         window.farmApp.state.seedsBalance -= cost;

@@ -16,7 +16,7 @@
 
             <!-- Contenedor agrupado para PC (Duelo + Árbol + Clima) -->
             <div class="col-span-3 sm:col-span-1 flex gap-2 w-full sm:w-auto">
-                
+
                 <!-- BOTÓN DUELO -->
                 <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[120px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3">
                     <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
@@ -423,28 +423,6 @@
     </div>
 </div>
 
-<!-- MODAL CONFIRMAR REMOVER BONSÁI -->
-<div id="remove-bonsai-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="window.farmApp.closeRemoveBonsaiModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border border-red-500 overflow-hidden">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
-            <span class="text-3xl sm:text-4xl">⚠️</span>
-        </div>
-        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-2">¿Rendirse y Remover?</h3>
-        <p class="text-xs sm:text-sm text-gray-500 mb-4">Al oprimir aceptar, el Bonsái será destruido y quedarás <strong class="text-red-600">descalificado</strong> del torneo actual inmediatamente. Perderás tu puntuación y tarifa de entrada.</p>
-        
-        <div class="bg-gray-50 border border-gray-200 p-3 sm:p-4 rounded-xl mb-6 text-left shadow-sm">
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><span class="text-red-500">■</span> Aviso Legal</p>
-            <p class="text-[10px] text-gray-500 leading-relaxed font-medium">Nuestro sistema detectará esta acción como voluntaria y de segunda confirmación. No hay reembolsos ni reversiones por retiro anticipado del torneo.</p>
-        </div>
-        
-        <div class="flex gap-3">
-            <button onclick="window.farmApp.executeRemoveBonsai()" class="flex-1 bg-red-500 text-white font-bold py-3 sm:py-3.5 rounded-xl hover:bg-red-600 shadow-soft transition-colors uppercase tracking-widest text-xs">Acepto</button>
-            <button onclick="window.farmApp.closeRemoveBonsaiModal()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3 sm:py-3.5 rounded-xl hover:bg-gray-50 transition-colors uppercase tracking-widest text-xs">Salir</button>
-        </div>
-    </div>
-</div>
-
 
 <!-- MODAL CONFIRMAR ABONO -->
 <div id="confirm-abono-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
@@ -553,7 +531,7 @@
 
             <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-5 rounded-2xl border border-yellow-200 shadow-sm flex flex-col sm:flex-row gap-4 sm:gap-5 items-center sm:items-start text-center sm:text-left">
                 <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl border border-yellow-300 flex items-center justify-center shrink-0 shadow-inner">
-                    <img src="assets/Plantas/bonsai.gif" class="w-10 h-10 sm:w-14 sm:h-14 object-contain drop-shadow-md" alt="Bonsái">
+                    <img src="assets/Herramientas_y_Servicios/PvP.png" class="w-10 h-10 sm:w-14 sm:h-14 object-contain drop-shadow-md" alt="Arena">
                 </div>
                 <div>
                     <h4 class="text-base sm:text-lg font-black text-yellow-900">5. Arena de Torneos</h4>
@@ -1256,15 +1234,7 @@ if (typeof window.farmApp === 'undefined') {
     window.farmApp = {
         PLOT_COSTS: [0, 0, 0, 25000, 60000, 120000, 250000, 500000, 1000000], // Parcela 9 habilitada por 1 Millón
 
-        TOURNAMENT_CONFIGS: {
-            1: { name: 'Bonsái del Maestro', image: 'assets/Plantas/bonsai.gif', durationHours: 12, startScore: 10000, evapPerHour: 30, minWater: 20, maxWater: 100, overwaterPenalty: 500, drainPerMin: 10, speed: 1.0 },
-            3: { name: 'Orquídea Lunar', image: 'assets/Plantas/orquidea_lunar.gif', durationHours: 6, startScore: 10000, evapPerHour: 55, minWater: 20, maxWater: 100, overwaterPenalty: 1000, drainPerMin: 20, speed: 1.2 },
-            4: { name: 'Rosa de Ceniza', image: 'assets/Plantas/rosa_ceniza.gif', durationHours: 8, startScore: 10000, evapPerHour: 35, minWater: 30, maxWater: 80, overwaterPenalty: 3000, drainPerMin: 30, speed: 1.5 },
-            5: { name: 'Loto de Cristal', image: 'assets/Plantas/loto_cristal.gif', durationHours: 12, startScore: 10000, evapPerHour: 15, minWater: 40, maxWater: 60, overwaterPenalty: 5000, drainPerMin: 50, speed: 0.8 }
-        },
-
         calibration: { active: false, x: 0, dir: 1, speed: 2, reqId: null },
-        
 
 
 
@@ -1377,8 +1347,7 @@ if (typeof window.farmApp === 'undefined') {
                 plant_big: 'assets/Plantas/flor_grande.gif',
                 plant_crystal: 'assets/Plantas/helecho_cristal.gif',
                 plant_moon: 'assets/Plantas/lirio_lunar.gif',
-                crow: 'assets/Enemigos/Cuervos/cuervo_base.png',
-                bonsai: 'assets/Plantas/bonsai.gif'
+                crow: 'assets/Enemigos/Cuervos/cuervo_base.png'
             },
             selectedPlotId: null,
             pendingPlotId: null,
