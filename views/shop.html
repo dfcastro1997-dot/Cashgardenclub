@@ -1,5 +1,5 @@
 <div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-cg_blue"></span>
@@ -11,17 +11,17 @@
     </div>
 
     <!-- TABS DE NAVEGACIÓN -->
-    <div class="flex gap-2 md:gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
-        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
-        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
-        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-green-500 border-b-4 border-transparent hover:text-green-600 whitespace-nowrap transition-colors">Servicios VIP</button>
-        <button onclick="window.shopApp.switchTab('exchange')" id="page-tab-exchange" class="pb-3 px-3 md:px-4 text-sm md:text-base font-black text-purple-500 border-b-4 border-transparent hover:text-purple-600 whitespace-nowrap transition-colors">Casa de Cambio</button>
+    <div class="flex gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
+        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-1 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
+        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-1 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
+        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-1 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Servicios VIP</button>
+        <button onclick="window.shopApp.switchTab('exchange')" id="page-tab-exchange" class="pb-3 px-1 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Casa de Cambio</button>
     </div>
 
     <!-- FILTROS (SOLO VISIBLES EN PESTAÑA FLORES) -->
-    <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-5 gap-3 mb-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
-        <input type="text" id="filter-name" oninput="window.shopApp.renderShopItems('flowers')" placeholder="Buscar planta..." class="w-full col-span-2 md:col-span-1 bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue shadow-inner">
-        <select id="filter-category" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+    <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-5 gap-3 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
+        <input type="text" id="filter-name" oninput="window.shopApp.renderShopItems()" placeholder="Buscar planta..." class="w-full col-span-2 md:col-span-1 bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue shadow-inner">
+        <select id="filter-category" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
             <option value="all">Todas las Categorías</option>
             <option value="Planta Estándar">Plantas Estándar</option>
             <option value="Plantas Ígneas">Plantas Ígneas</option>
@@ -41,18 +41,18 @@
             <option value="Plantas Explosivas">Plantas Explosivas</option>
             <option value="Plantas Cristalinas">Plantas Cristalinas</option>
         </select>
-        <select id="filter-price" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+        <select id="filter-price" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
             <option value="all">Cualquier Precio</option>
             <option value="low">Baratas (< 2,000 🌱)</option>
             <option value="med">Medias (2,000 - 10,000 🌱)</option>
             <option value="high">Premium (> 10,000 🌱)</option>
         </select>
-        <select id="filter-pot" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+        <select id="filter-pot" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
             <option value="all">Cualquier Maceta</option>
             <option value="small">Maceta Pequeña</option>
             <option value="big">Maceta Grande</option>
         </select>
-        <select id="filter-duration" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
+        <select id="filter-duration" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
             <option value="all">Cualquier Crecimiento</option>
             <option value="fast">Rápido (< 1 Hora)</option>
             <option value="med">Medio (1 - 5 Horas)</option>
@@ -60,11 +60,10 @@
         </select>
     </div>
 
-    <!-- CONTENEDORES DE CATÁLOGO -->
-    <div id="page-content-tools" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4"></div>
-    <div id="page-content-flowers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
-    <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
-    <div id="page-content-exchange" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
+    <!-- MAIN GRID ÚNICO PARA TODO EL CATÁLOGO -->
+    <div id="shop-main-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-6">
+        <!-- Inyectado por JS de forma unificada -->
+    </div>
 
     <!-- VENTANAS MODALES -->
     <div id="purchase-error-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
@@ -106,6 +105,8 @@ window.shopApp = {
         shopQuantities: {}
     },
     
+    currentTab: 'tools',
+    
     catalog: {
         tools: [
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla.', price: 5000 },
@@ -114,17 +115,17 @@ window.shopApp = {
         ],
         flowers: [],
         iap: [
-            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/Pase24.png', duration: '24 Horas', usage: 'Automatización Total', desc: 'Riego y recolección perfectos automatizados.', price_cop: 7500 },
-            { id: 'iap_combo_72h', name: 'Pase Granjero 3 Días', image: 'assets/Herramientas_y_Servicios/Pase3D.png', duration: '3 Días', usage: 'Automatización Total', desc: 'Riego y recolección perfectos. ¡Más Popular!', price_cop: 18000 },
-            { id: 'iap_combo_7d', name: 'Pase Granjero 7 Días', image: 'assets/Herramientas_y_Servicios/Pase7D.png', duration: '7 Días', usage: 'Automatización Total', desc: 'Riego y recolección perfectos. ¡Ahorra 40%!', price_cop: 30000 },
-            { id: 'iap_nursery_72h', name: 'Enfermería VIP 3 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '3 Días', usage: 'Curación Rápida', desc: 'Tus plantas en el Arsenal se curan el TRIPLE de rápido.', price_cop: 8000 },
-            { id: 'iap_nursery_7d', name: 'Enfermería VIP 7 Días', image: 'assets/Herramientas_y_Servicios/E2.png', duration: '7 Días', usage: 'Curación Rápida', desc: 'Curación x3. Ideal para luchadores constantes.', price_cop: 15000 },
-            { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/PaseVip.png', duration: '7 Días', usage: 'Todo Incluido', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
+            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/Pase24.png', duration: '24 Horas', usage: 'Auto Total', desc: 'Riego y recolección perfectos automatizados.', price_cop: 7500 },
+            { id: 'iap_combo_72h', name: 'Pase Granjero 3 Días', image: 'assets/Herramientas_y_Servicios/Pase3D.png', duration: '3 Días', usage: 'Auto Total', desc: 'Riego y recolección perfectos. ¡Más Popular!', price_cop: 18000 },
+            { id: 'iap_combo_7d', name: 'Pase Granjero 7 Días', image: 'assets/Herramientas_y_Servicios/Pase7D.png', duration: '7 Días', usage: 'Auto Total', desc: 'Riego y recolección perfectos. ¡Ahorra 40%!', price_cop: 30000 },
+            { id: 'iap_nursery_72h', name: 'Enfermería VIP 3 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '3 Días', usage: 'Curación', desc: 'Tus plantas en el Arsenal se curan el TRIPLE de rápido.', price_cop: 8000 },
+            { id: 'iap_nursery_7d', name: 'Enfermería VIP 7 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '7 Días', usage: 'Curación', desc: 'Curación x3. Ideal para luchadores constantes.', price_cop: 15000 },
+            { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/PaseVip.png', duration: '7 Días', usage: 'Todo Incl.', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
         ],
         exchange: [
-            { id: 'exc_10k', name: 'Lote N°1', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Inyección rápida de capital vegetal.', price_cop: 10000, seeds: 4250 },
-            { id: 'exc_25k', name: 'Lote N°2', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Inyección moderada de capital.', price_cop: 25000, seeds: 11000 },
-            { id: 'exc_50k', name: 'Lote N°3', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Monto élite para expansión seria.', price_cop: 50000, seeds: 22500 }
+            { id: 'exc_10k', name: 'Lote N°1', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección rápida de capital vegetal.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote N°2', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección moderada de capital.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote N°3', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Monto élite para expansión seria.', price_cop: 50000, seeds: 22500 }
         ]
     },
 
@@ -157,21 +158,20 @@ window.shopApp = {
     },
 
     switchTab(tab) {
+        this.currentTab = tab;
+
         ['tools', 'flowers', 'iap', 'exchange'].forEach(t => {
             const tabBtn = document.getElementById(`page-tab-${t}`);
-            const contentDiv = document.getElementById(`page-content-${t}`);
             if (t === tab) {
                 let colorClass = 'text-cg_blue border-cg_blue';
                 if (t === 'iap') colorClass = 'text-green-500 border-green-500';
                 if (t === 'exchange') colorClass = 'text-purple-500 border-purple-500';
-                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-black ${colorClass} border-b-4 whitespace-nowrap transition-colors`;
-                contentDiv.classList.remove('hidden');
+                tabBtn.className = `pb-3 px-1 sm:px-3 md:px-4 text-sm md:text-base font-black ${colorClass} border-b-4 whitespace-nowrap transition-colors`;
             } else {
                 let hoverClass = 'hover:text-cg_navy';
                 if (t === 'iap') hoverClass = 'hover:text-green-600';
                 if (t === 'exchange') hoverClass = 'hover:text-purple-600';
-                tabBtn.className = `pb-3 px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent ${hoverClass} whitespace-nowrap transition-colors`;
-                contentDiv.classList.add('hidden');
+                tabBtn.className = `pb-3 px-1 sm:px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent ${hoverClass} whitespace-nowrap transition-colors`;
             }
         });
 
@@ -184,13 +184,14 @@ window.shopApp = {
             filters.classList.remove('grid');
         }
         
-        this.renderShopItems(tab);
+        this.renderShopItems();
     },
 
-    renderShopItems(tab) {
-        const container = document.getElementById(`page-content-${tab}`);
+    renderShopItems() {
+        const tab = this.currentTab;
+        const container = document.getElementById('shop-main-grid');
         container.innerHTML = '';
-        let items = this.catalog[tab];
+        let items = this.catalog[tab] || [];
 
         if (tab === 'flowers') {
             const nameFilter = document.getElementById('filter-name') ? document.getElementById('filter-name').value.toLowerCase().trim() : '';
@@ -214,7 +215,7 @@ window.shopApp = {
             });
             
             if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-10 bg-white border border-gray-200 rounded-3xl text-gray-500 font-bold text-sm shadow-sm">No se encontraron plantas que coincidan con estos filtros.</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-12 bg-white border border-gray-100 rounded-3xl text-gray-400 font-bold text-sm shadow-sm">No se encontraron productos con estos filtros.</div>';
                 return;
             }
         }
@@ -228,51 +229,44 @@ window.shopApp = {
                 currentStock = this.state.inventory[item.id].qty || 0;
             }
             
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col group';
-            
             let tag = '';
-            let tagStyle = '';
-            
-            if (tab === 'flowers') { tag = item.category ? item.category : 'Semilla'; tagStyle = 'bg-cg_blue text-white border-blue-400'; } 
-            else if (tab === 'tools') { tag = 'Herramienta'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
-            else if (tab === 'exchange') { tag = 'Cambio Créditos'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
-            else { tag = 'Servicio Premium'; tagStyle = 'bg-white text-gray-600 border-gray-200'; }
+            if (tab === 'flowers') { tag = item.category ? item.category : 'Semilla'; } 
+            else if (tab === 'tools') { tag = 'Herramienta'; } 
+            else if (tab === 'exchange') { tag = 'Lote Semillas'; } 
+            else { tag = 'Servicio VIP'; }
             
             let actionArea = '';
             let stockBadge = '';
 
             if (tab === 'iap') {
-                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Adquirir por $${item.price_cop.toLocaleString()} CRÉDITOS</button>`;
+                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 mt-auto">Adquirir: $${item.price_cop.toLocaleString()}</button>`;
             } else if (tab === 'exchange') {
-                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-[13px] md:text-sm py-3.5 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-2">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
+                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 mt-auto">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
             } else {
                 if (item.id !== 'tool_scarecrow') {
                     stockBadge = `
-                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur border border-gray-200 px-2.5 py-1 rounded-lg shadow-sm z-20 flex flex-col items-center">
-                            <span class="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tienes</span>
-                            <span class="text-xs md:text-sm font-black text-cg_navy leading-none mt-0.5">${currentStock}</span>
+                        <div class="flex flex-col items-center border border-gray-200 px-2.5 py-1 rounded-lg bg-white min-w-[3.5rem]">
+                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Tienes</span>
+                            <span class="text-xs font-black text-cg_navy mt-0.5">${currentStock}</span>
                         </div>
                     `;
                 }
                 
                 if (item.price_cop) {
                     actionArea = `
-                        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
-                            <button onclick="window.shopApp.buyPremiumSeed('${item.id}', ${item.price_cop})" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex items-center justify-center gap-1">
-                                Comprar por $${item.price_cop.toLocaleString()} CRÉDITOS
-                            </button>
-                        </div>
+                        <button onclick="window.shopApp.buyPremiumSeed('${item.id}', ${item.price_cop})" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 mt-auto">
+                            Comprar: $${item.price_cop.toLocaleString()} COP
+                        </button>
                     `;
                 } else {
                     actionArea = `
-                        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full">
-                            <div class="flex items-center bg-gray-50 rounded-xl w-full sm:flex-1 border border-gray-200 shadow-inner h-10 md:h-12 overflow-hidden">
-                                <button onclick="window.shopApp.changeShopQty('${item.id}', -1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">-</button>
+                        <div class="flex items-center gap-2 mt-auto">
+                            <div class="flex items-center bg-gray-50 rounded-xl border border-gray-200 h-11 w-[88px] shrink-0 overflow-hidden">
+                                <button onclick="window.shopApp.changeShopQty('${item.id}', -1)" class="w-8 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors">-</button>
                                 <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
-                                <button onclick="window.shopApp.changeShopQty('${item.id}', 1, '${tab}')" class="w-10 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors text-lg">+</button>
+                                <button onclick="window.shopApp.changeShopQty('${item.id}', 1)" class="w-8 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors">+</button>
                             </div>
-                            <button onclick="window.shopApp.buyItem('${item.id}', ${item.price}, '${tab}')" class="w-full sm:w-auto bg-cg_blue hover:bg-cg_navy text-white font-black text-xs md:text-sm h-10 md:h-12 px-4 md:px-6 rounded-xl shadow-sm transition-all transform active:scale-95 flex-shrink-0 flex items-center justify-center gap-1">
+                            <button onclick="window.shopApp.buyItem('${item.id}', ${item.price})" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1">
                                 ${(item.price * qty).toLocaleString()} 🌱
                             </button>
                         </div>
@@ -280,7 +274,7 @@ window.shopApp = {
                 }
             }
 
-            let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} CRÉDITOS</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
+            let durationHtml = tab === 'exchange' ? `Costo: $${item.price_cop.toLocaleString()}` : `⏳ ${item.duration}`;
             
             let statsHtml = '';
             let harvestHtml = '';
@@ -294,62 +288,74 @@ window.shopApp = {
 
                 harvestHtml = `
                 <div class="bg-green-50 rounded-lg p-2 border border-green-200 mb-3 flex items-center justify-between shadow-sm">
-                    <span class="text-[10px] font-black text-green-700 uppercase tracking-widest">Cosecha Estimada</span>
+                    <span class="text-[10px] font-black text-green-700 uppercase tracking-widest">Cosecha</span>
                     <span class="font-black text-green-600 text-sm drop-shadow-sm">+${item.reward.toLocaleString()} 🌱</span>
                 </div>`;
                 
                 statsHtml = `
-                <div class="grid grid-cols-3 gap-2 text-center mb-3">
-                    <div class="bg-red-50 rounded-lg p-1.5 border border-red-100">
-                        <span class="block text-[8px] font-bold text-red-400 uppercase leading-none">Vida</span>
+                <div class="grid grid-cols-3 gap-1.5 w-full text-center mb-3">
+                    <div class="bg-red-50 rounded p-1 border border-red-100">
+                        <span class="block text-[8px] font-bold text-red-400 uppercase leading-none mb-0.5">Vida</span>
                         <span class="font-black text-red-600 text-xs leading-none">${item.hp}</span>
                     </div>
-                    <div class="bg-orange-50 rounded-lg p-1.5 border border-orange-100">
-                        <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none">Ataque</span>
+                    <div class="bg-orange-50 rounded p-1 border border-orange-100">
+                        <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none mb-0.5">Ataque</span>
                         <span class="font-black text-orange-600 text-xs leading-none">${item.atk}</span>
                     </div>
-                    <div class="bg-blue-50 rounded-lg p-1.5 border border-blue-100">
-                        <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none">Defensa</span>
+                    <div class="bg-blue-50 rounded p-1 border border-blue-100">
+                        <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none mb-0.5">Defensa</span>
                         <span class="font-black text-blue-600 text-xs leading-none">${item.def}%</span>
                     </div>
                 </div>`;
             }
 
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-3xl border border-gray-100 p-5 flex flex-col hover:shadow-md transition-shadow relative';
             card.innerHTML = `
-                <div class="bg-gradient-to-b from-gray-50 to-white h-40 md:h-48 flex items-center justify-center p-4 md:p-6 relative shrink-0 border-b border-gray-100">
-                    <span class="absolute top-3 left-3 ${tagStyle} text-[9px] md:text-[10px] font-black px-2 md:px-2.5 py-1 rounded-md shadow-sm border uppercase tracking-wider z-20">${tag}</span>
+                <!-- Badges -->
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-[9px] font-black text-gray-500 border border-gray-200 px-2 py-1 rounded-md uppercase tracking-widest bg-white">${tag}</span>
                     ${stockBadge}
-                    <img src="${item.image}" class="h-28 md:h-36 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
                 </div>
-                <div class="p-4 md:p-5 flex flex-col flex-1">
-                    <h4 class="font-black text-cg_navy text-base md:text-lg leading-tight mb-2">${item.name}</h4>
-                    <div class="flex justify-between items-center text-[9px] md:text-[10px] font-bold text-gray-500 mb-3 bg-gray-50 p-2 md:p-2.5 rounded-lg border border-gray-100">
-                        ${durationHtml}
-                        <span class="uppercase flex items-center gap-1 font-extrabold text-cg_navy">Usos: ${item.usage}</span>
-                    </div>
-                    ${reqPotHtml}
-                    ${harvestHtml}
-                    ${statsHtml}
-                    <p class="text-[11px] md:text-xs text-gray-500 mb-4 leading-relaxed flex-1">${item.desc}</p>
-                    <div class="mt-auto pt-3 border-t border-gray-100">
-                        ${actionArea}
-                    </div>
+                
+                <!-- Image -->
+                <div class="flex items-center justify-center h-28 mb-4">
+                    <img src="${item.image}" class="h-full w-auto object-contain drop-shadow-md hover:scale-110 transition-transform">
+                </div>
+                
+                <!-- Info -->
+                <h4 class="text-lg font-black text-cg_navy mb-3 line-clamp-1">${item.name}</h4>
+                
+                <div class="flex justify-between items-center text-[9px] font-black text-gray-500 bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg uppercase tracking-widest mb-3">
+                    <span class="flex items-center gap-1">${durationHtml}</span>
+                    <span>Usos: ${item.usage}</span>
+                </div>
+                
+                ${reqPotHtml}
+                ${harvestHtml}
+                ${statsHtml}
+                
+                <p class="text-xs text-gray-500 mb-5 leading-relaxed line-clamp-2 flex-1">${item.desc}</p>
+                
+                <!-- Action Row -->
+                <div class="mt-auto pt-4 border-t border-gray-100">
+                    ${actionArea}
                 </div>
             `;
             container.appendChild(card);
         });
     },
 
-    changeShopQty(itemId, delta, tab) {
+    changeShopQty(itemId, delta) {
         let current = this.state.shopQuantities[itemId];
         let next = current + delta;
         if (next >= 1 && next <= 99) {
             this.state.shopQuantities[itemId] = next;
-            this.renderShopItems(tab);
+            this.renderShopItems();
         }
     },
 
-    async buyItem(itemId, unitPrice, tab) {
+    async buyItem(itemId, unitPrice) {
         if (this.isProcessingBuy) return;
         this.isProcessingBuy = true;
         setTimeout(() => { this.isProcessingBuy = false; }, 600); 
@@ -400,8 +406,9 @@ window.shopApp = {
                 let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
                 targetInventory[itemId] = { 
                     name: catItem.name, 
-                    type: tab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                    reqSize: catItem.potType || (itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') ? 'small' : (itemId.includes('big') || itemId.includes('moon') ? 'big' : null)),                    qty: 0, 
+                    type: this.currentTab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                    reqSize: catItem.potType || (itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') ? 'small' : (itemId.includes('big') || itemId.includes('moon') ? 'big' : null)),                    
+                    qty: 0, 
                     image: catItem.image 
                 };
             }
@@ -422,7 +429,7 @@ window.shopApp = {
                 this.saveState();
             }
 
-            this.renderShopItems(tab);
+            this.renderShopItems();
             
             let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
             this.showPurchaseModal(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
@@ -562,7 +569,40 @@ window.shopApp = {
         } catch(e) {
             alert("Error de conexión al procesar la compra.");
         }
-    }, 
+    },
+
+    showPurchaseModal(img, name, qty, priceText, priceLabel) {
+        const bg = document.getElementById('purchase-modal-bg');
+        const card = document.getElementById('purchase-modal-card');
+        const modal = document.getElementById('purchase-success-modal');
+        
+        document.getElementById('purchase-modal-img').src = img;
+        document.getElementById('purchase-modal-desc').innerHTML = `Has adquirido <strong class="text-cg_navy">${qty}x ${name}</strong>. Ya se encuentra en tu inventario.`;
+        document.getElementById('purchase-modal-label').innerText = priceLabel;
+        document.getElementById('purchase-modal-price').innerText = priceText;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        setTimeout(() => {
+            bg.classList.remove('opacity-0');
+            bg.classList.add('opacity-100');
+            card.classList.remove('scale-95', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+        }, 10);
+
+        setTimeout(() => {
+            bg.classList.remove('opacity-100');
+            bg.classList.add('opacity-0');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }, 2500);
+    },
 
     saveState() {
         if (window.farmApp && window.farmApp.state) {
