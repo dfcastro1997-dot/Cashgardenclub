@@ -96,7 +96,30 @@
             </button>
         </div>
     </div>
+
+
+    <div id="shop-confirm-modal" class="fixed inset-0 z-[1050] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="window.shopApp.closeConfirmModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8">
+            <div class="mx-auto mb-4 shadow-inner flex items-center justify-center rounded-2xl border-4 w-24 h-24 bg-gray-50 border-gray-100 relative">
+                <img id="shop-confirm-img" src="" class="w-16 h-16 object-contain relative z-10 drop-shadow-md">
+            </div>
+            <h3 class="text-xl md:text-2xl font-black mb-1 tracking-tight text-slate-800">Confirmar Compra</h3>
+            <p class="text-sm text-slate-500 mb-4 font-medium leading-relaxed" id="shop-confirm-name">Nombre del Item</p>
+            
+            <div class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center justify-between w-full mb-6">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total a Pagar:</span>
+                <span class="text-base font-black" id="shop-confirm-price">0 🌱</span>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="window.shopApp.closeConfirmModal()" class="flex-1 bg-white border border-gray-200 text-slate-600 font-black py-3.5 rounded-xl hover:bg-gray-50 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
+                <button id="shop-confirm-btn" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest active:scale-95">Comprar</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <script>
 window.shopApp = {
@@ -237,6 +260,9 @@ window.shopApp = {
                 tagColor = 'text-purple-700'; tagBg = 'bg-purple-50'; tagBorder = 'border-purple-200';
             }
 
+
+            let premiumBadge = isPremium ? `<div class="absolute -right-6 top-4 bg-purple-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30">VIP</div>` : '';
+
             // Área de Acción y Botones
             let actionArea = '';
             let stockBadge = '';
@@ -251,9 +277,11 @@ window.shopApp = {
             }
 
             if (item._type === 'iap') {
-                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
+                // AQUÍ CAMBIAMOS A promptBuyIAP
+                actionArea = `<button onclick="window.shopApp.promptBuyIAP('${item.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
             } else if (item._type === 'exchange') {
-                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
+                // AQUÍ CAMBIAMOS A promptBuyExchange
+                actionArea = `<button onclick="window.shopApp.promptBuyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
             } else if (item.isReferral) {
                 // ESTILO EXCLUSIVO DE REFERIDOS
                 actionArea = `
@@ -263,6 +291,7 @@ window.shopApp = {
                 `;
                 premiumBadge = `<div class="absolute -right-6 top-4 bg-orange-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30 cursor-pointer" onclick="loadView('referrals')">REFERIDOS</div>`;
             } else {
+                // AQUÍ CAMBIAMOS A promptBuyItem
                 actionArea = `
                     <div class="flex items-center gap-2 mt-auto">
                         <div class="flex items-center bg-slate-50 rounded-xl border border-slate-200 h-11 w-[90px] shrink-0 overflow-hidden shadow-inner">
@@ -270,7 +299,7 @@ window.shopApp = {
                             <div class="flex-1 text-center text-sm font-black text-slate-800">${qty}</div>
                             <button onclick="window.shopApp.changeShopQty('${item.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 font-black hover:bg-slate-200 transition-colors">+</button>
                         </div>
-                        <button onclick="window.shopApp.buyItem('${item.id}', ${item.price})" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                        <button onclick="window.shopApp.promptBuyItem('${item.id}', ${item.price})" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">
                             ${(item.price * qty).toLocaleString()} 🌱
                         </button>
                     </div>`;
@@ -304,8 +333,6 @@ window.shopApp = {
             // Construir Tarjeta
             const card = document.createElement('div');
             card.className = `bg-white rounded-3xl border border-gray-100 flex flex-col hover:shadow-lg transition-all duration-300 relative overflow-hidden group ${isPremium ? 'ring-1 ring-purple-100' : ''}`;
-            
-            let premiumBadge = isPremium ? `<div class="absolute -right-6 top-4 bg-purple-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30">VIP</div>` : '';
 
             card.innerHTML = `
                 ${premiumBadge}
@@ -555,6 +582,77 @@ window.shopApp = {
             this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
         }
     },
+
+
+
+    promptBuyItem(itemId, unitPrice) {
+        const qty = this.state.shopQuantities[itemId];
+        const total = unitPrice * qty;
+        let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+        
+        document.getElementById('shop-confirm-img').src = catItem.image;
+        document.getElementById('shop-confirm-name').innerText = `${catItem.name} (x${qty})`;
+        
+        const priceEl = document.getElementById('shop-confirm-price');
+        priceEl.innerText = `${total.toLocaleString()} 🌱`;
+        priceEl.className = "text-base font-black text-emerald-600";
+        
+        document.getElementById('shop-confirm-btn').onclick = () => {
+            this.closeConfirmModal();
+            this.buyItem(itemId, unitPrice);
+        };
+        
+        document.getElementById('shop-confirm-modal').classList.remove('hidden');
+        document.getElementById('shop-confirm-modal').classList.add('flex');
+    },
+
+    promptBuyIAP(packageId) {
+        let catItem = this.catalog.iap.find(i => i.id === packageId);
+        document.getElementById('shop-confirm-img').src = catItem.image;
+        document.getElementById('shop-confirm-name').innerText = catItem.name;
+        
+        const priceEl = document.getElementById('shop-confirm-price');
+        priceEl.innerText = `$${catItem.price_cop.toLocaleString()}`;
+        priceEl.className = "text-base font-black text-rose-500";
+        
+        document.getElementById('shop-confirm-btn').onclick = () => {
+            this.closeConfirmModal();
+            this.buyIAP(packageId);
+        };
+        
+        document.getElementById('shop-confirm-modal').classList.remove('hidden');
+        document.getElementById('shop-confirm-modal').classList.add('flex');
+    },
+
+    promptBuyExchange(packageId, priceCop, seeds) {
+        let catItem = this.catalog.exchange.find(i => i.id === packageId);
+        document.getElementById('shop-confirm-img').src = catItem.image;
+        document.getElementById('shop-confirm-name').innerText = catItem.name;
+        
+        const priceEl = document.getElementById('shop-confirm-price');
+        priceEl.innerText = `$${priceCop.toLocaleString()}`;
+        priceEl.className = "text-base font-black text-rose-500";
+        
+        document.getElementById('shop-confirm-btn').onclick = () => {
+            this.closeConfirmModal();
+            this.buyExchange(packageId, priceCop, seeds);
+        };
+        
+        document.getElementById('shop-confirm-modal').classList.remove('hidden');
+        document.getElementById('shop-confirm-modal').classList.add('flex');
+    },
+
+    closeConfirmModal() {
+        document.getElementById('shop-confirm-modal').classList.add('hidden');
+        document.getElementById('shop-confirm-modal').classList.remove('flex');
+    },
+
+
+
+
+
+
+
 
     showModalAlert(img, title, qty, priceText, priceLabel, type = 'info', descMsg = '') {
         const modal = document.getElementById('shop-alert-modal');
