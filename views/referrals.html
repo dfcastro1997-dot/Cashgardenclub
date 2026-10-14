@@ -1,190 +1,185 @@
-<div class="relative min-h-screen pb-24 font-sans selection:bg-rose-500 selection:text-white">
+<div class="relative min-h-screen pb-24 font-sans selection:bg-orange-500 selection:text-white">
     
-    <!-- FONDO CARNÍVORO SEMITRANSPARENTE -->
-    <div class="absolute inset-0 z-0 bg-cover bg-center bg-fixed" style="background-image: url('assets/Fondos/Fondo_Carnivoro.jpg');"></div>
-    <div class="absolute inset-0 z-0 bg-gray-950/85 backdrop-blur-[2px]"></div>
-
-    <div class="relative z-10 max-w-[1100px] mx-auto pt-8 px-4 sm:px-6">
+    <div class="relative z-10 max-w-[1200px] mx-auto pt-8 px-4 sm:px-6">
         
-        <!-- HEADER EL PACTO -->
-        <div class="text-center mb-10 animate-fade-in">
-            <span class="inline-block bg-rose-950/50 border border-rose-500/30 text-rose-400 font-black text-[10px] sm:text-xs px-3 py-1 rounded-full uppercase tracking-[0.3em] mb-4 shadow-[0_0_15px_rgba(225,29,72,0.3)]">
-                Sociedad Secreta de Invocación
+        <!-- HEADER PROGRAMA -->
+        <div class="text-center mb-12 animate-fade-in">
+            <span class="inline-block bg-orange-100 border border-orange-200 text-orange-600 font-black text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-[0.3em] mb-4 shadow-sm">
+                Programa de Recompensas
             </span>
-            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-xl mb-3" style="text-shadow: 0 4px 20px rgba(225, 29, 72, 0.6);">
-                EL PACTO CARNÍVORO
+            <h1 class="text-4xl md:text-6xl font-black text-cg_navy tracking-tight drop-shadow-sm mb-4">
+                INVITA A UN AMIGO
             </h1>
-            <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
-                Trae almas nuevas a la Arena. Por cada granjero que reclutes y que pague su <strong class="text-rose-400">primera inscripción en efectivo a un torneo</strong>, ascenderás en el culto. Desbloquea especímenes devoradores que el Mercado jamás verá y reclama identidades de élite.
+            <p class="text-gray-500 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed bg-white/50 backdrop-blur px-6 py-4 rounded-2xl border border-gray-100 shadow-sm">
+                Trae a nuevos granjeros a competir en la Arena. Cuando tu invitado pague su <strong class="text-orange-600 font-black">primera inscripción en efectivo a un torneo</strong>, avanzarás en la ruta. Desbloquea imponentes especies carnívoras y avatares de élite que jamás estarán en el Mercado.
             </p>
         </div>
 
         <!-- CÓDIGO DE REFERIDO GIGANTE -->
-        <div class="flex justify-center mb-16 relative">
-            <div class="absolute inset-0 bg-rose-600 rounded-full blur-[80px] opacity-20 w-3/4 h-full mx-auto pointer-events-none"></div>
-            <div class="bg-gray-900/60 backdrop-blur-xl border-2 border-rose-500/40 rounded-3xl p-6 sm:p-10 text-center shadow-[0_0_40px_rgba(225,29,72,0.15)] w-full max-w-lg relative z-10 transform hover:scale-[1.02] transition-transform duration-500">
-                <p class="text-[10px] font-black text-rose-300 uppercase tracking-[0.2em] mb-2 opacity-80">Tu Código Único de Pacto</p>
-                <div class="bg-black/50 border border-gray-800 rounded-2xl py-4 px-6 inline-block shadow-inner mb-4">
-                    <h2 id="ref-code-display" class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-purple-300 to-rose-400 tracking-[0.25em] font-mono select-all">
+        <div class="flex justify-center mb-20 relative">
+            <div class="bg-white border-2 border-orange-300 rounded-[2rem] p-8 sm:p-12 text-center shadow-xl w-full max-w-2xl relative z-10 transform hover:scale-[1.02] transition-transform duration-500 hover:shadow-2xl">
+                <p class="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Tu Código Único de Invitación</p>
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl py-5 px-8 inline-block shadow-inner mb-5">
+                    <h2 id="ref-code-display" class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 tracking-[0.25em] font-mono select-all">
                         -----
                     </h2>
                 </div>
-                <p class="text-xs text-gray-500 font-bold leading-relaxed px-4">Entrégaselo a tus aliados al registrarse. Tu contador subirá cuando derramen su primera gota (Inscripción Paga).</p>
-                <button onclick="copyReferralCode()" class="mt-5 w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-4 rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.4)] uppercase tracking-widest text-xs transition-colors">
-                    Copiar Código 📋
+                <p class="text-xs sm:text-sm text-gray-500 font-bold leading-relaxed px-4 mb-6">Compártelo con tus amigos para que lo ingresen al crear su cuenta. Tu contador subirá automáticamente tras su primer torneo pago.</p>
+                <button onclick="copyReferralCode()" class="w-full sm:w-2/3 mx-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-red-500 hover:to-orange-500 text-white font-black py-4 md:py-5 rounded-xl shadow-[0_8px_15px_rgba(249,115,22,0.3)] uppercase tracking-widest text-xs md:text-sm transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="text-lg">📋</span> Copiar Código
                 </button>
             </div>
         </div>
 
         <!-- RUTA DE RECOMPENSAS (TIMELINE VERTICAL) -->
-        <div class="relative w-full max-w-4xl mx-auto pb-10">
+        <div class="relative w-full max-w-5xl mx-auto pb-10">
             <!-- Línea espina central (Desktop) -->
-            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-1.5 h-full bg-gradient-to-b from-rose-900 via-purple-900 to-black rounded-full opacity-60"></div>
+            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gray-200 rounded-full"></div>
             <!-- Línea espina lateral (Móvil) -->
-            <div class="md:hidden absolute left-6 w-1 h-full bg-gradient-to-b from-rose-900 via-purple-900 to-black rounded-full opacity-60"></div>
+            <div class="md:hidden absolute left-7 w-2 h-full bg-gray-200 rounded-full"></div>
 
             <!-- Hito 1 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.1s;">
                 <div class="hidden md:block w-5/12"></div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">1</div>
-                <div class="w-full pl-16 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-rose-500/30 p-5 rounded-3xl shadow-2xl hover:border-rose-400 transition-colors flex items-center gap-4">
-                        <img src="assets/Perfil/Granjero Cazacuervos.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Granjero Cazacuervos.gif';" class="w-16 h-16 rounded-xl border border-gray-600 object-cover shadow-[0_0_10px_rgba(0,0,0,0.8)] shrink-0">
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-blue-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">1</div>
+                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-blue-300 transition-colors flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <img src="assets/Perfil/Granjero Cazacuervos.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Granjero Cazacuervos.gif';" class="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-gray-200 object-cover shadow-md shrink-0">
                         <div>
-                            <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-rose-500/20">Identidad Exclusiva</span>
-                            <h4 class="font-black text-white text-base">Granjero Cazacuervos</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">+ Bono de 5,000 🌱 Semillas.</p>
+                            <span class="text-[9px] md:text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-blue-200">Identidad Exclusiva</span>
+                            <h4 class="font-black text-cg_navy text-lg md:text-xl leading-tight">Granjero Cazacuervos</h4>
+                            <p class="text-xs text-gray-500 mt-2 font-bold">+ Bono de 5,000 🌱 Semillas.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Hito 2 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.2s;">
-                <div class="w-full pl-16 md:pl-0 md:pr-12 md:w-5/12 text-left md:text-right">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-purple-500/30 p-5 rounded-3xl shadow-2xl hover:border-purple-400 transition-colors flex flex-row md:flex-row-reverse items-center gap-4 group">
-                        <img src="assets/Plantas/Drosera Pegajosa.gif" onerror="this.onerror=null; this.src='assets/Plantas/Drosera Pegajosa.jpg';" class="w-20 h-20 object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.4)] group-hover:scale-110 transition-transform shrink-0">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-orange-300 transition-colors flex flex-col sm:flex-row-reverse items-center sm:items-start text-center sm:text-right gap-5 group">
+                        <img src="assets/Plantas/Drosera Pegajosa.gif" onerror="this.onerror=null; this.src='assets/Plantas/Drosera Pegajosa.jpg';" class="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-xl group-hover:scale-110 transition-transform shrink-0">
                         <div>
-                            <span class="text-[9px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-purple-500/20">Especie Carnívora (Niv. 1)</span>
-                            <h4 class="font-black text-white text-lg">Drosera Pegajosa</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Un monstruo recubierto de rocío ácido.</p>
+                            <span class="text-[9px] md:text-[10px] bg-orange-50 text-orange-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-orange-200">Especie Carnívora</span>
+                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight">Drosera Pegajosa</h4>
+                            <p class="text-xs text-gray-500 mt-2 font-bold">Un espécimen exótico cubierto de un rocío atrapa-plagas altamente letal.</p>
                         </div>
                     </div>
                 </div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">2</div>
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-orange-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">2</div>
                 <div class="hidden md:block w-5/12"></div>
             </div>
 
             <!-- Hito 3 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.3s;">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.3s;">
                 <div class="hidden md:block w-5/12"></div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">3</div>
-                <div class="w-full pl-16 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-green-500/30 p-5 rounded-3xl shadow-2xl hover:border-green-400 transition-colors flex items-center gap-4">
-                        <div class="text-4xl drop-shadow-[0_0_10px_rgba(34,197,94,0.6)]">🌱</div>
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-green-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">3</div>
+                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-green-300 transition-colors flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="text-5xl md:text-6xl drop-shadow-sm">🌱</div>
                         <div>
-                            <span class="text-[9px] bg-green-950 text-green-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-green-500/20">Cofre de la Alianza</span>
-                            <h4 class="font-black text-white text-base">Inyección de 15,000 Semillas</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Capital fresco para pagar la Arena.</p>
+                            <span class="text-[9px] md:text-[10px] bg-green-50 text-green-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-green-200">Cofre de la Alianza</span>
+                            <h4 class="font-black text-cg_navy text-lg md:text-xl leading-tight">15,000 Semillas</h4>
+                            <p class="text-xs text-gray-500 mt-2 font-bold">Capital fresco para pagar la entrada a la Arena.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Hito 4 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.4s;">
-                <div class="w-full pl-16 md:pl-0 md:pr-12 md:w-5/12 text-left md:text-right">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-blue-500/30 p-5 rounded-3xl shadow-2xl hover:border-blue-400 transition-colors flex flex-row md:flex-row-reverse items-center gap-4">
-                        <img src="assets/Perfil/Cuervo Mercenario.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Cuervo Mercenario.gif';" class="w-16 h-16 rounded-xl border border-gray-600 object-cover shadow-[0_0_10px_rgba(0,0,0,0.8)] shrink-0">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.4s;">
+                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-purple-300 transition-colors flex flex-col sm:flex-row-reverse items-center sm:items-start text-center sm:text-right gap-5">
+                        <img src="assets/Perfil/Cuervo Mercenario.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Cuervo Mercenario.gif';" class="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-gray-200 object-cover shadow-md shrink-0">
                         <div>
-                            <span class="text-[9px] bg-blue-950 text-blue-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-blue-500/20">Identidad Exclusiva</span>
-                            <h4 class="font-black text-white text-base">Cuervo Mercenario</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Un renegado que lucha por el oro.</p>
+                            <span class="text-[9px] md:text-[10px] bg-purple-50 text-purple-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-purple-200">Identidad Exclusiva</span>
+                            <h4 class="font-black text-cg_navy text-lg md:text-xl leading-tight">Cuervo Mercenario</h4>
+                            <p class="text-xs text-gray-500 mt-2 font-bold">Un renegado de la plaga que ahora lucha por el oro.</p>
                         </div>
                     </div>
                 </div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">4</div>
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-purple-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">4</div>
                 <div class="hidden md:block w-5/12"></div>
             </div>
 
             <!-- Hito 5 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.5s;">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.5s;">
                 <div class="hidden md:block w-5/12"></div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">5</div>
-                <div class="w-full pl-16 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-purple-500/30 p-5 rounded-3xl shadow-2xl hover:border-purple-400 transition-colors flex items-center gap-4 group">
-                        <!-- Planta más grande -->
-                        <img src="assets/Plantas/Nepenthes Ácida.gif" onerror="this.onerror=null; this.src='assets/Plantas/Nepenthes Ácida.jpg';" class="w-28 h-28 object-contain drop-shadow-[0_0_20px_rgba(168,85,247,0.6)] group-hover:scale-110 transition-transform shrink-0">
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-orange-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">5</div>
+                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-orange-400 transition-colors flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 group">
+                        <!-- Planta Más Grande -->
+                        <img src="assets/Plantas/Nepenthes Ácida.gif" onerror="this.onerror=null; this.src='assets/Plantas/Nepenthes Ácida.jpg';" class="w-40 h-40 md:w-48 md:h-48 object-contain drop-shadow-xl group-hover:scale-110 transition-transform shrink-0">
                         <div>
-                            <span class="text-[9px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-purple-500/20">Especie Carnívora (Niv. 2)</span>
-                            <h4 class="font-black text-white text-xl">Nepenthes Ácida</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Un cántaro letal lleno de enzimas digestivas oscuras.</p>
+                            <span class="text-[9px] md:text-[10px] bg-orange-50 text-orange-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-orange-200">Especie Carnívora Avanzada</span>
+                            <h4 class="font-black text-cg_navy text-xl md:text-3xl leading-tight">Nepenthes Ácida</h4>
+                            <p class="text-xs md:text-sm text-gray-500 mt-2 font-bold leading-relaxed">Un cántaro masivo lleno de enzimas digestivas del cual nadie escapa.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Hito 6 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.6s;">
-                <div class="w-full pl-16 md:pl-0 md:pr-12 md:w-5/12 text-left md:text-right">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-green-500/30 p-5 rounded-3xl shadow-2xl hover:border-green-400 transition-colors flex flex-row md:flex-row-reverse items-center gap-4">
-                        <div class="text-4xl drop-shadow-[0_0_10px_rgba(34,197,94,0.6)]">🌱</div>
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.6s;">
+                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-green-400 transition-colors flex flex-col sm:flex-row-reverse items-center sm:items-start text-center sm:text-right gap-5">
+                        <div class="text-5xl md:text-6xl drop-shadow-sm">🌱</div>
                         <div>
-                            <span class="text-[9px] bg-green-950 text-green-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-green-500/20">Cofre de Sangre</span>
-                            <h4 class="font-black text-white text-base">Inyección de 30,000 Semillas</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Financiamiento para las Ligas Mayores.</p>
+                            <span class="text-[9px] md:text-[10px] bg-green-50 text-green-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-green-200">Cofre de Veterano</span>
+                            <h4 class="font-black text-cg_navy text-lg md:text-xl leading-tight">30,000 Semillas</h4>
+                            <p class="text-xs text-gray-500 mt-2 font-bold">Financiamiento robusto para las Ligas Mayores.</p>
                         </div>
                     </div>
                 </div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">6</div>
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-green-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">6</div>
                 <div class="hidden md:block w-5/12"></div>
             </div>
 
             <!-- Hito 7 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.7s;">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.7s;">
                 <div class="hidden md:block w-5/12"></div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">7</div>
-                <div class="w-full pl-16 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-rose-500/30 p-5 rounded-3xl shadow-2xl hover:border-rose-400 transition-colors flex items-center gap-4">
-                        <img src="assets/Perfil/Simbiosis Carnívora.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Simbiosis Carnívora.gif';" class="w-20 h-20 rounded-xl border border-rose-500 object-cover shadow-[0_0_15px_rgba(225,29,72,0.5)] shrink-0">
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-blue-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">7</div>
+                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-blue-400 transition-colors flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <img src="assets/Perfil/Simbiosis Carnívora.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Simbiosis Carnívora.gif';" class="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 border-gray-200 object-cover shadow-md shrink-0">
                         <div>
-                            <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-rose-500/20">Identidad Animada Élite</span>
-                            <h4 class="font-black text-white text-base">Simbiosis Carnívora</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Un huésped poseído por la flora brutal.</p>
+                            <span class="text-[9px] md:text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-blue-200">Identidad Animada Élite</span>
+                            <h4 class="font-black text-cg_navy text-lg md:text-2xl leading-tight">Simbiosis Carnívora</h4>
+                            <p class="text-xs md:text-sm text-gray-500 mt-2 font-bold">Un huésped devorado y poseído por la flora brutal.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Hito 8 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.8s;">
-                <div class="w-full pl-16 md:pl-0 md:pr-12 md:w-5/12 text-left md:text-right">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-purple-500/30 p-5 rounded-3xl shadow-2xl hover:border-purple-400 transition-colors flex flex-row md:flex-row-reverse items-center gap-4 group relative overflow-hidden">
-                        <div class="absolute inset-0 bg-purple-900/20 group-hover:bg-purple-900/40 transition-colors z-0"></div>
-                        <!-- Planta colosal -->
-                        <img src="assets/Plantas/Venus Trituradora.gif" onerror="this.onerror=null; this.src='assets/Plantas/Venus Trituradora.jpg';" class="w-36 h-36 object-contain drop-shadow-[0_0_30px_rgba(168,85,247,0.8)] group-hover:scale-[1.15] transition-transform shrink-0 relative z-10">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.8s;">
+                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-xl hover:border-orange-500 transition-colors flex flex-col sm:flex-row-reverse items-center sm:items-start text-center sm:text-right gap-5 group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-orange-50/50 opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
+                        <!-- Planta Colosal -->
+                        <img src="assets/Plantas/Venus Trituradora.gif" onerror="this.onerror=null; this.src='assets/Plantas/Venus Trituradora.jpg';" class="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-2xl group-hover:scale-[1.1] transition-transform shrink-0 relative z-10">
                         <div class="relative z-10">
-                            <span class="text-[9px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-purple-500/20">Especie Carnívora (Niv. 3)</span>
-                            <h4 class="font-black text-white text-2xl">Venus Trituradora</h4>
-                            <p class="text-[10px] text-gray-300 mt-1 font-bold">Mandíbulas de titanio botánico que hacen añicos las armaduras enemigas.</p>
+                            <span class="text-[9px] md:text-[10px] bg-orange-100 text-orange-700 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-orange-300">Monstruosidad (Niv. 3)</span>
+                            <h4 class="font-black text-cg_navy text-2xl md:text-4xl leading-tight">Venus Trituradora</h4>
+                            <p class="text-xs md:text-sm text-gray-500 mt-2 font-bold leading-relaxed">Mandíbulas de titanio botánico diseñadas para hacer añicos cualquier resistencia.</p>
                         </div>
                     </div>
                 </div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">8</div>
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-orange-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">8</div>
                 <div class="hidden md:block w-5/12"></div>
             </div>
 
             <!-- Hito 9 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-12 relative animate-fade-in" style="animation-delay: 0.9s;">
+            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.9s;">
                 <div class="hidden md:block w-5/12"></div>
-                <div class="w-10 h-10 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-gray-900 border-4 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] rounded-full flex items-center justify-center text-white font-black z-20 text-xs">9</div>
-                <div class="w-full pl-16 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-gray-900/70 backdrop-blur-md border border-green-500/30 p-5 rounded-3xl shadow-2xl hover:border-green-400 transition-colors flex items-center gap-4">
-                        <div class="text-5xl drop-shadow-[0_0_15px_rgba(34,197,94,0.8)]">🌱</div>
+                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-green-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">9</div>
+                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
+                    <div class="bg-white border-2 border-gray-100 p-6 md:p-8 rounded-3xl shadow-lg hover:border-green-500 transition-colors flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="text-6xl md:text-7xl drop-shadow-md">🌱</div>
                         <div>
-                            <span class="text-[9px] bg-green-950 text-green-300 px-2 py-0.5 rounded font-black uppercase tracking-wider mb-1 inline-block border border-green-500/20">Fortuna del Pacto</span>
-                            <h4 class="font-black text-white text-lg">Inyección de 50,000 Semillas</h4>
-                            <p class="text-[10px] text-gray-400 mt-1 font-bold">Un botín masivo para sostener tu imperio.</p>
+                            <span class="text-[9px] md:text-[10px] bg-green-50 text-green-600 px-2 py-1 rounded font-black uppercase tracking-wider mb-2 inline-block border border-green-200">Fortuna del Culto</span>
+                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight">50,000 Semillas</h4>
+                            <p class="text-xs md:text-sm text-gray-500 mt-2 font-bold">Un botín masivo para coronar tu imperio agrícola.</p>
                         </div>
                     </div>
                 </div>
@@ -192,27 +187,26 @@
 
             <!-- Hito 10 (Izquierda - SUPREMO) -->
             <div class="flex flex-col md:flex-row items-center w-full mb-8 relative animate-fade-in" style="animation-delay: 1s;">
-                <div class="w-full pl-16 md:pl-0 md:pr-12 md:w-5/12 text-left md:text-right">
-                    <div class="bg-gray-900/90 backdrop-blur-xl border-2 border-red-600 p-6 rounded-3xl shadow-[0_0_50px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.6)] transition-all flex flex-col items-center gap-5 group relative overflow-hidden text-center">
-                        <div class="absolute inset-0 bg-gradient-to-t from-red-900/50 to-transparent z-0"></div>
+                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
+                    <div class="bg-gradient-to-br from-white to-orange-50 border-4 border-orange-400 p-8 md:p-10 rounded-[2.5rem] shadow-2xl hover:shadow-[0_20px_50px_rgba(249,115,22,0.4)] transition-all flex flex-col items-center gap-6 group relative overflow-hidden">
                         
-                        <div class="relative z-10 flex flex-col items-center">
-                            <span class="text-[10px] bg-red-950 text-red-400 px-3 py-1 rounded font-black uppercase tracking-[0.3em] mb-2 inline-block border border-red-500/50">CÚSPIDE DEL CULTO (2 RECOMPENSAS)</span>
-                            <h4 class="font-black text-white text-3xl mb-1 drop-shadow-md">Hidra del Abismo</h4>
-                            <p class="text-[11px] text-gray-300 font-bold mb-4">La monstruosidad tricéfala que consume arenas enteras.</p>
+                        <div class="relative z-10 flex flex-col items-center w-full">
+                            <span class="text-[10px] md:text-xs bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.3em] mb-3 inline-block border border-orange-300">CÚSPIDE DEL PACTO (2 PREMIOS)</span>
+                            <h4 class="font-black text-cg_navy text-4xl md:text-5xl mb-2 drop-shadow-sm text-center">Hidra del Abismo</h4>
+                            <p class="text-xs md:text-sm text-gray-600 font-bold mb-6 text-center leading-relaxed">El depredador definitivo. Una atrocidad tricéfala que consume arenas enteras sin piedad.</p>
                             
-                            <!-- La planta más masiva -->
-                            <img src="assets/Plantas/Hidra del Abismo.gif" onerror="this.onerror=null; this.src='assets/Plantas/Hidra del Abismo.jpg';" class="w-48 h-48 sm:w-56 sm:h-56 object-contain drop-shadow-[0_0_40px_rgba(220,38,38,0.9)] group-hover:scale-105 transition-transform">
+                            <!-- La planta más masiva y majestuosa -->
+                            <img src="assets/Plantas/Hidra del Abismo.gif" onerror="this.onerror=null; this.src='assets/Plantas/Hidra del Abismo.jpg';" class="w-64 h-64 sm:w-72 sm:h-72 object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500">
                             
-                            <div class="mt-6 flex flex-col items-center">
-                                <span class="text-gray-400 font-bold text-xs uppercase mb-2">+ Desbloqueas el Avatar Rey:</span>
-                                <img src="assets/Perfil/Rey Cuervo Eclipse.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Rey Cuervo Eclipse.gif';" class="w-24 h-24 rounded-full border-4 border-red-500 object-cover shadow-[0_0_20px_rgba(220,38,38,1)]">
-                                <h5 class="text-white font-black text-sm mt-2">Rey Cuervo Eclipse</h5>
+                            <div class="mt-8 pt-6 border-t border-orange-200/50 w-full flex flex-col items-center">
+                                <span class="text-orange-600 font-black text-[10px] md:text-xs uppercase mb-3 tracking-widest">+ Desbloqueas el Avatar Supremo:</span>
+                                <img src="assets/Perfil/Rey Cuervo Eclipse.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Rey Cuervo Eclipse.gif';" class="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-orange-400 object-cover shadow-xl">
+                                <h5 class="text-cg_navy font-black text-lg md:text-xl mt-3">Rey Cuervo Eclipse</h5>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="w-12 h-12 absolute left-1 md:left-1/2 transform md:-translate-x-1/2 bg-red-600 border-4 border-black shadow-[0_0_20px_rgba(220,38,38,1)] rounded-full flex items-center justify-center text-white font-black z-20 text-lg">10</div>
+                <div class="w-14 h-14 md:w-16 md:h-16 absolute left-1 md:left-1/2 transform md:-translate-x-1/2 bg-orange-500 border-4 border-white shadow-xl rounded-full flex items-center justify-center text-white font-black z-20 text-xl md:text-2xl">10</div>
                 <div class="hidden md:block w-5/12"></div>
             </div>
 
@@ -221,35 +215,35 @@
 </div>
 
 <script>
-    function initReferrals() {
+    async function initReferrals() {
         const displayEl = document.getElementById('ref-code-display');
         if (!displayEl) return;
 
-        // Si el servidor asignó un short_id, lo usamos y le ponemos una 'R' para que parezca un código
-        let shortId = sessionStorage.getItem('short_id');
-        let code = "";
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
 
-        if (shortId && shortId !== "0000") {
-            code = "R" + shortId; // Ej: R1234
-        } else {
-            // Generador de fallback aleatorio de 5 dígitos alfanuméricos si no hay ID
-            let storedCode = localStorage.getItem('local_ref_code');
-            if (!storedCode) {
-                const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-                storedCode = "";
-                for (let i=0; i<5; i++) {
-                    storedCode += chars.charAt(Math.floor(Math.random() * chars.length));
+        if (username && token) {
+            try {
+                const res = await fetch(`/api/sync/${username}?token=${token}`);
+                const data = await res.json();
+                
+                if (data.status === 'success' && data.user.ref_code) {
+                    displayEl.innerText = data.user.ref_code;
+                    return;
                 }
-                localStorage.setItem('local_ref_code', storedCode);
+            } catch(e) {
+                console.error("Error obteniendo el código de referidos", e);
             }
-            code = storedCode;
         }
-
-        displayEl.innerText = code;
+        
+        // Fallback visual temporal si falla la conexión
+        displayEl.innerText = "ERROR";
     }
 
     window.copyReferralCode = function() {
         const code = document.getElementById('ref-code-display').innerText;
+        if(code === "-----" || code === "ERROR") return;
+        
         navigator.clipboard.writeText(code).then(() => {
             alert(`¡Código ${code} copiado al portapapeles!\nCompártelo con tus aliados para empezar tu ascenso.`);
         }).catch(err => {

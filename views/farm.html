@@ -24,11 +24,19 @@
                     <span id="mm-count-badge" class="absolute -top-2 -right-2 bg-cg_blue text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md animate-pulse">0</span>
                 </button>
 
-                <!-- BOTÓN REFERIDOS (NUEVO) -->
-                <button onclick="loadView('referrals')" class="relative flex-1 sm:w-auto sm:min-w-[130px] h-full min-h-[48px] sm:min-h-[56px] bg-gradient-to-r from-purple-800 to-rose-900 hover:from-purple-700 hover:to-rose-800 border-2 border-rose-500/50 rounded-2xl shadow-[0_0_15px_rgba(225,29,72,0.4)] font-black text-white flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3 group overflow-hidden">
-                    <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
-                    <span class="text-xl drop-shadow-[0_0_5px_rgba(255,255,255,0.8)] animate-pulse">🩸</span> 
-                    <span class="text-[10px] sm:text-xs uppercase tracking-widest z-10">El Pacto</span>
+                <!-- BOTÓN REFERIDOS (NUEVO CLARO CON BRILLO CADA 5S) -->
+                <style>
+                    @keyframes glowOrange5s {
+                        0%, 80%, 100% { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); border-color: #fed7aa; }
+                        90% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.6), inset 0 0 10px rgba(249, 115, 22, 0.1); border-color: #f97316; }
+                    }
+                    .btn-referidos-glow {
+                        animation: glowOrange5s 5s infinite;
+                    }
+                </style>
+                <button onclick="loadView('referrals')" class="btn-referidos-glow relative flex-1 sm:w-auto sm:min-w-[130px] h-full min-h-[48px] sm:min-h-[56px] bg-gradient-to-br from-orange-50 to-white hover:from-orange-100 hover:to-orange-50 border-2 border-orange-200 rounded-2xl font-black text-orange-600 flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3">
+                    <span class="text-xl drop-shadow-sm">🤝</span> 
+                    <span class="text-[10px] sm:text-xs uppercase tracking-widest z-10">Referidos</span>
                 </button>
                 
                 <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Escritorio) -->
