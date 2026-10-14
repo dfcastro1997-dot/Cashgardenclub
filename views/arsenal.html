@@ -142,8 +142,10 @@
         // Si está a punto de morir (ej. 11/120 HP), su valor se desploma.
         let hpFactor = plant.hp / plant.maxHp;
         
-        // 5. Bono heroico: +15% extra por cada victoria en la arena.
-        let winBonus = 1 + ((plant.wins || 0) * 0.15); 
+        // CORRECCIÓN: Se elimina el winBonus para evitar inflación y farmeo infinito. 
+        // Las plantas usadas son bienes que se deprecian, no inversiones.
+        let maxResaleBonus = 1.2; // Tope máximo del 20% extra sin importar cuántas victorias tenga
+        let winBonus = Math.min(maxResaleBonus, 1 + ((plant.wins || 0) * 0.05)); 
         
         return Math.floor(baseVal * hpFactor * winBonus);
     }

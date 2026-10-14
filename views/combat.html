@@ -630,31 +630,60 @@
             </div>
 
             <!-- POPUP DE EMOTES RÁPIDOS -->
-            <div id="cb-emote-wheel" class="hidden absolute top-12 z-50 bg-slate-900/95 border-2 border-amber-400/80 rounded-2xl p-2.5 shadow-2xl backdrop-blur-md flex flex-col gap-1.5 w-52 sm:w-60 animate-fade-in text-white pointer-events-auto">
-                <div class="text-[9px] uppercase tracking-wider font-black text-amber-300 text-center pb-1 border-b border-white/10">Reacciones Rápidas</div>
-                <div class="grid grid-cols-3 gap-1.5">
+            <div id="cb-emote-wheel" class="hidden absolute top-12 z-50 bg-slate-900/95 border-2 border-amber-400/80 rounded-2xl p-2.5 shadow-2xl backdrop-blur-md flex flex-col gap-1.5 w-60 sm:w-72 animate-fade-in text-white pointer-events-auto max-h-[60vh] overflow-y-auto">
+                <div class="text-[9px] uppercase tracking-wider font-black text-amber-300 text-center pb-1 border-b border-white/10 shrink-0">Reacciones Rápidas</div>
+                
+                <!-- Emotes con Ícono (2 Filas) -->
+                <div class="grid grid-cols-3 gap-1.5 shrink-0">
                     <button onclick="window.combatApp.sendEmote('😎', '¡Demasiado fácil!')" class="p-1.5 bg-white/5 hover:bg-amber-400/20 rounded-xl flex flex-col items-center hover:scale-105 active:scale-95 transition-all text-center">
                         <span class="text-2xl">😎</span>
-                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Cactus</span>
+                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Fácil</span>
                     </button>
                     <button onclick="window.combatApp.sendEmote('😭', '¡Piedad por favor!')" class="p-1.5 bg-white/5 hover:bg-amber-400/20 rounded-xl flex flex-col items-center hover:scale-105 active:scale-95 transition-all text-center">
                         <span class="text-2xl">😭</span>
-                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Cuervo</span>
+                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Piedad</span>
                     </button>
                     <button onclick="window.combatApp.sendEmote('😱', '¡¿Qué fue eso?!')" class="p-1.5 bg-white/5 hover:bg-amber-400/20 rounded-xl flex flex-col items-center hover:scale-105 active:scale-95 transition-all text-center">
                         <span class="text-2xl">😱</span>
-                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Girasol</span>
+                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Susto</span>
+                    </button>
+                    
+                    <!-- Nuevos Iconos Retadores -->
+                    <button onclick="window.combatApp.sendEmote('🥱', 'Me estoy durmiendo...')" class="p-1.5 bg-white/5 hover:bg-amber-400/20 rounded-xl flex flex-col items-center hover:scale-105 active:scale-95 transition-all text-center">
+                        <span class="text-2xl">🥱</span>
+                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Aburrido</span>
+                    </button>
+                    <button onclick="window.combatApp.sendEmote('🤡', 'Ups, error de novato')" class="p-1.5 bg-white/5 hover:bg-amber-400/20 rounded-xl flex flex-col items-center hover:scale-105 active:scale-95 transition-all text-center">
+                        <span class="text-2xl">🤡</span>
+                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Novato</span>
+                    </button>
+                    <button onclick="window.combatApp.sendEmote('🤫', 'Shh, estoy pensando')" class="p-1.5 bg-white/5 hover:bg-amber-400/20 rounded-xl flex flex-col items-center hover:scale-105 active:scale-95 transition-all text-center">
+                        <span class="text-2xl">🤫</span>
+                        <span class="text-[8px] font-black mt-0.5 text-slate-300">Silencio</span>
                     </button>
                 </div>
+
+                <!-- Frases chistosas y retadoras -->
                 <div class="flex flex-col gap-1 pt-1.5 border-t border-white/10">
-                    <button onclick="window.combatApp.sendEmote('👏', '¡Buena jugada!')" class="px-2 py-1 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-1.5 transition-colors">
-                        <span>👏</span> <span>¡Buena jugada!</span>
+                    <button onclick="window.combatApp.sendEmote('👏', '¡Buena jugada!')" class="px-2 py-1.5 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-2 transition-colors">
+                        <span class="text-base">👏</span> <span>¡Buena jugada!</span>
                     </button>
-                    <button onclick="window.combatApp.sendEmote('💥', '¡Se viene mi Ultimate!')" class="px-2 py-1 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-1.5 transition-colors text-amber-300">
-                        <span>💥</span> <span>¡Se viene mi Ultimate!</span>
+                    <button onclick="window.combatApp.sendEmote('💥', '¡Se viene mi Ultimate!')" class="px-2 py-1.5 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-2 transition-colors text-amber-300">
+                        <span class="text-base">💥</span> <span>¡Se viene mi Ultimate!</span>
+                    </button>
+                    
+                    <!-- Nuevas frases -->
+                    <button onclick="window.combatApp.sendEmote('🌱', 'Mucho abono, poco ataque...')" class="px-2 py-1.5 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-2 transition-colors text-green-300">
+                        <span class="text-base">🌱</span> <span>Mucho abono, poco ataque...</span>
+                    </button>
+                    <button onclick="window.combatApp.sendEmote('📉', 'Calculando tu derrota...')" class="px-2 py-1.5 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-2 transition-colors text-cyan-300">
+                        <span class="text-base">📉</span> <span>Calculando tu derrota...</span>
+                    </button>
+                    <button onclick="window.combatApp.sendEmote('💸', '¡Gracias por tus semillas!')" class="px-2 py-1.5 bg-white/5 hover:bg-white/15 rounded-lg text-left text-[10px] font-bold flex items-center gap-2 transition-colors text-rose-300">
+                        <span class="text-base">💸</span> <span>¡Gracias por tus semillas!</span>
                     </button>
                 </div>
-            </div>
+            </div>  
             <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-[min(94vw,32rem)] flex flex-col items-center gap-1 pointer-events-none">
             <!-- Banner de Estado / Instrucción Actual -->
             <div id="cb-instruction-pill" role="status" aria-live="polite" class="px-3 py-0.5 rounded-full bg-black/60 border border-white/20 text-white text-[10px] sm:text-xs font-black shadow-md text-center max-w-full transition-colors">
@@ -745,7 +774,7 @@
                         <span id="cb-energy-counter" class="text-sm sm:text-lg md:text-2xl font-black leading-none drop-shadow">5<span class="text-[9px] sm:text-xs md:text-sm text-cyan-200">/15</span></span>
                     </div>
                 </div>
-                <span class="text-[8px] sm:text-[9px] md:text-[10px] font-black text-amber-300 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider" title="Recuperas +3 de energía al inicio de cada ronda">⚡ +3/ronda</span>
+                <span class="text-[8px] sm:text-[9px] md:text-[10px] font-black text-amber-300 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider" title="Recuperas +4 de energía al inicio de cada ronda">⚡ +4/ronda</span>
             </div>
 
             <!-- CENTRO: MAZO DE CARTAS DINÁMICO (PLANTAS O ATAQUES DE LA PLANTA) -->
@@ -944,9 +973,9 @@ window.combatApp = {
     playerReserve: [],
     enemyTeam: [],
     turn: 1,
-    energy: 5,         
-    maxEnergy: 15,     
-    actionQueue: [], 
+    energy: 6,         // ANTES: 5
+    maxEnergy: 20,     // ANTES: 15
+    actionQueue: [],
     
     currentAttackerIdx: null,
     pendingSkill: null,
@@ -1168,8 +1197,13 @@ window.combatApp = {
 
     calculateFinalDamage(baseDmg, plantAtk) {
         const atk = (plantAtk !== undefined && plantAtk !== null) ? plantAtk : 50;
-        const mult = 1 + ((atk - 50) / 5) * 0.10;
-        return Math.max(1, Math.floor(baseDmg * mult));
+        
+        // 1. Escalado más justo: +5% de daño por cada 10 puntos de ataque (antes era +10% cada 5 puntos)
+        const mult = 1 + ((atk - 50) / 10) * 0.05;
+        
+        // 2. Reducción global: Multiplicamos el daño final por 0.65 (65%) para alargar los combates a más rondas.
+        // Aseguramos que el multiplicador nunca sea menor a 0.5 para que los ataques débiles sigan haciendo algo de daño.
+        return Math.max(1, Math.floor((baseDmg * 0.65) * Math.max(0.5, mult)));
     },
 
     // Catálogo de plantas (Plantas.xlsx): [categoría, nombre, gif, vida, ataque, defensa]
@@ -1667,7 +1701,10 @@ window.combatApp = {
             for(let i=0; i<3; i++) {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
                 const basePower = (rP.hp || 100) + (rP.atk || 40) + (rP.def || 20);
-                const multiplier = Math.max(1, playerAvgPower / basePower) * (1.05 + Math.random() * 0.10);
+                
+                // CORRECCIÓN: El multiplicador ahora permite que la IA sea ligeramente más débil o igual al jugador (85% a 105%).
+                // Se elimina la restricción de Math.max(1, ...) para que los bots no se inflen artificialmente si basePower ya es alto.
+                const multiplier = (playerAvgPower / basePower) * (0.85 + Math.random() * 0.20);
 
                 const bHp = Math.floor((rP.hp || 100) * multiplier);
                 const bAtk = Math.floor((rP.atk || 40) * multiplier);
@@ -2590,31 +2627,29 @@ window.combatApp = {
             shadow.classList.toggle('is-target-enemy', isTargetable);
             shadow.classList.toggle('is-target-ally', isAllyTargetable);
 
-            // Etiquetas superiores
+            // Etiquetas superiores (Modificadas para mantener la intriga táctica)
             let tags = '';
             if (isTargetable) {
-                const caster = this.playerTeam[this.currentAttackerIdx];
-                const { hits, buffLeft } = this.queuedRawHitsOn(idx);
-                const raw = this.pendingSkill.dmg * (caster && buffLeft[this.currentAttackerIdx] ? 2 : 1);
-                const before = this.simulateHits(ent, hits);
-                const after = this.simulateHits(ent, [...hits, raw]);
-                const kills = after >= ent.hp;
-                tags += `<span class="cb-tag ${kills ? 'bg-black text-amber-300' : 'bg-red-600 text-white'} animate-bounce">${kills ? '💀 K.O.' : `🎯 -${after - before}`}</span>`;
+                // CORRECCIÓN 1: Al apuntar a un enemigo, solo muestra "Apuntar" en lugar del daño exacto y el K.O.
+                tags += `<span class="cb-tag bg-red-600 text-white animate-bounce">🎯 Apuntar</span>`;
             } else if (isAllyTargetable) {
                 tags += `<span class="cb-tag bg-emerald-500 text-black animate-bounce">✚ Aplicar</span>`;
             } else if (!isP && !dead && this.isMyTurn()) {
                 const { hits } = this.queuedRawHitsOn(idx);
                 if (hits.length) {
-                    const dmg = this.simulateHits(ent, hits);
-                    tags += `<span class="cb-tag ${dmg >= ent.hp ? 'bg-black text-amber-300' : 'bg-amber-500 text-black'}">${dmg >= ent.hp ? '💀 K.O. en cola' : `⏳ -${dmg}`}</span>`;
+                    // CORRECCIÓN 2: Oculta el daño acumulado y el K.O. en cola.
+                    tags += `<span class="cb-tag bg-amber-500 text-black">⚔️ En la mira</span>`;
                 }
             }
             if (isP && !dead) {
                 const queued = this.actionQueue.filter(a => a.attackerIdx === idx).length;
-                if (queued > 0 && this.phase !== 'EXECUTION') tags += `<span class="cb-tag bg-red-600 text-white">⚔️ ${queued}</span>`;
-                if (intent && intent.targetIdx === idx && !isAllyTargetable) {
-                    tags += `<span class="cb-tag ${intent.lethal ? 'bg-black text-red-400' : 'bg-rose-700 text-white'}" title="Los cuervos atacarán a esta planta (la de menor vida)">${intent.lethal ? '☠️' : '⚠️'} -${intent.dmg}</span>`;
+                if (queued > 0 && this.phase !== 'EXECUTION') {
+                    // Mostramos cuántos ataques va a hacer TU planta (color azul para diferenciarlo)
+                    tags += `<span class="cb-tag bg-blue-600 text-white">⚔️ ${queued} en cola</span>`;
                 }
+                
+                // CORRECCIÓN 3: Se eliminó intencionalmente el bloque 'if (intent...)' 
+                // para que NUNCA aparezca la calavera ni la alerta de daño sobre tus plantas.
             }
             el.querySelector('.cb-unit-tags').innerHTML = tags;
 
@@ -3073,14 +3108,19 @@ window.combatApp = {
         }
 
         // Si es PvE (contra cuervos IA), el cuervo a veces responde con un emote rival
+        // Si es PvE (contra cuervos IA), el cuervo a veces responde con un emote rival
         if (!isEnemy && !this.isPvP && Math.random() < 0.65) {
             setTimeout(() => {
                 if (this.combatEnded) return;
                 const responses = [
                     { emoji: '🦅', text: '¡Craaa! ¡No cantes victoria!' },
-                    { emoji: '😭', text: '¡Mis plumas!' },
+                    { emoji: '😭', text: '¡Ay! ¡Me harás caldo de cuervo!' },
                     { emoji: '😈', text: '¡Prepárate para mi picotazo!' },
-                    { emoji: '💀', text: '¡Te extinguiré!' }
+                    { emoji: '💀', text: '¡Te extinguiré!' },
+                    { emoji: '💩', text: '¡Te dejaré un recuerdito desde el cielo!' },
+                    { emoji: '🧐', text: '¡Craso error, humano!' },
+                    { emoji: '🌿', text: '¡Tu ensaladita no me asusta!' },
+                    { emoji: '🥱', text: 'Tus plantitas me dan sueño.' }
                 ];
                 const r = responses[Math.floor(Math.random() * responses.length)];
                 this.sendEmote(r.emoji, r.text, true);
@@ -3362,8 +3402,9 @@ window.combatApp = {
         } else if (kind === 't_abono' || kind === 'buff') {
             this.showFx('¡FURIA CARMESÍ!');
             this.playSound('tactic', 'Abono Ferocidad');
-            const hpCost = Math.floor(target.hp * 0.50);
-            target.hp = Math.max(1, target.hp - hpCost);
+            // CORRECCIÓN: Cuesta el 30% de la VIDA MÁXIMA, forzando un sacrificio real.
+            const hpCost = Math.floor(target.maxHp * 0.30);
+            target.hp = Math.max(1, target.hp - hpCost); // Puede dejarla en 1 HP, pero el costo fue alto.
             target.hasBuff = true;
             this.showFloatingDamage(tgtId, `-${hpCost} HP`, 'text-rose-500');
             this.showFloatingDamage(tgtId, 'ATK x2 🔥', 'text-amber-300');
@@ -3589,7 +3630,8 @@ window.combatApp = {
             this.endCombat(false);
         } else {
             this.turn++;
-            this.energy = Math.min(this.maxEnergy, this.energy + 3);
+            // CORRECCIÓN: Sumar 4 de energía en lugar de 3
+            this.energy = Math.min(this.maxEnergy, this.energy + 4);
             this.tickExhaustion();
             this.actionQueue = [];
             this.phase = 'P_SELECT';
@@ -3597,7 +3639,8 @@ window.combatApp = {
             this.renderHand();
             this.updateUI();
             this.showFx(`RONDA ${this.turn}`);
-            this.setInstruction(`Ronda ${this.turn} (+3⚡) · ${this.defaultInstruction()}`);
+            // CORRECCIÓN: Actualizar el texto del globo
+            this.setInstruction(`Ronda ${this.turn} (+4⚡) · ${this.defaultInstruction()}`);
         }
     },
 
@@ -3774,7 +3817,8 @@ window.combatApp = {
     },
 
     startMyTurn() {
-        this.energy = Math.min(this.maxEnergy, this.energy + 3);
+        // CORRECCIÓN: Sumar 4 de energía en PvP
+        this.energy = Math.min(this.maxEnergy, this.energy + 4);
         this.phase = 'P_SELECT';
         this.renderHand();
         this.updateUI();
