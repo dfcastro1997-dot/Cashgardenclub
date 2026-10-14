@@ -1100,8 +1100,9 @@
                     Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
                     
                     try {
-                        if (oldScript.innerHTML) {
-                            newScript.text = oldScript.innerHTML;
+                        // Usar textContent en lugar de innerHTML evita que caracteres como <, >, o & se rompan al evaluar el script
+                        if (oldScript.textContent) {
+                            newScript.textContent = oldScript.textContent;
                         }
                         if (oldScript.parentNode) {
                             oldScript.parentNode.replaceChild(newScript, oldScript);
