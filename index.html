@@ -217,7 +217,9 @@
                     
                     <div class="relative">
                             <button onclick="toggleUserMenu(event)" class="flex items-center gap-2 sm:gap-3 focus:outline-none hover:opacity-80 transition-opacity">
-                                <div id="profile-avatar" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-cg_navy border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-xs sm:text-sm">US</div>
+                                <div id="profile-avatar" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center overflow-hidden">
+                                    <img src="assets/Fondos/logo.png" alt="Perfil" class="w-full h-full object-cover">
+                                </div>
                                 <div class="hidden md:block text-left">
                                     <p class="text-sm font-bold text-cg_navy leading-tight flex items-center gap-1"><span id="profile-name">Usuario</span> <span class="text-[10px] text-gray-400">▼</span></p>
                                 </div>
@@ -229,6 +231,9 @@
                                 <p class="text-sm font-black text-cg_navy truncate" id="dropdown-username">usuario@cashgarden.com</p>
                             </div>
                             <div class="py-2">
+                                <button onclick="openAvatarModal(); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-cg_blue transition-colors flex items-center gap-3">
+                                    <span class="text-lg">🖼️</span> Cambiar Foto de Perfil
+                                </button>
                                 <button onclick="loadView('wallet'); toggleUserMenu();" class="w-full text-left px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors flex items-center gap-3">
                                     <span class="text-lg">🏦</span> Billetera Wompi
                                 </button>
@@ -335,7 +340,19 @@
 
 
 
-
+    <!-- MODAL SELECCIÓN DE AVATAR -->
+    <div id="avatar-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeAvatarModal()"></div>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in p-6">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+                <h3 class="text-xl font-black text-cg_navy tracking-tight">Elige tu Avatar</h3>
+                <button onclick="closeAvatarModal()" class="text-gray-400 hover:text-red-500 font-bold w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition-colors">✕</button>
+            </div>
+            <div id="avatar-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3 overflow-y-auto max-h-[60vh] p-2">
+                <!-- Se inyecta por JS -->
+            </div>
+        </div>
+    </div>
 
 
 
@@ -657,7 +674,18 @@
             
             document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span>`;
             document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
-            document.getElementById('profile-avatar').innerText = name.substring(0, 2).toUpperCase();
+            
+            const avatarImg = document.querySelector('#profile-avatar img');
+            if(avatarImg) {
+                let profilePic = 'assets/Perfil/defecto.png';
+                if (userData.game_state) {
+                    try {
+                        const st = JSON.parse(userData.game_state);
+                        if (st.profilePic) profilePic = st.profilePic;
+                    } catch(e){}
+                }
+                avatarImg.src = profilePic;
+            }
             
             const balance = userData.balance || 0;
             document.getElementById('global-balance').innerText = "$" + balance.toLocaleString();
@@ -882,6 +910,13 @@
                                         });
                                     }                                    
                                     window.farmApp.state.lastTick = state.lastTick;
+                                    
+                                    if (state.profilePic) {
+                                        window.farmApp.state.profilePic = state.profilePic;
+                                        const avatarImg = document.querySelector('#profile-avatar img');
+                                        if (avatarImg) avatarImg.src = state.profilePic;
+                                    }
+
                                     window.farmApp.updateUI();
                                 }
                             }
@@ -1347,7 +1382,40 @@
 
 
 
+        // ================= GALERÍA DE AVATARES =================
+        const AVAILABLE_AVATARS = [
+            'assets/Perfil/defecto.png',
+            'assets/Perfil/1.png',
+            'assets/Perfil/2.png',
+            'assets/Perfil/3.jpg',
+            'assets/Perfil/4.jpg'
+            // ⚠️ IMPORTANTE: Añade aquí los nombres exactos de las imágenes (png/jpg) que hayas subido a la carpeta assets/Perfil
+        ];
 
+        window.openAvatarModal = function() {
+            const grid = document.getElementById('avatar-grid');
+            grid.innerHTML = AVAILABLE_AVATARS.map(src => `
+                <img src="${src}" onclick="selectAvatar('${src}')" class="w-full aspect-square object-cover rounded-2xl border-4 border-transparent hover:border-cg_blue cursor-pointer shadow-sm transition-all hover:scale-105" onerror="this.style.display='none'">
+            `).join('');
+            
+            document.getElementById('avatar-modal').classList.remove('hidden');
+            document.getElementById('avatar-modal').classList.add('flex');
+        };
+
+        window.closeAvatarModal = function() {
+            document.getElementById('avatar-modal').classList.add('hidden');
+            document.getElementById('avatar-modal').classList.remove('flex');
+        };
+
+        window.selectAvatar = function(src) {
+            if (window.farmApp && window.farmApp.state) {
+                window.farmApp.state.profilePic = src;
+                window.farmApp.saveState(); // Se guarda en PostgreSQL automáticamente
+            }
+            const avatarImg = document.querySelector('#profile-avatar img');
+            if (avatarImg) avatarImg.src = src;
+            closeAvatarModal();
+        };
 
 
 
