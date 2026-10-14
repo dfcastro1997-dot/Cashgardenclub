@@ -171,7 +171,7 @@
     </div>
 
     <!-- SECCIÓN 4: CATÁLOGO DE CULTIVOS -->
-    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 overflow-hidden mt-8">
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 overflow-hidden">
         <div class="flex items-center gap-3 mb-6">
             <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center border border-green-100 shadow-sm shrink-0">
                 <span class="text-2xl">🌿</span>
@@ -189,7 +189,7 @@
             <h4 class="font-black text-green-800 text-sm mb-2">Variables a tener en cuenta:</h4>
             <ul class="text-xs md:text-sm text-green-700 space-y-2 list-disc list-inside">
                 <li><strong>Evaporación y Rango Seguro:</strong> Cada especie tolera distintos niveles de agua.</li>
-                <li><strong>Tiempo de Crecimiento:</strong> Desde minutos hasta horas. Organiza tu tiempo o usa Asistentes VIP.</li>
+                <li><strong>Tiempo de Crecimiento:</strong> Desde minutos hasta horas. Organiza tu tiempo para evitar perder tu cosecha.</li>
                 <li><strong>Estadísticas de Combate:</strong> Las plantas más caras y duraderas suelen tener mejor HP y Ataque para la Arena.</li>
             </ul>
             <p class="text-xs text-green-600 mt-4 italic">Revisa constantemente el Mercado para descubrir nuevas especies exóticas y armar el mejor escuadrón.</p>
@@ -284,36 +284,24 @@
         </div>
 
         <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
-            Para aquellos granjeros que no pueden estar pendientes de la simulación cada hora, el Mercado ofrece soluciones automatizadas premium. Estos pases de batalla otorgan ventajas insuperables de automatización durante periodos fijos. Se adquieren exclusivamente con Saldo Real (Créditos).
+            Para aquellos granjeros que no pueden estar pendientes de la simulación constantemente, el Mercado ofrece soluciones premium. Estos pases otorgan ventajas excepcionales durante periodos fijos y se adquieren exclusivamente con Saldo Real (Créditos).
         </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-            
-            <div class="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-blue-400 transition-colors">
-                <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform">
-                <h4 class="font-black text-blue-900 text-sm mb-2">Asistente Auto-Riego</h4>
-                <p class="text-xs text-blue-800 leading-relaxed mb-2">Suscripción global. Riega automáticamente todas tus plantas al 100% de su rango seguro y bloquea plagas por sequía durante su vigencia.</p>
-            </div>
-            
-            <div class="bg-white border border-emerald-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-emerald-400 transition-colors">
-                <img src="assets/Herramientas_y_Servicios/recolector.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform">
-                <h4 class="font-black text-emerald-900 text-sm mb-2">El Recolector</h4>
-                <p class="text-xs text-emerald-800 leading-relaxed mb-2">Suscripción global. Cosecha tus plantas apenas terminan de crecer, depositando tus semillas al instante en tu inventario. Evita robos por abandono.</p>
-            </div>
-
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <!-- Enfermería VIP -->
             <div class="bg-white border border-red-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-red-400 transition-colors">
                 <img src="assets/Herramientas_y_Servicios/E1.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform relative z-10 mt-2">
                 <h4 class="font-black text-red-900 text-sm mb-2 relative z-10">Enfermería VIP</h4>
                 <p class="text-xs text-red-800 leading-relaxed mb-2 relative z-10">Suscripción global. Tus plantas descansando en el Arsenal se recuperan el <strong>TRIPLE de rápido</strong>. Indispensable si combates de forma continua en la Arena.</p>
             </div>
             
+            <!-- Membresía Élite -->
             <div class="bg-white border-2 border-purple-400 rounded-2xl p-5 flex flex-col items-center text-center shadow-lg relative overflow-hidden group hover:border-purple-500 transition-colors">
                 <div class="absolute inset-0 bg-purple-100/30"></div>
                 <img src="assets/Herramientas_y_Servicios/PaseVip.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform relative z-10">
                 <h4 class="font-black text-purple-900 text-sm mb-2 relative z-10">Pase Granjero / Membresía Élite</h4>
-                <p class="text-xs text-purple-800 leading-relaxed mb-2 relative z-10">Combos que agrupan Auto-Riego, Recolector y Enfermería VIP por un precio especial. Tu Invernadero y Arsenal trabajarán al máximo rendimiento de forma autónoma.</p>
+                <p class="text-xs text-purple-800 leading-relaxed mb-2 relative z-10">Membresía premium que otorga beneficios exclusivos en la Granja y el Arsenal. Optimiza tus tiempos de recuperación y maximiza tu eficiencia en el juego.</p>
             </div>
-
         </div>
     </div>
 
@@ -414,13 +402,13 @@
                 <span class="text-2xl">🏆</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">9. Torneos Asíncronos Sit & Go (Gana "$")</h3>
-                <p class="text-xs font-bold text-cg_gold uppercase tracking-widest">Habilidad alquímica y precisión pura</p>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">9. Torneos Asíncronos Sit & Go (Gana CRÉDITOS)</h3>
+                <p class="text-xs font-bold text-cg_gold uppercase tracking-widest">Combate PvE de alto rendimiento</p>
             </div>
         </div>
 
         <p class="text-sm text-gray-600 leading-relaxed mb-8 relative z-10">
-            Los Torneos que encuentras en la barra superior son eventos de habilidad pura (Sit & Go P2P) donde compites contra otras personas por dinero real retirables a tu cuenta. No interviene la suerte ni el combate directo; todo depende de tu pulso y cálculo matemático en el <strong>Ritual de Alquimia</strong>.
+            Los Torneos que encuentras en la barra superior son eventos competitivos (Sit & Go) donde luchas contra Guardianes de la Arena por dinero real retirables a tu cuenta. El éxito depende del poder de tu escuadrón y tus decisiones tácticas.
         </p>
 
         <div class="grid grid-cols-1 gap-6 relative z-10">
@@ -430,10 +418,9 @@
                 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">1</div>
                     <div>
-                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Preparación: Alquimia Orgánica</h4>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Preparación: Forma tu Escuadrón</h4>
                         <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
-                            Al inscribirte, iniciarás el <strong>Ritual de Alquimia</strong>. Tendrás <strong>10 segundos</strong> para deslizar los 4 medidores (Agua, Nutrientes, Luz, Tierra) hacia sus porcentajes exactos que se indican debajo. 
-                            <br><br><strong class="text-red-500 font-bold">La Trampa Oculta:</strong> Mover el slider de Luz afectará el de Agua. Todo está interconectado. Además, a los 5 segundos, la fórmula de la meta se ocultará y jugarás guiado por tu memoria visual. Cualquier error de milímetros restará puntos de tu marcador base (10,000 Pts).
+                            Debes armar un equipo de hasta 3 plantas seleccionándolas desde tu Granja o tu Arsenal. Ten en cuenta que algunas ligas están restringidas a ciertas especies para mantener el equilibrio competitivo.
                         </p>
                     </div>
                 </div>
@@ -446,15 +433,8 @@
                     <div>
                         <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Espera: Horarios Escalonados</h4>
                         <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
-                            Para asegurar un ambiente justo y lleno de jugadores, los torneos están programados en bloques de 4 horas con <strong>desfases de 1 hora entre ligas</strong>:
+                            Los torneos se agrupan en bloques de 4 horas con desfases entre ligas. Al inscribirte, tu escuadrón quedará a la espera del cierre de llaves hasta que el contador llegue a cero.
                         </p>
-                        <ul class="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-700">
-                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">🌱 <strong>Bonsái:</strong> En la hora base (Ej: 12:00)</li>
-                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">🌸 <strong>Orquídea:</strong> +1 Hora (Ej: 1:00)</li>
-                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">🌹 <strong>Rosa:</strong> +2 Horas (Ej: 2:00)</li>
-                            <li class="bg-white border border-gray-100 px-3 py-2 rounded-lg shadow-sm">💎 <strong>Loto:</strong> +3 Horas (Ej: 3:00)</li>
-                        </ul>
-                        <p class="text-xs mt-3 text-gray-500">Mientras el reloj llega a cero, tu planta dirá <span class="bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded border border-blue-200">Sala en Preparación</span> y no perderá puntos.</p>
                     </div>
                 </div>
             </div>
@@ -464,15 +444,12 @@
                 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">3</div>
                     <div>
-                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase en Vivo: Supervivencia de Puntos</h4>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase en Vivo: Derrota a los Guardianes</h4>
                         <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
-                            ¡El reloj llegó a cero! La planta ahora es vulnerable. Debes mantener el nivel de agua <strong>estrictamente dentro de su franja segura</strong> usando el Calibrador de Riego.
+                            Te enfrentarás a 3 Guardianes (Jefes) generados por el sistema en un combate 3v3. Tu puntaje final se define por:<br>
+                            <strong class="text-blue-600">+10 Puntos</strong> por cada punto de Vida (HP) que conserven tus plantas al final de la batalla (Bono de Supervivencia).<br>
+                            <strong class="text-red-500">-50 Puntos</strong> de penalización por cada turno que tardes en derrotar a los enemigos (Penalización de Tiempo). ¡Sé letal y rápido!
                         </p>
-                        <ul class="mt-3 list-disc list-inside text-xs text-gray-700 space-y-1">
-                            <li>El agua se evapora constantemente influenciada por la temporada climatológica actual.</li>
-                            <li>Cada minuto que la planta pase secándose o ahogándose, te drenará puntos permanentemente.</li>
-                            <li><strong class="text-red-600">Castigo de Inundación:</strong> Si excedes el máximo (Ej. 100%), perderás miles de puntos de un solo golpe.</li>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -482,11 +459,9 @@
                 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">4</div>
                     <div>
-                        <h4 class="font-black text-cg_navy text-lg mb-2">Finalización: Veredicto y Ganador</h4>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Finalización: Reparto del Pozo</h4>
                         <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
-                            Cuando el temporizador del torneo llega a cero, el servidor detiene la sala. El sistema revisa la tabla de posiciones y evalúa la Precisión de Sintonización Orgánica inicial y el puntaje retenido.
-                            <br><br>
-                            Los 3 primeros lugares se reparten el pozo de dinero real en "$" que se sumará a su saldo en la plataforma. Los puestos 4 en adelante reciben un premio consuelo en semillas. <strong>¡Puedes retirar ese saldo directamente a tu Nequi desde tu Billetera!</strong>
+                            Al llegar el contador a cero, la sala cierra y se evalúan los puntajes. El Top 3 se reparte el pozo acumulado en CRÉDITOS reales retirables, y el resto recibe un premio consuelo en semillas.
                         </p>
                     </div>
                 </div>
@@ -495,35 +470,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 10: HIDRATACIÓN Y ESTADÍSTICAS DE CAMPEONATO -->
-    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 overflow-hidden mt-8">
-        <div class="flex items-center gap-3 mb-6">
-            <div class="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center border border-cyan-100 shadow-sm shrink-0">
-                <span class="text-2xl">💧</span>
-            </div>
-            <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">10. Hidratación y Estadísticas de Campeonato</h3>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Consumo de agua y daño por especie en torneos</p>
-            </div>
-        </div>
-
-        <p class="text-sm text-gray-600 leading-relaxed mb-6">
-            Cada liga de torneo y evento asíncrono está protegida por distintas especies de <strong>Guardianes</strong>. En la fase en vivo (Supervivencia de Puntos), cada planta tiene un comportamiento de hidratación distinto.
-        </p>
-
-        <div class="bg-cyan-50/50 border border-cyan-200 rounded-2xl p-5 shadow-sm">
-            <h4 class="font-black text-cyan-800 text-sm mb-2">Comprende a tu planta de torneo:</h4>
-            <ul class="text-xs md:text-sm text-cyan-700 space-y-3 list-disc list-inside">
-                <li><strong>Evaporación Base:</strong> Qué tan rápido baja el medidor de agua. En algunas ligas hardcore puede bajar más rápido de lo normal.</li>
-                <li><strong>Rango Seguro:</strong> El porcentaje mínimo y máximo en el que debes mantener el agua para no perder puntos.</li>
-                <li><strong>Drenaje (Fuera de Rango):</strong> Los puntos que te restan por cada minuto que pases por debajo o por encima del rango seguro.</li>
-                <li><strong>Castigo por Ahogamiento:</strong> Una penalización masiva e instantánea de puntos si superas el 100% de agua.</li>
-            </ul>
-            <p class="text-xs text-cyan-600 mt-4 font-bold">💡 Consejo: Antes de entrar a combatir, pulsa el botón (ℹ️) en la tarjeta del torneo para conocer estas variables.</p>
-        </div>
-    </div>
-
-    <!-- SECCIÓN 11: EL MODO COMBATE (ARENA DE DUELOS) -->
+    <!-- SECCIÓN 10: EL MODO COMBATE (ARENA DE DUELOS) -->
     <div class="bg-white rounded-3xl shadow-lg border-2 border-red-500 p-6 md:p-8 relative overflow-hidden mt-8">
         <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         
@@ -532,7 +479,7 @@
                 <span class="text-2xl">⚔️</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">11. Modo Combate: La Arena de Duelos 3v3</h3>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">10. Modo Combate: La Arena de Duelos 3v3</h3>
                 <p class="text-xs font-bold text-red-600 uppercase tracking-widest">Estrategia RPG por Turnos</p>
             </div>
         </div>
@@ -631,14 +578,14 @@
         
     </div>
 
-    <!-- SECCIÓN 12: TELEGRAM -->
+    <!-- SECCIÓN 11: TELEGRAM -->
     <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
         <div class="flex items-center gap-3 mb-6">
             <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-200 shadow-sm shrink-0">
                 <span class="text-2xl">✈️</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">12. Alertas Inteligentes por Telegram</h3>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">11. Alertas Inteligentes por Telegram</h3>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Conecta tus plantas con tu celular</p>
             </div>
         </div>
@@ -677,10 +624,10 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 13: RETIROS -->
+    <!-- SECCIÓN 12: RETIROS -->
     <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 text-center flex flex-col items-center mt-8">
         <span class="text-4xl mb-3">🏦</span>
-        <h3 class="text-xl font-black text-cg_navy mb-2">13. Dispersión Automática (Retiros)</h3>
+        <h3 class="text-xl font-black text-cg_navy mb-2">12. Dispersión Automática (Retiros)</h3>
         <p class="text-sm text-gray-600 max-w-xl mx-auto leading-relaxed">
             CashGarden no es un banco. Los fondos que ganes en los torneos deben ser retirados regularmente. Configura tu número en el menú <strong class="text-cg_navy">Billetera Wompi</strong>. 
             Los pagos se envían mediante la pasarela segura directamente a <strong>Nequi</strong> una vez superes los $10,000.
