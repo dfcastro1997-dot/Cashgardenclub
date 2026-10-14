@@ -184,28 +184,25 @@ def init_db():
         );
     ''')
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_token VARCHAR(120);")
-    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(50);") # NUEVO
-
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(50);")
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS short_id VARCHAR(4) UNIQUE;")
-    # --- AÑADIR ESTA LÍNEA PARA LOS REFERIDOS ---
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS ref_code VARCHAR(5) UNIQUE;")
     
-    # NUEVA TABLA PARA CONEXIONES PVP
+    # --- NUEVA COLUMNA PARA GUARDAR QUIÉN LO INVITÓ ---
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by VARCHAR(5);")
+
     cur.execute('''
         CREATE TABLE IF NOT EXISTS pvp_matches (
             id SERIAL PRIMARY KEY,
             challenger_id INTEGER REFERENCES users(id),
             target_id INTEGER REFERENCES users(id),
-            status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, rejected, playing
+            status VARCHAR(20) DEFAULT 'pending', 
             bet_seeds INTEGER DEFAULT 0,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
     ''')
-
-
     cur.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS match_data TEXT DEFAULT '{}';")
     cur.execute("ALTER TABLE pvp_matches ADD COLUMN IF NOT EXISTS winner_username VARCHAR(50);")
-
 
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournaments (
@@ -238,8 +235,6 @@ def init_db():
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
     ''')
-    
-    # NUEVA ESTRUCTURA PARA SALAS DE TORNEO SIT & GO (10 JUGADORES)
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournament_instances (
             id SERIAL PRIMARY KEY,
@@ -263,7 +258,6 @@ def init_db():
             CONSTRAINT unique_player_instance UNIQUE(instance_id, user_id)
         );
     ''')
-
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tree_state (
             id SERIAL PRIMARY KEY,
@@ -284,11 +278,6 @@ def init_db():
             CONSTRAINT unique_user_tree UNIQUE(user_id, date_str)
         );
     ''')
-
-
-
-
-
     cur.execute('''
         CREATE TABLE IF NOT EXISTS dynamic_plants (
             id VARCHAR(50) PRIMARY KEY,
@@ -304,20 +293,10 @@ def init_db():
         );
     ''')
 
-
-
-
-
-
-
-
-    # Añadir las columnas dinámicamente si no existen (para la precisión y el tiempo)
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_precision NUMERIC(6,3) DEFAULT 0.000;")
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_time NUMERIC(5,2) DEFAULT 0.00;")
-    
     cur.execute("ALTER TABLE tree_state ADD COLUMN IF NOT EXISTS donation_count INTEGER DEFAULT 0;")
 
-    # --- NUEVA TABLA DE CONFIGURACIÓN DEL ÁRBOL (CON SOPORTE MULTI-ITEM) ---
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tree_config (
             id SERIAL PRIMARY KEY,
@@ -340,7 +319,6 @@ def init_db():
         ])
         cur.execute("INSERT INTO tree_config (id, vip_prizes_json, milestones_json) VALUES (1, %s, %s)", (default_vip, default_miles))
 
-    # --- NUEVA TABLA DE CONFIGURACIÓN DE GUARDIANES DE TORNEO ---
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournament_config (
             id SERIAL PRIMARY KEY,
@@ -649,50 +627,6 @@ def serve_views(path): return send_from_directory('views', path)
 def serve_admin(): return send_from_directory('.', 'admin.html')
 
 
-
-@app.route('/api/register', methods=['POST'])
-def register():
-    import random
-    import string # Necesario para el código alfanumérico
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    if cur.fetchone(): 
-        cur.close()
-        conn.close()
-        return jsonify({"error": "El usuario ya existe"}), 400
-    
-    hashed_pw = generate_password_hash(password)
-    token = str(uuid.uuid4())
-    
-    # Generar un ID de 4 dígitos único para PvP
-    while True:
-        short_id = str(random.randint(1000, 9999))
-        cur.execute("SELECT id FROM users WHERE short_id = %s", (short_id,))
-        if not cur.fetchone():
-            break
-
-    # --- NUEVO: Generar Código de Referido de 5 caracteres (Letras y Números) ---
-    while True:
-        ref_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
-        cur.execute("SELECT id FROM users WHERE ref_code = %s", (ref_code,))
-        if not cur.fetchone():
-            break
-    
-    cur.execute(
-        "INSERT INTO users (username, password_hash, balance, session_token, short_id, ref_code) VALUES (%s, %s, 0, %s, %s, %s) RETURNING id, username, balance, session_token, short_id, ref_code", 
-        (username, hashed_pw, token, short_id, ref_code)
-    )
-    new_user = cur.fetchone()
-    conn.commit()
-    cur.close()
-    conn.close()
-    
-    return jsonify({"message": "Registro exitoso", "user": new_user})
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -1457,8 +1391,50 @@ def admin_tournament_config():
 
 
 
+@app.route('/api/register', methods=['POST'])
+def register():
+    import random
+    import string
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    referred_by = data.get('referred_by')
+    if referred_by:
+        referred_by = referred_by.strip().upper()
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+    if cur.fetchone(): 
+        cur.close()
+        conn.close()
+        return jsonify({"error": "El usuario ya existe"}), 400
+    
+    hashed_pw = generate_password_hash(password)
+    token = str(uuid.uuid4())
+    
+    while True:
+        short_id = str(random.randint(1000, 9999))
+        cur.execute("SELECT id FROM users WHERE short_id = %s", (short_id,))
+        if not cur.fetchone():
+            break
 
-
+    while True:
+        ref_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        cur.execute("SELECT id FROM users WHERE ref_code = %s", (ref_code,))
+        if not cur.fetchone():
+            break
+    
+    cur.execute(
+        "INSERT INTO users (username, password_hash, balance, session_token, short_id, ref_code, referred_by) VALUES (%s, %s, 0, %s, %s, %s, %s) RETURNING id, username, balance, session_token, short_id, ref_code, referred_by", 
+        (username, hashed_pw, token, short_id, ref_code, referred_by)
+    )
+    new_user = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    return jsonify({"message": "Registro exitoso", "user": new_user})
 
 @app.route('/api/admin/users', methods=['POST'])
 def admin_get_users():
@@ -1467,10 +1443,10 @@ def admin_get_users():
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, username, short_id, balance, game_state, phone_nequi FROM users ORDER BY id DESC")
+    # AÑADIDO: ref_code, referred_by
+    cur.execute("SELECT id, username, short_id, balance, game_state, phone_nequi, ref_code, referred_by FROM users ORDER BY id DESC")
     users = cur.fetchall()
     
-    # Extraer las semillas de game_state para la tabla
     for u in users:
         u['seeds'] = 0
         if u.get('game_state'):
@@ -1479,11 +1455,16 @@ def admin_get_users():
                 u['seeds'] = st.get('seedsBalance', 0)
             except:
                 pass
-        del u['game_state'] # No enviar todo el JSON pesado a la tabla general
+        del u['game_state']
 
     cur.close()
     conn.close()
     return jsonify({"status": "success", "users": users})
+
+
+
+
+
 
 @app.route('/api/admin/user_farm/<short_id>', methods=['POST'])
 def admin_get_farm(short_id):

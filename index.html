@@ -95,28 +95,29 @@
                         </div>
                         <input type="password" id="confirm_password" placeholder="Repite tu contraseña" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
                     </div>
+
+                    <!-- NUEVO: Código de Referido (Opcional, oculto en login) -->
+                    <div id="referral-input-container" class="relative group hidden">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 group-focus-within:text-orange-500 transition-colors text-base sm:text-lg">🤝</span>
+                        </div>
+                        <input type="text" id="referred_by_input" placeholder="Código de Invitación (Opcional)" maxlength="5" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-orange-50/50 border-2 border-orange-200 focus:border-orange-500 focus:bg-white outline-none font-black text-orange-600 transition-all placeholder-orange-400 text-sm uppercase">
+                    </div>
                 </div>
                 
                 <!-- CHECKBOXES LEGALES Y CAPTCHA -->
                 <div id="register-extras-container" class="hidden flex-col gap-2 mt-2">
-                    <label class="flex items-start gap-2.5 cursor-pointer p-2 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
-                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
-                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Acepto los <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a> y confirmo ser <strong>mayor de 18 años</strong>.</span>
-                    </label>
-                    
-                    <label class="flex items-start gap-2.5 cursor-pointer p-2 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
-                        <input type="checkbox" id="chk-privacy" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0">
-                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Autorizo el <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Tratamiento de mis Datos Personales</a>.</span>
+                    <label class="flex items-start gap-2.5 cursor-pointer p-2 sm:p-3 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
+                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0 cursor-pointer">
+                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Acepto los <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a>, confirmo ser <strong>mayor de 18 años</strong> y autorizo el Tratamiento de mis Datos Personales.</span>
                     </label>
 
                     <!-- CAPTCHA Interactivo -->
                     <div class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between shadow-sm mt-1">
                         <div class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1" onclick="openCaptchaModal()">
-                            <!-- Interfaz visual del checkbox personalizado -->
                             <div id="captcha-checkbox-ui" class="w-5 h-5 sm:w-6 sm:h-6 bg-white border-2 border-gray-300 rounded flex items-center justify-center transition-all shadow-inner">
                                 <svg id="captcha-checkmark" class="w-4 h-4 text-green-500 hidden animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <!-- Input real oculto (se valida en el form) -->
                             <input type="checkbox" id="chk-captcha" class="hidden">
                             <span class="text-xs sm:text-sm font-bold text-gray-700">No soy un robot</span>
                         </div>
@@ -605,6 +606,7 @@
             
             document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
             document.getElementById('confirm-password-container').classList.toggle('hidden', isLoginMode);
+            document.getElementById('referral-input-container').classList.toggle('hidden', isLoginMode);
             document.getElementById('register-extras-container').classList.toggle('hidden', isLoginMode);
 
             document.getElementById('btn-toggle-mode').innerHTML = isLoginMode 
@@ -615,7 +617,7 @@
             validateRegistrationForm(); 
         }
 
-        document.querySelectorAll('#chk-terms, #chk-privacy, #chk-captcha, #password, #confirm_password').forEach(el => {
+        document.querySelectorAll('#chk-terms, #chk-captcha, #password, #confirm_password').forEach(el => {
             el.addEventListener('input', validateRegistrationForm);
             el.addEventListener('change', validateRegistrationForm);
         });
@@ -625,12 +627,11 @@
             const pass = document.getElementById('password').value;
             const passConfirm = document.getElementById('confirm_password').value;
             const chkTerms = document.getElementById('chk-terms').checked;
-            const chkPrivacy = document.getElementById('chk-privacy').checked;
             const chkCaptcha = document.getElementById('chk-captcha').checked;
             
             const btnReg = document.getElementById('btn-register');
             
-            if (pass.length > 3 && pass === passConfirm && chkTerms && chkPrivacy && chkCaptcha) {
+            if (pass.length > 3 && pass === passConfirm && chkTerms && chkCaptcha) {
                 btnReg.disabled = false;
                 btnReg.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
@@ -642,6 +643,7 @@
         async function handleAuth(action) {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value;
+            const refBy = document.getElementById('referred_by_input') ? document.getElementById('referred_by_input').value.trim() : "";
             
             if (!user || !pass) {
                 showError("Por favor completa todos los campos.");
@@ -663,87 +665,8 @@
                 const response = await fetch(`/api/${action}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pass })
+                    body: JSON.stringify({ username: user, password: pass, referred_by: refBy })
                 });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    sessionStorage.setItem('username', data.user.username);
-                    sessionStorage.setItem('session_token', data.user.session_token); 
-                    updateProfileUI(data.user);
-
-                    // Si entra por login, desplegar la animación de progreso
-                    const form = document.getElementById('auth-form');
-                    const loadViewEl = document.getElementById('login-loading-view');
-                    const avatarImg = document.getElementById('loading-avatar-img');
-                    const farmerTitle = document.getElementById('loading-farmer-title');
-                    const stepText = document.getElementById('loading-step-text');
-                    const progressFill = document.getElementById('login-progress-fill');
-                    const progressPct = document.getElementById('login-progress-pct');
-                    const checkMark = document.getElementById('loading-avatar-check');
-                    const spinner = document.getElementById('loading-avatar-spinner');
-
-                    // 1. Extraer la foto de perfil del jugador guardada en la base de datos
-                    let userAvatar = 'assets/Perfil/defecto.png';
-                    if (data.user.game_state) {
-                        try {
-                            const st = JSON.parse(data.user.game_state);
-                            if (st.profilePic) userAvatar = st.profilePic;
-                        } catch(e){}
-                    }
-                    avatarImg.src = userAvatar;
-                    farmerTitle.innerText = `¡Hola, ${data.user.username}!`;
-
-                    // 2. Transformar la ventana modal ocultando el formulario
-                    form.classList.add('hidden');
-                    loadViewEl.classList.remove('hidden');
-                    loadViewEl.classList.add('flex');
-
-                    // 3. Simular las etapas de conexión y carga
-                    const steps = [
-                        { pct: 25, text: "Identificando granjero...", delay: 400 },
-                        { pct: 55, text: "Buscando semillas y herramientas...", delay: 900 },
-                        { pct: 85, text: "Analizando terrenos e invernadero...", delay: 1400 },
-                        { pct: 100, text: "¡Granjero verificado con éxito!", delay: 1900 }
-                    ];
-
-                    steps.forEach(st => {
-                        setTimeout(() => {
-                            progressFill.style.width = st.pct + '%';
-                            progressPct.innerText = st.pct + '%';
-                            stepText.innerText = st.text;
-
-                            if (st.pct === 100) {
-                                spinner.classList.add('hidden');
-                                checkMark.classList.remove('hidden');
-                                checkMark.classList.add('flex');
-                                stepText.className = "text-xs font-black text-green-600 mb-6 uppercase tracking-wider h-5 flex items-center justify-center";
-                            }
-                        }, st.delay);
-                    });
-
-                    // 4. Entrar definitivamente a la Granja tras finalizar el análisis
-                    setTimeout(() => {
-                        document.getElementById('login-screen').classList.add('opacity-0');
-                        setTimeout(() => {
-                            document.getElementById('login-screen').classList.add('hidden');
-                            document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
-                            document.getElementById('dashboard-screen').classList.add('flex');
-                            loadView('farm', document.querySelector('.nav-btn-desktop')); 
-                            startBackgroundMusic();
-                        }, 400);
-                    }, 2400);
-
-                } else {
-                    if (btnLogin) btnLogin.disabled = false;
-                    showError(data.error || 'Ocurrió un error');
-                }
-            } catch (err) {
-                if (btnLogin) btnLogin.disabled = false;
-                showError('Error de conexión con el servidor.');
-            }
-        }
 
         function checkCookies() {
             if(!localStorage.getItem('cookiesAccepted')) {

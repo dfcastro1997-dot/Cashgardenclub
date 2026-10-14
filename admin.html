@@ -206,8 +206,8 @@
                 </div>
 
                 <!-- VISTA 3: DIRECTORIO COMPLETO -->
-                <div id="view-directorio" class="admin-view hidden animate-fade-in h-[75vh] min-h-[500px]">
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 flex flex-col h-full">
+                <div id="view-directorio" class="admin-view hidden animate-fade-in space-y-6 pb-10">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 flex flex-col min-h-[400px]">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4 shrink-0">
                             <h2 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">👥 Directorio Global</h2>
                             <div class="relative w-full sm:w-72 shrink-0">
@@ -217,18 +217,41 @@
                         </div>
                         
                         <div class="flex-1 overflow-x-auto rounded-2xl border border-gray-200 shadow-sm relative hide-scrollbar bg-white">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
                                 <thead class="bg-gray-50 sticky top-0 z-10 border-b border-gray-200 shadow-sm">
                                     <tr>
-                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">ID Cuenta</th>
+                                        <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">ID / Código Propio</th>
                                         <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
+                                        <th class="p-4 text-[10px] font-black text-orange-500 uppercase tracking-widest">Invitado Por</th>
                                         <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
                                         <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
                                         <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Auditar</th>
                                     </tr>
                                 </thead>
                                 <tbody id="dir-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
-                                    <tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold animate-pulse">Cargando base de datos...</td></tr>
+                                    <tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold animate-pulse">Cargando base de datos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- NUEVA TABLA: RED DE REFERIDOS -->
+                    <div class="bg-white rounded-3xl shadow-sm border border-orange-200 p-6 flex flex-col mt-6">
+                        <div class="mb-4 border-b border-gray-100 pb-4">
+                            <h2 class="text-xl sm:text-2xl font-black text-cg_navy flex items-center gap-2">🤝 Red de Referidos</h2>
+                            <p class="text-xs text-gray-500 font-medium mt-1">Granjeros que han invitado a nuevos jugadores exitosamente.</p>
+                        </div>
+                        <div class="overflow-x-auto rounded-2xl border border-orange-100 shadow-sm bg-white hide-scrollbar">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+                                <thead class="bg-orange-50 sticky top-0 z-10 border-b border-orange-100 shadow-sm">
+                                    <tr>
+                                        <th class="p-4 text-[10px] font-black text-orange-700 uppercase tracking-widest">Reclutador</th>
+                                        <th class="p-4 text-[10px] font-black text-orange-700 uppercase tracking-widest text-center">Total Referidos</th>
+                                        <th class="p-4 text-[10px] font-black text-orange-700 uppercase tracking-widest">Lista de Invitados</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ref-network-list" class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
+                                    <!-- Inyectado por JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -874,21 +897,31 @@
 
         function renderDirectory(arr) {
             const list = document.getElementById('dir-list');
-            if(!list) return;
+            const refList = document.getElementById('ref-network-list');
+            if(!list || !refList) return;
+            
             list.innerHTML = '';
+            refList.innerHTML = '';
+            
             if(arr.length === 0) {
-                list.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-bold">No hay coincidencias.</td></tr>'; return;
+                list.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">No hay coincidencias.</td></tr>'; 
+                return;
             }
 
+            // Construir tabla principal
             arr.forEach(u => {
                 let seedsText = u.seeds !== undefined ? u.seeds.toLocaleString() : '--';
+                let refCodeStr = u.ref_code ? `<span class="text-orange-500 font-bold ml-2" title="Su código para invitar">(${u.ref_code})</span>` : '';
+                let invitedByStr = u.referred_by ? `<span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-[10px] font-black border border-orange-200">${u.referred_by}</span>` : '<span class="text-gray-300">-</span>';
                 
                 list.innerHTML += `
                     <tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 last:border-0">
-                        <td class="p-3 pl-4">
+                        <td class="p-3 pl-4 whitespace-nowrap">
                             <span class="bg-gray-100 text-gray-500 font-black px-2 py-1 rounded text-[10px] border border-gray-200 uppercase tracking-widest shadow-sm">#${u.short_id || '----'}</span>
+                            ${refCodeStr}
                         </td>
                         <td class="p-3 font-black text-cg_navy text-xs">${u.username}</td>
+                        <td class="p-3">${invitedByStr}</td>
                         <td class="p-3 text-right font-black text-green-600 text-xs">${seedsText}</td>
                         <td class="p-3 text-right font-black text-cg_gold text-xs">$${parseFloat(u.balance||0).toLocaleString()}</td>
                         <td class="p-3 pr-4 text-center">
@@ -897,6 +930,42 @@
                     </tr>
                 `;
             });
+
+            // Construir tabla de referidos (Agrupación)
+            const referralsNetwork = {};
+            allUsersCache.forEach(u => {
+                if (u.referred_by) {
+                    if (!referralsNetwork[u.referred_by]) referralsNetwork[u.referred_by] = [];
+                    referralsNetwork[u.referred_by].push(u.username);
+                }
+            });
+
+            const sortedRefCodes = Object.keys(referralsNetwork).sort((a,b) => referralsNetwork[b].length - referralsNetwork[a].length);
+
+            if (sortedRefCodes.length === 0) {
+                refList.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-gray-400 font-bold">Aún no hay jugadores referidos.</td></tr>';
+            } else {
+                sortedRefCodes.forEach(code => {
+                    const owner = allUsersCache.find(u => u.ref_code === code);
+                    const ownerName = owner ? owner.username : 'Usuario Desconocido';
+                    const invitedUsers = referralsNetwork[code];
+                    
+                    refList.innerHTML += `
+                        <tr class="hover:bg-orange-50/30 transition-colors border-b border-orange-50 last:border-0">
+                            <td class="p-3 pl-4">
+                                <span class="font-black text-cg_navy text-sm block">${ownerName}</span>
+                                <span class="text-[9px] font-bold text-orange-500 uppercase tracking-widest bg-white border border-orange-200 px-1.5 py-0.5 rounded shadow-sm">Código: ${code}</span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <span class="bg-orange-500 text-white font-black px-3 py-1 rounded-full shadow-sm">${invitedUsers.length}</span>
+                            </td>
+                            <td class="p-3 text-xs text-gray-500 font-medium whitespace-normal min-w-[200px]">
+                                ${invitedUsers.join(', ')}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
         }
 
         function filterDirectory() {
