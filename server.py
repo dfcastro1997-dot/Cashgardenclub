@@ -803,6 +803,8 @@ def save_state():
                 if 'arsenal' in db_state: incoming_state['arsenal'] = db_state['arsenal']
                 if 'plots' in db_state: incoming_state['plots'] = db_state['plots']
                 if 'pending_gift' in db_state: incoming_state['pending_gift'] = db_state['pending_gift']
+                # --- SOLUCIÓN: PROTEGER LA FOTO DE PERFIL ---
+                if 'profilePic' in db_state: incoming_state['profilePic'] = db_state['profilePic']
 
             incoming_seeds = incoming_state.get('seedsBalance', 0)
             db_seeds = db_state.get('seedsBalance', 35000 if not db_state_raw else 0)

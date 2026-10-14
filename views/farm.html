@@ -1634,6 +1634,12 @@ if (typeof window.farmApp === 'undefined') {
                                         });
                                     }
                                     
+                                    // --- SOLUCIÓN: RECUPERAR FOTO DE PERFIL ---
+                                    if (s.profilePic) {
+                                        this.state.profilePic = s.profilePic;
+                                    }
+                                    // ------------------------------------------
+                                    
                                     this.state.lastTick = s.lastTick ?? Date.now();
                                     this.state.isSynced = true;
 
