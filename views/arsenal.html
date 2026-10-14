@@ -15,6 +15,51 @@
     </div>
 </div>
 
+
+
+
+
+<!-- MODAL CONFIRMAR CURAR -->
+<div id="confirm-heal-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="cancelHeal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border border-green-200 animate-fade-in">
+        <div class="w-16 h-16 mx-auto mb-4 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center shadow-inner">
+            <img src="assets/Herramientas_y_Servicios/pocion.png" class="w-8 h-8 object-contain">
+        </div>
+        <h3 class="text-xl font-black text-cg_navy mb-2">¿Restaurar Salud?</h3>
+        <p class="text-sm text-gray-500 mb-6" id="confirm-heal-text">Costo: 0 🌱<br>Restaurará la salud de la planta al 100%.</p>
+        <div class="flex gap-3">
+            <button onclick="cancelHeal()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm uppercase tracking-widest">Cancelar</button>
+            <button id="btn-confirm-heal" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-black py-3 rounded-xl shadow-soft transition-colors text-sm uppercase tracking-widest">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FONDOS INSUFICIENTES ARSENAL (AUTO-CIERRE) -->
+<div id="heal-insufficient-funds-modal" class="fixed inset-0 z-[650] hidden items-center justify-center p-4 pointer-events-none">
+    <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-xs p-5 text-center border-t-4 border-red-500 animate-fade-in pointer-events-auto">
+        <div class="text-4xl mb-2">⚠️</div>
+        <h3 class="text-lg font-black text-cg_navy mb-1">Fondos Insuficientes</h3>
+        <p class="text-xs text-gray-500 font-bold" id="heal-insufficient-funds-text">No tienes suficientes semillas.</p>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
     function processArsenalRecovery() {
         if (!window.farmApp || !window.farmApp.state.arsenal) return;
@@ -111,6 +156,8 @@
         return Math.max(50, healCost);
     }
 
+    let pendingHealPlantId = null;
+
     function healArsenalPlant(plantId) {
         if (!window.farmApp || !window.farmApp.state.arsenal) return;
         
@@ -120,23 +167,52 @@
         const cost = calculateHealCost(plant);
         
         if (window.farmApp.state.seedsBalance >= cost) {
-            if (confirm(`¿Pagar ${cost.toLocaleString()} 🌱 para restaurar la salud de ${plant.name} al 100%?`)) {
-                window.farmApp.state.seedsBalance -= cost;
-                plant.hp = plant.maxHp;
-                plant.lastRecover = Date.now();
-                window.farmApp.saveState();
-                
-                const balEl = document.getElementById('global-seeds-display');
-                if (balEl) {
-                    balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
-                    balEl.classList.add('text-red-500', 'scale-110');
-                    setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
-                }
-                renderArsenal();
-            }
+            pendingHealPlantId = plantId;
+            document.getElementById('confirm-heal-text').innerHTML = `¿Pagar <strong class="text-green-600">${cost.toLocaleString()} 🌱</strong> para restaurar la salud de ${plant.name} al 100%?`;
+            
+            const btn = document.getElementById('btn-confirm-heal');
+            btn.onclick = () => executeHeal(cost);
+            
+            const modal = document.getElementById('confirm-heal-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         } else {
-            alert("No tienes suficientes semillas (🌱) para curar a esta planta.");
+            document.getElementById('heal-insufficient-funds-text').innerHTML = `Necesitas <strong class="text-red-500">${cost.toLocaleString()} 🌱</strong> para curar esta planta.`;
+            const modal = document.getElementById('heal-insufficient-funds-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 3000); // Auto-cierre a los 3 segundos
         }
+    }
+
+    function cancelHeal() {
+        pendingHealPlantId = null;
+        const modal = document.getElementById('confirm-heal-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function executeHeal(cost) {
+        if (!pendingHealPlantId) return;
+        const plant = window.farmApp.state.arsenal.find(p => p.id === pendingHealPlantId);
+        if (!plant) return;
+
+        window.farmApp.state.seedsBalance -= cost;
+        plant.hp = plant.maxHp;
+        plant.lastRecover = Date.now();
+        window.farmApp.saveState();
+        
+        const balEl = document.getElementById('global-seeds-display');
+        if (balEl) {
+            balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+            balEl.classList.add('text-red-500', 'scale-110');
+            setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
+        }
+        renderArsenal();
+        cancelHeal();
     }
 
 
