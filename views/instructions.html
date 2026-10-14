@@ -12,7 +12,7 @@
         </div>
         <div class="bg-gray-50 border border-gray-200 px-4 py-2 rounded-xl text-right">
             <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Versión de Guía</p>
-            <p class="text-sm font-black text-cg_gold animate-pulse">v7.0 - Combate y Automatización</p>
+            <p class="text-sm font-black text-cg_gold animate-pulse">v8.0 - Combate Avanzado y Árbol</p>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
                 <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-100 rounded-full blur-2xl opacity-50"></div>
                 <div class="flex items-center gap-3 mb-3 relative z-10">
                     <span class="text-3xl drop-shadow-md">💵</span>
-                    <h4 class="text-lg font-black text-cg_gold">Pesos (COP $)</h4>
+                    <h4 class="text-lg font-black text-cg_gold">Créditos (COP $)</h4>
                 </div>
                 <ul class="text-sm text-gray-600 space-y-2 relative z-10 list-disc list-inside">
                     <li>Se ganan <strong>exclusivamente ganando Torneos</strong> en la Arena.</li>
@@ -182,6 +182,10 @@
             </div>
         </div>
         
+        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+            CashGarden cuenta con un <strong>sistema de plantas dinámicas</strong>. Nuevas especies exóticas y botánicas se añaden frecuentemente al Mercado. Abajo se muestran las especies base originales:
+        </p>
+
         <div class="overflow-x-auto rounded-2xl border border-gray-100">
             <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead class="bg-gray-50 border-b border-gray-200">
@@ -326,7 +330,7 @@
     </div>
 
     <!-- SECCIÓN 5: PLAGAS Y PROTECCIONES -->
-    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
         <div class="flex items-center gap-3 mb-6">
             <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center border border-red-100 shadow-sm shrink-0">
                 <span class="text-2xl">🦅</span>
@@ -413,15 +417,15 @@
         </div>
 
         <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
-            Para aquellos granjeros que no pueden estar pendientes de la simulación cada hora, el Mercado ofrece soluciones automatizadas premium. Estos pases de batalla otorgan ventajas insuperables de automatización durante 24h o 72h. Se adquieren exclusivamente con Saldo Real (COP).
+            Para aquellos granjeros que no pueden estar pendientes de la simulación cada hora, el Mercado ofrece soluciones automatizadas premium. Estos pases de batalla otorgan ventajas insuperables de automatización durante periodos fijos. Se adquieren exclusivamente con Saldo Real (Créditos COP).
         </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
             
             <div class="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-blue-400 transition-colors">
                 <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform">
                 <h4 class="font-black text-blue-900 text-sm mb-2">Asistente Auto-Riego</h4>
-                <p class="text-xs text-blue-800 leading-relaxed mb-2">Suscripción global. Riega automáticamente todas tus plantas al 100% de su rango seguro y bloquea plagas por completo durante su vigencia.</p>
+                <p class="text-xs text-blue-800 leading-relaxed mb-2">Suscripción global. Riega automáticamente todas tus plantas al 100% de su rango seguro y bloquea plagas por sequía durante su vigencia.</p>
             </div>
             
             <div class="bg-white border border-emerald-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-emerald-400 transition-colors">
@@ -429,12 +433,18 @@
                 <h4 class="font-black text-emerald-900 text-sm mb-2">El Recolector</h4>
                 <p class="text-xs text-emerald-800 leading-relaxed mb-2">Suscripción global. Cosecha tus plantas apenas terminan de crecer, depositando tus semillas al instante en tu inventario. Evita robos por abandono.</p>
             </div>
+
+            <div class="bg-white border border-red-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-red-400 transition-colors">
+                <span class="text-4xl mb-3 drop-shadow-md group-hover:scale-110 transition-transform mt-2">🏥</span>
+                <h4 class="font-black text-red-900 text-sm mb-2">Enfermería VIP</h4>
+                <p class="text-xs text-red-800 leading-relaxed mb-2">Suscripción global. Tus plantas descansando en el Arsenal se recuperan el <strong>TRIPLE de rápido</strong>. Indispensable si combates de forma continua en la Arena.</p>
+            </div>
             
             <div class="bg-white border-2 border-purple-400 rounded-2xl p-5 flex flex-col items-center text-center shadow-lg relative overflow-hidden group hover:border-purple-500 transition-colors">
                 <div class="absolute inset-0 bg-purple-100/30"></div>
                 <img src="assets/Herramientas_y_Servicios/combo_vip.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform relative z-10">
-                <h4 class="font-black text-purple-900 text-sm mb-2 relative z-10">Pase Granjero (Combo Total)</h4>
-                <p class="text-xs text-purple-800 leading-relaxed mb-2 relative z-10">Combina el Auto-Riego y el Recolector por un precio especial. Tu Invernadero trabajará de forma autónoma al 100%.</p>
+                <h4 class="font-black text-purple-900 text-sm mb-2 relative z-10">Pase Granjero / Membresía Élite</h4>
+                <p class="text-xs text-purple-800 leading-relaxed mb-2 relative z-10">Combos que agrupan Auto-Riego, Recolector y Enfermería VIP por un precio especial. Tu Invernadero y Arsenal trabajarán al máximo rendimiento de forma autónoma.</p>
             </div>
 
         </div>
@@ -489,7 +499,46 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 8: ARENA DE TORNEOS (COMPLETA Y DETALLADA) -->
+    <!-- SECCIÓN 8: EL ÁRBOL DE LA VIDA (NUEVA) -->
+    <div class="bg-gradient-to-br from-green-50 to-white rounded-3xl shadow-soft border border-green-200 p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center border border-green-200 shadow-sm shrink-0">
+                <span class="text-2xl">🌲</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-green-900">8. El Árbol de la Vida (Evento Comunitario)</h3>
+                <p class="text-xs font-bold text-green-600 uppercase tracking-widest">Cooperación Global Diaria</p>
+            </div>
+        </div>
+        
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            Todos los días, la comunidad de CashGarden recibe una <strong>Meta Global de donación de Semillas</strong>. Al donar tus semillas sobrantes participas activamente en un esfuerzo conjunto. Si la barra alcanza el 100% antes de la medianoche (hora de cierre de ciclo), el Árbol florece y reparte recompensas masivas.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <div class="bg-white border border-green-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">🎁</span>
+                    <h4 class="font-black text-green-800 text-base">Fases de Botín</h4>
+                </div>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    A medida que el Árbol sube su porcentaje de donaciones (25%, 50%, 75%, 100%), se liberan diferentes <strong>ítems gratuitos</strong> (semillas de alto nivel, macetas, regaderas, etc.). ¡Si participas donando aunque sea el mínimo requerido, recibirás todos estos premios al final del día!
+                </p>
+            </div>
+            <div class="bg-white border border-yellow-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">👑</span>
+                    <h4 class="font-black text-yellow-800 text-base">Ranking y Privilegios VIP</h4>
+                </div>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Los 10 usuarios que donen la mayor cantidad de semillas entrarán en la Tabla de Guardianes. <strong>El Top 3 recibe enormes porcentajes extra</strong> de semillas como retorno de inversión, y además obtiene beneficios VIP directos del administrador (como cofres especiales o pases).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 9: ARENA DE TORNEOS (COMPLETA Y DETALLADA) -->
     <div class="bg-white rounded-3xl shadow-lg border-2 border-cg_gold p-6 md:p-8 relative overflow-hidden mt-8">
         <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-yellow-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         
@@ -498,7 +547,7 @@
                 <span class="text-2xl">🏆</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">8. Torneos Sit & Go (Gana COP)</h3>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">9. Torneos Asíncronos Sit & Go (Gana COP)</h3>
                 <p class="text-xs font-bold text-cg_gold uppercase tracking-widest">Habilidad alquímica y precisión pura</p>
             </div>
         </div>
@@ -579,14 +628,14 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 9: HIDRATACIÓN Y ESTADÍSTICAS DE CAMPEONATO -->
+    <!-- SECCIÓN 10: HIDRATACIÓN Y ESTADÍSTICAS DE CAMPEONATO -->
     <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 overflow-hidden mt-8">
         <div class="flex items-center gap-3 mb-6">
             <div class="w-12 h-12 bg-cyan-50 rounded-2xl flex items-center justify-center border border-cyan-100 shadow-sm shrink-0">
                 <span class="text-2xl">💧</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">9. Hidratación y Estadísticas de Campeonato</h3>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">10. Hidratación y Estadísticas de Campeonato</h3>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Consumo de agua y daño por especie en torneos</p>
             </div>
         </div>
@@ -656,7 +705,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 10: EL MODO COMBATE (ARENA DE DUELOS) -->
+    <!-- SECCIÓN 11: EL MODO COMBATE (ARENA DE DUELOS) -->
     <div class="bg-white rounded-3xl shadow-lg border-2 border-red-500 p-6 md:p-8 relative overflow-hidden mt-8">
         <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         
@@ -665,52 +714,54 @@
                 <span class="text-2xl">⚔️</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">10. Modo Combate: La Arena de Duelos 3v3</h3>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">11. Modo Combate: La Arena de Duelos 3v3</h3>
                 <p class="text-xs font-bold text-red-600 uppercase tracking-widest">Estrategia RPG por Turnos</p>
             </div>
         </div>
 
         <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
-            Más allá del cultivo pacífico, tu Invernadero puede ser una base militar botánica. Usando el botón <strong>"Duelo"</strong> en la pantalla de la Granja, entrarás a la <strong>Arena de Combate Táctico (3v3)</strong>, un sistema RPG por turnos donde controlas a tu escuadrón botánico. Existen dos formas principales de combatir:
+            Más allá del cultivo pacífico, tu Invernadero puede ser una base militar botánica. Usando el botón <strong>"Duelo"</strong> en la pantalla de la Granja, entrarás a la <strong>Arena de Combate Táctico (3v3)</strong>, un sistema RPG por turnos donde controlas a tu escuadrón. Existen tres formas de combatir:
         </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10 mb-8">
-            <!-- PVE (Cuervos) -->
-            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-gray-400 transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-3xl drop-shadow-md">🦅</span>
-                    <h4 class="text-lg font-black text-gray-800 group-hover:text-black transition-colors">Campaña (PvE)</h4>
-                </div>
-                <p class="text-xs md:text-sm text-gray-600 leading-relaxed mb-4">
-                    Juegas contra la Inteligencia Artificial (una bandada de cuervos). Requiere gastar un <strong>Ticket de Duelo</strong> (se compra en el mercado). La dificultad y estadísticas de los cuervos se adaptan al poder de tu equipo. Si vences a los cuervos, la recompensa será enorme, pero si pierdes tu equipo muere y pierdes el ticket.
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mb-8">
+            <!-- PVE -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-gray-400 transition-colors group flex flex-col items-center text-center">
+                <img src="assets/Herramientas_y_Servicios/PvC.png" class="w-16 h-16 object-contain drop-shadow-md mb-3">
+                <h4 class="text-lg font-black text-gray-800 group-hover:text-black transition-colors mb-2">Campaña (PvE)</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Juegas contra la Inteligencia Artificial (una bandada de cuervos). La dificultad y estadísticas de los cuervos se adaptan al poder de tu equipo. Si vences, la recompensa en semillas es alta.
+                </p>
+            </div>
+            
+            <!-- PVR (Bots) -->
+            <div class="bg-orange-50 border border-orange-200 rounded-2xl p-5 shadow-sm relative hover:border-orange-400 transition-colors group flex flex-col items-center text-center">
+                <img src="assets/Herramientas_y_Servicios/PvR.png" class="w-16 h-16 object-contain drop-shadow-md mb-3">
+                <h4 class="text-lg font-black text-orange-900 group-hover:text-orange-700 transition-colors mb-2">Duelo IA (Bots)</h4>
+                <p class="text-xs text-orange-800 leading-relaxed">
+                    Simula un combate PvP enfrentándote a un Bot de IA. Estos entrenadores virtuales usan plantas reales del mercado con estadísticas proporcionales a tu escuadrón. ¡Ideal para probar sinergias!
                 </p>
             </div>
 
-            <!-- PVP (Jugador vs Jugador) -->
-            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm relative hover:border-blue-400 transition-colors group">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-3xl drop-shadow-md">👤</span>
-                    <h4 class="text-lg font-black text-blue-900 group-hover:text-blue-700 transition-colors">Duelo Directo (PvP)</h4>
-                </div>
-                <p class="text-xs md:text-sm text-blue-800 leading-relaxed mb-4">
-                    Luchas en tiempo real contra un amigo o rival ingresando su <strong>ID de 4 Dígitos</strong>. Ambos acuerdan una apuesta en semillas (Ej: 5,000 🌱). El ganador se lleva el botín completo. Es un modo a muerte súbita y ultra competitivo, donde el que pierde se queda sin nada.
+            <!-- PVP -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm relative hover:border-blue-400 transition-colors group flex flex-col items-center text-center">
+                <img src="assets/Herramientas_y_Servicios/PvP.png" class="w-16 h-16 object-contain drop-shadow-md mb-3">
+                <h4 class="text-lg font-black text-blue-900 group-hover:text-blue-700 transition-colors mb-2">Duelo Directo (PvP)</h4>
+                <p class="text-xs text-blue-800 leading-relaxed">
+                    Luchas en tiempo real contra un amigo o rival ingresando su <strong>ID de 4 Dígitos</strong>. Ambos acuerdan una apuesta en semillas. El ganador se lleva el botín completo. Es un modo a muerte súbita.
                 </p>
-                <div class="mt-3 bg-blue-100 px-3 py-2 rounded-lg border border-blue-200 text-xs font-bold text-blue-900">
-                    🔍 Tu ID de 4 dígitos aparece en tu perfil (arriba a la derecha).
-                </div>
             </div>
         </div>
 
         <h4 class="font-black text-cg_navy text-sm mb-4 uppercase tracking-widest border-b border-gray-200 pb-2 relative z-10">Mecánicas de Combate 3v3</h4>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-            <!-- Formar Escuadrón -->
+            <!-- Formar Escuadrón y Arsenal -->
             <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                 <span class="text-2xl mt-1">🛡️</span>
                 <div>
-                    <h5 class="font-black text-cg_navy text-sm mb-1">1. Reclutar el Escuadrón</h5>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">1. Reclutar el Escuadrón y el Arsenal</h5>
                     <p class="text-xs text-gray-600 leading-relaxed">
-                        Puedes llevar hasta 3 plantas al combate. Las eliges directamente desde las parcelas de tu granja (si ya están listas para cosechar) o desde tu <strong>Almacén Estratégico (Arsenal)</strong>. Si usas una planta en duelo y mueres, la planta se pierde para siempre.
+                        Puedes llevar hasta 3 plantas al combate. Las eliges desde las parcelas de tu granja (si están listas) o desde tu <strong>Almacén Estratégico (Arsenal)</strong>. Si una planta resulta herida, puedes curarla en el Arsenal gastando semillas o dejar que recupere HP lentamente con el tiempo.
                     </p>
                 </div>
             </div>
@@ -721,7 +772,7 @@
                 <div>
                     <h5 class="font-black text-cg_navy text-sm mb-1">2. Puntos de Energía</h5>
                     <p class="text-xs text-gray-600 leading-relaxed">
-                        Ambos jugadores inician con 5 Puntos de Energía. Cada ataque o habilidad de tus plantas consume energía. Al iniciar un nuevo turno, <strong>recuperas 3 puntos de energía</strong> (máximo 15). Debes administrarla para desatar tus habilidades Ultimate.
+                        Inicias con 5 Puntos de Energía. Cada ataque o táctica consume energía. Al iniciar un nuevo turno, <strong>recuperas 3 puntos de energía</strong> (máximo 15). Deberás administrarla si planeas desatar tus habilidades Ultimate.
                     </p>
                 </div>
             </div>
@@ -730,20 +781,31 @@
             <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                 <span class="text-2xl mt-1">🃏</span>
                 <div>
-                    <h5 class="font-black text-cg_navy text-sm mb-1">3. Mazo de Habilidades</h5>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">3. Mazo de Habilidades Elementales</h5>
                     <p class="text-xs text-gray-600 leading-relaxed">
-                        Cada especie de planta tiene un mazo único de 5 cartas de ataque (desde habilidades básicas de coste 1, hasta habilidades "Ultimate" demoledoras de coste 4 o 5). Para atacar, tocas a tu planta, eliges la carta, y luego tocas a la planta rival objetivo.
+                        Cada especie tiene un mazo único de 5 cartas de ataque (Niveles I al V). Las habilidades de Nivel V ("Ultimates") desencadenan cinemáticas de pantalla completa y daño devastador.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tácticas y Relevo -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-2xl mt-1">🎒</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">4. Tácticas Universales y Banquillo</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Todas las plantas tienen acceso a 5 Tácticas (como <strong>Fotosíntesis +2⚡</strong>, <strong>Baluarte</strong>, o <strong>Abono Carmesí</strong>). Además, por un coste de 2⚡, puedes enviar una planta herida al banquillo (Reserva) y sacar un reemplazo fresco.
                     </p>
                 </div>
             </div>
 
             <!-- Iniciativa (Piedra Papel Tijera) -->
-            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
                 <span class="text-2xl mt-1">✌️</span>
                 <div>
-                    <h5 class="font-black text-cg_navy text-sm mb-1">4. Iniciativa en PvP</h5>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">5. Iniciativa en PvP (Piedra, Papel o Tijera)</h5>
                     <p class="text-xs text-gray-600 leading-relaxed">
-                        En el modo PvP, antes de iniciar el combate ambos jugadores juegan una partida secreta de <strong>Piedra, Papel o Tijera</strong>. El ganador atacará primero en el combate, lo cual es una ventaja táctica inmensa.
+                        En el modo PvP directo, antes de iniciar el combate, ambos jugadores juegan una partida secreta y sincronizada de <strong>Piedra, Papel o Tijera</strong>. El ganador tendrá el primer turno en el combate, lo que le otorga una ventaja táctica inmensa.
                     </p>
                 </div>
             </div>
@@ -751,14 +813,14 @@
         
     </div>
 
-    <!-- SECCIÓN 11: TELEGRAM -->
+    <!-- SECCIÓN 12: TELEGRAM -->
     <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
         <div class="flex items-center gap-3 mb-6">
             <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-200 shadow-sm shrink-0">
                 <span class="text-2xl">✈️</span>
             </div>
             <div>
-                <h3 class="text-xl md:text-2xl font-black text-cg_navy">11. Alertas Inteligentes por Telegram</h3>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">12. Alertas Inteligentes por Telegram</h3>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Conecta tus plantas con tu celular</p>
             </div>
         </div>
@@ -797,10 +859,10 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 12: RETIROS -->
+    <!-- SECCIÓN 13: RETIROS -->
     <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 text-center flex flex-col items-center mt-8">
         <span class="text-4xl mb-3">🏦</span>
-        <h3 class="text-xl font-black text-cg_navy mb-2">12. Dispersión Automática (Retiros)</h3>
+        <h3 class="text-xl font-black text-cg_navy mb-2">13. Dispersión Automática (Retiros)</h3>
         <p class="text-sm text-gray-600 max-w-xl mx-auto leading-relaxed">
             CashGarden no es un banco. Los fondos que ganes en los torneos deben ser retirados regularmente. Configura tu número en el menú <strong class="text-cg_navy">Billetera Wompi</strong>. 
             Los pagos se envían mediante la pasarela segura directamente a <strong>Nequi</strong> una vez superes los $10,000 COP.
