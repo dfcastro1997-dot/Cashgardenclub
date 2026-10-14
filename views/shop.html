@@ -1,63 +1,78 @@
-<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-5">
-        <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-cg_blue"></span>
-                <span class="text-xs font-extrabold text-cg_blue uppercase tracking-widest">Suministros Agrícolas</span>
+<div class="max-w-[1400px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-24 relative px-4 md:px-6 lg:px-8 pt-4">
+    
+    <!-- HEADER PROFESIONAL -->
+    <div class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="flex items-center gap-4 md:gap-5 w-full md:w-auto">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shrink-0 shadow-inner">
+                <span class="text-2xl md:text-3xl">🛒</span>
             </div>
-            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Mercado de Insumos</h2>
-            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Equípate con las mejores herramientas para optimizar tu producción de semillas.</p>
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-cg_blue animate-pulse shadow-[0_0_8px_rgba(41,150,218,0.8)]"></span>
+                    <span class="text-[9px] md:text-[10px] font-bold text-cg_blue uppercase tracking-widest">Suministros Agrícolas</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight leading-none">Mercado Global</h2>
+                <p class="text-xs text-slate-500 font-medium mt-1.5 hidden md:block">Equípate con herramientas, adquiere nuevas especies o automatiza tu granja con servicios premium.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-50 border border-slate-200 px-5 py-3 rounded-2xl flex flex-col gap-1 w-full md:w-auto shadow-inner text-right min-w-[200px]">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Poder Adquisitivo</span>
+            <div class="flex items-center justify-end gap-3 mt-1">
+                <span class="text-sm font-black text-green-600 bg-white px-2 py-1 rounded shadow-sm border border-gray-100" id="shop-seeds-display">0 🌱</span>
+                <span class="text-sm font-black text-cg_gold bg-white px-2 py-1 rounded shadow-sm border border-gray-100" id="shop-cop-display">$0</span>
+            </div>
         </div>
     </div>
 
-    <!-- TABS DE NAVEGACIÓN -->
-    <div class="flex gap-4 border-b border-gray-200 bg-transparent overflow-x-auto pb-0 hide-scrollbar w-full">
-        <button onclick="window.shopApp.switchTab('tools')" id="page-tab-tools" class="pb-3 px-1 text-sm md:text-base font-black text-cg_blue border-b-4 border-cg_blue whitespace-nowrap transition-colors">Herramientas</button>
-        <button onclick="window.shopApp.switchTab('flowers')" id="page-tab-flowers" class="pb-3 px-1 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Semillas y Flores</button>
-        <button onclick="window.shopApp.switchTab('iap')" id="page-tab-iap" class="pb-3 px-1 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Servicios VIP</button>
-        <button onclick="window.shopApp.switchTab('exchange')" id="page-tab-exchange" class="pb-3 px-1 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent hover:text-cg_navy whitespace-nowrap transition-colors">Casa de Cambio</button>
-    </div>
+    <!-- PANEL DE FILTROS AVANZADOS -->
+    <div class="bg-white p-4 md:p-5 rounded-3xl border border-gray-100 shadow-sm relative z-20">
+        <div class="flex items-center gap-2 mb-4 border-b border-gray-50 pb-3">
+            <span class="text-lg">🔍</span>
+            <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Filtros de Búsqueda</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <!-- Buscar por Nombre -->
+            <div class="relative">
+                <input type="text" id="filter-search" oninput="window.shopApp.renderShopItems()" placeholder="Buscar producto por nombre..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white transition-colors shadow-inner placeholder-slate-400">
+            </div>
+            
+            <!-- Tipo de Producto -->
+            <select id="filter-type" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+                <option value="all">📦 Todos los Tipos</option>
+                <option value="tools">🛠️ Herramientas y Defensa</option>
+                <option value="flowers">🌿 Semillas Botánicas</option>
+                <option value="iap">⭐ Servicios VIP (Automáticos)</option>
+                <option value="exchange">💰 Casa de Cambio (Packs)</option>
+            </select>
 
-    <!-- FILTROS (SOLO VISIBLES EN PESTAÑA FLORES) -->
-    <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-5 gap-3 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
-        <input type="text" id="filter-name" oninput="window.shopApp.renderShopItems()" placeholder="Buscar planta..." class="w-full col-span-2 md:col-span-1 bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue shadow-inner">
-        <select id="filter-category" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
-            <option value="all">Todas las Categorías</option>
-            <option value="Planta Estándar">Plantas Estándar</option>
-            <option value="Plantas Ígneas">Plantas Ígneas</option>
-            <option value="Plantas Glaciares">Plantas Glaciares</option>
-            <option value="Plantas Eléctricas">Plantas Eléctricas</option>
-            <option value="Plantas Acuáticas">Plantas Acuáticas</option>
-            <option value="Plantas Rocosas">Plantas Rocosas</option>
-            <option value="Plantas Aéreas">Plantas Aéreas</option>
-            <option value="Plantas Espaciales">Plantas Espaciales</option>
-            <option value="Plantas Alienígenas">Plantas Alienígenas</option>
-            <option value="Plantas Mecha-botánica">Plantas Mecha-botánica</option>
-            <option value="Plantas Radiactivas">Plantas Radiactivas</option>
-            <option value="Plantas Mutantes">Plantas Mutantes</option>
-            <option value="Plantas Jurásicas">Plantas Jurásicas</option>
-            <option value="Plantas Demoníacas">Plantas Demoníacas</option>
-            <option value="Plantas Necróticas">Plantas Necróticas</option>
-            <option value="Plantas Explosivas">Plantas Explosivas</option>
-            <option value="Plantas Cristalinas">Plantas Cristalinas</option>
-        </select>
-        <select id="filter-price" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
-            <option value="all">Cualquier Precio</option>
-            <option value="low">Baratas (< 2,000 🌱)</option>
-            <option value="med">Medias (2,000 - 10,000 🌱)</option>
-            <option value="high">Premium (> 10,000 🌱)</option>
-        </select>
-        <select id="filter-pot" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
-            <option value="all">Cualquier Maceta</option>
-            <option value="small">Maceta Pequeña</option>
-            <option value="big">Maceta Grande</option>
-        </select>
-        <select id="filter-duration" onchange="window.shopApp.renderShopItems()" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
-            <option value="all">Cualquier Crecimiento</option>
-            <option value="fast">Rápido (< 1 Hora)</option>
-            <option value="med">Medio (1 - 5 Horas)</option>
-            <option value="slow">Lento (> 5 Horas)</option>
-        </select>
+            <!-- Categoría Botánica -->
+            <select id="filter-category" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+                <option value="all">🌍 Cualquier Elemento (Solo Plantas)</option>
+                <option value="Planta Estándar">Planta Estándar</option>
+                <option value="Plantas Ígneas">Plantas Ígneas (Fuego)</option>
+                <option value="Plantas Glaciares">Plantas Glaciares (Hielo)</option>
+                <option value="Plantas Eléctricas">Plantas Eléctricas (Rayo)</option>
+                <option value="Plantas Acuáticas">Plantas Acuáticas (Agua)</option>
+                <option value="Plantas Rocosas">Plantas Rocosas (Tierra)</option>
+                <option value="Plantas Aéreas">Plantas Aéreas (Viento)</option>
+                <option value="Plantas Espaciales">Plantas Espaciales (Cosmos)</option>
+                <option value="Plantas Alienígenas">Plantas Alienígenas (Xeno)</option>
+                <option value="Plantas Mecha-botánica">Plantas Mecha-botánica (Acero)</option>
+                <option value="Plantas Radiactivas">Plantas Radiactivas (Nuclear)</option>
+                <option value="Plantas Mutantes">Plantas Mutantes (Veneno)</option>
+                <option value="Plantas Jurásicas">Plantas Jurásicas (Fósil)</option>
+                <option value="Plantas Demoníacas">Plantas Demoníacas (Oscuridad)</option>
+            </select>
+
+            <!-- Tipo de Moneda -->
+            <select id="filter-price" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+                <option value="all">🪙 Cualquier Moneda</option>
+                <option value="free_cop">🌱 Comprar con Semillas</option>
+                <option value="premium">💵 Comprar con CRÉDITOS</option>
+            </select>
+        </div>
     </div>
 
     <!-- MAIN GRID ÚNICO PARA TODO EL CATÁLOGO -->
@@ -65,34 +80,28 @@
         <!-- Inyectado por JS de forma unificada -->
     </div>
 
-    <!-- VENTANAS MODALES -->
-    <div id="purchase-error-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity duration-300" onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center border border-red-500 animate-fade-in">
-            <div class="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
-                <span class="text-3xl md:text-4xl relative z-10 drop-shadow-md">⚠️</span>
+    <!-- VENTANA MODAL PROFESIONAL PARA ALERTAS/ÉXITOS -->
+    <div id="shop-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="window.shopApp.closeAlertModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8" id="shop-alert-card">
+            
+            <div id="shop-alert-icon-container" class="mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-20 h-20 bg-gray-50 border-gray-100 relative">
+                <div class="absolute inset-0 rounded-full border border-gray-200 animate-ping opacity-50" id="shop-alert-ping"></div>
+                <img id="shop-alert-img" src="" class="w-12 h-12 object-contain relative z-10 drop-shadow-md hidden">
+                <span class="text-3xl md:text-4xl relative z-10 drop-shadow-sm" id="shop-alert-icon">⚠️</span>
             </div>
-            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1">Operación Fallida</h3>
-            <p id="purchase-error-text" class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes saldo suficiente.</p>
-            <button onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3 md:py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] md:text-xs">
+            
+            <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-slate-800" id="shop-alert-title">Aviso</h3>
+            <p class="text-xs md:text-sm text-slate-500 mb-6 font-medium leading-relaxed" id="shop-alert-msg">Mensaje</p>
+            
+            <div id="shop-alert-details" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center justify-between w-full mb-6 hidden">
+                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest" id="shop-alert-label">Inversión:</span>
+                <span class="text-sm md:text-base font-black text-slate-800" id="shop-alert-price"></span>
+            </div>
+
+            <button onclick="window.shopApp.closeAlertModal()" id="shop-alert-btn" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-slate-800 hover:bg-slate-900 active:scale-95">
                 Aceptar
             </button>
-        </div>
-    </div>
-
-    <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="purchase-modal-bg"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center transform scale-95 opacity-0 transition-all duration-300 border border-gray-100" id="purchase-modal-card">
-            <div class="w-20 h-20 md:w-24 md:h-24 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center mb-4 md:mb-5 shadow-inner relative">
-                <div class="absolute inset-0 rounded-full border border-green-200 animate-ping opacity-50"></div>
-                <img id="purchase-modal-img" src="" class="w-12 h-12 md:w-14 md:h-14 object-contain relative z-10 drop-shadow-md">
-            </div>
-            <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1" id="purchase-modal-title">¡Compra Exitosa!</h3>
-            <p class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6" id="purchase-modal-desc"></p>
-            <div class="bg-gray-50 border border-gray-200 px-4 md:px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 md:gap-3 w-full">
-                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest" id="purchase-modal-label">Inversión:</span>
-                <span class="text-sm md:text-base font-black text-red-500" id="purchase-modal-price"></span>
-            </div>
         </div>
     </div>
 </div>
@@ -101,37 +110,39 @@
 window.shopApp = {
     state: {
         seedsBalance: 35000,
+        balance: 0,
         inventory: {},
         shopQuantities: {}
     },
     
-    currentTab: 'tools',
-    
     catalog: {
         tools: [
-            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla.', price: 5000 },
+            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla de tamaño pequeño.', price: 5000 },
+            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'assets/Herramientas_y_Servicios/maceta_grande.png', duration: '10 Siembras', usage: '1', desc: 'Soporta cualquier planta, obligatoria para especies gigantes.', price: 15000 },
             { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual.', price: 500 },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: 'Global', desc: 'Protección preventiva contra plagas.', price: 6000 }
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: '1 Parcela', desc: 'Protección preventiva contra plagas. Cura al instante.', price: 6000 },
+            { id: 'tool_duel_ticket', name: 'Ticket de Duelo', image: 'assets/Herramientas_y_Servicios/ticket_duelo.png', duration: '1 Partida', usage: 'Arena PvE', desc: 'Permite el acceso a la campaña contra los cuervos.', price: 2000 }
         ],
         flowers: [],
         iap: [
-            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/Pase24.png', duration: '24 Horas', usage: 'Auto Total', desc: 'Riego y recolección perfectos automatizados.', price_cop: 7500 },
+            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/Pase24.png', duration: '24 Horas', usage: 'Auto Total', desc: 'Riego y recolección perfectos automatizados globalmente.', price_cop: 7500 },
             { id: 'iap_combo_72h', name: 'Pase Granjero 3 Días', image: 'assets/Herramientas_y_Servicios/Pase3D.png', duration: '3 Días', usage: 'Auto Total', desc: 'Riego y recolección perfectos. ¡Más Popular!', price_cop: 18000 },
             { id: 'iap_combo_7d', name: 'Pase Granjero 7 Días', image: 'assets/Herramientas_y_Servicios/Pase7D.png', duration: '7 Días', usage: 'Auto Total', desc: 'Riego y recolección perfectos. ¡Ahorra 40%!', price_cop: 30000 },
             { id: 'iap_nursery_72h', name: 'Enfermería VIP 3 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '3 Días', usage: 'Curación', desc: 'Tus plantas en el Arsenal se curan el TRIPLE de rápido.', price_cop: 8000 },
-            { id: 'iap_nursery_7d', name: 'Enfermería VIP 7 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '7 Días', usage: 'Curación', desc: 'Curación x3. Ideal para luchadores constantes.', price_cop: 15000 },
+            { id: 'iap_nursery_7d', name: 'Enfermería VIP 7 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '7 Días', usage: 'Curación', desc: 'Curación x3. Ideal para luchadores constantes en la Arena.', price_cop: 15000 },
             { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/PaseVip.png', duration: '7 Días', usage: 'Todo Incl.', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
         ],
         exchange: [
-            { id: 'exc_10k', name: 'Lote N°1', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección rápida de capital vegetal.', price_cop: 10000, seeds: 4250 },
-            { id: 'exc_25k', name: 'Lote N°2', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección moderada de capital.', price_cop: 25000, seeds: 11000 },
-            { id: 'exc_50k', name: 'Lote N°3', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Monto élite para expansión seria.', price_cop: 50000, seeds: 22500 }
+            { id: 'exc_10k', name: 'Lote Básico', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección rápida de capital vegetal para empezar.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote Profesional', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección moderada de capital para agricultores en expansión.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote Élite Magnate', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Monto élite para expansión seria del invernadero.', price_cop: 50000, seeds: 22500 }
         ]
     },
 
     async init() {
         if (window.farmApp && window.farmApp.state) {
             this.state.seedsBalance = window.farmApp.state.seedsBalance;
+            this.state.balance = window.farmApp.state.balance || 0;
             this.state.inventory = window.farmApp.state.inventory;
         }
         
@@ -144,7 +155,7 @@ window.shopApp = {
                         this.catalog.flowers.push({
                             id: dp.id, name: dp.name, image: dp.image_url,
                             duration: dp.grow_time_minutes + ' Minutos', durationMins: dp.grow_time_minutes,
-                            usage: '1', desc: 'Especie única criada en nuestros laboratorios.',
+                            usage: '1', desc: 'Especie única de rendimiento variable cultivada en laboratorios.',
                             category: dp.category || 'Planta Estándar', potType: dp.pot_type || 'small',
                             price: dp.price, hp: dp.hp, atk: dp.atk, def: dp.def, reward: dp.reward
                         });
@@ -153,193 +164,189 @@ window.shopApp = {
             }
         } catch(e) {}
         
-        document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
-        this.switchTab('tools');
-    },
-
-    switchTab(tab) {
-        this.currentTab = tab;
-
-        ['tools', 'flowers', 'iap', 'exchange'].forEach(t => {
-            const tabBtn = document.getElementById(`page-tab-${t}`);
-            if (t === tab) {
-                let colorClass = 'text-cg_blue border-cg_blue';
-                if (t === 'iap') colorClass = 'text-green-500 border-green-500';
-                if (t === 'exchange') colorClass = 'text-purple-500 border-purple-500';
-                tabBtn.className = `pb-3 px-1 sm:px-3 md:px-4 text-sm md:text-base font-black ${colorClass} border-b-4 whitespace-nowrap transition-colors`;
-            } else {
-                let hoverClass = 'hover:text-cg_navy';
-                if (t === 'iap') hoverClass = 'hover:text-green-600';
-                if (t === 'exchange') hoverClass = 'hover:text-purple-600';
-                tabBtn.className = `pb-3 px-1 sm:px-3 md:px-4 text-sm md:text-base font-bold text-gray-400 border-b-4 border-transparent ${hoverClass} whitespace-nowrap transition-colors`;
-            }
-        });
-
-        const filters = document.getElementById('flowers-filters');
-        if (tab === 'flowers') {
-            filters.classList.remove('hidden');
-            filters.classList.add('grid');
-        } else {
-            filters.classList.add('hidden');
-            filters.classList.remove('grid');
-        }
-        
+        this.updateBalancesUI();
         this.renderShopItems();
     },
 
+    updateBalancesUI() {
+        const seedEl = document.getElementById('shop-seeds-display');
+        const copEl = document.getElementById('shop-cop-display');
+        const globalSeedEl = document.getElementById('global-seeds-display');
+        const globalCopEl = document.getElementById('global-balance');
+
+        if (seedEl) seedEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+        if (globalSeedEl) globalSeedEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+
+        if (copEl) copEl.innerText = "$" + this.state.balance.toLocaleString();
+        if (globalCopEl) globalCopEl.innerText = "$" + this.state.balance.toLocaleString();
+    },
+
     renderShopItems() {
-        const tab = this.currentTab;
         const container = document.getElementById('shop-main-grid');
         container.innerHTML = '';
-        let items = this.catalog[tab] || [];
 
-        if (tab === 'flowers') {
-            const nameFilter = document.getElementById('filter-name') ? document.getElementById('filter-name').value.toLowerCase().trim() : '';
-            const catFilter = document.getElementById('filter-category').value;
-            const priceFilter = document.getElementById('filter-price').value;
-            const potFilter = document.getElementById('filter-pot').value;
-            const durFilter = document.getElementById('filter-duration').value;
+        // 1. Unificar todos los catálogos con una marca interna
+        let allItems = [
+            ...this.catalog.tools.map(i => ({...i, _type: 'tools'})),
+            ...this.catalog.flowers.map(i => ({...i, _type: 'flowers'})),
+            ...this.catalog.iap.map(i => ({...i, _type: 'iap'})),
+            ...this.catalog.exchange.map(i => ({...i, _type: 'exchange'}))
+        ];
 
-            items = items.filter(item => {
-                let match = true;
-                if (nameFilter !== '' && !item.name.toLowerCase().includes(nameFilter)) match = false;
-                if (catFilter !== 'all' && item.category !== catFilter) match = false;
-                if (priceFilter === 'low' && item.price >= 2000) match = false;
-                if (priceFilter === 'med' && (item.price < 2000 || item.price > 10000)) match = false;
-                if (priceFilter === 'high' && item.price <= 10000) match = false;
-                if (potFilter !== 'all' && item.potType !== potFilter) match = false;
-                if (durFilter === 'fast' && item.durationMins >= 60) match = false;
-                if (durFilter === 'med' && (item.durationMins < 60 || item.durationMins > 300)) match = false;
-                if (durFilter === 'slow' && item.durationMins <= 300) match = false;
-                return match;
-            });
+        // 2. Obtener valores de los filtros
+        const searchF = document.getElementById('filter-search') ? document.getElementById('filter-search').value.toLowerCase().trim() : '';
+        const typeF = document.getElementById('filter-type') ? document.getElementById('filter-type').value : 'all';
+        const catF = document.getElementById('filter-category') ? document.getElementById('filter-category').value : 'all';
+        const priceF = document.getElementById('filter-price') ? document.getElementById('filter-price').value : 'all';
+
+        // 3. Filtrar
+        allItems = allItems.filter(item => {
+            if (searchF && !item.name.toLowerCase().includes(searchF)) return false;
             
-            if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-12 bg-white border border-gray-100 rounded-3xl text-gray-400 font-bold text-sm shadow-sm">No se encontraron productos con estos filtros.</div>';
-                return;
-            }
+            if (typeF !== 'all' && item._type !== typeF) return false;
+            
+            if (catF !== 'all' && item._type === 'flowers' && item.category !== catF) return false;
+            
+            if (priceF === 'free_cop' && item.price_cop) return false; 
+            if (priceF === 'premium' && !item.price_cop) return false; 
+            
+            return true;
+        });
+
+        // 4. Renderizar Vacío
+        if (allItems.length === 0) {
+            container.innerHTML = '<div class="col-span-full text-center py-16 bg-white border border-gray-100 rounded-3xl shadow-sm"><span class="text-4xl mb-3 block opacity-30">🔍</span><p class="text-gray-400 font-black text-base uppercase tracking-widest">No hay resultados</p><p class="text-sm font-medium text-gray-500 mt-2">Intenta cambiar los filtros de búsqueda.</p></div>';
+            return;
         }
 
-        items.forEach(item => {
+        // 5. Generar Tarjetas
+        allItems.forEach(item => {
             if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
             const qty = this.state.shopQuantities[item.id];
+            let currentStock = (this.state.inventory[item.id] && this.state.inventory[item.id].qty) ? this.state.inventory[item.id].qty : 0;
             
-            let currentStock = 0;
-            if(this.state.inventory[item.id]) {
-                currentStock = this.state.inventory[item.id].qty || 0;
+            // Estilos y Etiquetas según tipo
+            let tagText = '', tagColor = '', tagBg = '', tagBorder = '';
+            let isPremium = !!item.price_cop;
+
+            if (item._type === 'flowers') {
+                tagText = item.category || 'Semilla Estándar';
+                tagColor = 'text-green-700'; tagBg = 'bg-green-50'; tagBorder = 'border-green-200';
+            } else if (item._type === 'tools') {
+                tagText = 'Herramienta';
+                tagColor = 'text-blue-700'; tagBg = 'bg-blue-50'; tagBorder = 'border-blue-200';
+            } else if (item._type === 'exchange') {
+                tagText = 'Lote Semillas';
+                tagColor = 'text-amber-700'; tagBg = 'bg-amber-50'; tagBorder = 'border-amber-200';
+            } else {
+                tagText = 'Servicio VIP';
+                tagColor = 'text-purple-700'; tagBg = 'bg-purple-50'; tagBorder = 'border-purple-200';
             }
-            
-            let tag = '';
-            if (tab === 'flowers') { tag = item.category ? item.category : 'Semilla'; } 
-            else if (tab === 'tools') { tag = 'Herramienta'; } 
-            else if (tab === 'exchange') { tag = 'Lote Semillas'; } 
-            else { tag = 'Servicio VIP'; }
-            
+
+            // Área de Acción y Botones
             let actionArea = '';
             let stockBadge = '';
 
-            if (tab === 'iap') {
-                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 mt-auto">Adquirir: $${item.price_cop.toLocaleString()}</button>`;
-            } else if (tab === 'exchange') {
-                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 mt-auto">Comprar ${item.seeds.toLocaleString()} 🌱</button>`;
-            } else {
-                if (item.id !== 'tool_scarecrow') {
-                    stockBadge = `
-                        <div class="flex flex-col items-center border border-gray-200 px-2.5 py-1 rounded-lg bg-white min-w-[3.5rem]">
-                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Tienes</span>
-                            <span class="text-xs font-black text-cg_navy mt-0.5">${currentStock}</span>
-                        </div>
-                    `;
-                }
-                
-                if (item.price_cop) {
-                    actionArea = `
-                        <button onclick="window.shopApp.buyPremiumSeed('${item.id}', ${item.price_cop})" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 mt-auto">
-                            Comprar: $${item.price_cop.toLocaleString()} COP
-                        </button>
-                    `;
-                } else {
-                    actionArea = `
-                        <div class="flex items-center gap-2 mt-auto">
-                            <div class="flex items-center bg-gray-50 rounded-xl border border-gray-200 h-11 w-[88px] shrink-0 overflow-hidden">
-                                <button onclick="window.shopApp.changeShopQty('${item.id}', -1)" class="w-8 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors">-</button>
-                                <div class="flex-1 text-center text-sm font-black text-cg_navy">${qty}</div>
-                                <button onclick="window.shopApp.changeShopQty('${item.id}', 1)" class="w-8 h-full flex items-center justify-center text-gray-500 font-black hover:bg-gray-200 transition-colors">+</button>
-                            </div>
-                            <button onclick="window.shopApp.buyItem('${item.id}', ${item.price})" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1">
-                                ${(item.price * qty).toLocaleString()} 🌱
-                            </button>
-                        </div>
-                    `;
-                }
+            // Mostrar stock solo si no es un pase temporal
+            if (item._type === 'tools' || item._type === 'flowers') {
+                stockBadge = `
+                    <div class="flex flex-col items-center border border-gray-200 px-2 py-1 rounded-lg bg-white/90 backdrop-blur shadow-sm min-w-[3.5rem]">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Stock</span>
+                        <span class="text-xs font-black text-slate-800 leading-none">${currentStock}</span>
+                    </div>`;
             }
 
-            let durationHtml = tab === 'exchange' ? `Costo: $${item.price_cop.toLocaleString()}` : `⏳ ${item.duration}`;
-            
+            if (item._type === 'iap') {
+                actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
+            } else if (item._type === 'exchange') {
+                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Cambiar ${item.seeds.toLocaleString()} 🌱</button>`;
+            } else {
+                actionArea = `
+                    <div class="flex items-center gap-2 mt-auto">
+                        <div class="flex items-center bg-slate-50 rounded-xl border border-slate-200 h-11 w-[90px] shrink-0 overflow-hidden shadow-inner">
+                            <button onclick="window.shopApp.changeShopQty('${item.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 font-black hover:bg-slate-200 transition-colors">-</button>
+                            <div class="flex-1 text-center text-sm font-black text-slate-800">${qty}</div>
+                            <button onclick="window.shopApp.changeShopQty('${item.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 font-black hover:bg-slate-200 transition-colors">+</button>
+                        </div>
+                        <button onclick="window.shopApp.buyItem('${item.id}', ${item.price})" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                            ${(item.price * qty).toLocaleString()} 🌱
+                        </button>
+                    </div>`;
+            }
+
+            // Datos Botánicos (solo para flores)
             let statsHtml = '';
-            let harvestHtml = '';
             let reqPotHtml = '';
             
-            if (tab === 'flowers' && item.hp) {
-                let reqSize = item.potType === 'small' ? 'Maceta Pequeña' : 'Maceta Grande';
-                reqPotHtml = `<div class="bg-indigo-50 border border-indigo-100 rounded-lg p-2 mb-2 text-center shadow-sm">
-                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">🏺 Requiere: ${reqSize}</span>
-                </div>`;
+            if (item._type === 'flowers' && item.hp) {
+                let reqSize = item.potType === 'small' ? 'Pequeña' : 'Grande';
+                reqPotHtml = `<span class="bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shrink-0">🏺 Maceta ${reqSize}</span>`;
 
-                harvestHtml = `
-                <div class="bg-green-50 rounded-lg p-2 border border-green-200 mb-3 flex items-center justify-between shadow-sm">
-                    <span class="text-[10px] font-black text-green-700 uppercase tracking-widest">Cosecha</span>
-                    <span class="font-black text-green-600 text-sm drop-shadow-sm">+${item.reward.toLocaleString()} 🌱</span>
-                </div>`;
-                
                 statsHtml = `
-                <div class="grid grid-cols-3 gap-1.5 w-full text-center mb-3">
-                    <div class="bg-red-50 rounded p-1 border border-red-100">
-                        <span class="block text-[8px] font-bold text-red-400 uppercase leading-none mb-0.5">Vida</span>
-                        <span class="font-black text-red-600 text-xs leading-none">${item.hp}</span>
+                <div class="grid grid-cols-3 gap-1.5 w-full text-center mb-4 mt-2">
+                    <div class="bg-rose-50 rounded-lg p-1.5 border border-rose-100 shadow-sm">
+                        <span class="block text-[8px] font-bold text-rose-500 uppercase leading-none mb-0.5">Vida</span>
+                        <span class="font-black text-rose-700 text-xs leading-none">${item.hp}</span>
                     </div>
-                    <div class="bg-orange-50 rounded p-1 border border-orange-100">
-                        <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none mb-0.5">Ataque</span>
-                        <span class="font-black text-orange-600 text-xs leading-none">${item.atk}</span>
+                    <div class="bg-amber-50 rounded-lg p-1.5 border border-amber-100 shadow-sm">
+                        <span class="block text-[8px] font-bold text-amber-500 uppercase leading-none mb-0.5">Ataque</span>
+                        <span class="font-black text-amber-700 text-xs leading-none">${item.atk}</span>
                     </div>
-                    <div class="bg-blue-50 rounded p-1 border border-blue-100">
-                        <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none mb-0.5">Defensa</span>
-                        <span class="font-black text-blue-600 text-xs leading-none">${item.def}%</span>
+                    <div class="bg-sky-50 rounded-lg p-1.5 border border-sky-100 shadow-sm">
+                        <span class="block text-[8px] font-bold text-sky-500 uppercase leading-none mb-0.5">Defensa</span>
+                        <span class="font-black text-sky-700 text-xs leading-none">${item.def}%</span>
                     </div>
                 </div>`;
             }
 
+            // Construir Tarjeta
             const card = document.createElement('div');
-            card.className = 'bg-white rounded-3xl border border-gray-100 p-5 flex flex-col hover:shadow-md transition-shadow relative';
+            card.className = `bg-white rounded-3xl border border-gray-100 flex flex-col hover:shadow-lg transition-all duration-300 relative overflow-hidden group ${isPremium ? 'ring-1 ring-purple-100' : ''}`;
+            
+            let premiumBadge = isPremium ? `<div class="absolute -right-6 top-4 bg-purple-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30">VIP</div>` : '';
+
             card.innerHTML = `
-                <!-- Badges -->
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-[9px] font-black text-gray-500 border border-gray-200 px-2 py-1 rounded-md uppercase tracking-widest bg-white">${tag}</span>
-                    ${stockBadge}
+                ${premiumBadge}
+                <!-- Cabecera de Imagen -->
+                <div class="bg-gradient-to-b from-slate-50 to-white h-44 flex items-center justify-center p-5 relative border-b border-gray-50 shrink-0">
+                    <span class="absolute top-3 left-3 ${tagBg} ${tagColor} ${tagBorder} text-[9px] font-black px-2.5 py-1.5 rounded-lg shadow-sm border uppercase tracking-widest z-20">${tagText}</span>
+                    <div class="absolute top-3 right-3 z-20">${stockBadge}</div>
+                    
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <div class="absolute inset-0 bg-${isPremium ? 'purple' : 'blue'}-100 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
+                        <img src="${item.image}" onerror="this.src='assets/Fondos/logo.png'" class="h-28 md:h-32 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    </div>
                 </div>
-                
-                <!-- Image -->
-                <div class="flex items-center justify-center h-28 mb-4">
-                    <img src="${item.image}" class="h-full w-auto object-contain drop-shadow-md hover:scale-110 transition-transform">
-                </div>
-                
-                <!-- Info -->
-                <h4 class="text-lg font-black text-cg_navy mb-3 line-clamp-1">${item.name}</h4>
-                
-                <div class="flex justify-between items-center text-[9px] font-black text-gray-500 bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg uppercase tracking-widest mb-3">
-                    <span class="flex items-center gap-1">${durationHtml}</span>
-                    <span>Usos: ${item.usage}</span>
-                </div>
-                
-                ${reqPotHtml}
-                ${harvestHtml}
-                ${statsHtml}
-                
-                <p class="text-xs text-gray-500 mb-5 leading-relaxed line-clamp-2 flex-1">${item.desc}</p>
-                
-                <!-- Action Row -->
-                <div class="mt-auto pt-4 border-t border-gray-100">
-                    ${actionArea}
+
+                <!-- Cuerpo de Info -->
+                <div class="p-5 flex flex-col flex-1">
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <h4 class="font-black text-slate-800 text-lg leading-tight line-clamp-2">${item.name}</h4>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-1.5 mb-3">
+                        <span class="bg-slate-50 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shrink-0">
+                            ${item._type === 'exchange' ? '💎 ' : '⏳ '} ${item._type === 'exchange' ? 'Packs' : item.duration}
+                        </span>
+                        <span class="bg-slate-50 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shrink-0">
+                            Usos: ${item.usage}
+                        </span>
+                        ${reqPotHtml}
+                    </div>
+                    
+                    ${item._type === 'flowers' && item.reward ? `
+                    <div class="bg-emerald-50/50 rounded-xl p-2.5 border border-emerald-100 mb-1 flex items-center justify-between shadow-sm">
+                        <span class="text-[9px] font-black text-emerald-800 uppercase tracking-widest">Cosecha Estimada</span>
+                        <span class="font-black text-emerald-600 text-sm drop-shadow-sm">+${item.reward.toLocaleString()} 🌱</span>
+                    </div>` : ''}
+                    
+                    ${statsHtml}
+                    
+                    <p class="text-[11px] md:text-xs text-slate-500 mb-5 leading-relaxed line-clamp-3 flex-1 font-medium">${item.desc}</p>
+                    
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        ${actionArea}
+                    </div>
                 </div>
             `;
             container.appendChild(card);
@@ -396,8 +403,8 @@ window.shopApp = {
                     window.farmApp.saveState(); 
                     
                     let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-                    this.showPurchaseModal(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
-                    document.getElementById('global-seeds-display').innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                    this.showModalAlert(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:', 'success');
+                    this.updateBalancesUI();
                     return;
                 }
             }
@@ -406,7 +413,7 @@ window.shopApp = {
                 let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
                 targetInventory[itemId] = { 
                     name: catItem.name, 
-                    type: this.currentTab === 'flowers' ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                    type: this.catalog.flowers.some(f => f.id === itemId) ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
                     reqSize: catItem.potType || (itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') ? 'small' : (itemId.includes('big') || itemId.includes('moon') ? 'big' : null)),                    
                     qty: 0, 
                     image: catItem.image 
@@ -419,35 +426,28 @@ window.shopApp = {
 
             farmState.seedsBalance -= total;
             this.state.seedsBalance = farmState.seedsBalance;
-            document.getElementById('global-seeds-display').innerText = farmState.seedsBalance.toLocaleString() + " 🌱";
             
             if (window.farmApp && window.farmApp.state) {
                 window.farmApp.state.inventory = targetInventory;
-                window.farmApp.updateInventoryUI();
+                if(typeof window.farmApp.updateInventoryUI === 'function') window.farmApp.updateInventoryUI();
                 window.farmApp.saveState();
-            } else {
-                this.saveState();
             }
 
+            this.updateBalancesUI();
             this.renderShopItems();
             
             let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-            this.showPurchaseModal(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:');
+            this.showModalAlert(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:', 'success');
             
         } else {
-            const errorModal = document.getElementById('purchase-error-modal');
-            if (errorModal) {
-                document.getElementById('purchase-error-text').innerText = "No tienes Semillas (🌱) suficientes para realizar esta compra.";
-                errorModal.classList.remove('hidden');
-                errorModal.classList.add('flex');
-            }
+            this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', "No tienes Semillas (🌱) suficientes para realizar esta compra.");
         }
     },
 
-    async buyExchange(packageId) {
+    async buyExchange(packageId, priceCop, seedsAmount) {
         const username = sessionStorage.getItem('username');
         const token = sessionStorage.getItem('session_token');
-        if (!username || !token) return alert("Debes iniciar sesión para realizar cambios.");
+        if (!username || !token) return this.showModalAlert(null, 'Aviso', null, null, null, 'info', "Debes iniciar sesión para realizar cambios.");
         
         try {
             const res = await fetch('/api/store/buy_seeds', {
@@ -464,34 +464,25 @@ window.shopApp = {
                     window.farmApp.saveState();
                 }
                 
-                const balEl = document.getElementById('global-seeds-display');
-                if (balEl) balEl.innerText = data.new_seeds.toLocaleString() + " 🌱";
-                const copEl = document.getElementById('global-balance');
-                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
-
+                this.state.seedsBalance = data.new_seeds;
+                this.state.balance = data.new_balance_cop;
+                this.updateBalancesUI();
                 if(window.syncUserData) window.syncUserData(); 
 
                 let catItem = this.catalog.exchange.find(i => i.id === packageId);
-                this.showPurchaseModal(catItem.image, "Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()} CRÉDITOS`, 'Debitado:');
+                this.showModalAlert(catItem.image, "Lote de Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
             } else {
-                const errorModal = document.getElementById('purchase-error-modal');
-                if (errorModal) {
-                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo de Créditos Insuficiente. Completa torneos o encuestas.";
-                    errorModal.classList.remove('hidden');
-                    errorModal.classList.add('flex');
-                } else {
-                    alert("Error: " + data.error);
-                }
+                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de Créditos Insuficiente. Completa torneos o encuestas.");
             }
         } catch(e) {
-            alert("Error de conexión al procesar el cambio.");
+            this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
         }
     },
 
     async buyIAP(packageId) {
         const username = sessionStorage.getItem('username');
         const token = sessionStorage.getItem('session_token');
-        if (!username || !token) return alert("Debes iniciar sesión para realizar compras.");
+        if (!username || !token) return this.showModalAlert(null, 'Aviso', null, null, null, 'info', "Debes iniciar sesión para realizar compras.");
         
         try {
             const res = await fetch('/api/store/buy_seeds', {
@@ -506,9 +497,8 @@ window.shopApp = {
                     window.farmApp.state.balance = data.new_balance_cop;
                 }
                 
-                const copEl = document.getElementById('global-balance');
-                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
-
+                this.state.balance = data.new_balance_cop;
+                this.updateBalancesUI();
                 if(window.syncUserData) window.syncUserData(); 
 
                 if (packageId.startsWith('iap_')) {
@@ -549,66 +539,74 @@ window.shopApp = {
                         if (typeof window.farmApp.updateAutomationUI === 'function') {
                             window.farmApp.updateAutomationUI();
                         }
-                        window.farmApp.renderPlots(); 
+                        if(typeof window.farmApp.renderPlots === 'function') window.farmApp.renderPlots(); 
                         window.farmApp.saveState(); 
                     }
                     
                     let catItem = this.catalog.iap.find(i => i.id === packageId);
-                    this.showPurchaseModal(catItem.image, catItem.name, 1, `-$${catItem.price_cop.toLocaleString()} COP`, 'Debitado:');
+                    this.showModalAlert(catItem.image, catItem.name, 1, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
                 }
             } else {
-                const errorModal = document.getElementById('purchase-error-modal');
-                if (errorModal) {
-                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.";
-                    errorModal.classList.remove('hidden');
-                    errorModal.classList.add('flex');
-                } else {
-                    alert("Error: " + data.error);
-                }
+                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.");
             }
         } catch(e) {
-            alert("Error de conexión al procesar la compra.");
+            this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
         }
     },
 
-    showPurchaseModal(img, name, qty, priceText, priceLabel) {
-        const bg = document.getElementById('purchase-modal-bg');
-        const card = document.getElementById('purchase-modal-card');
-        const modal = document.getElementById('purchase-success-modal');
-        
-        document.getElementById('purchase-modal-img').src = img;
-        document.getElementById('purchase-modal-desc').innerHTML = `Has adquirido <strong class="text-cg_navy">${qty}x ${name}</strong>. Ya se encuentra en tu inventario.`;
-        document.getElementById('purchase-modal-label').innerText = priceLabel;
-        document.getElementById('purchase-modal-price').innerText = priceText;
+    showModalAlert(img, title, qty, priceText, priceLabel, type = 'info', descMsg = '') {
+        const modal = document.getElementById('shop-alert-modal');
+        const card = document.getElementById('shop-alert-card');
+        const iconCont = document.getElementById('shop-alert-icon-container');
+        const icon = document.getElementById('shop-alert-icon');
+        const imgEl = document.getElementById('shop-alert-img');
+        const ping = document.getElementById('shop-alert-ping');
+        const titleEl = document.getElementById('shop-alert-title');
+        const descEl = document.getElementById('shop-alert-msg');
+        const detailsBox = document.getElementById('shop-alert-details');
+        const btn = document.getElementById('shop-alert-btn');
+
+        titleEl.innerText = title;
+
+        if (type === 'success' && img) {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-emerald-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-20 h-20 bg-emerald-50 border-emerald-100 relative";
+            icon.classList.add('hidden');
+            imgEl.src = img;
+            imgEl.classList.remove('hidden');
+            ping.className = "absolute inset-0 rounded-full border border-emerald-300 animate-ping opacity-50";
+            
+            titleEl.className = "text-xl md:text-2xl font-black mb-2 tracking-tight text-emerald-600";
+            descEl.innerHTML = `Has adquirido <strong class="text-slate-800">${qty.toLocaleString()}x ${title}</strong>. Ya se encuentra activo o en tu inventario.`;
+            
+            detailsBox.classList.remove('hidden');
+            document.getElementById('shop-alert-label').innerText = priceLabel;
+            document.getElementById('shop-alert-price').innerText = priceText;
+            document.getElementById('shop-alert-price').className = priceText.includes('$') ? "text-sm md:text-base font-black text-rose-500" : "text-sm md:text-base font-black text-emerald-600";
+
+            btn.className = "w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-emerald-500 hover:bg-emerald-600 active:scale-95";
+        } else if (type === 'error') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-rose-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "mx-auto mb-4 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-rose-50 border-rose-100 relative";
+            icon.classList.remove('hidden');
+            icon.innerText = "❌";
+            imgEl.classList.add('hidden');
+            ping.className = "hidden";
+            
+            titleEl.className = "text-xl md:text-2xl font-black mb-2 tracking-tight text-rose-600";
+            descEl.innerText = descMsg;
+            detailsBox.classList.add('hidden');
+            
+            btn.className = "w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-rose-500 hover:bg-rose-600 active:scale-95";
+        }
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        
-        setTimeout(() => {
-            bg.classList.remove('opacity-0');
-            bg.classList.add('opacity-100');
-            card.classList.remove('scale-95', 'opacity-0');
-            card.classList.add('scale-100', 'opacity-100');
-        }, 10);
-
-        setTimeout(() => {
-            bg.classList.remove('opacity-100');
-            bg.classList.add('opacity-0');
-            card.classList.remove('scale-100', 'opacity-100');
-            card.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.remove('flex');
-                modal.classList.add('hidden');
-            }, 300);
-        }, 2500);
     },
 
-    saveState() {
-        if (window.farmApp && window.farmApp.state) {
-            window.farmApp.state.seedsBalance = this.state.seedsBalance;
-            window.farmApp.saveState(); 
-        }
+    closeAlertModal() {
+        document.getElementById('shop-alert-modal').classList.add('hidden');
+        document.getElementById('shop-alert-modal').classList.remove('flex');
     }
 };
 
