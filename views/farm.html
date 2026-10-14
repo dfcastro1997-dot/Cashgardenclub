@@ -2205,6 +2205,7 @@ if (typeof window.farmApp === 'undefined') {
             const plot = this.state.plots[plotId];
             let name, img, scoreText, limitText, penaltyText, rulesTitle;
             let pAtk = 0, pDef = 0, pHp = 0;
+            let pPrice = 0, pReward = 0; // <-- AÑADE ESTA LÍNEA AQUÍ ARRIBA
             let isCombatPlant = false;
             let limitTitle = "Rango de Supervivencia:";
 
@@ -2268,8 +2269,8 @@ if (typeof window.farmApp === 'undefined') {
                 isCombatPlant = true;
                 const pid = plot.plant.id;
                 
-                // Valores base por defecto
-                let pPrice = 0, pReward = 0;
+                pPrice = 0; 
+                pReward = 0;
                 
                 if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; pPrice = 5000; pReward = 1500; }
                 else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; pPrice = 2000; pReward = 3200; } 
