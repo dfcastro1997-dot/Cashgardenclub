@@ -1513,27 +1513,11 @@ window.combatApp = {
             });
         }
 
-        // Si todavía está vacío (ej: sin plantas en arsenal ni huerto, o recarga en pruebas):
-        if (this.playerTeam.length === 0) {
-            this.playerTeam = [
-                buildPlantObj('Chispa de Fuego', 'Chispa de Fuego', 'assets/Plantas/Chispa de Fuego.gif', true, 'ars_1', 100, 4, 45, 5),
-                buildPlantObj('Brote de Escarcha', 'Brote de Escarcha', 'assets/Plantas/Brote de Escarcha.gif', true, 'ars_2', 100, 6, 25, 20),
-                buildPlantObj('Zarza Chispeante', 'Zarza Chispeante', 'assets/Plantas/Zarza Chispeante.gif', true, 'ars_3', 100, 2, 50, 5)
-            ];
-        }
-
         let remainingArsenal = (window.farmApp.state.arsenal || []).filter(a => !usedArsenalIds.has(a.id) && a.hp > 0);
         remainingArsenal.slice(0, 2).forEach(ap => {
             usedArsenalIds.add(ap.id);
             this.playerReserve.push(buildPlantObj(ap.plantId, ap.name, ap.icon, true, ap.id, ap.hp, ap.wins, ap.atk, ap.def));
         });
-
-        if (this.playerReserve.length === 0) {
-            this.playerReserve = [
-                buildPlantObj('Arbusto Volcánico', 'Arbusto Volcánico', 'assets/Plantas/Arbusto Volcánico.gif', true, 'ars_res_1', 150, 2, 80, 12),
-                buildPlantObj('Helecho Congelado', 'Helecho Congelado', 'assets/Plantas/Helecho Congelado.gif', true, 'ars_res_2', 160, 3, 45, 30)
-            ];
-        }
 
         window.farmApp.state.combatLock = true;
         
