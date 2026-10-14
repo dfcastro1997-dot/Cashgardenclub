@@ -68,23 +68,32 @@
     }
 
     function calculateSellPrice(plant) {
-        let baseVal = 1000;
-        if (plant.plantId === 'flower_wheat') baseVal = 1500;
-        else if (plant.plantId === 'flower_bamboo') baseVal = 4000;
-        else if (plant.plantId === 'flower_cactus') baseVal = 2500;
-        else if (plant.plantId === 'flower_small') baseVal = 3000;
-        else if (plant.plantId === 'flower_big') baseVal = 8000;
-        else if (plant.plantId === 'flower_crystal') baseVal = 5000;
-        else if (plant.plantId === 'flower_moon') baseVal = 12000;
-        else if (plant.plantId === 'flower_solar') baseVal = 7000;
-        else if (plant.plantId === 'flower_neon') baseVal = 9000;
-        else if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
-            baseVal = Math.floor((window.farmApp.state.dynamicPlants[plant.plantId].price || 2000) * 0.4);
+        let shopPrice = 2000; // Precio por defecto si no se encuentra
+
+        // 1. Asignamos el precio exacto de la tienda (Mercado) para las plantas base
+        if (plant.plantId === 'flower_wheat') shopPrice = 5000;
+        else if (plant.plantId === 'flower_bamboo') shopPrice = 4000;
+        else if (plant.plantId === 'flower_cactus') shopPrice = 2000;
+        else if (plant.plantId === 'flower_small') shopPrice = 3000;
+        else if (plant.plantId === 'flower_big') shopPrice = 12000;
+        else if (plant.plantId === 'flower_crystal') shopPrice = 8000;
+        else if (plant.plantId === 'flower_moon') shopPrice = 15000;
+        else if (plant.plantId === 'flower_solar') shopPrice = 5000;
+        else if (plant.plantId === 'flower_neon') shopPrice = 12000;
+
+        // 2. Si es una planta dinámica creada desde el admin, tomamos su precio exacto de la base de datos
+        if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
+            shopPrice = window.farmApp.state.dynamicPlants[plant.plantId].price || shopPrice;
         }
         
-        // El precio depende de la salud de la planta. Si está medio muerta, vale la mitad.
+        // 3. El valor base de venta será el 50% de su valor original en la tienda
+        let baseVal = shopPrice * 0.5;
+
+        // 4. El precio final depende de la salud (HP) actual de la planta. 
+        // Si está a punto de morir (ej. 11/120 HP), su valor se desploma.
         let hpFactor = plant.hp / plant.maxHp;
-        // Bono heroico: +15% del valor por cada victoria que la planta tenga.
+        
+        // 5. Bono heroico: +15% extra por cada victoria en la arena.
         let winBonus = 1 + ((plant.wins || 0) * 0.15); 
         
         return Math.floor(baseVal * hpFactor * winBonus);
@@ -115,14 +124,31 @@
             const isInjured = plant.hp < plant.maxHp;
             const winsBadge = (plant.wins && plant.wins > 0) ? `<div class="absolute top-3 left-3 bg-cg_gold text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm border border-yellow-300 uppercase tracking-widest z-20">🏆 ${plant.wins} Victorias</div>` : '';
             const sellPrice = calculateSellPrice(plant);
+
+            // --- NUEVO: OBTENER EL PRECIO ORIGINAL DE MERCADO ---
+            let shopPrice = 2000;
+            if (plant.plantId === 'flower_wheat') shopPrice = 5000;
+            else if (plant.plantId === 'flower_bamboo') shopPrice = 4000;
+            else if (plant.plantId === 'flower_cactus') shopPrice = 2000;
+            else if (plant.plantId === 'flower_small') shopPrice = 3000;
+            else if (plant.plantId === 'flower_big') shopPrice = 12000;
+            else if (plant.plantId === 'flower_crystal') shopPrice = 8000;
+            else if (plant.plantId === 'flower_moon') shopPrice = 15000;
+            else if (plant.plantId === 'flower_solar') shopPrice = 5000;
+            else if (plant.plantId === 'flower_neon') shopPrice = 12000;
+
+            if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
+                shopPrice = window.farmApp.state.dynamicPlants[plant.plantId].price || shopPrice;
+            }
+            // -----------------------------------------------------------
             
-            // --- NUEVA LÓGICA: DETECCIÓN DEL TERRENO SEGÚN LA PLANTA ---
+            // --- DETECCIÓN DEL TERRENO SEGÚN LA PLANTA ---
             let currentTerrain = 'assets/Fondos/terreno_vacio.png';
             if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
                 let cat = window.farmApp.state.dynamicPlants[plant.plantId].category;
                 if (cat && cat.startsWith('Plantas ')) {
                     let typeName = cat.replace('Plantas ', '').trim();
-                    if (typeName === 'Ígneas') typeName = 'Igneo'; // Excepción para el nombre del archivo
+                    if (typeName === 'Ígneas') typeName = 'Igneo'; 
                     currentTerrain = `assets/Fondos/terreno_${typeName}.png`;
                 }
             }
@@ -133,7 +159,7 @@
                     <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full opacity-50 z-0"></div>
                     ${winsBadge}
                     
-                    <!-- CONTENEDOR VISUAL MODIFICADO CON EL TERRENO DE FONDO -->
+                    <!-- CONTENEDOR VISUAL -->
                     <div class="flex items-center justify-center w-full h-28 sm:h-32 mb-3 relative z-10 group">
                         <img src="${currentTerrain}" class="absolute h-20 sm:h-24 w-auto object-contain drop-shadow-sm mt-6">
                         <img src="${plant.icon}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md group-hover:scale-110 transition-transform ${isInjured ? 'opacity-80' : ''} relative z-10 mb-2">
@@ -149,7 +175,7 @@
                         ${isInjured ? '<span class="text-blue-500 animate-pulse">Curando...</span>' : '<span class="text-green-500">Sana</span>'}
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 text-center relative z-10 mb-4">
+                    <div class="grid grid-cols-2 gap-2 text-center relative z-10 mb-2">
                         <div class="bg-orange-50 rounded-lg p-1.5 sm:p-2 border border-orange-100">
                             <span class="block text-[9px] sm:text-[10px] font-bold text-orange-400 uppercase">ATK</span>
                             <span class="font-black text-orange-600 text-sm">${plant.atk}</span>
@@ -158,6 +184,12 @@
                             <span class="block text-[9px] sm:text-[10px] font-bold text-blue-400 uppercase">DEF</span>
                             <span class="font-black text-blue-600 text-sm">${plant.def}%</span>
                         </div>
+                    </div>
+                    
+                    <!-- NUEVA CAJA: VALOR EN MERCADO -->
+                    <div class="bg-gray-50 rounded-lg p-1.5 sm:p-2 border border-gray-200 text-center relative z-10 mb-4">
+                        <span class="block text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Valor en Mercado</span>
+                        <span class="font-black text-cg_navy text-sm">${shopPrice.toLocaleString()} 🌱</span>
                     </div>
                     
                     <button onclick="sellArsenalPlant('${plant.id}')" class="mt-auto w-full bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 border border-gray-200 hover:border-red-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10">
