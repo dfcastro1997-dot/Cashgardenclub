@@ -19,7 +19,10 @@
     </div>
 
     <!-- FILTROS (SOLO VISIBLES EN PESTAÑA FLORES) -->
-    <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-4 gap-3 mb-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
+    <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-5 gap-3 mb-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
+        <!-- NUEVO: CAMPO DE BÚSQUEDA POR NOMBRE -->
+        <input type="text" id="filter-name" oninput="window.shopApp.renderShopItems('flowers')" placeholder="Buscar planta..." class="w-full col-span-2 md:col-span-1 bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue shadow-inner">
+        
         <select id="filter-category" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
             <option value="all">Todas las Categorías</option>
             <option value="Planta Estándar">Plantas Estándar</option>
@@ -209,6 +212,7 @@ window.shopApp = {
 
         // APLICACIÓN DE FILTROS PARA SEMILLAS Y FLORES
         if (tab === 'flowers') {
+            const nameFilter = document.getElementById('filter-name') ? document.getElementById('filter-name').value.toLowerCase().trim() : '';
             const catFilter = document.getElementById('filter-category').value;
             const priceFilter = document.getElementById('filter-price').value;
             const potFilter = document.getElementById('filter-pot').value;
@@ -216,6 +220,10 @@ window.shopApp = {
 
             items = items.filter(item => {
                 let match = true;
+                
+                // NUEVO: Filtro por nombre
+                if (nameFilter !== '' && !item.name.toLowerCase().includes(nameFilter)) match = false;
+                
                 if (catFilter !== 'all' && item.category !== catFilter) match = false;
                 if (priceFilter === 'low' && item.price >= 2000) match = false;
                 if (priceFilter === 'med' && (item.price < 2000 || item.price > 10000)) match = false;
