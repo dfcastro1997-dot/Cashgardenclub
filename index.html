@@ -175,57 +175,64 @@
         <div class="absolute inset-0 z-0 opacity-10 bg-cover bg-center bg-no-repeat pointer-events-none fixed" style="background-image: url('assets/Fondos/dashboard_bg.jpg');"></div>
         
         <!-- TOP NAVBAR -->
-        <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-[150]">
+        <header class="bg-white border-b border-gray-200 sticky top-0 w-full z-[150] shadow-sm">
             <div class="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 shrink-0">
-                    <img src="assets/Fondos/logo.png" alt="CashGarden Logo" class="h-8 sm:h-10 w-auto">
+                    <img src="assets/Fondos/logo.png" alt="CashGarden Logo" class="h-8 sm:h-11 w-auto hover:scale-105 transition-transform duration-300">
                 </div>
                 
-                <nav class="hidden lg:flex items-center gap-2 h-full">
-                    <button onclick="loadView('farm', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-cg_gold border-b-2 border-cg_gold transition-all">
+                <nav class="hidden lg:flex items-center gap-1 h-full">
+                    <button onclick="loadView('farm', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-cg_gold border-b-[3px] border-cg_gold transition-all">
                         <span>Granja</span>
                     </button>
-                    <button onclick="loadView('shop', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                    <button onclick="loadView('shop', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-cg_gold transition-all">
                         <span>Mercado</span>
                     </button>
-                    <button onclick="loadView('nutrients', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                    <button onclick="loadView('nutrients', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-cg_gold transition-all">
                         <span>Torneos</span>
                     </button>
-                    <button onclick="loadView('arbol', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-green-600 transition-all">
+                    <button onclick="loadView('arbol', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-green-600 transition-all">
                         <span>Árbol</span>
                     </button>
-                    <button onclick="loadView('instructions', this)" class="nav-btn-desktop h-full px-5 flex items-center gap-2 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-cg_gold transition-all">
+                    <button onclick="loadView('instructions', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-cg_gold transition-all">
                         <span>Instrucciones</span>
                     </button>
                 </nav>
 
                 <!-- RECURSOS Y USUARIO (Responsive) -->
-                <div class="flex items-center gap-2 sm:gap-5 shrink-0">
-                    <div class="flex items-center gap-1.5 sm:gap-3 bg-gray-50 p-1 sm:p-1.5 rounded-xl border border-gray-100">
-                        <div onclick="showSeedsHistory()" class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-green-200 shadow-sm relative cursor-pointer hover:bg-green-50 hover:border-green-400 transition-colors group">
-                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 group-hover:text-green-600 hidden sm:inline transition-colors">SEMILLAS</span>
-                            <span id="global-seeds-display" class="text-[11px] sm:text-sm font-extrabold text-green-600 transition-all duration-300">0 🌱</span>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full animate-bounce shadow-md">i</span>
+                <div class="flex items-center gap-3 sm:gap-6 shrink-0">
+                    
+                    <!-- Contenedor Unificado de Recursos -->
+                    <div class="flex items-center gap-2 bg-gray-50/80 p-1 sm:p-1.5 rounded-[1rem] sm:rounded-2xl border border-gray-100 shadow-inner hidden min-[360px]:flex">
+                        <div onclick="showSeedsHistory()" class="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-green-200 shadow-sm relative cursor-pointer hover:bg-green-50 hover:border-green-400 transition-colors group">
+                            <span class="text-[9px] sm:text-[10px] font-black text-gray-400 group-hover:text-green-600 hidden xl:inline transition-colors uppercase tracking-widest">Semillas</span>
+                            <span id="global-seeds-display" class="text-xs sm:text-sm font-black text-green-600 transition-all duration-300">0 🌱</span>
+                            <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full animate-bounce shadow-md">i</span>
                         </div>
-                        <div class="flex items-center gap-1 sm:gap-2 bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-cg_yellow shadow-sm relative cursor-pointer" onclick="syncUserData()">
-                            <span class="text-[10px] sm:text-sm font-bold text-gray-400 hidden sm:inline">CRÉDITOS</span>
-                            <span id="global-balance" class="text-[11px] sm:text-sm font-extrabold text-cg_gold transition-all duration-300">$0</span>
+                        <div class="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-yellow-300 shadow-sm relative cursor-pointer hover:bg-yellow-50 hover:border-yellow-400 transition-colors" onclick="syncUserData()">
+                            <span class="text-[9px] sm:text-[10px] font-black text-gray-400 hidden xl:inline uppercase tracking-widest">Créditos</span>
+                            <span id="global-balance" class="text-xs sm:text-sm font-black text-cg_gold transition-all duration-300">$0</span>
                         </div>
                     </div>
-                    <div class="w-px h-6 sm:h-8 bg-gray-200 hidden md:block"></div>
+                    
+                    <div class="w-px h-8 sm:h-10 bg-gray-200 hidden lg:block"></div>
                     
                     <div class="relative">
-                            <button onclick="toggleUserMenu(event)" class="flex items-center gap-2 sm:gap-3 focus:outline-none hover:opacity-80 transition-opacity">
-                                <div id="profile-avatar" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center overflow-hidden">
-                                    <img src="assets/Fondos/logo.png" alt="Perfil" class="w-full h-full object-cover">
-                                </div>
-                                <div class="hidden md:block text-left">
-                                    <p class="text-sm font-bold text-cg_navy leading-tight flex items-center gap-1"><span id="profile-name">Usuario</span> <span class="text-[10px] text-gray-400">▼</span></p>
-                                </div>
-                            </button>
+                        <button onclick="toggleUserMenu(event)" class="flex items-center gap-2 sm:gap-3 focus:outline-none hover:bg-gray-50 p-1.5 rounded-full md:rounded-2xl transition-all border border-transparent hover:border-gray-200">
+                            <!-- Avatar ampliado -->
+                            <div id="profile-avatar" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white border-2 border-gray-200 shadow-sm flex items-center justify-center overflow-hidden shrink-0 transition-transform hover:scale-105">
+                                <img src="assets/Fondos/logo.png" alt="Perfil" class="w-full h-full object-cover">
+                            </div>
+                            <!-- Datos del Jugador Profesionalizados -->
+                            <div class="hidden md:flex items-center gap-2 pr-1">
+                                <p class="text-sm font-black text-cg_navy leading-none" id="profile-name">Usuario</p>
+                                <span id="profile-id" class="bg-gray-50 text-gray-500 font-bold px-1.5 py-0.5 rounded text-[10px] border border-gray-200 shadow-sm tracking-wider">#0000</span>
+                                <span class="text-[10px] text-gray-400 ml-1">▼</span>
+                            </div>
+                        </button>
                             
-                            <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[999] transition-all">
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[999] transition-all">
                             <div class="p-4 border-b border-gray-50 bg-gray-50/50">
                                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tu Cuenta</p>
                                 <p class="text-sm font-black text-cg_navy truncate" id="dropdown-username">usuario@cashgarden.com</p>
@@ -258,8 +265,6 @@
                                     </div>
                                     <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.3" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-cg_blue" oninput="changeMusicVolume(this.value)">
                                 </div>
-
-
                             </div>
                             <div class="py-2 border-t border-gray-100">
                                 <button onclick="logout()" class="w-full text-left px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-3">
@@ -672,7 +677,12 @@
             const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
             const shortId = userData.short_id || '0000';
             
-            document.getElementById('profile-name').innerHTML = `${name} <span class="bg-gray-100 border border-gray-200 text-gray-500 px-1.5 py-0.5 rounded text-[10px] ml-1">#${shortId}</span>`;
+            // Asignación Profesional de Elementos
+            const nameEl = document.getElementById('profile-name');
+            const idEl = document.getElementById('profile-id');
+            if (nameEl) nameEl.innerText = name;
+            if (idEl) idEl.innerText = `#${shortId}`;
+            
             document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
             
             const avatarImg = document.querySelector('#profile-avatar img');
