@@ -15,14 +15,6 @@
                 <p class="text-xs text-slate-500 font-medium mt-1.5 hidden md:block">Equípate con herramientas, adquiere nuevas especies o automatiza tu granja con servicios premium.</p>
             </div>
         </div>
-        
-        <div class="bg-slate-50 border border-slate-200 px-5 py-3 rounded-2xl flex flex-col gap-1 w-full md:w-auto shadow-inner text-right min-w-[200px]">
-            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Poder Adquisitivo</span>
-            <div class="flex items-center justify-end gap-3 mt-1">
-                <span class="text-sm font-black text-green-600 bg-white px-2 py-1 rounded shadow-sm border border-gray-100" id="shop-seeds-display">0 🌱</span>
-                <span class="text-sm font-black text-cg_gold bg-white px-2 py-1 rounded shadow-sm border border-gray-100" id="shop-cop-display">$0</span>
-            </div>
-        </div>
     </div>
 
     <!-- PANEL DE FILTROS AVANZADOS -->
@@ -42,9 +34,9 @@
             <select id="filter-type" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
                 <option value="all">📦 Todos los Tipos</option>
                 <option value="tools">🛠️ Herramientas y Defensa</option>
-                <option value="flowers">🌿 Semillas Botánicas</option>
                 <option value="iap">⭐ Servicios VIP (Automáticos)</option>
                 <option value="exchange">💰 Casa de Cambio (Packs)</option>
+                <option value="flowers">🌿 Semillas Botánicas</option>
             </select>
 
             <!-- Categoría Botánica -->
@@ -118,10 +110,8 @@ window.shopApp = {
     catalog: {
         tools: [
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla de tamaño pequeño.', price: 5000 },
-            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'assets/Herramientas_y_Servicios/maceta_grande.png', duration: '10 Siembras', usage: '1', desc: 'Soporta cualquier planta, obligatoria para especies gigantes.', price: 15000 },
             { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual.', price: 500 },
-            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: '1 Parcela', desc: 'Protección preventiva contra plagas. Cura al instante.', price: 6000 },
-            { id: 'tool_duel_ticket', name: 'Ticket de Duelo', image: 'assets/Herramientas_y_Servicios/ticket_duelo.png', duration: '1 Partida', usage: 'Arena PvE', desc: 'Permite el acceso a la campaña contra los cuervos.', price: 2000 }
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: '1 Parcela', desc: 'Protección preventiva contra plagas. Cura al instante.', price: 6000 }
         ],
         flowers: [],
         iap: [
@@ -133,9 +123,9 @@ window.shopApp = {
             { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/PaseVip.png', duration: '7 Días', usage: 'Todo Incl.', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
         ],
         exchange: [
-            { id: 'exc_10k', name: 'Lote Básico', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección rápida de capital vegetal para empezar.', price_cop: 10000, seeds: 4250 },
-            { id: 'exc_25k', name: 'Lote Profesional', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Inyección moderada de capital para agricultores en expansión.', price_cop: 25000, seeds: 11000 },
-            { id: 'exc_50k', name: 'Lote Élite Magnate', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Monto élite para expansión seria del invernadero.', price_cop: 50000, seeds: 22500 }
+            { id: 'exc_10k', name: 'Lote Básico', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 4,250 🌱 semillas.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote Profesional', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 11,000 🌱 semillas.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote Élite Magnate', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 22,500 🌱 semillas.', price_cop: 50000, seeds: 22500 }
         ]
     },
 
@@ -169,15 +159,10 @@ window.shopApp = {
     },
 
     updateBalancesUI() {
-        const seedEl = document.getElementById('shop-seeds-display');
-        const copEl = document.getElementById('shop-cop-display');
         const globalSeedEl = document.getElementById('global-seeds-display');
         const globalCopEl = document.getElementById('global-balance');
 
-        if (seedEl) seedEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         if (globalSeedEl) globalSeedEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
-
-        if (copEl) copEl.innerText = "$" + this.state.balance.toLocaleString();
         if (globalCopEl) globalCopEl.innerText = "$" + this.state.balance.toLocaleString();
     },
 
@@ -185,12 +170,12 @@ window.shopApp = {
         const container = document.getElementById('shop-main-grid');
         container.innerHTML = '';
 
-        // 1. Unificar todos los catálogos con una marca interna
+        // 1. Unificar todos los catálogos con una marca interna en el ORDEN solicitado
         let allItems = [
             ...this.catalog.tools.map(i => ({...i, _type: 'tools'})),
-            ...this.catalog.flowers.map(i => ({...i, _type: 'flowers'})),
             ...this.catalog.iap.map(i => ({...i, _type: 'iap'})),
-            ...this.catalog.exchange.map(i => ({...i, _type: 'exchange'}))
+            ...this.catalog.exchange.map(i => ({...i, _type: 'exchange'})),
+            ...this.catalog.flowers.map(i => ({...i, _type: 'flowers'}))
         ];
 
         // 2. Obtener valores de los filtros
@@ -247,7 +232,7 @@ window.shopApp = {
             let actionArea = '';
             let stockBadge = '';
 
-            // Mostrar stock solo si no es un pase temporal
+            // Mostrar stock solo si no es un pase temporal ni exchange
             if (item._type === 'tools' || item._type === 'flowers') {
                 stockBadge = `
                     <div class="flex flex-col items-center border border-gray-200 px-2 py-1 rounded-lg bg-white/90 backdrop-blur shadow-sm min-w-[3.5rem]">
@@ -259,7 +244,7 @@ window.shopApp = {
             if (item._type === 'iap') {
                 actionArea = `<button onclick="window.shopApp.buyIAP('${item.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
             } else if (item._type === 'exchange') {
-                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Cambiar ${item.seeds.toLocaleString()} 🌱</button>`;
+                actionArea = `<button onclick="window.shopApp.buyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
             } else {
                 actionArea = `
                     <div class="flex items-center gap-2 mt-auto">
@@ -472,7 +457,7 @@ window.shopApp = {
                 let catItem = this.catalog.exchange.find(i => i.id === packageId);
                 this.showModalAlert(catItem.image, "Lote de Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
             } else {
-                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de Créditos Insuficiente. Completa torneos o encuestas.");
+                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de CRÉDITOS Insuficiente. Completa torneos o encuestas.");
             }
         } catch(e) {
             this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
@@ -547,7 +532,7 @@ window.shopApp = {
                     this.showModalAlert(catItem.image, catItem.name, 1, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
                 }
             } else {
-                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo COP Insuficiente. Completa torneos o encuestas.");
+                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de CRÉDITOS Insuficiente. Completa torneos o encuestas.");
             }
         } catch(e) {
             this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
