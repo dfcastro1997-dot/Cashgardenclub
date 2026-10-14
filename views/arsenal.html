@@ -21,14 +21,18 @@
         const now = Date.now();
         let updated = false;
         
+        const hasVipHeal = window.farmApp.state.vipHealEndTime && window.farmApp.state.vipHealEndTime > now;
+        const healMultiplier = hasVipHeal ? 3 : 1;
+        
         window.farmApp.state.arsenal.forEach(plant => {
             if (plant.hp < plant.maxHp && plant.lastRecover) {
-                // Recuperar 1 HP por minuto (60000ms) sin conexión ni coste
                 const elapsedMs = now - plant.lastRecover;
-                const hpToRecover = Math.floor(elapsedMs / 60000);
+                const minutesPassed = Math.floor(elapsedMs / 60000);
+                const hpToRecover = minutesPassed * healMultiplier;
+                
                 if (hpToRecover > 0) {
                     plant.hp = Math.min(plant.maxHp, plant.hp + hpToRecover);
-                    plant.lastRecover = now; // Reinicia el ancla
+                    plant.lastRecover += (minutesPassed * 60000); 
                     updated = true;
                 }
             } else if (!plant.lastRecover) {
@@ -98,6 +102,43 @@
         
         return Math.floor(baseVal * hpFactor * winBonus);
     }
+
+
+    function calculateHealCost(plant) {
+        let basePrice = calculateSellPrice({ ...plant, hp: plant.maxHp, wins: 0 }) * 2; 
+        let missingHpPct = 1 - (plant.hp / plant.maxHp);
+        let healCost = Math.floor(basePrice * 0.25 * missingHpPct);
+        return Math.max(50, healCost);
+    }
+
+    function healArsenalPlant(plantId) {
+        if (!window.farmApp || !window.farmApp.state.arsenal) return;
+        
+        const plant = window.farmApp.state.arsenal.find(p => p.id === plantId);
+        if (!plant || plant.hp >= plant.maxHp) return;
+        
+        const cost = calculateHealCost(plant);
+        
+        if (window.farmApp.state.seedsBalance >= cost) {
+            if (confirm(`¿Pagar ${cost.toLocaleString()} 🌱 para restaurar la salud de ${plant.name} al 100%?`)) {
+                window.farmApp.state.seedsBalance -= cost;
+                plant.hp = plant.maxHp;
+                plant.lastRecover = Date.now();
+                window.farmApp.saveState();
+                
+                const balEl = document.getElementById('global-seeds-display');
+                if (balEl) {
+                    balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+                    balEl.classList.add('text-red-500', 'scale-110');
+                    setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
+                }
+                renderArsenal();
+            }
+        } else {
+            alert("No tienes suficientes semillas (🌱) para curar a esta planta.");
+        }
+    }
+
 
     function renderArsenal() {
         processArsenalRecovery();
@@ -191,6 +232,14 @@
                         <span class="block text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Valor en Mercado</span>
                         <span class="font-black text-cg_navy text-sm">${shopPrice.toLocaleString()} 🌱</span>
                     </div>
+                    
+                    <!-- NUEVO BOTÓN CURAR (Aparece solo si le falta vida) -->
+                    ${isInjured ? `
+                    <button onclick="healArsenalPlant('${plant.id}')" class="mb-2 w-full bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 border border-green-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10 flex items-center justify-center gap-1.5">
+                        <img src="assets/Herramientas_y_Servicios/pocion.png" class="w-4 h-4 object-contain">
+                        Curar: ${calculateHealCost(plant).toLocaleString()} 🌱
+                    </button>
+                    ` : ''}
                     
                     <button onclick="sellArsenalPlant('${plant.id}')" class="mt-auto w-full bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 border border-gray-200 hover:border-red-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10">
                         Vender: ${sellPrice.toLocaleString()} 🌱

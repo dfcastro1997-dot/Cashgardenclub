@@ -20,9 +20,7 @@
 
     <!-- FILTROS (SOLO VISIBLES EN PESTAÑA FLORES) -->
     <div id="flowers-filters" class="hidden grid-cols-2 md:grid-cols-5 gap-3 mb-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all animate-fade-in mt-4">
-        <!-- NUEVO: CAMPO DE BÚSQUEDA POR NOMBRE -->
         <input type="text" id="filter-name" oninput="window.shopApp.renderShopItems('flowers')" placeholder="Buscar planta..." class="w-full col-span-2 md:col-span-1 bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue shadow-inner">
-        
         <select id="filter-category" onchange="window.shopApp.renderShopItems('flowers')" class="w-full bg-gray-50 border border-gray-200 text-cg_navy px-3 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-cg_blue cursor-pointer shadow-inner">
             <option value="all">Todas las Categorías</option>
             <option value="Planta Estándar">Plantas Estándar</option>
@@ -68,7 +66,7 @@
     <div id="page-content-iap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
     <div id="page-content-exchange" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 hidden"></div>
 
-    <!-- VENTANA MODAL DE ERROR (FONDOS INSUFICIENTES) -->
+    <!-- VENTANAS MODALES -->
     <div id="purchase-error-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity duration-300" onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center border border-red-500 animate-fade-in">
@@ -76,14 +74,13 @@
                 <span class="text-3xl md:text-4xl relative z-10 drop-shadow-md">⚠️</span>
             </div>
             <h3 class="text-xl md:text-2xl font-black text-cg_navy mb-1">Operación Fallida</h3>
-            <p id="purchase-error-text" class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes saldo suficiente para realizar esta compra.</p>
+            <p id="purchase-error-text" class="text-xs md:text-sm font-bold text-gray-500 mb-5 md:mb-6">No tienes saldo suficiente.</p>
             <button onclick="document.getElementById('purchase-error-modal').classList.replace('flex', 'hidden')" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3 md:py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] md:text-xs">
                 Aceptar
             </button>
         </div>
     </div>
 
-    <!-- VENTANA MODAL TEMPORAL DE COMPRA -->
     <div id="purchase-success-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 pointer-events-none">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="purchase-modal-bg"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 md:p-8 flex flex-col items-center text-center transform scale-95 opacity-0 transition-all duration-300 border border-gray-100" id="purchase-modal-card">
@@ -112,20 +109,18 @@ window.shopApp = {
     catalog: {
         tools: [
             { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla.', price: 5000 },
-            { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual en el minijuego de riego.', price: 500 },
+            { id: 'tool_pot_big', name: 'Maceta Grande', image: 'assets/Herramientas_y_Servicios/maceta_grande.png', duration: '10 Siembras', usage: '1', desc: 'Obligatoria para semillas gigantes.', price: 15000 },
+            { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual.', price: 500 },
             { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: 'Global', desc: 'Protección preventiva contra plagas.', price: 6000 }
         ],
-        flowers: [
-            // Las plantas estáticas han sido removidas. 
-            // Las plantas dinámicas se inyectarán automáticamente desde la BD.
-        ],
+        flowers: [],
         iap: [
-            { id: 'iap_water_24h', name: 'Auto-Riego 24H', image: 'assets/Herramientas_y_Servicios/auto_riego.png', duration: '24 Horas', usage: 'Automatización', desc: 'Riego perfecto automatizado.', price_cop: 5000 },
-            { id: 'iap_water_72h', name: 'Auto-Riego 72H', image: 'assets/Herramientas_y_Servicios/auto_riego.png', duration: '3 Días', usage: 'Automatización', desc: 'Riego perfecto automatizado.', price_cop: 12000 },
-            { id: 'iap_harvest_24h', name: 'El Recolector 24H', image: 'assets/Herramientas_y_Servicios/recolector.png', duration: '24 Horas', usage: 'Recolección', desc: 'Cosecha tus plantas en cuanto maduran.', price_cop: 4000 },
-            { id: 'iap_harvest_72h', name: 'El Recolector 72H', image: 'assets/Herramientas_y_Servicios/recolector.png', duration: '3 Días', usage: 'Recolección', desc: 'Cosecha tus plantas en cuanto maduran.', price_cop: 10000 },
-            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '24 Horas', usage: 'Combo Total', desc: 'Auto-riego y recolección unidos.', price_cop: 7500 },
-            { id: 'iap_combo_72h', name: 'Pase Granjero 72H', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '3 Días', usage: 'Combo Total', desc: 'Auto-riego y recolección unidos.', price_cop: 18000 }
+            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '24 Horas', usage: 'Automatización Total', desc: 'Riego y recolección perfectos automatizados.', price_cop: 7500 },
+            { id: 'iap_combo_72h', name: 'Pase Granjero 3 Días', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '3 Días', usage: 'Automatización Total', desc: 'Riego y recolección perfectos. ¡Más Popular!', price_cop: 18000 },
+            { id: 'iap_combo_7d', name: 'Pase Granjero 7 Días', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '7 Días', usage: 'Automatización Total', desc: 'Riego y recolección perfectos. ¡Ahorra 40%!', price_cop: 30000 },
+            { id: 'iap_nursery_72h', name: 'Enfermería VIP 3 Días', image: 'assets/Herramientas_y_Servicios/Enfermeria.png', duration: '3 Días', usage: 'Curación Rápida', desc: 'Tus plantas en el Arsenal se curan el TRIPLE de rápido.', price_cop: 8000 },
+            { id: 'iap_nursery_7d', name: 'Enfermería VIP 7 Días', image: 'assets/Herramientas_y_Servicios/Enfermeria.png', duration: '7 Días', usage: 'Curación Rápida', desc: 'Curación x3. Ideal para luchadores constantes.', price_cop: 15000 },
+            { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/combo_vip.png', duration: '7 Días', usage: 'Todo Incluido', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
         ],
         exchange: [
             { id: 'exc_10k', name: 'Lote N°1', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Instantáneo', usage: 'Consumible', desc: 'Inyección rápida de capital vegetal.', price_cop: 10000, seeds: 4250 },
@@ -140,35 +135,23 @@ window.shopApp = {
             this.state.inventory = window.farmApp.state.inventory;
         }
         
-        // --- CÓDIGO NUEVO: CARGAR PLANTAS DINÁMICAS DESDE LA BD ---
         try {
             const res = await fetch('/api/plants');
             if (res.ok) {
                 const dynamicPlants = await res.json();
                 dynamicPlants.forEach(dp => {
-                    // Evitar duplicados si ya existen en el array
                     if (!this.catalog.flowers.some(f => f.id === dp.id)) {
                         this.catalog.flowers.push({
-                            id: dp.id,
-                            name: dp.name,
-                            image: dp.image_url,
-                            duration: dp.grow_time_minutes + ' Minutos',
-                            durationMins: dp.grow_time_minutes,
-                            usage: '1',
-                            desc: 'Especie única criada en nuestros laboratorios.',
-                            category: dp.category || 'Planta Estándar', // <-- FIX: Aquí solo guarda el nombre, no "Categoría: X"
-                            potType: dp.pot_type || 'small',
-                            price: dp.price,
-                            hp: dp.hp,
-                            atk: dp.atk,
-                            def: dp.def,
-                            reward: dp.reward
+                            id: dp.id, name: dp.name, image: dp.image_url,
+                            duration: dp.grow_time_minutes + ' Minutos', durationMins: dp.grow_time_minutes,
+                            usage: '1', desc: 'Especie única criada en nuestros laboratorios.',
+                            category: dp.category || 'Planta Estándar', potType: dp.pot_type || 'small',
+                            price: dp.price, hp: dp.hp, atk: dp.atk, def: dp.def, reward: dp.reward
                         });
                     }
                 });
             }
-        } catch(e) { console.error("Error cargando plantas dinámicas", e); }
-        // -----------------------------------------------------------
+        } catch(e) {}
         
         document.getElementById('global-seeds-display').innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
         this.switchTab('tools');
@@ -210,7 +193,6 @@ window.shopApp = {
         container.innerHTML = '';
         let items = this.catalog[tab];
 
-        // APLICACIÓN DE FILTROS PARA SEMILLAS Y FLORES
         if (tab === 'flowers') {
             const nameFilter = document.getElementById('filter-name') ? document.getElementById('filter-name').value.toLowerCase().trim() : '';
             const catFilter = document.getElementById('filter-category').value;
@@ -220,20 +202,15 @@ window.shopApp = {
 
             items = items.filter(item => {
                 let match = true;
-                
-                // NUEVO: Filtro por nombre
                 if (nameFilter !== '' && !item.name.toLowerCase().includes(nameFilter)) match = false;
-                
                 if (catFilter !== 'all' && item.category !== catFilter) match = false;
                 if (priceFilter === 'low' && item.price >= 2000) match = false;
                 if (priceFilter === 'med' && (item.price < 2000 || item.price > 10000)) match = false;
                 if (priceFilter === 'high' && item.price <= 10000) match = false;
                 if (potFilter !== 'all' && item.potType !== potFilter) match = false;
-                
                 if (durFilter === 'fast' && item.durationMins >= 60) match = false;
                 if (durFilter === 'med' && (item.durationMins < 60 || item.durationMins > 300)) match = false;
                 if (durFilter === 'slow' && item.durationMins <= 300) match = false;
-                
                 return match;
             });
             
@@ -255,24 +232,13 @@ window.shopApp = {
             const card = document.createElement('div');
             card.className = 'bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col group';
             
-            // --- NUEVO: CONFIGURACIÓN DE LA ETIQUETA SUPERIOR IZQUIERDA POR CATEGORÍA ---
             let tag = '';
             let tagStyle = '';
             
-            if (tab === 'flowers') {
-                tag = item.category ? item.category : 'Semilla';
-                tagStyle = 'bg-cg_blue text-white border-blue-400';
-            } else if (tab === 'tools') {
-                tag = 'Herramienta';
-                tagStyle = 'bg-white text-gray-600 border-gray-200';
-            } else if (tab === 'exchange') {
-                tag = 'Cambio COP';
-                tagStyle = 'bg-white text-gray-600 border-gray-200';
-            } else {
-                tag = 'Servicio Premium';
-                tagStyle = 'bg-white text-gray-600 border-gray-200';
-            }
-            // ----------------------------------------------------------------------------
+            if (tab === 'flowers') { tag = item.category ? item.category : 'Semilla'; tagStyle = 'bg-cg_blue text-white border-blue-400'; } 
+            else if (tab === 'tools') { tag = 'Herramienta'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
+            else if (tab === 'exchange') { tag = 'Cambio COP'; tagStyle = 'bg-white text-gray-600 border-gray-200'; } 
+            else { tag = 'Servicio Premium'; tagStyle = 'bg-white text-gray-600 border-gray-200'; }
             
             let actionArea = '';
             let stockBadge = '';
@@ -317,7 +283,6 @@ window.shopApp = {
 
             let durationHtml = tab === 'exchange' ? `<span class="uppercase flex items-center gap-1 font-black text-purple-600">Costo: $${item.price_cop.toLocaleString()} COP</span>` : `<span class="uppercase flex items-center gap-1">⏳ ${item.duration}</span>`;
             
-            // Renderizado de Estadísticas de Combate y Cosecha si es Flor
             let statsHtml = '';
             let harvestHtml = '';
             let reqPotHtml = '';
@@ -388,7 +353,7 @@ window.shopApp = {
     async buyItem(itemId, unitPrice, tab) {
         if (this.isProcessingBuy) return;
         this.isProcessingBuy = true;
-        setTimeout(() => { this.isProcessingBuy = false; }, 600); // Bloqueo de 600ms para evitar doble compra accidental
+        setTimeout(() => { this.isProcessingBuy = false; }, 600); 
         
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
@@ -517,91 +482,6 @@ window.shopApp = {
         }
     },
 
-    async buyPremiumSeed(itemId, priceCop) {
-        const username = sessionStorage.getItem('username');
-        const token = sessionStorage.getItem('session_token');
-        if (!username || !token) return alert("Debes iniciar sesión para realizar compras.");
-        
-        try {
-            const res = await fetch('/api/store/buy_seeds', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, session_token: token, package_id: itemId })
-            });
-            const data = await res.json();
-            
-            if (res.ok) {
-                if(window.farmApp) {
-                    window.farmApp.state.balance = data.new_balance_cop;
-                    
-                    if (!window.farmApp.state.inventory[itemId]) {
-                        let catItem = this.catalog.flowers.find(i => i.id === itemId);
-                        window.farmApp.state.inventory[itemId] = { 
-                            name: catItem.name, 
-                            type: 'seed', 
-                            reqSize: catItem.potType || 'big', 
-                            qty: 0, 
-                            image: catItem.image 
-                        };
-                    }
-                    window.farmApp.state.inventory[itemId].qty += 1;
-                    window.farmApp.saveState();
-                }
-                
-                const copEl = document.getElementById('global-balance');
-                if (copEl) copEl.innerText = "$" + data.new_balance_cop.toLocaleString();
-
-                if(window.syncUserData) window.syncUserData(); 
-
-                let catItem = this.catalog.flowers.find(i => i.id === itemId);
-                this.showPurchaseModal(catItem.image, catItem.name, 1, `-$${priceCop.toLocaleString()} COP`, 'Debitado:');
-                
-                this.renderShopItems('flowers');
-            } else {
-                const errorModal = document.getElementById('purchase-error-modal');
-                if (errorModal) {
-                    document.getElementById('purchase-error-text').innerText = data.error || "Saldo COP Insuficiente.";
-                    errorModal.classList.remove('hidden');
-                    errorModal.classList.add('flex');
-                } else {
-                    alert("Error: " + data.error);
-                }
-            }
-        } catch(e) {
-            alert("Error de conexión al procesar la compra premium.");
-        }
-    },
-
-    showPurchaseModal(imgUrl, itemName, qty, pricePaidStr, labelStr) {
-        const modal = document.getElementById('purchase-success-modal');
-        const bg = document.getElementById('purchase-modal-bg');
-        const card = document.getElementById('purchase-modal-card');
-        
-        document.getElementById('purchase-modal-img').src = imgUrl;
-        document.getElementById('purchase-modal-desc').innerText = `Has adquirido ${qty.toLocaleString()}x ${itemName} para tu inventario.`;
-        document.getElementById('purchase-modal-price').innerText = pricePaidStr;
-        document.getElementById('purchase-modal-label').innerText = labelStr;
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        setTimeout(() => {
-            bg.classList.remove('opacity-0');
-            card.classList.remove('scale-95', 'opacity-0');
-            card.classList.add('scale-100', 'opacity-100');
-        }, 10);
-
-        setTimeout(() => {
-            bg.classList.add('opacity-0');
-            card.classList.remove('scale-100', 'opacity-100');
-            card.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 200);
-        }, 1500); 
-    },
-
     async buyIAP(packageId) {
         const username = sessionStorage.getItem('username');
         const token = sessionStorage.getItem('session_token');
@@ -626,11 +506,11 @@ window.shopApp = {
                 if(window.syncUserData) window.syncUserData(); 
 
                 if (packageId.startsWith('iap_')) {
-                    const hours = packageId.includes('24h') ? 24 : 72;
+                    const hours = packageId.includes('24h') ? 24 : (packageId.includes('72h') ? 72 : 168);
                     const now = Date.now();
                     
                     if (window.farmApp) {
-                        if (packageId.includes('water') || packageId.includes('combo')) {
+                        if (packageId.includes('combo') || packageId.includes('elite')) {
                             window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
                             
                             window.farmApp.state.plots.forEach(plot => {
@@ -652,8 +532,12 @@ window.shopApp = {
                             });
                         }
                         
-                        if (packageId.includes('harvest') || packageId.includes('combo')) {
+                        if (packageId.includes('combo') || packageId.includes('elite')) {
                             window.farmApp.state.autoHarvestEndTime = Math.max(now, window.farmApp.state.autoHarvestEndTime || 0) + (hours * 3600000);
+                        }
+
+                        if (packageId.includes('nursery') || packageId.includes('elite')) {
+                            window.farmApp.state.vipHealEndTime = Math.max(now, window.farmApp.state.vipHealEndTime || 0) + (hours * 3600000);
                         }
                         
                         if (typeof window.farmApp.updateAutomationUI === 'function') {

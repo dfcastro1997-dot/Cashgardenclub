@@ -2013,6 +2013,14 @@ if (typeof window.farmApp === 'undefined') {
                                                 ${plot.hasCrow ? 'disabled' : ''}>
                                             Quitar
                                         </button>
+                                        
+                                        <!-- NUEVO BOTÓN ABONAR -->
+                                        ${!isAutoWatering && !plot.isReady && !plot.hasCrow ? `
+                                            <button onclick="window.farmApp.fertilizePlant(${plot.id}); event.stopPropagation();" class="bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-200 text-[8px] sm:text-[9px] font-black transition-all uppercase tracking-widest px-2 sm:px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1">
+                                                <img src="assets/Herramientas_y_Servicios/abono.png" class="w-3 h-3 object-contain"> Abono
+                                            </button>
+                                        ` : ''}
+
                                         ${!isAutoWatering && plot.water < 100 && !plot.isReady && !plot.hasCrow ? (
                                             (this.state.inventory.tool_water && this.state.inventory.tool_water.qty > 0) ? `
                                                 <button onclick="window.farmApp.selectPlot(${plot.id}); window.farmApp.useTool('water'); event.stopPropagation();" class="bg-cg_blue hover:bg-cg_navy text-white text-[8px] sm:text-[9px] font-black transition-all uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md shadow-sm">
@@ -2653,6 +2661,45 @@ if (typeof window.farmApp === 'undefined') {
             }
             this.saveState();
         },
+
+
+
+        fertilizePlant(plotId) {
+            const plot = this.state.plots[plotId];
+            if (!plot || plot.status !== 'planted' || plot.isReady || plot.hasCrow) return;
+            
+            let reward = plot.plant.reward || 1500;
+            if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id]) {
+                reward = this.state.dynamicPlants[plot.plant.id].reward || reward;
+            }
+            
+            const cost = Math.floor(reward * 0.30);
+            
+            if (this.state.seedsBalance >= cost) {
+                if (confirm(`¿Usar Abono Acelerador por ${cost.toLocaleString()} 🌱?\nReducirá el tiempo restante de crecimiento a la mitad (-50%).`)) {
+                    this.state.seedsBalance -= cost;
+                    
+                    const now = Date.now();
+                    const remainingMs = plot.harvestAt - now;
+                    
+                    if (remainingMs > 0) {
+                        plot.harvestAt = now + (remainingMs * 0.5);
+                    }
+                    
+                    this.showPlotToast(plotId, '⚡', '¡Tiempo -50%!');
+                    this.updateUI();
+                    this.saveState();
+                }
+            } else {
+                this.showFarmAlert('Fondos Insuficientes', `Necesitas ${cost.toLocaleString()} 🌱 para abonar esta especie.`, '⚠️');
+            }
+        },
+
+
+
+
+
+
 
         removePot(plotId) {
             const plot = this.state.plots[plotId];

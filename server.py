@@ -973,12 +973,12 @@ def buy_seeds():
     incoming_inventory = data.get('inventory') 
     
     costs = {
-        "iap_water_24h": {"seeds": 0, "cop": 5000},
-        "iap_water_72h": {"seeds": 0, "cop": 12000},
-        "iap_harvest_24h": {"seeds": 0, "cop": 4000},
-        "iap_harvest_72h": {"seeds": 0, "cop": 10000},
         "iap_combo_24h": {"seeds": 0, "cop": 7500},
         "iap_combo_72h": {"seeds": 0, "cop": 18000},
+        "iap_combo_7d": {"seeds": 0, "cop": 30000},
+        "iap_nursery_72h": {"seeds": 0, "cop": 8000},
+        "iap_nursery_7d": {"seeds": 0, "cop": 15000},
+        "iap_elite_7d": {"seeds": 0, "cop": 39000},
         "exc_10k": {"seeds": 4250, "cop": 10000},
         "exc_25k": {"seeds": 11000, "cop": 25000},
         "exc_50k": {"seeds": 22500, "cop": 50000}
