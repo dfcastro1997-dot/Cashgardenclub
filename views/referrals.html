@@ -1,210 +1,214 @@
 <div class="relative min-h-screen pb-24 font-sans selection:bg-orange-500 selection:text-white">
     
-    <div class="relative z-10 max-w-[1200px] mx-auto pt-8 px-4 sm:px-6">
+    <!-- FONDO CLARO SEMITRANSPARENTE -->
+    <div class="absolute inset-0 z-0 bg-cover bg-center bg-fixed" style="background-image: url('assets/Fondos/Fondo_Carnivoro.jpg');"></div>
+    <div class="absolute inset-0 z-0 bg-slate-50/90 backdrop-blur-sm"></div>
+
+    <div class="relative z-10 max-w-[1000px] mx-auto pt-10 px-4 sm:px-6 lg:px-8">
         
         <!-- HEADER PROGRAMA -->
-        <div class="text-center mb-12 animate-fade-in">
-            <span class="inline-block bg-orange-100 border border-orange-200 text-orange-600 font-black text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-[0.3em] mb-4 shadow-sm">
+        <div class="text-center mb-16 animate-fade-in">
+            <span class="inline-block bg-white border border-gray-200 text-gray-500 font-black text-[10px] sm:text-xs px-5 py-2 rounded-full uppercase tracking-[0.3em] mb-5 shadow-sm">
                 Programa de Recompensas
             </span>
-            <h1 class="text-4xl md:text-6xl font-black text-cg_navy tracking-tight drop-shadow-sm mb-4">
-                INVITA A UN AMIGO
+            <h1 class="text-5xl md:text-7xl font-black text-slate-800 tracking-tight drop-shadow-sm mb-6">
+                INVITA A UN <span class="text-orange-500">AMIGO</span>
             </h1>
-            <p class="text-gray-500 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed bg-white/50 backdrop-blur px-6 py-4 rounded-2xl border border-gray-100 shadow-sm">
+            <p class="text-slate-600 text-sm md:text-lg max-w-3xl mx-auto font-medium leading-relaxed bg-white/60 backdrop-blur-md px-8 py-6 rounded-3xl border border-white shadow-sm">
                 Trae a nuevos granjeros a competir en la Arena. Cuando tu invitado pague su <strong class="text-orange-600 font-black">primera inscripción en efectivo a un torneo</strong>, avanzarás en la ruta. Desbloquea imponentes especies carnívoras y avatares de élite que jamás estarán en el Mercado.
             </p>
         </div>
 
         <!-- CÓDIGO DE REFERIDO GIGANTE -->
-        <div class="flex justify-center mb-20 relative">
-            <div class="bg-white border-2 border-orange-300 rounded-[2rem] p-8 sm:p-12 text-center shadow-xl w-full max-w-2xl relative z-10 transform hover:scale-[1.02] transition-transform duration-500 hover:shadow-2xl">
-                <p class="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Tu Código Único de Invitación</p>
-                <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl py-5 px-8 inline-block shadow-inner mb-5">
-                    <h2 id="ref-code-display" class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 tracking-[0.25em] font-mono select-all">
+        <div class="flex justify-center mb-24 relative">
+            <div class="bg-white/80 backdrop-blur-xl border-2 border-orange-200 rounded-[2.5rem] p-8 sm:p-14 text-center shadow-xl w-full max-w-2xl relative z-10 transform hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:border-orange-300">
+                <div class="absolute -top-6 -right-6 w-32 h-32 bg-orange-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+                
+                <p class="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 relative z-10">Tu Código Único de Invitación</p>
+                <div class="bg-white border-2 border-gray-100 rounded-3xl py-6 px-10 inline-block shadow-sm mb-6 relative z-10 group cursor-pointer" onclick="copyReferralCode()">
+                    <h2 id="ref-code-display" class="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 tracking-[0.2em] font-mono select-all group-hover:scale-105 transition-transform">
                         -----
                     </h2>
                 </div>
-                <p class="text-sm text-gray-500 font-bold leading-relaxed px-4 mb-6">Compártelo con tus amigos para que lo ingresen al crear su cuenta. Tu contador subirá automáticamente tras su primer torneo pago.</p>
-                <button onclick="copyReferralCode()" class="w-full sm:w-2/3 mx-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-red-500 hover:to-orange-500 text-white font-black py-4 md:py-5 rounded-xl shadow-[0_8px_15px_rgba(249,115,22,0.3)] uppercase tracking-widest text-sm transition-all active:scale-95 flex items-center justify-center gap-2">
-                    <span class="text-xl">📋</span> Copiar Código
+                <p class="text-sm md:text-base text-gray-500 font-bold leading-relaxed px-4 mb-8 relative z-10">Compártelo con tus amigos para que lo ingresen al crear su cuenta. Tu contador subirá automáticamente tras su primer torneo pago.</p>
+                
+                <button onclick="copyReferralCode()" class="w-full sm:w-3/4 mx-auto bg-slate-800 hover:bg-slate-900 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_8px_0_#0f172a] active:translate-y-[8px] active:shadow-none uppercase tracking-widest text-sm md:text-base transition-all flex items-center justify-center gap-3 relative z-10">
+                    <span class="text-xl">📋</span> Copiar Mi Código
                 </button>
             </div>
         </div>
 
-        <!-- RUTA DE RECOMPENSAS (TIMELINE VERTICAL) -->
-        <div class="relative w-full max-w-5xl mx-auto pb-10">
-            <!-- Línea espina central (Desktop) -->
-            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gray-200 rounded-full"></div>
-            <!-- Línea espina lateral (Móvil) -->
-            <div class="md:hidden absolute left-7 w-2 h-full bg-gray-200 rounded-full"></div>
+        <!-- RUTA DE RECOMPENSAS (STACK DE TARJETAS) -->
+        <div class="space-y-8 pb-12">
 
-            <!-- Hito 1 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.1s;">
-                <div class="hidden md:block w-5/12"></div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-blue-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">1</div>
-                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-blue-300 transition-colors flex flex-col lg:flex-row items-center text-center lg:text-left gap-6">
-                        <img src="assets/Perfil/Granjero Cazacuervos.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Granjero Cazacuervos.gif';" class="w-32 h-32 md:w-36 md:h-36 rounded-2xl border-2 border-gray-200 object-cover shadow-md shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-blue-200">Identidad Exclusiva</span>
-                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight mb-2">Granjero Cazacuervos</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-blue-600">Si invitas a 1 amigo</strong>, desbloqueas este avatar de élite y recibes un bono inicial de 5,000 🌱 Semillas.</p>
-                        </div>
-                    </div>
+            <!-- Hito 1 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-blue-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">1</div>
+                <div class="flex-1 text-center md:text-left z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-blue-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Avatar Exclusivo</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">Granjero Cazacuervos</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-blue-600 font-black">Si invitas a 1 amigo</strong>, desbloqueas este avatar de élite y recibes un bono inicial de 5,000 🌱 Semillas.
+                    </p>
+                </div>
+                <div class="shrink-0 z-10 relative">
+                    <img src="assets/Perfil/Granjero Cazacuervos.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Granjero Cazacuervos.gif';" class="w-40 h-40 md:w-48 md:h-48 object-cover rounded-[2rem] border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
 
-            <!-- Hito 2 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.2s;">
-                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-orange-300 transition-colors flex flex-col lg:flex-row-reverse items-center text-center lg:text-right gap-6 group">
-                        <img src="assets/Plantas/Drosera Pegajosa.gif" onerror="this.onerror=null; this.src='assets/Plantas/Drosera Pegajosa.jpg';" class="w-36 h-36 md:w-44 md:h-44 object-contain drop-shadow-xl group-hover:scale-110 transition-transform shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-orange-50 text-orange-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-orange-200">Especie Carnívora</span>
-                            <h4 class="font-black text-cg_navy text-xl md:text-3xl leading-tight mb-2">Drosera Pegajosa</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-orange-600">Si invitas a 2 amigos</strong>, obtienes este espécimen exótico cubierto de un rocío atrapa-plagas altamente letal.</p>
-                        </div>
-                    </div>
+            <!-- Hito 2 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row-reverse items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -z-10 -translate-x-1/3 translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-orange-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">2</div>
+                <div class="flex-1 text-center md:text-right z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-orange-500 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">Especie Carnívora</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">Drosera Pegajosa</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-orange-600 font-black">Si invitas a 2 amigos</strong>, obtienes este espécimen exótico cubierto de un rocío atrapa-plagas altamente letal.
+                    </p>
                 </div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-orange-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">2</div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <!-- Hito 3 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.3s;">
-                <div class="hidden md:block w-5/12"></div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-green-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">3</div>
-                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-green-300 transition-colors flex flex-col lg:flex-row items-center text-center lg:text-left gap-6">
-                        <div class="text-6xl md:text-7xl drop-shadow-sm shrink-0">🌱</div>
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-green-50 text-green-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-green-200">Cofre de la Alianza</span>
-                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight mb-2">15,000 Semillas</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-green-600">Si invitas a 3 amigos</strong>, recibes una gran inyección de capital fresco para pagar tus próximas entradas a la Arena.</p>
-                        </div>
-                    </div>
+                <div class="shrink-0 z-10 relative">
+                    <img src="assets/Plantas/Drosera Pegajosa.gif" onerror="this.onerror=null; this.src='assets/Plantas/Drosera Pegajosa.jpg';" class="w-40 h-40 md:w-56 md:h-56 object-contain drop-shadow-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
                 </div>
             </div>
 
-            <!-- Hito 4 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.4s;">
-                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-purple-300 transition-colors flex flex-col lg:flex-row-reverse items-center text-center lg:text-right gap-6">
-                        <img src="assets/Perfil/Cuervo Mercenario.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Cuervo Mercenario.gif';" class="w-32 h-32 md:w-36 md:h-36 rounded-2xl border-2 border-gray-200 object-cover shadow-md shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-purple-50 text-purple-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-purple-200">Identidad Exclusiva</span>
-                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight mb-2">Cuervo Mercenario</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-purple-600">Si invitas a 4 amigos</strong>, consigues este raro avatar de un renegado de la plaga que ahora lucha por el oro.</p>
-                        </div>
-                    </div>
+            <!-- Hito 3 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-green-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">3</div>
+                <div class="flex-1 text-center md:text-left z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">Cofre de la Alianza</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">15,000 Semillas</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-green-600 font-black">Si invitas a 3 amigos</strong>, recibes una gran inyección de capital fresco para pagar tus próximas entradas a la Arena.
+                    </p>
                 </div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-purple-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">4</div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <!-- Hito 5 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.5s;">
-                <div class="hidden md:block w-5/12"></div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-orange-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">5</div>
-                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-orange-400 transition-colors flex flex-col lg:flex-row items-center text-center lg:text-left gap-6 group">
-                        <img src="assets/Plantas/Nepenthes Ácida.gif" onerror="this.onerror=null; this.src='assets/Plantas/Nepenthes Ácida.jpg';" class="w-40 h-40 md:w-52 md:h-52 object-contain drop-shadow-xl group-hover:scale-110 transition-transform shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-orange-50 text-orange-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-orange-200">Especie Carnívora Avanzada</span>
-                            <h4 class="font-black text-cg_navy text-2xl md:text-3xl leading-tight mb-2">Nepenthes Ácida</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-orange-600">Si invitas a 5 amigos</strong>, tu escuadrón sumará este cántaro masivo lleno de enzimas digestivas del cual nadie escapa.</p>
-                        </div>
-                    </div>
+                <div class="shrink-0 z-10 relative flex items-center justify-center w-40 h-40 md:w-48 md:h-48 bg-gray-50 rounded-[2rem] border-4 border-white shadow-xl">
+                    <span class="text-7xl md:text-8xl drop-shadow-md group-hover:scale-110 transition-transform">🌱</span>
                 </div>
             </div>
 
-            <!-- Hito 6 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.6s;">
-                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-green-400 transition-colors flex flex-col lg:flex-row-reverse items-center text-center lg:text-right gap-6">
-                        <div class="text-6xl md:text-7xl drop-shadow-sm shrink-0">🌱</div>
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-green-50 text-green-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-green-200">Cofre de Veterano</span>
-                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight mb-2">30,000 Semillas</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-green-600">Si invitas a 6 amigos</strong>, ganas el financiamiento robusto que necesitas para participar en las Ligas Mayores.</p>
-                        </div>
-                    </div>
+            <!-- Hito 4 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row-reverse items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl -z-10 -translate-x-1/3 translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-purple-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">4</div>
+                <div class="flex-1 text-center md:text-right z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-100">Identidad Exclusiva</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">Cuervo Mercenario</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-purple-600 font-black">Si invitas a 4 amigos</strong>, consigues este raro avatar de un renegado de la plaga que ahora lucha por el oro.
+                    </p>
                 </div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-green-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">6</div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <!-- Hito 7 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.7s;">
-                <div class="hidden md:block w-5/12"></div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-blue-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">7</div>
-                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-blue-400 transition-colors flex flex-col lg:flex-row items-center text-center lg:text-left gap-6">
-                        <img src="assets/Perfil/Simbiosis Carnívora.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Simbiosis Carnívora.gif';" class="w-32 h-32 md:w-36 md:h-36 rounded-2xl border-2 border-gray-200 object-cover shadow-md shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-blue-200">Identidad Animada Élite</span>
-                            <h4 class="font-black text-cg_navy text-xl md:text-2xl leading-tight mb-2">Simbiosis Carnívora</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-blue-600">Si invitas a 7 amigos</strong>, dominas la flora y desbloqueas este avatar de un huésped poseído por la flora brutal.</p>
-                        </div>
-                    </div>
+                <div class="shrink-0 z-10 relative">
+                    <img src="assets/Perfil/Cuervo Mercenario.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Cuervo Mercenario.gif';" class="w-40 h-40 md:w-48 md:h-48 object-cover rounded-[2rem] border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
 
-            <!-- Hito 8 (Izquierda) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.8s;">
-                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-xl hover:border-orange-500 transition-colors flex flex-col lg:flex-row-reverse items-center text-center lg:text-right gap-6 group relative overflow-hidden">
-                        <div class="absolute inset-0 bg-orange-50/50 opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
-                        <img src="assets/Plantas/Venus Trituradora.gif" onerror="this.onerror=null; this.src='assets/Plantas/Venus Trituradora.jpg';" class="w-40 h-40 md:w-56 md:h-56 object-contain drop-shadow-2xl group-hover:scale-[1.1] transition-transform shrink-0 relative z-10">
-                        <div class="relative z-10 flex-1 min-w-0 w-full">
-                            <span class="text-[10px] md:text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-orange-300">Monstruosidad (Niv. 3)</span>
-                            <h4 class="font-black text-cg_navy text-2xl md:text-3xl leading-tight mb-2 break-words">Venus Trituradora</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed break-words"><strong class="text-orange-600">Si invitas a 8 amigos</strong>, comandarás estas mandíbulas de titanio botánico diseñadas para hacer añicos cualquier resistencia en el campo.</p>
-                        </div>
-                    </div>
+            <!-- Hito 5 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-orange-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">5</div>
+                <div class="flex-1 text-center md:text-left z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-orange-500 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">Especie Carnívora Avanzada</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">Nepenthes Ácida</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-orange-600 font-black">Si invitas a 5 amigos</strong>, tu escuadrón sumará este cántaro masivo lleno de enzimas digestivas del cual nadie escapa.
+                    </p>
                 </div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-orange-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">8</div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <!-- Hito 9 (Derecha) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-16 relative animate-fade-in" style="animation-delay: 0.9s;">
-                <div class="hidden md:block w-5/12"></div>
-                <div class="w-12 h-12 md:w-14 md:h-14 absolute left-2 md:left-1/2 transform md:-translate-x-1/2 bg-white border-4 border-green-500 shadow-md rounded-full flex items-center justify-center text-cg_navy font-black z-20 text-lg">9</div>
-                <div class="w-full pl-20 md:pl-0 md:w-5/12 md:ml-auto">
-                    <div class="bg-white border-2 border-gray-100 p-8 rounded-3xl shadow-lg hover:border-green-500 transition-colors flex flex-col lg:flex-row items-center text-center lg:text-left gap-6">
-                        <div class="text-7xl md:text-8xl drop-shadow-md shrink-0">🌱</div>
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[10px] md:text-xs bg-green-50 text-green-600 px-3 py-1 rounded-full font-black uppercase tracking-wider mb-3 inline-block border border-green-200">Fortuna del Culto</span>
-                            <h4 class="font-black text-cg_navy text-2xl md:text-3xl leading-tight mb-2">50,000 Semillas</h4>
-                            <p class="text-sm text-gray-500 font-bold leading-relaxed"><strong class="text-green-600">Si invitas a 9 amigos</strong>, tu red te recompensa con un botín masivo para coronar tu imperio agrícola de una vez por todas.</p>
-                        </div>
-                    </div>
+                <div class="shrink-0 z-10 relative">
+                    <img src="assets/Plantas/Nepenthes Ácida.gif" onerror="this.onerror=null; this.src='assets/Plantas/Nepenthes Ácida.jpg';" class="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                 </div>
             </div>
 
-            <!-- Hito 10 (Izquierda - SUPREMO) -->
-            <div class="flex flex-col md:flex-row items-center w-full mb-8 relative animate-fade-in" style="animation-delay: 1s;">
-                <div class="w-full pl-20 md:pl-0 md:pr-12 md:w-5/12 text-center md:text-right">
-                    <div class="bg-gradient-to-br from-white to-orange-50 border-4 border-orange-400 p-8 md:p-10 rounded-[2.5rem] shadow-2xl hover:shadow-[0_20px_50px_rgba(249,115,22,0.4)] transition-all flex flex-col items-center gap-6 group relative overflow-hidden">
-                        
-                        <div class="relative z-10 flex flex-col items-center w-full">
-                            <span class="text-[10px] md:text-xs bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.3em] mb-4 inline-block border border-orange-300">CÚSPIDE DEL PACTO (2 PREMIOS)</span>
-                            <h4 class="font-black text-cg_navy text-4xl md:text-5xl mb-3 drop-shadow-sm text-center">Hidra del Abismo</h4>
-                            <p class="text-sm text-gray-600 font-bold mb-8 text-center leading-relaxed"><strong class="text-orange-600 font-black">Si invitas a 10 amigos</strong>, reclamas al depredador definitivo. Una atrocidad tricéfala que consume arenas enteras sin piedad.</p>
-                            
-                            <img src="assets/Plantas/Hidra del Abismo.gif" onerror="this.onerror=null; this.src='assets/Plantas/Hidra del Abismo.jpg';" class="w-64 h-64 sm:w-80 sm:h-80 object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500">
-                            
-                            <div class="mt-10 pt-8 border-t border-orange-200/50 w-full flex flex-col items-center">
-                                <span class="text-orange-600 font-black text-xs md:text-sm uppercase mb-4 tracking-widest">+ Desbloqueas el Avatar Supremo:</span>
-                                <img src="assets/Perfil/Rey Cuervo Eclipse.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Rey Cuervo Eclipse.gif';" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-orange-400 object-cover shadow-xl">
-                                <h5 class="text-cg_navy font-black text-xl md:text-2xl mt-4">Rey Cuervo Eclipse</h5>
-                            </div>
+            <!-- Hito 6 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row-reverse items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-green-50 rounded-full blur-3xl -z-10 -translate-x-1/3 translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-green-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">6</div>
+                <div class="flex-1 text-center md:text-right z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">Cofre de Veterano</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">30,000 Semillas</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-green-600 font-black">Si invitas a 6 amigos</strong>, ganas el financiamiento robusto que necesitas para participar en las Ligas Mayores de manera holgada.
+                    </p>
+                </div>
+                <div class="shrink-0 z-10 relative flex items-center justify-center w-40 h-40 md:w-48 md:h-48 bg-gray-50 rounded-[2rem] border-4 border-white shadow-xl">
+                    <span class="text-7xl md:text-8xl drop-shadow-md group-hover:scale-110 transition-transform">🌱</span>
+                </div>
+            </div>
+
+            <!-- Hito 7 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-blue-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">7</div>
+                <div class="flex-1 text-center md:text-left z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-blue-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Identidad Animada Élite</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">Simbiosis Carnívora</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-blue-600 font-black">Si invitas a 7 amigos</strong>, dominas la flora y desbloqueas este asombroso avatar de un huésped poseído por la brutalidad natural.
+                    </p>
+                </div>
+                <div class="shrink-0 z-10 relative">
+                    <img src="assets/Perfil/Simbiosis Carnívora.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Simbiosis Carnívora.gif';" class="w-40 h-40 md:w-48 md:h-48 object-cover rounded-[2rem] border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Hito 8 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row-reverse items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -z-10 -translate-x-1/3 translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-orange-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">8</div>
+                <div class="flex-1 text-center md:text-right z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-orange-500 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">Monstruosidad Botánica</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">Venus Trituradora</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-orange-600 font-black">Si invitas a 8 amigos</strong>, comandarás estas mandíbulas de titanio botánico diseñadas expresamente para hacer añicos cualquier resistencia en el campo.
+                    </p>
+                </div>
+                <div class="shrink-0 z-10 relative">
+                    <img src="assets/Plantas/Venus Trituradora.gif" onerror="this.onerror=null; this.src='assets/Plantas/Venus Trituradora.jpg';" class="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Hito 9 -->
+            <div class="bg-white/90 backdrop-blur-lg border border-gray-100 shadow-lg rounded-[2rem] p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-green-500 rounded-full border-4 border-white shadow-md flex items-center justify-center text-2xl md:text-3xl font-black text-white z-10">9</div>
+                <div class="flex-1 text-center md:text-left z-10">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">Fortuna del Culto</span>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 mt-3 mb-2">50,000 Semillas</h3>
+                    <p class="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                        <strong class="text-green-600 font-black">Si invitas a 9 amigos</strong>, tu red te recompensa con un botín masivo para coronar tu imperio agrícola y jugar en las ligas élite.
+                    </p>
+                </div>
+                <div class="shrink-0 z-10 relative flex items-center justify-center w-40 h-40 md:w-48 md:h-48 bg-gray-50 rounded-[2rem] border-4 border-white shadow-xl">
+                    <span class="text-7xl md:text-8xl drop-shadow-md group-hover:scale-110 transition-transform">🌱</span>
+                </div>
+            </div>
+
+            <!-- Hito 10 (SUPREMO) -->
+            <div class="bg-gradient-to-br from-red-50 to-orange-50 border-4 border-red-200 shadow-2xl rounded-[2.5rem] p-8 md:p-14 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden group hover:shadow-[0_20px_50px_rgba(239,68,68,0.2)] transition-all duration-500">
+                <div class="w-16 h-16 md:w-24 md:h-24 shrink-0 bg-red-600 rounded-full border-4 border-white shadow-xl flex items-center justify-center text-2xl md:text-4xl font-black text-white z-20 absolute top-8 left-8 md:static">10</div>
+                
+                <div class="flex-1 text-center md:text-left z-10 mt-12 md:mt-0 w-full">
+                    <span class="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-red-600 bg-white px-4 py-1.5 rounded-full shadow-sm border border-red-200 inline-block mb-4">Cúspide del Pacto (2 Premios)</span>
+                    <h3 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 mb-4 tracking-tight">Hidra del Abismo</h3>
+                    <p class="text-sm md:text-base text-gray-600 font-medium leading-relaxed mb-8">
+                        <strong class="text-red-600 font-black text-base md:text-lg">Si invitas a 10 amigos</strong>, reclamas al depredador definitivo. Una atrocidad tricéfala que consume arenas enteras sin piedad.
+                    </p>
+                    
+                    <div class="bg-white/80 backdrop-blur border border-red-100 rounded-3xl p-5 flex flex-col sm:flex-row items-center gap-5 shadow-sm text-left w-full max-w-sm mx-auto md:mx-0">
+                        <img src="assets/Perfil/Rey Cuervo Eclipse.jpg" onerror="this.onerror=null; this.src='assets/Perfil/Rey Cuervo Eclipse.gif';" class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-md object-cover shrink-0">
+                        <div>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">+ Desbloqueas Avatar:</span>
+                            <h5 class="text-slate-800 font-black text-lg md:text-xl leading-tight mt-1">Rey Cuervo Eclipse</h5>
                         </div>
                     </div>
                 </div>
-                <div class="w-14 h-14 md:w-16 md:h-16 absolute left-1 md:left-1/2 transform md:-translate-x-1/2 bg-orange-500 border-4 border-white shadow-xl rounded-full flex items-center justify-center text-white font-black z-20 text-xl md:text-2xl">10</div>
-                <div class="hidden md:block w-5/12"></div>
+
+                <div class="shrink-0 z-10 relative mt-6 md:mt-0 w-full md:w-auto flex justify-center">
+                    <div class="absolute inset-0 bg-red-200 rounded-full blur-[80px] opacity-40 -z-10 scale-150"></div>
+                    <img src="assets/Plantas/Hidra del Abismo.gif" onerror="this.onerror=null; this.src='assets/Plantas/Hidra del Abismo.jpg';" class="w-64 h-64 md:w-80 md:h-80 object-contain drop-shadow-[0_20px_40px_rgba(220,38,38,0.4)] group-hover:scale-110 group-hover:rotate-2 transition-transform duration-700">
+                </div>
             </div>
 
         </div>
@@ -213,7 +217,7 @@
 
 <!-- ================= NUEVA VENTANA MODAL DE COPIADO ================= -->
 <div id="ref-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm transition-opacity duration-300" onclick="closeRefAlert()"></div>
+    <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="closeRefAlert()"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-orange-200 overflow-hidden animate-fade-in text-center p-6 md:p-8">
         
         <div class="mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-20 h-20 bg-green-50 border-green-100 relative">
@@ -224,7 +228,7 @@
         <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-slate-800">¡Código Copiado!</h3>
         <p class="text-xs md:text-sm text-slate-500 mb-6 font-medium leading-relaxed" id="ref-alert-msg">Mensaje</p>
         
-        <button onclick="closeRefAlert()" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-[0_5px_0_#c2410c] active:shadow-none active:translate-y-[5px] uppercase tracking-widest text-xs md:text-sm bg-orange-500 hover:bg-orange-600">
+        <button onclick="closeRefAlert()" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-[0_5px_0_#ea580c] active:shadow-none active:translate-y-[5px] uppercase tracking-widest text-xs md:text-sm bg-orange-500 hover:bg-orange-600">
             ¡Entendido!
         </button>
     </div>
@@ -260,7 +264,6 @@
         const code = document.getElementById('ref-code-display').innerText;
         if(code === "-----" || code === "ERROR") return;
         
-        // Exactamente el texto requerido
         const textToCopy = `Mi codigo de referido es ${code}.`;
         
         navigator.clipboard.writeText(textToCopy).then(() => {
@@ -277,6 +280,5 @@
         document.getElementById('ref-alert-modal').classList.add('hidden');
     }
 
-    // Inicializar visualización del código apenas cargue la vista
     setTimeout(initReferrals, 100);
 </script>
