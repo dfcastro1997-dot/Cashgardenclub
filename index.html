@@ -148,6 +148,41 @@
                     </button>
                 </div>
             </form>
+
+
+            <!-- PANTALLA DE PROGRESO Y VALIDACIÓN DEL GRANJERO -->
+            <div id="login-loading-view" class="hidden flex-col items-center justify-center py-6 text-center animate-fade-in">
+                <!-- Avatar Circular Centrado -->
+                <div class="relative w-28 h-28 mx-auto mb-5">
+                    <div class="absolute inset-0 rounded-full border-4 border-cg_blue/30 animate-ping opacity-60"></div>
+                    <div id="loading-avatar-spinner" class="absolute -inset-1 rounded-full border-4 border-transparent border-t-cg_blue animate-spin"></div>
+                    <div class="w-full h-full rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gray-100 flex items-center justify-center relative z-10">
+                        <img id="loading-avatar-img" src="assets/Perfil/defecto.png" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Check verde animado al completar -->
+                    <div id="loading-avatar-check" class="hidden absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-2 border-white items-center justify-center text-white text-sm font-black shadow-lg z-20 animate-bounce">
+                        ✓
+                    </div>
+                </div>
+
+                <!-- Título y Mensajes de Verificación -->
+                <h4 id="loading-farmer-title" class="text-xl font-black text-cg_navy mb-1 tracking-tight">Accediendo...</h4>
+                <p id="loading-step-text" class="text-xs font-bold text-cg_blue mb-6 uppercase tracking-wider h-5 flex items-center justify-center animate-pulse">
+                    Identificando granjero...
+                </p>
+
+                <!-- Barra de Progreso -->
+                <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden border border-gray-200 relative shadow-inner mb-2">
+                    <div id="login-progress-fill" class="h-full bg-gradient-to-r from-cg_blue via-blue-500 to-green-500 rounded-full transition-all duration-300 w-0"></div>
+                </div>
+                <div class="flex justify-between w-full text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    <span>Sincronizando Granja</span>
+                    <span id="login-progress-pct" class="text-cg_navy font-black">0%</span>
+                </div>
+            </div>
+
+
+            
         </div>
 
         <!-- BOTÓN DISCRETO ADMIN -->
@@ -621,6 +656,9 @@
                 }
             }
 
+            const btnLogin = document.getElementById('btn-login');
+            if (btnLogin) btnLogin.disabled = true;
+
             try {
                 const response = await fetch(`/api/${action}`, {
                     method: 'POST',
@@ -634,20 +672,75 @@
                     sessionStorage.setItem('username', data.user.username);
                     sessionStorage.setItem('session_token', data.user.session_token); 
                     updateProfileUI(data.user);
-                    
-                    document.getElementById('login-screen').classList.add('opacity-0');
+
+                    // Si entra por login, desplegar la animación de progreso
+                    const form = document.getElementById('auth-form');
+                    const loadViewEl = document.getElementById('login-loading-view');
+                    const avatarImg = document.getElementById('loading-avatar-img');
+                    const farmerTitle = document.getElementById('loading-farmer-title');
+                    const stepText = document.getElementById('loading-step-text');
+                    const progressFill = document.getElementById('login-progress-fill');
+                    const progressPct = document.getElementById('login-progress-pct');
+                    const checkMark = document.getElementById('loading-avatar-check');
+                    const spinner = document.getElementById('loading-avatar-spinner');
+
+                    // 1. Extraer la foto de perfil del jugador guardada en la base de datos
+                    let userAvatar = 'assets/Perfil/defecto.png';
+                    if (data.user.game_state) {
+                        try {
+                            const st = JSON.parse(data.user.game_state);
+                            if (st.profilePic) userAvatar = st.profilePic;
+                        } catch(e){}
+                    }
+                    avatarImg.src = userAvatar;
+                    farmerTitle.innerText = `¡Hola, ${data.user.username}!`;
+
+                    // 2. Transformar la ventana modal ocultando el formulario
+                    form.classList.add('hidden');
+                    loadViewEl.classList.remove('hidden');
+                    loadViewEl.classList.add('flex');
+
+                    // 3. Simular las etapas de conexión y carga
+                    const steps = [
+                        { pct: 25, text: "Identificando granjero...", delay: 400 },
+                        { pct: 55, text: "Buscando semillas y herramientas...", delay: 900 },
+                        { pct: 85, text: "Analizando terrenos e invernadero...", delay: 1400 },
+                        { pct: 100, text: "¡Granjero verificado con éxito!", delay: 1900 }
+                    ];
+
+                    steps.forEach(st => {
+                        setTimeout(() => {
+                            progressFill.style.width = st.pct + '%';
+                            progressPct.innerText = st.pct + '%';
+                            stepText.innerText = st.text;
+
+                            if (st.pct === 100) {
+                                spinner.classList.add('hidden');
+                                checkMark.classList.remove('hidden');
+                                checkMark.classList.add('flex');
+                                stepText.className = "text-xs font-black text-green-600 mb-6 uppercase tracking-wider h-5 flex items-center justify-center";
+                            }
+                        }, st.delay);
+                    });
+
+                    // 4. Entrar definitivamente a la Granja tras finalizar el análisis
                     setTimeout(() => {
-                        document.getElementById('login-screen').classList.add('hidden');
-                        document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
-                        document.getElementById('dashboard-screen').classList.add('flex');
-                        loadView('farm', document.querySelector('.nav-btn-desktop')); 
-                        
-                        startBackgroundMusic(); // <-- INICIA MÚSICA DE FONDO
-                    }, 300);
+                        document.getElementById('login-screen').classList.add('opacity-0');
+                        setTimeout(() => {
+                            document.getElementById('login-screen').classList.add('hidden');
+                            document.getElementById('dashboard-screen').classList.remove('hidden', 'opacity-0');
+                            document.getElementById('dashboard-screen').classList.add('flex');
+                            loadView('farm', document.querySelector('.nav-btn-desktop')); 
+                            startBackgroundMusic();
+                        }, 400);
+                    }, 2400);
+
                 } else {
+                    if (btnLogin) btnLogin.disabled = false;
                     showError(data.error || 'Ocurrió un error');
                 }
             } catch (err) {
+                if (btnLogin) btnLogin.disabled = false;
                 showError('Error de conexión con el servidor.');
             }
         }
