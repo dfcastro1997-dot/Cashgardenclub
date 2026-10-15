@@ -217,7 +217,6 @@
 <div id="duelo-entry-choice-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('duelo-entry-choice-modal').classList.replace('flex', 'hidden')"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue animate-fade-in">
-        <div class="text-5xl mb-3">⚔️</div>
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1 tracking-tight">Centro de Duelos</h3>
         <p class="text-xs text-gray-500 mb-6 font-medium">¿Qué deseas hacer hoy?</p>
 
@@ -970,12 +969,15 @@ if (typeof window.farmApp === 'undefined') {
         window.updateInvitationsBadge();
     };
 
-    // Bucle para hacer fluctuar las IAs en línea periódicamente
     setInterval(() => {
-        const delta = Math.floor(Math.random() * 5) - 2; // Sube o baja entre -2 y +2
+        const delta = Math.floor(Math.random() * 5) - 2;
         window.iaOnlineCount = Math.max(10, Math.min(35, window.iaOnlineCount + delta));
-        window.updateIAsSimulator();
+        window.updateInvitationsBadge();
     }, 8000);
+
+
+    window.updateInvitationsBadge();
+
 
     window.updateInvitationsBadge = function() {
         const badge = document.getElementById('mm-count-badge');
@@ -985,16 +987,24 @@ if (typeof window.farmApp === 'undefined') {
         if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
     };
 
+
     // Inicializar el simulador al cargar
     window.updateIAsSimulator();
 
-    // DESACTIVAR VENTANAS POPUP EMERGENTES AUTOMÁTICAS (Solo se verán al abrir el listado)
+    // RECEPTOR FILTRADO: Bloquea invitaciones emergentes de Bots y guarda solo las de Jugadores Reales
     window.socket.off('incoming_challenge');
     window.socket.on('incoming_challenge', (data) => {
+        const isBot = data.is_bot || data.is_bot_challenge || (data.challenger_name && data.challenger_name.startsWith('Bot '));
+        
+        // Si la invitación viene de un Bot, la ignoramos completamente
+        if (isBot) return;
+
+        // Guardamos únicamente retos de usuarios reales
         const exists = window.activeInvitationsList.some(inv => inv.match_id === data.match_id);
         if (!exists) {
             window.activeInvitationsList.unshift(data);
             window.updateInvitationsBadge();
+            
             if (document.getElementById('duelo-invitations-modal') && !document.getElementById('duelo-invitations-modal').classList.contains('hidden')) {
                 window.renderInvitationsTable();
             }
