@@ -95,9 +95,10 @@
         <!-- Inyectado por JS de forma unificada -->
     </div>
 
-    <!-- VENTANA MODAL PROFESIONAL PARA ALERTAS/ÉXITOS -->
+
+    <!-- VENTANA MODAL PROFESIONAL PARA ALERTAS/ÉXITOS (AUTO-CIERRE) -->
     <div id="shop-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="window.shopApp.closeAlertModal()"></div>
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300"></div>
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8" id="shop-alert-card">
             
             <div id="shop-alert-icon-container" class="mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-20 h-20 bg-gray-50 border-gray-100 relative">
@@ -109,17 +110,12 @@
             <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-slate-800" id="shop-alert-title">Aviso</h3>
             <p class="text-xs md:text-sm text-slate-500 mb-6 font-medium leading-relaxed" id="shop-alert-msg">Mensaje</p>
             
-            <div id="shop-alert-details" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center justify-between w-full mb-6 hidden">
+            <div id="shop-alert-details" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center justify-between w-full mb-2 hidden">
                 <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest" id="shop-alert-label">Inversión:</span>
                 <span class="text-sm md:text-base font-black text-slate-800" id="shop-alert-price"></span>
             </div>
-
-            <button onclick="window.shopApp.closeAlertModal()" id="shop-alert-btn" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-slate-800 hover:bg-slate-900 active:scale-95">
-                Aceptar
-            </button>
         </div>
     </div>
-
 
     <div id="shop-confirm-modal" class="fixed inset-0 z-[1050] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="window.shopApp.closeConfirmModal()"></div>
@@ -675,71 +671,92 @@ window.shopApp = {
     promptBuyItem(itemId, unitPrice) {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
-        let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
         
-        document.getElementById('shop-confirm-img').src = catItem.image;
-        document.getElementById('shop-confirm-name').innerText = `${catItem.name} (x${qty})`;
+        // Revisar el inventario actual
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory || {};
         
-        const priceEl = document.getElementById('shop-confirm-price');
-        priceEl.innerText = `${total.toLocaleString()} 🌱`;
-        priceEl.className = "text-base font-black text-emerald-600";
+        const isPlant = this.catalog.flowers.some(f => f.id === itemId);
+        const pots = targetInventory['tool_pot_small'] ? targetInventory['tool_pot_small'].qty : 0;
+        const water = targetInventory['tool_water'] ? targetInventory['tool_water'].qty : 0;
         
-        document.getElementById('shop-confirm-btn').onclick = () => {
-            this.closeConfirmModal();
+        // Ejecución de compra directa (se salta la confirmación). 
+        // Si falta agua o macetas para la planta, compra el combo automáticamente.
+        if (isPlant && (pots === 0 || water === 0)) {
+            const comboTotal = total + 5500; // Costo adicional de la maceta y el agua
+            this.buyCombo(itemId, unitPrice, qty, comboTotal);
+        } else {
             this.buyItem(itemId, unitPrice);
-        };
+        }
+    },
+
+    async buyCombo(itemId, unitPrice, qty, comboTotal) {
+        if (this.isProcessingBuy) return;
+        this.isProcessingBuy = true;
+        setTimeout(() => { this.isProcessingBuy = false; }, 600); 
         
-        document.getElementById('shop-confirm-modal').classList.remove('hidden');
-        document.getElementById('shop-confirm-modal').classList.add('flex');
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory;
+
+        if (farmState.seedsBalance >= comboTotal) {
+            
+            // 1. Agregar la Planta
+            if (!targetInventory[itemId]) {
+                let catItem = this.catalog.flowers.find(i => i.id === itemId);
+                targetInventory[itemId] = { 
+                    name: catItem.name, 
+                    type: 'seed', 
+                    reqSize: catItem.potType || 'small',                    
+                    qty: 0, 
+                    image: catItem.image 
+                };
+            }
+            targetInventory[itemId].qty += qty;
+            
+            // 2. Agregar la Maceta Pequeña
+            if (!targetInventory['tool_pot_small']) {
+                targetInventory['tool_pot_small'] = { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' };
+            }
+            targetInventory['tool_pot_small'].qty += 1;
+            
+            // 3. Agregar el Agua (10 Usos)
+            if (!targetInventory['tool_water']) {
+                targetInventory['tool_water'] = { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' };
+            }
+            targetInventory['tool_water'].qty += 10;
+
+            // Descontar Balance
+            farmState.seedsBalance -= comboTotal;
+            this.state.seedsBalance = farmState.seedsBalance;
+            
+            if (window.farmApp && window.farmApp.state) {
+                window.farmApp.state.inventory = targetInventory;
+                if(typeof window.farmApp.updateInventoryUI === 'function') window.farmApp.updateInventoryUI();
+                window.farmApp.saveState();
+            }
+
+            this.updateBalancesUI();
+            this.renderShopItems();
+            
+            let catItem = this.catalog.flowers.find(i => i.id === itemId);
+            this.showModalAlert(catItem.image, "Combo de Siembra", 1, `-${comboTotal.toLocaleString()} 🌱`, 'Inversión:', 'success', `Incluye: ${qty}x ${catItem.name}, Maceta Peq. y Regadera.`);
+            
+        } else {
+            this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', "No tienes Semillas (🌱) suficientes para realizar esta compra.");
+        }
     },
 
     promptBuyIAP(packageId) {
-        let catItem = this.catalog.iap.find(i => i.id === packageId);
-        document.getElementById('shop-confirm-img').src = catItem.image;
-        document.getElementById('shop-confirm-name').innerText = catItem.name;
-        
-        const priceEl = document.getElementById('shop-confirm-price');
-        priceEl.innerText = `$${catItem.price_cop.toLocaleString()}`;
-        priceEl.className = "text-base font-black text-rose-500";
-        
-        document.getElementById('shop-confirm-btn').onclick = () => {
-            this.closeConfirmModal();
-            this.buyIAP(packageId);
-        };
-        
-        document.getElementById('shop-confirm-modal').classList.remove('hidden');
-        document.getElementById('shop-confirm-modal').classList.add('flex');
+        this.buyIAP(packageId); // Salta la confirmación
     },
 
     promptBuyExchange(packageId, priceCop, seeds) {
-        let catItem = this.catalog.exchange.find(i => i.id === packageId);
-        document.getElementById('shop-confirm-img').src = catItem.image;
-        document.getElementById('shop-confirm-name').innerText = catItem.name;
-        
-        const priceEl = document.getElementById('shop-confirm-price');
-        priceEl.innerText = `$${priceCop.toLocaleString()}`;
-        priceEl.className = "text-base font-black text-rose-500";
-        
-        document.getElementById('shop-confirm-btn').onclick = () => {
-            this.closeConfirmModal();
-            this.buyExchange(packageId, priceCop, seeds);
-        };
-        
-        document.getElementById('shop-confirm-modal').classList.remove('hidden');
-        document.getElementById('shop-confirm-modal').classList.add('flex');
+        this.buyExchange(packageId, priceCop, seeds); // Salta la confirmación
     },
 
     closeConfirmModal() {
-        document.getElementById('shop-confirm-modal').classList.add('hidden');
-        document.getElementById('shop-confirm-modal').classList.remove('flex');
+        // Función mantenida vacía para evitar errores de referencias perdidas
     },
-
-
-
-
-
-
-
 
     showModalAlert(img, title, qty, priceText, priceLabel, type = 'info', descMsg = '') {
         const modal = document.getElementById('shop-alert-modal');
@@ -751,7 +768,6 @@ window.shopApp = {
         const titleEl = document.getElementById('shop-alert-title');
         const descEl = document.getElementById('shop-alert-msg');
         const detailsBox = document.getElementById('shop-alert-details');
-        const btn = document.getElementById('shop-alert-btn');
 
         titleEl.innerText = title;
 
@@ -764,14 +780,13 @@ window.shopApp = {
             ping.className = "absolute inset-0 rounded-full border border-emerald-300 animate-ping opacity-50";
             
             titleEl.className = "text-xl md:text-2xl font-black mb-2 tracking-tight text-emerald-600";
-            descEl.innerHTML = `Has adquirido <strong class="text-slate-800">${qty.toLocaleString()}x ${title}</strong>. Ya se encuentra activo o en tu inventario.`;
+            descEl.innerHTML = `Has adquirido <strong class="text-slate-800">${qty.toLocaleString()}x ${title}</strong>.<br><br><span class="text-[10px] text-gray-500 font-bold">${descMsg}</span>`;
             
             detailsBox.classList.remove('hidden');
             document.getElementById('shop-alert-label').innerText = priceLabel;
             document.getElementById('shop-alert-price').innerText = priceText;
             document.getElementById('shop-alert-price').className = priceText.includes('$') ? "text-sm md:text-base font-black text-rose-500" : "text-sm md:text-base font-black text-emerald-600";
 
-            btn.className = "w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-emerald-500 hover:bg-emerald-600 active:scale-95";
         } else if (type === 'error') {
             card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-rose-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
             iconCont.className = "mx-auto mb-4 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-rose-50 border-rose-100 relative";
@@ -783,12 +798,16 @@ window.shopApp = {
             titleEl.className = "text-xl md:text-2xl font-black mb-2 tracking-tight text-rose-600";
             descEl.innerText = descMsg;
             detailsBox.classList.add('hidden');
-            
-            btn.className = "w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-rose-500 hover:bg-rose-600 active:scale-95";
         }
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+
+        // Configurar Auto-Cierre
+        if (this.alertTimeout) clearTimeout(this.alertTimeout);
+        this.alertTimeout = setTimeout(() => {
+            this.closeAlertModal();
+        }, 2200); // El modal desaparecerá suavemente en 2.2 segundos
     },
 
     closeAlertModal() {
