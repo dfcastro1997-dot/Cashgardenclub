@@ -1955,6 +1955,19 @@ if (typeof window.farmApp === 'undefined') {
                         }
                     }); 
             }
+
+
+
+            // Agrega esto al final de init() en farmApp
+            setTimeout(() => {
+                if(window.guideApp && !sessionStorage.getItem('guide_welcomed')) {
+                    window.guideApp.show("¡Buenas vecino! Revisa la humedad de la tierra. Si la planta baja de su límite, se estresará.", "explicando");
+                    sessionStorage.setItem('guide_welcomed', 'true'); // Para que solo lo salude una vez por sesión
+                }
+            }, 1000);
+
+
+
         },
 
         updateUI() {
@@ -2733,6 +2746,10 @@ if (typeof window.farmApp === 'undefined') {
                 if (isRotting) {
                     plot.hasCrow = true;
                     this.showPlotToast(plotId, '🦠', msgToast);
+                    // NUEVO: El granjero te regaña si la ahogas
+                    if(window.guideApp) {
+                        window.guideApp.show("¡Cuidado ahí! Le pusiste demasiada agua y se ha podrido. ¡Ponle un espantapájaros para salvarla!", "alarma");
+                    }
                 } else {
                     this.showPlotToast(plotId, '💧', `+${waterAdded}% Agua`);
                 }
