@@ -1862,34 +1862,45 @@
                     this.close();
 
                 } else if (merchantId === 'bael') {
-                    // Lista de semillas más económicas o básicas
-                    const basicSeeds = ['flower_wheat', 'flower_bamboo', 'flower_small'];
-                    const randomSeed = basicSeeds[Math.floor(Math.random() * basicSeeds.length)];
-                    
-                    // Buscar imagen y nombre real de la base de datos
+                    let randomSeedId = 'dyn_semilla_base'; 
                     let seedName = 'Semilla Misteriosa';
                     let seedImg = 'assets/Fondos/logo.png';
-                    
-                    if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[randomSeed]) {
-                        seedName = window.farmApp.state.dynamicPlants[randomSeed].name;
-                        seedImg = window.farmApp.state.dynamicPlants[randomSeed].image_url;
-                    } else {
-                        // Nombres por defecto para las semillas base del juego
-                        if(randomSeed === 'flower_wheat') { seedName = 'Semilla de Trigo'; }
-                        else if(randomSeed === 'flower_bamboo') { seedName = 'Semilla de Bambú'; }
-                        else if(randomSeed === 'flower_small') { seedName = 'Semilla Pequeña'; }
+                    let potType = 'small';
+
+                    // Extraer plantas reales de la base de datos (dinámicas)
+                    if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
+                        const allPlants = Object.values(window.farmApp.state.dynamicPlants);
+                        
+                        // Filtrar para que Bael solo entregue semillas económicas/básicas (precio <= 15000)
+                        let basicPlants = allPlants.filter(p => p.price <= 15000);
+                        
+                        // Si no hay plantas baratas creadas, toma cualquiera del catálogo
+                        if (basicPlants.length === 0) basicPlants = allPlants; 
+                        
+                        if (basicPlants.length > 0) {
+                            const randomPlant = basicPlants[Math.floor(Math.random() * basicPlants.length)];
+                            randomSeedId = randomPlant.id;
+                            seedName = randomPlant.name;
+                            seedImg = randomPlant.image_url;
+                            potType = randomPlant.pot_type || 'small';
+                        }
                     }
 
-                    if (!window.farmApp.state.inventory[randomSeed]) {
-                        // reqSize en 'small' porque ahora son plantas estándar
-                        window.farmApp.state.inventory[randomSeed] = { name: seedName, type: 'seed', reqSize: 'small', qty: 0, image: seedImg };
+                    if (!window.farmApp.state.inventory[randomSeedId]) {
+                        window.farmApp.state.inventory[randomSeedId] = { 
+                            name: seedName, 
+                            type: 'seed', 
+                            reqSize: potType, 
+                            qty: 0, 
+                            image: seedImg 
+                        };
                     }
                     
-                    window.farmApp.state.inventory[randomSeed].qty += 1;
+                    window.farmApp.state.inventory[randomSeedId].qty += 1;
                     window.farmApp.saveState();
                     window.farmApp.updateUI();
                     
-                    window.farmApp.showFarmAlert("Muestra Gratis", "Bael deslizó una semilla en tu bolsillo.", "🧪");
+                    window.farmApp.showFarmAlert("Muestra Gratis", `Bael deslizó una semilla de ${seedName} en tu bolsillo.`, "🧪");
                     this.close();
 
                 } else if (merchantId === 'vito') {
