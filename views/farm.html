@@ -3423,10 +3423,10 @@ if (typeof window.farmApp === 'undefined') {
                 this.updateVisualTimers();
             }, 1000);
 
-            // NUEVO: Intervalo del Granjero Guía (Evalúa la granja cada 45 segundos)
+            // Intervalo del Granjero Guía (Evalúa la granja cada 5 minutos para no saturar)
             this.guideInterval = setInterval(() => {
                 this.evaluateGuideAdvice();
-            }, 45000);
+            }, 300000); // 300,000 ms = 5 minutos
             
             // Llamar una vez al inicio con un pequeño retraso para saludar
             setTimeout(() => this.evaluateGuideAdvice(), 2500);
@@ -3511,7 +3511,7 @@ if (typeof window.farmApp === 'undefined') {
             }
 
             // --- 2. CONSEJOS Y AVISOS NORMALES (Esperan 2 minutos - 120,000ms entre avisos) ---
-            if (!isCritical && timeSinceLast < 120000) return;
+            if (!isCritical && timeSinceLast < 600000) return;
 
             if (!msg) {
                 if (plots.some(p => p.status === 'planted' && p.isReady && !p.isSpoiled)) {

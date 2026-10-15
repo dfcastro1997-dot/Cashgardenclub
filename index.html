@@ -51,23 +51,22 @@
 </head>
 <body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="absolute inset-0 z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('assets/Fondos/login_bg.jpg');">
+    <div id="login-screen" class="absolute inset-0 w-full h-full bg-fixed z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('assets/Fondos/login_bg.jpg');">
         <!-- Capa oscura -->
         <div class="absolute inset-0 bg-gray-900/30"></div>
         
-        <!-- Tarjeta de Login (Ajustada para móvil y con scroll interno si es necesario) -->
+        <!-- Tarjeta de Login -->
         <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md p-6 sm:p-8 relative z-10 border border-white/50 transform transition-all max-h-[95vh] overflow-y-auto" style="scrollbar-width: none;">
             
             <div class="flex flex-col items-center justify-center mb-5 sm:mb-6 relative">
                 <div class="absolute inset-0 bg-white rounded-full blur-2xl opacity-60 w-24 h-24 mx-auto"></div>
-                <img src="assets/Fondos/logo.png" alt="CashGarden Logo" class="h-20 sm:h-24 w-auto relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
+                <!-- Título Nuevo en lugar del Logo -->
+                <h2 class="text-3xl sm:text-4xl font-black text-cg_navy relative z-10 drop-shadow-lg text-center uppercase tracking-widest">Ingreso de Granjeros</h2>
             </div>
             
             <form id="auth-form" class="space-y-3 sm:space-y-4 relative z-10">
-                <div class="text-center mb-1">
-                    <p class="text-[9px] sm:text-[10px] text-cg_navy font-black bg-gray-100/80 inline-block px-3 py-1.5 rounded-full border border-gray-200 shadow-sm uppercase tracking-widest">🌱 Simulador Skill-Based</p>
-                </div>
+                
+                <!-- (La etiqueta de Simulador Skill-Based fue eliminada de aquí) -->
                 
                 <h3 id="form-title" class="text-center font-black text-cg_navy text-xl sm:text-2xl hidden mb-3">Crear tu Cuenta</h3>
                 
@@ -1701,14 +1700,16 @@
             window.guideApp.close();
         };
 
-        // NUEVO: Iniciar el promotor global de referidos cada 6 minutos (360,000 ms)
         setInterval(() => {
-            // Solo mostrar si el dashboard principal está visible (es decir, el usuario ya inició sesión)
+            // Solo intenta sacar un mercader si la granja/dashboard está visible
             const dashboard = document.getElementById('dashboard-screen');
-            if (dashboard && !dashboard.classList.contains('hidden')) {
-                window.guideApp.promoteReferrals();
+            if (dashboard && !dashboard.classList.contains('hidden') && !window.merchantApp.isOpen) {
+                if (Math.random() < 0.05) { // 5% de chance
+                    const mercs = ['silas', 'bael', 'vito'];
+                    window.merchantApp.show(mercs[Math.floor(Math.random() * mercs.length)]);
+                }
             }
-        }, 360000);
+        }, 600000);
 
 
 
@@ -1742,20 +1743,36 @@
                 if (!data) return;
                 this.currentMerchant = merchantId;
 
-                // --- NUEVO: Generar planta para Vito ANTES de mostrar el mensaje ---
                 let finalQuote = data.quote;
+                let btnText = "Aceptar Trato";
+                let btnAction = () => this.accept(merchantId);
+
+                // Lógica de Don Vito
                 if (merchantId === 'vito') {
-                    let randomSeedId = 'dyn_rosa_permafrost'; 
-                    let plantName = 'Rosa Permafrost';
-                    if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
-                        const dynamicKeys = Object.keys(window.farmApp.state.dynamicPlants);
-                        if (dynamicKeys.length > 0) {
-                            randomSeedId = dynamicKeys[Math.floor(Math.random() * dynamicKeys.length)];
-                            plantName = window.farmApp.state.dynamicPlants[randomSeedId].name;
+                    // Verificar si ya hay un contrato activo
+                    const hasActiveContract = window.farmApp && window.farmApp.state && window.farmApp.state.vitoContract && window.farmApp.state.vitoContract.active;
+
+                    if (hasActiveContract) {
+                        finalQuote = "Tic, tac... El tiempo corre. Recuerda que tienes una entrega pendiente conmigo. No me decepciones, o ya sabes qué pasará con tus ahorros.";
+                        btnText = "Ver Contrato";
+                        btnAction = () => { 
+                            this.close(); 
+                            window.checkVitoContract(); 
+                        };
+                    } else {
+                        // Generar nuevo contrato si no tiene ninguno activo
+                        let randomSeedId = 'dyn_rosa_permafrost'; 
+                        let plantName = 'Rosa Permafrost';
+                        if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
+                            const dynamicKeys = Object.keys(window.farmApp.state.dynamicPlants);
+                            if (dynamicKeys.length > 0) {
+                                randomSeedId = dynamicKeys[Math.floor(Math.random() * dynamicKeys.length)];
+                                plantName = window.farmApp.state.dynamicPlants[randomSeedId].name;
+                            }
                         }
+                        this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: 35000 };
+                        finalQuote = `Tengo un pedido urgente. Necesito que cultives: ${plantName} en menos de 4 horas. Si cumples, la paga es enorme. Si me fallas... me quedaré con el 30% de tus ahorros.`;
                     }
-                    this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: 35000 };
-                    finalQuote = `Tengo un pedido urgente. Necesito que cultives: ${plantName} en menos de 4 horas. Si cumples, la paga es enorme. Si me fallas... me quedaré con el 30% de tus ahorros.`;
                 }
 
                 const container = document.getElementById('merchant-container');
@@ -1765,8 +1782,18 @@
                 document.getElementById('merchant-character').src = data.img;
                 document.getElementById('merchant-name').innerText = data.name;
 
-                // Configurar acción de aceptar según mercader
-                document.getElementById('merchant-accept-btn').onclick = () => this.accept(merchantId);
+                // Configurar botones
+                const acceptBtn = document.getElementById('merchant-accept-btn');
+                acceptBtn.innerText = btnText;
+                acceptBtn.onclick = btnAction;
+                
+                // Cambiar el texto del botón de rechazar si es solo un recordatorio
+                const rejectBtn = acceptBtn.previousElementSibling;
+                if (merchantId === 'vito' && window.farmApp && window.farmApp.state && window.farmApp.state.vitoContract && window.farmApp.state.vitoContract.active) {
+                    rejectBtn.innerText = "Ignorar";
+                } else {
+                    rejectBtn.innerText = "Rechazar";
+                }
 
                 // Deslizar desde la derecha (Quitar translate-x-full, poner translate-x-0)
                 container.classList.remove('translate-x-full');
@@ -1835,25 +1862,34 @@
                     this.close();
 
                 } else if (merchantId === 'bael') {
-                    const premiumSeeds = ['dyn_hidra_del_abismo', 'dyn_dragon', 'dyn_golem'];
-                    const randomSeed = premiumSeeds[Math.floor(Math.random() * premiumSeeds.length)];
+                    // Lista de semillas más económicas o básicas
+                    const basicSeeds = ['flower_wheat', 'flower_bamboo', 'flower_small'];
+                    const randomSeed = basicSeeds[Math.floor(Math.random() * basicSeeds.length)];
                     
                     // Buscar imagen y nombre real de la base de datos
                     let seedName = 'Semilla Misteriosa';
                     let seedImg = 'assets/Fondos/logo.png';
+                    
                     if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[randomSeed]) {
                         seedName = window.farmApp.state.dynamicPlants[randomSeed].name;
                         seedImg = window.farmApp.state.dynamicPlants[randomSeed].image_url;
+                    } else {
+                        // Nombres por defecto para las semillas base del juego
+                        if(randomSeed === 'flower_wheat') { seedName = 'Semilla de Trigo'; }
+                        else if(randomSeed === 'flower_bamboo') { seedName = 'Semilla de Bambú'; }
+                        else if(randomSeed === 'flower_small') { seedName = 'Semilla Pequeña'; }
                     }
 
                     if (!window.farmApp.state.inventory[randomSeed]) {
-                        window.farmApp.state.inventory[randomSeed] = { name: seedName, type: 'seed', reqSize: 'big', qty: 0, image: seedImg };
+                        // reqSize en 'small' porque ahora son plantas estándar
+                        window.farmApp.state.inventory[randomSeed] = { name: seedName, type: 'seed', reqSize: 'small', qty: 0, image: seedImg };
                     }
+                    
                     window.farmApp.state.inventory[randomSeed].qty += 1;
                     window.farmApp.saveState();
                     window.farmApp.updateUI();
                     
-                    window.farmApp.showFarmAlert("Muestra Gratis", "Bael deslizó una semilla exótica en tu bolsillo.", "🧪");
+                    window.farmApp.showFarmAlert("Muestra Gratis", "Bael deslizó una semilla en tu bolsillo.", "🧪");
                     this.close();
 
                 } else if (merchantId === 'vito') {
