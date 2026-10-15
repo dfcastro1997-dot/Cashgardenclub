@@ -206,18 +206,15 @@
     </div>
 
 
-    <!-- ========================================== -->
-    <!-- SISTEMA DE GRANJERO GUÍA (ESTILO PVZ)      -->
-    <!-- ========================================== -->
     <div id="guide-overlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-end justify-start">
         <!-- Contenedor principal que se desliza desde la izquierda -->
         <div id="guide-container" class="relative flex items-end transform -translate-x-full transition-transform duration-500 ease-out">
             
-            <!-- Personaje pegado a la izquierda y abajo (Ajustado en tamaño móvil) -->
-            <img id="guide-character" src="assets/Granjero/Explicando.png" class="w-40 sm:w-64 md:w-[320px] lg:w-[380px] h-auto object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] relative z-20 pointer-events-auto">
+            <!-- Personaje pegado a la izquierda y abajo (Z-index 40 para quedar AL FRENTE de la burbuja) -->
+            <img id="guide-character" src="assets/Granjero/Explicando.png" class="w-40 sm:w-64 md:w-[320px] lg:w-[380px] h-auto object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] relative z-40 pointer-events-auto">
             
-            <!-- Burbuja de Diálogo (Anchos y posiciones ajustadas para no tocar el borde) -->
-            <div id="guide-bubble" class="absolute bottom-[40%] sm:bottom-[50%] left-[60%] sm:left-[85%] bg-white text-cg_navy border-4 border-cg_navy rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl pointer-events-auto w-[210px] sm:w-[320px] md:w-[400px] transform scale-0 transition-transform duration-300 origin-bottom-left z-30 flex flex-col mb-2 sm:mb-0">
+            <!-- Burbuja de Diálogo (Movida más a la derecha y con Z-index 30 para quedar DETRÁS de la planta) -->
+            <div id="guide-bubble" class="absolute bottom-[40%] sm:bottom-[50%] left-[80%] sm:left-[95%] lg:left-[100%] bg-white text-cg_navy border-4 border-cg_navy rounded-2xl sm:rounded-3xl p-4 sm:p-5 sm:pl-8 shadow-2xl pointer-events-auto w-[220px] sm:w-[320px] md:w-[400px] transform scale-0 transition-transform duration-300 origin-bottom-left z-30 flex flex-col mb-2 sm:mb-0">
                 
                 <!-- Triángulo de la burbuja apuntando hacia el granjero -->
                 <div class="absolute top-[60%] -left-[19px] w-0 h-0 
@@ -227,10 +224,11 @@
                             border-y-[12px] border-y-transparent 
                             border-r-[12px] border-r-white z-10"></div>
                 
-                <p id="guide-text" class="text-xs sm:text-sm md:text-lg font-black leading-snug mb-3 sm:mb-4 min-h-[3.5rem] text-left whitespace-pre-wrap break-words"></p>
+                <!-- Texto con un poco de padding izquierdo (pl-2) para evitar que las hojas lo tapen -->
+                <p id="guide-text" class="text-xs sm:text-sm md:text-lg font-black leading-snug mb-3 sm:mb-4 min-h-[3.5rem] text-left whitespace-pre-wrap break-words pl-2 sm:pl-4"></p>
                 
-                <!-- Botón de Confirmación proporcionado para móvil -->
-                <button onclick="window.closeGuide()" class="self-end bg-cg_gold hover:bg-orange-500 text-white font-black py-2 px-4 sm:py-2.5 sm:px-5 rounded-xl shadow-[0_4px_0_#c27818] active:translate-y-[4px] active:shadow-none uppercase tracking-widest text-[10px] sm:text-xs transition-all">
+                <!-- Botón de Confirmación -->
+                <button onclick="window.closeGuide()" class="self-end bg-cg_gold hover:bg-orange-500 text-white font-black py-2 px-4 sm:py-2.5 sm:px-5 rounded-xl shadow-[0_4px_0_#c27818] active:translate-y-[4px] active:shadow-none uppercase tracking-widest text-[10px] sm:text-xs transition-all relative z-50">
                     ¡Entendido!
                 </button>
             </div>
