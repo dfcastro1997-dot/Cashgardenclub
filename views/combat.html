@@ -1671,18 +1671,16 @@ window.combatApp = {
             }
 
             this.enemyTeam = [];
-            // Multiplicadores fijos por liga para que el jugador sienta la mejora de sus plantas
-            let fixedMultiplier = 1.0;
-            if (squadValue >= 1000) fixedMultiplier = 1.8 + (Math.random() * 0.4);
-            else if (squadValue < 500) fixedMultiplier = 0.7 + (Math.random() * 0.2);
-            else fixedMultiplier = 1.2 + (Math.random() * 0.3);
-
+            
             for(let i=0; i<3; i++) {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
 
-                const bHp = Math.floor((rP.hp || 100) * fixedMultiplier);
-                const bAtk = Math.floor((rP.atk || 40) * fixedMultiplier);
-                const bDef = Math.min(75, Math.floor((rP.def || 20) * fixedMultiplier));
+                // Usamos las estadísticas BASE reales de la planta sin multiplicadores inflados.
+                // La dificultad real proviene de que el sistema ('pool') ya seleccionó 
+                // plantas más fuertes de la base de datos según el nivel del jugador.
+                const bHp = rP.hp || 100;
+                const bAtk = rP.atk || 40;
+                const bDef = rP.def || 20;
 
                 this.enemyTeam.push(buildPlantObj(rP.id || rP.catKey, rP.name, rP.image_url || rP.icon, false, `e_${i}`, bHp, 0, bAtk, bDef));
             }
