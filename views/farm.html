@@ -1926,6 +1926,7 @@ if (typeof window.farmApp === 'undefined') {
                         ? 'border-red-400 bg-red-50/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse' 
                         : (plot.isReady ? 'border-green-400 bg-green-50 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : (isSelected ? 'border-cg_blue shadow-md bg-white' : 'border-gray-200 bg-white hover:border-cg_blue shadow-sm hover:shadow-md'));
 
+                    // Tarjeta más alta: h-72 sm:h-[21rem]
                     el.className = `rounded-2xl border-2 h-72 sm:h-[21rem] relative cursor-pointer transition-all overflow-hidden flex flex-col ${borderStyle}`;
                     
                     let minSafe = 20, maxSafe = 80;
@@ -1954,10 +1955,8 @@ if (typeof window.farmApp === 'undefined') {
                             currentTerrain = `assets/Fondos/terreno_${typeName}.png`;
                         }
                     }
-                    
-                    const currentPlantImg = plot.plant && plot.plant.icon ? plot.plant.icon : (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big);
 
-                    // Formato de Tiempo Mejorado (HH:MM:SS)
+                    // 1. Calculamos el progreso primero para poder usarlo en la evolución
                     let timeLeftText = '';
                     let progress = 0;
                     if(plot.plantedAt) {
@@ -1977,22 +1976,38 @@ if (typeof window.farmApp === 'undefined') {
                         }
                     }
 
+                    // 2. Lógica de Evolución: Semilla (<80%) -> Planta (>=80%)
+                    let currentPlantImg = plot.plant && plot.plant.icon ? plot.plant.icon : this.state.images.plant_small;
+                    let plantImgClass = "absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md";
+                    let plantImgStyle = "transform: translateY(-20%);";
+                    let imgOnError = "";
+
+                    if (progress < 80) {
+                        currentPlantImg = `assets/Semillas/${plantCategoryName}.png`;
+                        // Fallback Inteligente: Si no existe el .png, intentará cargar el .jpg
+                        imgOnError = `onerror="this.onerror=null; this.src='assets/Semillas/${plantCategoryName}.jpg';"`;
+                        
+                        plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md"; // Más pequeña
+                        plantImgStyle = "transform: translateY(0%);"; // Sentada sobre la tierra sin flotar
+                    }
+
                     let crowHtml = '';
                     if (plot.hasCrow) {
                         if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
-                        // Corrección de posición para que no dañe la UI del "Pausado"
                         crowHtml = `
+                            </div>
                             <div class="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-1 cursor-pointer hover:scale-110 transition-transform z-50 pointer-events-auto" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
                                 <img src="${this.state.images.crow}" alt="Cuervo" class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md animate-bounce" />
                                 <span class="bg-red-600 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">¡CLICK AQUÍ!</span>
                             </div>
+                            <div class="hidden">
                         `;
                     } else {
                         plot.crowArrivedAt = 0;
                     }
 
                     let stressBadge = (plot.stressMarks && plot.stressMarks > 0) 
-                        ? `<span class="text-[8px] sm:text-[9px] font-bold bg-orange-100 text-orange-600 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm">⚠️ -${plot.stressMarks * 15}% ROI</span>` 
+                        ? `<span class="text-[8px] sm:text-[9px] font-bold bg-orange-100 text-orange-600 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm shrink-0">⚠️ -${plot.stressMarks * 15}% ROI</span>` 
                         : '';
 
                     el.innerHTML = `
@@ -2018,14 +2033,15 @@ if (typeof window.farmApp === 'undefined') {
                         <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center">
                                 <img src="${currentTerrain}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno">
-                                <img src="${currentPlantImg}" class="absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md" style="transform: translateY(-20%);" alt="Planta">
+                                <!-- La imagen ahora es dinámica (Semilla o Planta) con fallback de extensión -->
+                                <img src="${currentPlantImg}" ${imgOnError} class="${plantImgClass}" style="${plantImgStyle}" alt="Planta">
                             </div>
                         </div>
 
-                        <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 p-3 flex flex-col gap-3 z-20 rounded-b-2xl cursor-default shadow-[0_-4px_10px_rgba(0,0,0,0.03)]" onclick="event.stopPropagation()">
+                        <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 p-3 flex flex-col gap-2 z-20 rounded-b-2xl cursor-default shadow-[0_-4px_10px_rgba(0,0,0,0.03)]" onclick="event.stopPropagation()">
                             
                             <!-- Fila 1: Estadísticas Limpias (Info, Agua, Tiempo) -->
-                            <div class="flex justify-between items-center px-1">
+                            <div class="flex justify-between items-center px-1 mb-1">
                                 <div class="flex items-center gap-2 sm:gap-3">
                                     <!-- Botón 'i' -->
                                     <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" class="w-7 h-7 sm:w-8 sm:h-8 bg-blue-50 text-blue-500 border border-blue-200 rounded-full flex items-center justify-center font-black shadow-sm hover:bg-blue-100 hover:text-blue-600 transition-colors text-sm font-serif shrink-0 cursor-pointer pointer-events-auto">i</button>
@@ -2034,22 +2050,18 @@ if (typeof window.farmApp === 'undefined') {
                                     <div class="flex items-center gap-1.5 leading-none">
                                         <span class="text-lg sm:text-xl drop-shadow-sm">💧</span>
                                         <span class="text-sm sm:text-base font-black ${waterColorClass}">${displayWater}%</span>
+                                        ${stressBadge}
                                     </div>
                                 </div>
                                 
-                                <!-- Tiempo Formato Reloj -->
+                                <!-- Tiempo Formato Reloj (CON ID PARA ACTUALIZAR EN VIVO) -->
                                 <div class="text-sm sm:text-base font-mono font-black ${isAlert ? 'text-red-500' : 'text-slate-700'} bg-gray-100 px-3 py-2 rounded-xl border border-gray-200 shadow-sm pointer-events-none flex items-center gap-1.5 shrink-0">
                                     <span class="text-base">⏳</span> 
                                     <span id="plot-timer-${plot.id}" class="min-w-[45px] text-center">${isAlert ? 'PAUSADO' : timeLeftText}</span>
                                 </div>
                             </div>
                             
-                            <!-- Fila 2: Barra de Progreso de Crecimiento -->
-                            <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden pointer-events-none shadow-inner border border-gray-200">
-                                <div id="plot-progress-${plot.id}" class="bg-green-500 h-full transition-all duration-1000" style="width: ${progress}%"></div>
-                            </div>
-                            
-                            <!-- Fila 3: Botones de Acción (Ancho Completo y Uniforme) -->
+                            <!-- Fila 2: Botones de Acción (Ancho Completo y Uniforme) -->
                             <div class="flex items-center justify-between gap-1.5 sm:gap-2 w-full mt-0.5">
                                 ${plot.isReady ? `
                                     ${plot.isSpoiled ? `
