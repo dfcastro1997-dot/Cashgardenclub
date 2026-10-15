@@ -278,4 +278,18 @@
     }
 
     setTimeout(initReferrals, 100);
+
+    // --- MENSAJE DEL GUÍA EN REFERIDOS ---
+    setTimeout(() => {
+        if(window.guideApp) {
+            const lastRefGreeting = sessionStorage.getItem('last_ref_greeting') || 0;
+            const now = Date.now();
+            
+            // Habla cada 5 minutos (300,000 ms) para no aburrir
+            if (now - lastRefGreeting > 300000) { 
+                window.guideApp.show("¡Mira esta belleza carnívora! Especies legendarias como la Hidra del Abismo y avatares exclusivos solo se consiguen invitando amigos. ¡Copia tu código y pásalo!", "referidos");
+                sessionStorage.setItem('last_ref_greeting', now.toString());
+            }
+        }
+    }, 1200);
 </script>

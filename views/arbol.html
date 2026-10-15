@@ -445,6 +445,44 @@ window.treeApp = {
             });
             topList.innerHTML = topHtml;
         }
+
+
+
+        // --- NUEVO: MENSAJES DINÁMICOS DEL GUÍA EN EL ÁRBOL ---
+        setTimeout(() => {
+            if(window.guideApp) {
+                const lastTreeGreeting = sessionStorage.getItem('last_tree_greeting') || 0;
+                const now = Date.now();
+                
+                // Hablará cada 3 minutos al entrar aquí
+                if (now - lastTreeGreeting > 180000) { 
+                    let msg = "";
+                    let emotion = "explicando";
+
+                    if (data.status === 'completed') {
+                        msg = "¡Lo logramos! La comunidad llenó el Árbol de la Vida. Revisa el podio y las recompensas que nos entregaron, ¡están buenísimas!";
+                        emotion = "celebracion";
+                    } else if (pct >= 85) {
+                        msg = `¡Ya casi, vecino! Estamos al ${Math.floor(pct)}%. Dona unas cuantas semillas más para asegurar el premio final antes de que cierre el ciclo.`;
+                        emotion = "celebracion";
+                    } else if (pct === 0) {
+                        msg = "Este es el Árbol de la Vida. Si todos donamos un poco de nuestras ganancias hoy, a la medianoche se desbloquearán herramientas y semillas gratis para todos.";
+                        emotion = "explicando";
+                    } else {
+                        msg = "La comunidad está trabajando duro en el Árbol. Recuerda que si logras entrar al Top 3 de guardianes, te llevarás un porcentaje enorme de todo el botín.";
+                        emotion = "explicando";
+                    }
+                    
+                    window.guideApp.show(msg, emotion);
+                    sessionStorage.setItem('last_tree_greeting', now.toString());
+                }
+            }
+        }, 1200);
+
+
+
+
+
     },
 
     // --- MODALES PERSONALIZADOS ---

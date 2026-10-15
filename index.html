@@ -761,6 +761,11 @@
             const name = userData.username || sessionStorage.getItem('username') || 'Usuario';
             const shortId = userData.short_id || '0000';
             
+            // NUEVO: Guardar el código de referido en la sesión para usarlo globalmente
+            if (userData.ref_code) {
+                sessionStorage.setItem('ref_code', userData.ref_code);
+            }
+            
             // Asignación Profesional de Elementos
             const nameEl = document.getElementById('profile-name');
             const idEl = document.getElementById('profile-id');
@@ -1568,7 +1573,8 @@
                 const images = {
                     'explicando': 'assets/Granjero/Explicando.png',
                     'alarma': 'assets/Granjero/Alarma.png',
-                    'celebracion': 'assets/Granjero/Celebración.png'
+                    'celebracion': 'assets/Granjero/Celebración.png',
+                    'referidos': 'assets/Granjero/Referidos.png'
                 };
                 charImg.src = images[emotion] || images['explicando'];
 
@@ -1612,6 +1618,23 @@
                     container.classList.add('-translate-x-full');
                     this.isOpen = false;
                 }, 200);
+            },
+
+            // NUEVO: Promoción automática de referidos
+            promoteReferrals() {
+                if (this.isOpen) return; // No interrumpir si ya está hablando en pantalla
+                
+                const refCode = sessionStorage.getItem('ref_code');
+                if (!refCode) return;
+                
+                const msgs = [
+                    `¡Ey vecino! ¿Sabías que si invitas amigos puedes ganar plantas carnívoras y mucho más? Diles que usen tu código al registrarse: ${refCode}`,
+                    `¡El trabajo en equipo da frutos! Comparte tu código ${refCode} con tus amigos y desbloquea especies exclusivas de la Arena.`,
+                    `¡No te guardes el secreto! Dile a tus conocidos que se unan usando tu código ${refCode} y ganen recompensas juntos.`
+                ];
+                const msg = msgs[Math.floor(Math.random() * msgs.length)];
+                
+                this.show(msg, 'referidos');
             }
         };
 
@@ -1619,6 +1642,15 @@
         window.closeGuide = function() {
             window.guideApp.close();
         };
+
+        // NUEVO: Iniciar el promotor global de referidos cada 6 minutos (360,000 ms)
+        setInterval(() => {
+            // Solo mostrar si el dashboard principal está visible (es decir, el usuario ya inició sesión)
+            const dashboard = document.getElementById('dashboard-screen');
+            if (dashboard && !dashboard.classList.contains('hidden')) {
+                window.guideApp.promoteReferrals();
+            }
+        }, 360000);
 
 
 

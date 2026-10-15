@@ -212,26 +212,31 @@ window.shopApp = {
         this.updateBalancesUI();
         this.renderShopItems();
 
-        // --- NUEVO: Saludos en el Mercado con temporizador de 5 minutos ---
+        // --- NUEVO: Saludos y promociones en el Mercado ---
         setTimeout(() => {
             if(window.guideApp) {
                 const lastShopGreeting = sessionStorage.getItem('last_shop_greeting') || 0;
                 const now = Date.now();
                 
-                // Si han pasado más de 5 minutos (300,000 ms) desde la última vez que habló en la tienda
-                if (now - lastShopGreeting > 300000) { 
+                // Si han pasado más de 3 minutos (180,000 ms)
+                if (now - lastShopGreeting > 180000) { 
                     const shopQuotes = [
                         "¡Bienvenido al Mercado! Aquí encontrarás desde regaderas hasta semillas exóticas. ¡Invierte con sabiduría!",
-                        "Recuerda: antes de comprar las plantas más caras, asegúrate de tener suficientes macetas y agua de sobra.",
-                        "¡Buenas ofertas hoy! Échale un ojo a los pases de automatización si te vas a desconectar un buen rato.",
-                        "Si andas corto de semillas, puedes intercambiar tus Créditos Reales por lotes gigantes aquí mismo."
+                        "Recuerda: antes de comprar las plantas más caras, asegúrate de tener suficientes macetas y una buena reserva de agua.",
+                        "¿Te vas a desconectar? El Pase Granjero VIP es una ganga. Tus plantas se regarán y cosecharán solas mientras duermes.",
+                        "Si la Arena de combate te está dejando las plantas a 1 HP, la Enfermería VIP es lo que necesitas. ¡Se curarán el triple de rápido!",
+                        "¡No dejes que se te acabe el agua! Compra el lote de 10 usos para no estar corriendo en una emergencia.",
+                        "Si andas corto de semillas para los torneos, el Banco de Cambio te permite comprar lotes gigantes usando tus Créditos."
                     ];
                     const quote = shopQuotes[Math.floor(Math.random() * shopQuotes.length)];
-                    window.guideApp.show(quote, "explicando");
+                    // Alternamos entre explicando y celebración aleatoriamente
+                    const randomEmotion = Math.random() > 0.5 ? "explicando" : "celebracion";
+                    
+                    window.guideApp.show(quote, randomEmotion);
                     sessionStorage.setItem('last_shop_greeting', now.toString());
                 }
             }
-        }, 1000);
+        }, 1200);
     },
 
     updateBalancesUI() {
