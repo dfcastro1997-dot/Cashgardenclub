@@ -415,13 +415,10 @@ def process_server_tick(game_state_str, chat_id=None):
                     min_safe = 20
                     max_safe = 80
 
-                    # === CORRECCIÓN AUTO-RIEGO ===
-                    # Ancla el agua al centro seguro exacto de la planta, asegurando que nunca se ahogue ni se seque
                     if is_auto_watering:
                         safe_mid = min_safe + ((max_safe - min_safe) / 2.0)
                         plot['water'] = safe_mid
                         plot['hasCrow'] = False
-                        plot['crowLeavingAt'] = 0
 
                     if not plot.get('isReady'):
                         if not is_auto_watering:
@@ -430,31 +427,24 @@ def process_server_tick(game_state_str, chat_id=None):
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
                             
-                            if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
-                                plot['hasCrow'] = False
-                                plot['crowLeavingAt'] = 0
-                                if plot.get('water', 0) > max_safe:
-                                    plot['water'] = max_safe
+                        # PERIODO DE GRACIA: 60 segundos desde que se planta o se espanta
+                        just_planted = (now - plot.get('plantedAt', now)) < 60000
+                        just_shooed = (now - plot.get('lastShooAt', 0)) < 60000
+                        in_grace_period = just_planted or just_shooed
 
                         if plot.get('scarecrowEndTime', 0) > now:
                             plot['hasCrow'] = False
                         elif not plot.get('hasCrow') and not is_auto_watering:
-                            if plot.get('water', 0) < min_safe:
+                            if plot.get('water', 0) < min_safe and not in_grace_period:
                                 plot['hasCrow'] = True
-                            elif plot.get('water', 0) > max_safe:
+                                plot['stressMarks'] = plot.get('stressMarks', 0) + 1
+                            elif plot.get('water', 0) > max_safe and not in_grace_period:
                                 plot['hasCrow'] = True
+                                plot['stressMarks'] = plot.get('stressMarks', 0) + 1
                             
                         if plot.get('hasCrow'):
-                            crow_arrived = plot.get('crowArrivedAt', now)
-                            plot['crowArrivedAt'] = crow_arrived
-                        else:
-                            plot['crowArrivedAt'] = 0
-
-                        # Periodo de gracia de 10 minutos (600,000 ms) antes de pausar el crecimiento
-                        time_with_crow = now - plot.get('crowArrivedAt', now)
-                        is_crow_landed = plot.get('hasCrow') and time_with_crow > 600000
-                        
-                        if plot.get('water', 0) <= 0 or is_crow_landed:
+                            plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
+                        elif plot.get('water', 0) <= 0:
                             plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
 
                     # FASE DE COSECHA O ABANDONO
@@ -462,9 +452,14 @@ def process_server_tick(game_state_str, chat_id=None):
                         plot['isReady'] = True
                         
                         if is_auto_harvesting and not plot.get('isSpoiled'):
-                            reward = plot.get('plant', {}).get('reward', 1500)
+                            base_reward = plot.get('plant', {}).get('reward', 1500)
                             
-                            state['seedsBalance'] = state.get('seedsBalance', 0) + reward
+                            # APLICAR PENALIZACIÓN DE ESTRÉS
+                            stress = plot.get('stressMarks', 0)
+                            penalty_multiplier = max(0.1, 1.0 - (stress * 0.15))
+                            final_reward = int(base_reward * penalty_multiplier)
+                            
+                            state['seedsBalance'] = state.get('seedsBalance', 0) + final_reward
                             plot['potUses'] = plot.get('potUses', 0) + 1
                             max_uses = 5 
                             
@@ -476,31 +471,28 @@ def process_server_tick(game_state_str, chat_id=None):
                                 plot['status'] = 'pot'
                                 
                             plot['plant'] = None
-                            # El agua se conserva en la tierra para que se evapore al sol
                             plot['hasCrow'] = False
-                            plot['crowLeavingAt'] = 0
                             plot['scarecrowEndTime'] = 0
                             plot['plantedAt'] = 0
                             plot['harvestAt'] = 0
                             plot['isReady'] = False
                             plot['isSpoiled'] = False
+                            plot['stressMarks'] = 0
+                            plot['lastShooAt'] = 0
                         else:
-                            # === CORRECCIÓN: SOLO PENALIZAR POR ABANDONO SI NO TIENE AUTO-RIEGO ===
+                            # PENALIZACIÓN POR ABANDONO (Si la planta madura se pudre)
                             if not is_auto_watering:
                                 growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
-                                grace_period = growth_time / 2.0  # 50% del tiempo de vida
+                                grace_period = growth_time / 2.0  
                                 time_overdue = now - (plot.get('harvestAt', now) + grace_period)
                                 
                                 if time_overdue > 0:
                                     plot['isSpoiled'] = True
                                     plot['hasCrow'] = True
                                     
-                                    # Tramos de 15 minutos = 900,000 ms
-                                    if time_overdue > 2700000: # 45 mins: 3 cuervos + Colapso
+                                    if time_overdue > 2700000:
                                         plot['crowsCount'] = 3
-                                        plot['rewardMultiplier'] = 0.0 # Pierde el 100% de la ganancia
-                                        
-                                        # Contagio al siguiente terreno (se procesa fuera del for)
+                                        plot['rewardMultiplier'] = 0.0 
                                         if not plot.get('contagionTriggered'):
                                             plot['contagionTriggered'] = True
                                             contagion_triggered = True

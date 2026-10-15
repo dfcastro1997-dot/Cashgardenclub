@@ -1335,8 +1335,28 @@ window.combatApp = {
         }
 
         const audio = new Audio(src);
-        audio.volume = window.bgMusic ? Math.min(1, window.bgMusic.volume + 0.3) : 0.6;
-        audio.play().catch(() => {});
+        
+        // Aumentamos drásticamente el volumen de los ataques (SFX) para que destaquen sobre la música
+        audio.volume = (window.bgMusic && window.bgMusic.volume > 0) ? Math.min(1.0, window.bgMusic.volume + 0.6) : 0.8;
+        
+        // Anti-Garbage Collection: Guardamos la referencia globalmente hasta que el sonido termine
+        if (!this._playingSounds) this._playingSounds = [];
+        this._playingSounds.push(audio);
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                audio.onended = () => {
+                    const idx = this._playingSounds.indexOf(audio);
+                    if (idx > -1) this._playingSounds.splice(idx, 1);
+                };
+            }).catch(e => {
+                console.warn("Sonido bloqueado temporalmente por el navegador:", e);
+                // Si el navegador bloqueó el autoplay en ese milisegundo, limpiamos la memoria
+                const idx = this._playingSounds.indexOf(audio);
+                if (idx > -1) this._playingSounds.splice(idx, 1);
+            });
+        }
     },
 
     toggleSpeed() {
@@ -1960,7 +1980,6 @@ window.combatApp = {
 
         let html = '';
         if (mode === 'plants') {
-            const width = 'cb-w-plant';
             let shown = 0;
             this.playerTeam.forEach((plant, idx) => {
                 if (plant.hp <= 0) return;
@@ -1968,33 +1987,43 @@ window.combatApp = {
                 const queuedCount = this.actionQueue.filter(a => a.attackerIdx === idx).length;
                 const hpPercent = Math.max(0, (plant.hp / plant.maxHp) * 100);
                 const statusChips = [
-                    plant.shieldHp > 0 ? `<span class="bg-blue-600 text-white px-1 rounded">🛡️${plant.shieldHp}</span>` : '',
-                    plant.blockHit ? `<span class="bg-emerald-600 text-white px-1 rounded">🔰</span>` : '',
-                    plant.hasBuff ? `<span class="bg-rose-600 text-white px-1 rounded">🔥x2</span>` : '',
-                    this.isExhausted(plant) ? `<span class="bg-amber-600 text-white px-1 rounded">💤${plant.cantAttackTurns}</span>` : ''
+                    plant.shieldHp > 0 ? `<span class="bg-blue-600 text-white px-1.5 py-0.5 rounded border border-white/20 shadow">🛡️${plant.shieldHp}</span>` : '',
+                    plant.blockHit ? `<span class="bg-emerald-600 text-white px-1.5 py-0.5 rounded border border-white/20 shadow">🔰</span>` : '',
+                    plant.hasBuff ? `<span class="bg-rose-600 text-white px-1.5 py-0.5 rounded border border-white/20 shadow">🔥x2</span>` : '',
+                    this.isExhausted(plant) ? `<span class="bg-amber-600 text-white px-1.5 py-0.5 rounded border border-white/20 shadow">💤${plant.cantAttackTurns}</span>` : ''
                 ].join('');
-                const above = `
-                    <div class="w-full flex flex-col mb-1 px-1.5 py-0.5 rounded-lg bg-black/75 border border-white/20 shadow-md pointer-events-none">
-                        <div class="flex items-center justify-between gap-1 text-[8px] sm:text-[10px] font-black text-amber-200 mb-0.5">
-                            <span class="truncate">${this.escapeHtml(plant.name.split(' ')[0])}</span>
-                            <span class="text-green-300 tabular-nums shrink-0">${plant.hp}/${plant.maxHp}</span>
+
+                html += `
+                <div role="button" tabindex="0" aria-label="${this.escapeHtml(plant.name)}"
+                     onclick="window.combatApp.openPlantAttacks(${idx})"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}"
+                     class="relative flex flex-col items-center justify-end shrink-0 cursor-pointer transition-transform duration-200 anim-tarjeta-float-${idx % 3} hover:scale-105"
+                     style="width: clamp(110px, 26vw, 170px);">
+                    
+                    <!-- Barra de HP Estilo Clásico (Referencia a la Imagen) -->
+                    <div class="w-full flex flex-col mb-1 sm:mb-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-[#23211a]/95 border-2 border-[#54624b] shadow-[0_4px_10px_rgba(0,0,0,0.5)] pointer-events-none z-20">
+                        <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs font-black mb-1 sm:mb-1.5">
+                            <span class="text-[#fef08a] truncate leading-none drop-shadow-sm">${this.escapeHtml(plant.name.split(' ')[0])}</span>
+                            <span class="text-[#86efac] tabular-nums shrink-0 leading-none drop-shadow-sm">${plant.hp}/${plant.maxHp}</span>
                         </div>
-                        <div class="axie-hp-track w-full h-1.5 sm:h-2 rounded-full overflow-hidden">
-                            <div class="h-full rounded-full ${hpPercent < 30 ? 'bg-red-500' : 'bg-gradient-to-r from-emerald-500 via-green-400 to-lime-300'}" style="width: ${hpPercent}%"></div>
+                        <div class="w-full h-2 sm:h-2.5 bg-black/60 rounded-full overflow-hidden border border-black/40 shadow-inner">
+                            <div class="h-full rounded-full ${hpPercent < 30 ? 'bg-[#ef4444]' : 'bg-gradient-to-r from-[#22c55e] to-[#86efac]'}" style="width: ${hpPercent}%;"></div>
                         </div>
-                        ${statusChips ? `<div class="flex gap-0.5 mt-0.5 text-[7px] sm:text-[9px] font-black">${statusChips}</div>` : ''}
-                    </div>`;
-                const overlays = `
-                    ${queuedCount > 0 ? `<div class="absolute -top-2 -right-1 bg-red-600 text-white font-black text-[9px] sm:text-[11px] px-1.5 rounded-full border-2 border-white shadow-md z-30">⚔️ ${queuedCount}</div>` : ''}
-                    ${this.isExhausted(plant) ? `<div class="cb-status absolute left-1/2 -translate-x-1/2 bg-amber-600 text-white font-black uppercase rounded-full shadow-lg z-30 whitespace-nowrap pointer-events-none">💤 Descansa</div>` : ''}`;
-                html += this.cardHTML({
-                    idx, widthClass: width, animClass: `anim-tarjeta-float-${idx % 3}`, above, overlays,
-                    enabled: true, selected: false, hotkey: shown,
-                    img: this.getPlantCardImage(plant), color: plant.catColor || '#16a34a',
-                    fallbackInner: this.plantFallbackInner(plant),
-                    onclick: `window.combatApp.openPlantAttacks(${idx})`,
-                    ariaLabel: `${plant.name}, ${plant.hp} de ${plant.maxHp} HP. Ver ataques`
-                });
+                        ${statusChips ? `<div class="flex gap-1 mt-1.5 text-[8px] sm:text-[9px] font-black justify-center">${statusChips}</div>` : ''}
+                    </div>
+
+                    <!-- Sprite Transparente de la Planta -->
+                    <div class="relative flex items-center justify-center w-full min-h-[90px] sm:min-h-[120px]">
+                        ${queuedCount > 0 ? `<div class="absolute top-0 right-0 bg-red-600 text-white font-black text-[10px] sm:text-xs px-2 py-0.5 rounded-full border-2 border-white shadow-md z-30">⚔️ ${queuedCount}</div>` : ''}
+                        ${this.isExhausted(plant) ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-600/90 text-white font-black text-[10px] sm:text-xs uppercase px-3 py-1 rounded-full shadow-lg z-30 whitespace-nowrap">💤</div>` : ''}
+                        <img src="${plant.icon}" draggable="false" class="h-24 sm:h-32 md:h-36 w-auto object-contain drop-shadow-2xl">
+                    </div>
+
+                    <!-- Indicador Hotkey Inferior -->
+                    <div class="mt-1 sm:mt-2 bg-[#1a1a1a] text-white text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-md border border-[#333] shadow-sm z-20">
+                        ${shown}
+                    </div>
+                </div>`;
             });
         } else if (mode === 'skills') {
             const plant = this.playerTeam[this.activePlantIndex];
