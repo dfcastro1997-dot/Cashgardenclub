@@ -212,16 +212,24 @@ window.shopApp = {
         this.updateBalancesUI();
         this.renderShopItems();
 
-        // --- NUEVO: Mensajes aleatorios del guía al entrar al mercado ---
+        // --- NUEVO: Saludos en el Mercado con temporizador de 5 minutos ---
         setTimeout(() => {
             if(window.guideApp) {
-                const shopQuotes = [
-                    "¡Bienvenido al Mercado! Aquí encontrarás desde regaderas hasta semillas exóticas. ¡Invierte con sabiduría!",
-                    "Recuerda: antes de comprar las plantas más caras, asegúrate de tener suficientes macetas y agua de sobra.",
-                    "¡Buenas ofertas hoy! Échale un ojo a los pases de automatización si te vas a desconectar un buen rato."
-                ];
-                const quote = shopQuotes[Math.floor(Math.random() * shopQuotes.length)];
-                window.guideApp.show(quote, "explicando");
+                const lastShopGreeting = sessionStorage.getItem('last_shop_greeting') || 0;
+                const now = Date.now();
+                
+                // Si han pasado más de 5 minutos (300,000 ms) desde la última vez que habló en la tienda
+                if (now - lastShopGreeting > 300000) { 
+                    const shopQuotes = [
+                        "¡Bienvenido al Mercado! Aquí encontrarás desde regaderas hasta semillas exóticas. ¡Invierte con sabiduría!",
+                        "Recuerda: antes de comprar las plantas más caras, asegúrate de tener suficientes macetas y agua de sobra.",
+                        "¡Buenas ofertas hoy! Échale un ojo a los pases de automatización si te vas a desconectar un buen rato.",
+                        "Si andas corto de semillas, puedes intercambiar tus Créditos Reales por lotes gigantes aquí mismo."
+                    ];
+                    const quote = shopQuotes[Math.floor(Math.random() * shopQuotes.length)];
+                    window.guideApp.show(quote, "explicando");
+                    sessionStorage.setItem('last_shop_greeting', now.toString());
+                }
             }
         }, 1000);
     },

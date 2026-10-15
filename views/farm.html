@@ -3344,64 +3344,90 @@ if (typeof window.farmApp === 'undefined') {
             // Si el granjero ya está en pantalla hablando, no lo interrumpimos
             if (!window.guideApp || window.guideApp.isOpen) return; 
 
+            const now = Date.now();
+            // Tiempo desde el último consejo (si es la primera vez, es un número muy grande)
+            const timeSinceLast = this.lastGuideTime ? (now - this.lastGuideTime) : 9999999;
+            
             const plots = this.state.plots;
             const inventory = this.state.inventory;
             const balance = this.state.seedsBalance;
             
-            // Verificamos qué recursos reales tiene el jugador
+            // Verificamos recursos reales
             const hasSeeds = Object.values(inventory).some(item => item.type === 'seed' && item.qty > 0);
             const waterQty = inventory.tool_water ? inventory.tool_water.qty : 0;
             const potQty = inventory.tool_pot_small ? inventory.tool_pot_small.qty : 0;
 
-            // 1. Prioridad Máxima: Cuervos / Plagas en el campo
+            let msg = null;
+            let emotion = 'explicando';
+            let isCritical = false;
+
+            // --- 1. ALERTAS CRÍTICAS (Ignoran el tiempo de espera) ---
             if (plots.some(p => p.hasCrow)) {
-                window.guideApp.show("¡Por las barbas de mi abuelo! ¡Un cuervo se está comiendo tu cosecha! Toca la planta rápido para espantarlo.", "alarma");
-                return;
+                msg = "¡Por las barbas de mi abuelo! ¡Un cuervo se está comiendo tu cosecha! Toca la planta rápido para espantarlo.";
+                emotion = "alarma";
+                isCritical = true;
+            } else if (plots.some(p => p.status === 'planted' && p.water > 0 && p.water <= 25)) {
+                msg = "¡Se encienden las alarmas! Tienes una planta muy seca. Échale agua antes de que se llene de plagas.";
+                emotion = "alarma";
+                isCritical = true;
+            } else if (plots.some(p => p.status === 'planted' && p.isSpoiled)) {
+                msg = "¡Qué desastre! Tienes una planta marchita y dañada. Límpiala pronto o contagiará a las demás.";
+                emotion = "alarma";
+                isCritical = true;
             }
 
-            // 2. Prioridad Alta: Plantas a punto de secarse (0% - 25% de agua)
-            if (plots.some(p => p.status === 'planted' && p.water > 0 && p.water <= 25)) {
-                window.guideApp.show("¡Se encienden las alarmas! Tienes una planta muy seca. Échale agua antes de que se llene de plagas.", "alarma");
-                return;
-            }
+            // --- 2. CONSEJOS Y AVISOS NORMALES (Esperan 2 minutos - 120,000ms entre avisos) ---
+            if (!isCritical && timeSinceLast < 120000) return;
 
-            // 3. Prioridad Alta: Plantas podridas
-            if (plots.some(p => p.status === 'planted' && p.isSpoiled)) {
-                window.guideApp.show("¡Qué desastre! Tienes una planta marchita y dañada. Límpiala pronto o contagiará a las demás.", "alarma");
-                return;
-            }
-
-            // 4. Prioridad Media: Cosechas listas para recoger
-            if (plots.some(p => p.status === 'planted' && p.isReady && !p.isSpoiled)) {
-                window.guideApp.show("¡Huele a dinero! Tienes una planta lista para cosechar. Recógela antes de que vengan los carroñeros.", "celebracion");
-                return;
-            }
-
-            // 5. Consejo de Emergencia: Semillas Críticas (REEMPLAZA EL MENSAJE ANTERIOR)
-            if (balance < 1000 && !hasSeeds) {
-                // Solo te regaña si tienes plantas sembradas, ya que dependes de ellas para sobrevivir
-                if (plots.some(p => p.status === 'planted')) {
-                    window.guideApp.show("¡Ten cuidado con tus plantas! Casi no te quedan semillas ni para la planta más barata. ¡Necesitas cosechar con urgencia para recuperar capital!", "alarma");
-                    return;
+            if (!msg) {
+                if (plots.some(p => p.status === 'planted' && p.isReady && !p.isSpoiled)) {
+                    msg = "¡Huele a dinero! Tienes una planta lista para cosechar. Recógela antes de que vengan los carroñeros.";
+                    emotion = "celebracion";
+                } 
+                // CONSEJO NUEVO: Semillas críticas
+                else if (balance < 2000 && !hasSeeds && plots.some(p => p.status === 'planted')) {
+                    msg = "¡Ten cuidado! Casi no te quedan semillas ni para la planta más barata. ¡Necesitas cosechar con urgencia para recuperar capital!";
+                    emotion = "alarma";
+                } 
+                // CONSEJO NUEVO: Maceta lista pero SIN semillas
+                else if (plots.some(p => p.status === 'pot') && !hasSeeds) {
+                    msg = "Tienes una maceta lista en la tierra, pero te quedaste sin semillas. ¡Corre al Mercado y compra algunas para empezar a producir!";
+                    emotion = "explicando";
+                } 
+                // CONSEJO: Maceta lista CON semillas
+                else if (plots.some(p => p.status === 'pot') && hasSeeds) {
+                    msg = "Veo que tienes una maceta lista en la tierra. ¡Selecciona la parcela y siembra una semilla de tu inventario!";
+                    emotion = "explicando";
+                } 
+                // CONSEJO: Tierra libre y sin herramientas
+                else if (plots.some(p => p.status === 'empty') && potQty === 0 && waterQty === 0 && balance >= 5500) {
+                    msg = "¡Oye! Tienes tierra libre pero no tienes ni macetas ni agua en tu inventario. Un buen granjero siempre está preparado. ¡Visita el Mercado!";
+                    emotion = "explicando";
+                } 
+                // CONSEJO: Mucho dinero, terrenos bloqueados
+                else if (plots.some(p => p.status === 'locked') && balance >= 25000) {
+                    msg = "Veo que tienes bastantes semillas ahorradas. ¿Has pensado en comprar un nuevo terreno para expandir el negocio?";
+                    emotion = "celebracion";
+                } 
+                // CONSEJO: Ambiente tranquilo (Relleno aleatorio para dar vida)
+                else if (plots.some(p => p.status === 'planted' && !p.isReady && !p.isSpoiled && !p.hasCrow)) {
+                    const tips = [
+                        "La paciencia es la madre de la agricultura. Deja que esas plantas crezcan a su ritmo.",
+                        "¿Sabías que el clima afecta la evaporación? Mantén un ojo en la estación actual arriba a la derecha.",
+                        "No olvides revisar tu Arsenal. Una planta bien curada es tu mejor defensa en la Arena."
+                    ];
+                    msg = tips[Math.floor(Math.random() * tips.length)];
+                    emotion = "explicando";
                 }
             }
 
-            // 6. Consejo: Macetas vacías listas para sembrar (SOLO SI TIENE SEMILLAS)
-            if (plots.some(p => p.status === 'pot') && hasSeeds) {
-                window.guideApp.show("Veo que tienes una maceta lista en la tierra. ¡Selecciona la parcela y siembra una semilla de tu inventario!", "explicando");
-                return;
-            }
+            if (msg) {
+                // Evitamos que repita el MISMO consejo exacto seguido si no es una emergencia
+                if (!isCritical && this.lastGuideMsg === msg && timeSinceLast < 240000) return; 
 
-            // 7. Consejo: Sin herramientas básicas
-            if (plots.some(p => p.status === 'empty') && potQty === 0 && waterQty === 0 && balance >= 5500) {
-                window.guideApp.show("¡Oye! Tienes tierra libre pero no tienes ni macetas ni agua en tu inventario. Un buen granjero siempre está preparado. ¡Visita el Mercado!", "explicando");
-                return;
-            }
-
-            // 8. Consejo: Expansión de negocio
-            if (plots.some(p => p.status === 'locked') && balance >= 25000) {
-                window.guideApp.show("Veo que tienes bastantes semillas ahorradas. ¿Has pensado en comprar un nuevo terreno para expandir el negocio?", "celebracion");
-                return;
+                window.guideApp.show(msg, emotion);
+                this.lastGuideTime = now;
+                this.lastGuideMsg = msg;
             }
         },
 
