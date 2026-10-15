@@ -416,15 +416,20 @@
 </div>
 
 <!-- MODAL CALIBRADOR DE RIEGO (MINIJUEGO) -->
+<!-- MODAL CALIBRADOR DE RIEGO (MINIJUEGO) -->
 <div id="water-calib-modal" class="fixed inset-0 z-[170] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue">
         <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1">Riego Quirúrgico</h3>
-        <p class="text-[10px] sm:text-xs text-gray-500 mb-8 font-bold uppercase tracking-widest">Detén la flecha en la zona azul segura</p>
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-3 font-bold uppercase tracking-widest">Detén la flecha en la zona azul segura</p>
+        
+        <!-- NUEVA ADVERTENCIA ROJA -->
+        <p id="calib-warning-text" class="text-[11px] sm:text-xs text-red-600 mb-6 font-black uppercase tracking-wider animate-pulse bg-red-50 p-2.5 rounded-xl border border-red-200 shadow-inner">
+            ¡Cuidado! Si llenas el agua por encima del 80%, la planta se ahogará y se pudrirá.
+        </p>
         
         <!-- Barra de progreso dinámica -->
         <div class="relative w-full h-10 sm:h-12 bg-red-100 rounded-full mb-8 sm:mb-10 shadow-inner border border-red-200 overflow-hidden">
-            
             <!-- Zona Segura Dinámica -->
             <div id="calib-safe-zone" class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500 transition-all"></div>
             
@@ -1880,24 +1885,23 @@ if (typeof window.farmApp === 'undefined') {
                         ? 'border-red-400 bg-red-50/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse' 
                         : (plot.isReady ? 'border-green-400 bg-green-50 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : (isSelected ? 'border-cg_blue shadow-md bg-white' : 'border-gray-200 bg-white hover:border-cg_blue shadow-sm hover:shadow-md'));
 
-                    el.className = `rounded-2xl border-2 h-56 sm:h-64 relative cursor-pointer transition-all overflow-hidden flex flex-col ${borderStyle}`;
+                    // Tarjeta más alta: h-64 sm:h-72
+                    el.className = `rounded-2xl border-2 h-64 sm:h-[19rem] relative cursor-pointer transition-all overflow-hidden flex flex-col ${borderStyle}`;
                     
-                    const potImg = this.state.inventory.tool_pot_small ? this.state.inventory.tool_pot_small.image : 'assets/Herramientas_y_Servicios/maceta_pequena.png';
-                    const potName = 'MACETA PEQ';
-                    
-                    let currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
-                    
-                    // --- NUEVO: TERRENO SEGÚN CATEGORÍA DE LA PLANTA ---
-                    if (plot.plant && this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id]) {
-                        let cat = this.state.dynamicPlants[plot.plant.id].category;
-                        if (cat && cat.startsWith('Plantas ')) {
-                            let typeName = cat.replace('Plantas ', '').trim();
-                            if (typeName === 'Ígneas') typeName = 'Igneo'; // Excepción para coincidir con la imagen
-                            currentTerrain = `assets/Fondos/terreno_${typeName}.png`;
-                        }
+                    let minSafe = 20, maxSafe = 80;
+                    if (plot.plant) {
+                        const pid = plot.plant.id;
+                        if(pid === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+                        else if(pid === 'flower_bamboo' || pid === 'flower_small' || pid === 'flower_moon') { maxSafe = 90; }
+                        else if(pid === 'flower_big') { minSafe = 50; maxSafe = 70; }
                     }
                     
-                    // --- NUEVO: TERRENO SEGÚN CATEGORÍA DE LA PLANTA ---
+                    let waterColorClass = 'text-cg_blue';
+                    if (!isAutoWatering && (displayWater < minSafe || displayWater > maxSafe)) {
+                        waterColorClass = 'text-red-600 animate-pulse';
+                    }
+
+                    let currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                     let plantCategoryName = 'Planta Estándar';
                     let currentPlantName = plot.plant ? plot.plant.name : 'Planta';
                     
@@ -1906,33 +1910,36 @@ if (typeof window.farmApp === 'undefined') {
                         if (cat) plantCategoryName = cat;
                         if (cat && cat.startsWith('Plantas ')) {
                             let typeName = cat.replace('Plantas ', '').trim();
-                            if (typeName === 'Ígneas') typeName = 'Igneo'; // Excepción para coincidir con la imagen
+                            if (typeName === 'Ígneas') typeName = 'Igneo'; 
                             currentTerrain = `assets/Fondos/terreno_${typeName}.png`;
                         }
                     }
                     
-                    // Usa directamente el ícono dinámico que guardamos al plantar
                     const currentPlantImg = plot.plant && plot.plant.icon ? plot.plant.icon : (plot.pot === 'small' ? this.state.images.plant_small : this.state.images.plant_big);
 
+                    // Formato de Tiempo: MM:SS o HH:MM:SS
                     let timeLeftText = '';
                     let progress = 0;
                     if(plot.plantedAt) {
-                        // Calcula el tiempo base real dinámicamente restando el harvestAt menos el plantedAt
                         const baseDuration = plot.harvestAt - plot.plantedAt;
-
                         const msLeft = Math.max(0, plot.harvestAt - now);
                         progress = Math.min(100, Math.max(0, ((baseDuration - msLeft) / baseDuration) * 100));
                         
-                        const hoursLeft = msLeft / 3600000;
-                        if(hoursLeft > 0) {
-                            timeLeftText = hoursLeft < 1 ? `${Math.ceil(hoursLeft * 60)}m` : `${hoursLeft.toFixed(1)}h`;
+                        const h = Math.floor(msLeft / 3600000);
+                        const m = Math.floor((msLeft % 3600000) / 60000);
+                        const s = Math.floor((msLeft % 60000) / 1000);
+                        
+                        if (msLeft > 0) {
+                            if (h > 0) timeLeftText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                            else timeLeftText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                        } else {
+                            timeLeftText = "00:00";
                         }
                     }
 
                     let crowHtml = '';
                     if (plot.hasCrow) {
                         if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
-                        // Borramos la lógica de crowLeavingAt y dejamos solo el botón para espantar
                         crowHtml = `
                             </div>
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
@@ -1958,8 +1965,6 @@ if (typeof window.farmApp === 'undefined') {
                             <span class="bg-white/90 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black text-cg_navy border border-gray-200 shadow-sm leading-tight">${currentPlantName}</span>
                         </div>
 
-                        <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" style="bottom: 65px; left: 12px;" class="absolute w-7 h-7 sm:w-8 sm:h-8 bg-white text-cg_blue border-2 border-blue-200 rounded-full flex items-center justify-center font-black shadow-lg hover:bg-blue-50 hover:scale-110 transition-transform z-[70] text-xs sm:text-sm font-serif pointer-events-auto cursor-pointer sm:bottom-[75px] sm:left-4">i</button>
-
                         <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
                             ${isAutoWatering ? `<img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-md animate-pulse shrink-0">` : ''}
                             ${crowHtml}
@@ -1971,7 +1976,7 @@ if (typeof window.farmApp === 'undefined') {
                             </div>
                         </div>` : ''}
 
-                        <div class="absolute inset-0 flex items-center justify-center pb-4 z-10 pointer-events-none">
+                        <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center">
                                 <img src="${currentTerrain}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno">
                                 <img src="${currentPlantImg}" class="absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md" style="transform: translateY(-20%);" alt="Planta">
@@ -1980,12 +1985,17 @@ if (typeof window.farmApp === 'undefined') {
 
                         <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 p-2.5 flex flex-col gap-2 z-20 rounded-b-2xl cursor-default shadow-[0_-4px_10px_rgba(0,0,0,0.03)]" onclick="event.stopPropagation()">
                             
-                            <!-- Fila 1: Estadísticas (Agua, Estrés, Tiempo) -->
+                            <!-- Fila 1: Estadísticas (Agua, Estrés, Tiempo, Info) -->
                             <div class="flex justify-between items-center px-1">
                                 <div class="flex items-center gap-1.5 sm:gap-2">
-                                    <span class="text-xs sm:text-sm font-black ${displayWater <= 0 ? 'text-red-600' : 'text-cg_blue'}">💧 ${displayWater}\%</span>${stressBadge}
+                                    <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" class="w-6 h-6 bg-blue-50 text-blue-600 border border-blue-200 rounded-full flex items-center justify-center font-black shadow-sm hover:bg-blue-100 transition-colors text-xs font-serif shrink-0 cursor-pointer pointer-events-auto">i</button>
+                                    <div class="flex flex-col leading-tight">
+                                        <span class="text-xs sm:text-sm font-black ${waterColorClass}">💧 ${displayWater}%</span>
+                                        <span class="text-[8px] text-gray-500 font-bold tracking-tight">Ideal: ${minSafe}-${maxSafe}%</span>
+                                    </div>
+                                    ${stressBadge}
                                 </div>
-                                <span class="text-[9px] sm:text-[10px] font-bold ${isAlert ? 'text-red-500' : 'text-gray-500'} bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 shadow-sm pointer-events-none">⏳ ${isAlert ? 'Pausado' : timeLeftText}</span>
+                                <span class="text-[10px] font-mono font-black ${isAlert ? 'text-red-500' : 'text-cg_navy'} bg-gray-100 px-2 py-1 rounded-md border border-gray-200 shadow-sm pointer-events-none">⏳ ${isAlert ? 'PAUSADO' : timeLeftText}</span>
                             </div>
 
                             <!-- Fila 2: Barra de Progreso de Crecimiento -->
@@ -1993,7 +2003,7 @@ if (typeof window.farmApp === 'undefined') {
                                 <div class="bg-green-500 h-full transition-all duration-1000" style="width: ${progress}%"></div>
                             </div>
                             
-                            <!-- Fila 3: Botones de Acción (Ancho Completo y Uniforme) -->
+                            <!-- Fila 3: Botones de Acción -->
                             <div class="flex items-center justify-between gap-1.5 sm:gap-2 w-full mt-0.5">
                                 ${plot.isReady ? `
                                     ${plot.isSpoiled ? `
@@ -2203,18 +2213,25 @@ if (typeof window.farmApp === 'undefined') {
 
         showPlantInfoModal(plotId) {
             const plot = this.state.plots[plotId];
-            let name, img, scoreText, limitText, penaltyText, rulesTitle;
+            let name, img, scoreText, penaltyText, rulesTitle;
             let pAtk = 0, pDef = 0, pHp = 0;
-            let pPrice = 0, pReward = 0; // <-- AÑADE ESTA LÍNEA AQUÍ ARRIBA
+            let pPrice = 0, pReward = 0; 
             let isCombatPlant = false;
-            let limitTitle = "Rango de Supervivencia:";
+            let limitHtml = ""; // NUEVO CONTENEDOR PARA LÍMITES
 
             if (plotId === 8 && plot.status === 'tournament') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 name = conf.name;
                 img = conf.image;
                 scoreText = `Inicias con <strong class="text-cg_gold">${conf.startScore.toLocaleString()} Puntos Perfectos</strong>.`;
-                limitText = `Mantén el agua entre ${conf.minWater}% y ${conf.maxWater}%. Fuera de ahí, perderás puntos continuamente.`;
+                
+                limitHtml = `
+                    <ul class="text-left list-none mt-2 space-y-2 bg-white p-3 rounded-lg border border-red-100 shadow-inner">
+                        <li class="flex items-center gap-2 text-xs"><span class="text-red-500 font-black">Humedad Mínima: ${conf.minWater}%</span> <span class="text-gray-500 font-medium">(Si baja, se seca)</span></li>
+                        <li class="flex items-center gap-2 text-xs"><span class="text-blue-600 font-black">Humedad Máxima: ${conf.maxWater}%</span> <span class="text-gray-500 font-medium">(Si sube, se pudre)</span></li>
+                    </ul>
+                `;
+
                 penaltyText = `Si tu inyección de agua supera el límite máximo, serás penalizado inmediatamente con <strong class="text-red-600">-${conf.overwaterPenalty} Puntos</strong>.`;
                 rulesTitle = "REGLAS OFICIALES DEL TORNEO";
                 
@@ -2224,41 +2241,42 @@ if (typeof window.farmApp === 'undefined') {
                 name = plot.plant.name;
                 img = plot.plant.icon; 
                 
-                scoreText = `<strong class="text-cg_blue">Planta de Cultivo Dinámico</strong>. Presta atención al riego.`;
-                
-                // --- CÁLCULO DE CONSUMO DE AGUA EN TIEMPO REAL ---
+                let minSafe = 20, maxSafe = 80;
+                const pid = plot.plant.id;
+                if(pid === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+                else if(pid === 'flower_bamboo' || pid === 'flower_small' || pid === 'flower_moon') { maxSafe = 90; }
+                else if(pid === 'flower_big') { minSafe = 50; maxSafe = 70; }
+
                 let baseEvapRate = 40;
-                if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id] && this.state.dynamicPlants[plot.plant.id].water_evap) {
-                    baseEvapRate = this.state.dynamicPlants[plot.plant.id].water_evap;
+                if (this.state.dynamicPlants && this.state.dynamicPlants[pid] && this.state.dynamicPlants[pid].water_evap) {
+                    baseEvapRate = this.state.dynamicPlants[pid].water_evap;
                 }
-                
-                const seasonMultiplier = this.getSeasonData(Date.now()).mult;
-                const finalEvapRate = baseEvapRate * seasonMultiplier;
+                const finalEvapRate = baseEvapRate * this.getSeasonData(Date.now()).mult;
                 
                 let exhaustionText = "Ya está seca.";
                 if (plot.water > 0) {
                     const hoursLeft = plot.water / finalEvapRate;
                     const exhaustionTime = new Date(Date.now() + hoursLeft * 3600000);
-                    exhaustionText = `a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</strong> se agotará el agua por el consumo de tu planta.`;
+                    exhaustionText = `a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</strong> se agotará el agua.`;
                 }
 
-                limitTitle = "Consumo de Agua:";
-                limitText = `Consume ${finalEvapRate}% por hora. Por lo tanto, ${exhaustionText}`;
-                // ----------------------------------------------------
+                scoreText = `Consume ${finalEvapRate}% por hora. Por lo tanto, ${exhaustionText}`;
                 
-                penaltyText = `Si excedes el rango, sufrirás pudrición o sequía grave, deteniendo el crecimiento y atrayendo plagas.`;
+                limitHtml = `
+                    <ul class="text-left list-none mt-2 space-y-2 bg-white p-3 rounded-lg border border-red-100 shadow-inner">
+                        <li class="flex items-center gap-2 text-xs"><span class="text-red-500 font-black">Humedad Mínima: ${minSafe}%</span> <span class="text-gray-500 font-medium">(Si baja, se seca)</span></li>
+                        <li class="flex items-center gap-2 text-xs"><span class="text-blue-600 font-black">Humedad Máxima: ${maxSafe}%</span> <span class="text-gray-500 font-medium">(Si sube, se pudre)</span></li>
+                    </ul>
+                `;
+                
+                penaltyText = `Si excedes el rango, sufrirás pudrición o sequía grave, deteniendo el crecimiento y atrayendo plagas (-15% de cosecha por evento).`;
                 rulesTitle = "INFORMACIÓN DE LA PLANTA";
                 
                 document.getElementById('welcome-water-system').classList.add('hidden');
                 document.getElementById('welcome-penalty-container').classList.add('hidden');
                 
-                // Mapear Estadísticas de Combate e Inversión
                 isCombatPlant = true;
-                const pid = plot.plant.id;
-                
-                pPrice = 0; 
-                pReward = 0;
-                pAtk = 40; pDef = 20; pHp = 100;
+                pPrice = 0; pReward = 0; pAtk = 40; pDef = 20; pHp = 100;
                 
                 if (this.state.dynamicPlants && this.state.dynamicPlants[pid]) {
                     pAtk = this.state.dynamicPlants[pid].atk || pAtk;
@@ -2267,22 +2285,18 @@ if (typeof window.farmApp === 'undefined') {
                     pPrice = this.state.dynamicPlants[pid].price || 0;
                     pReward = this.state.dynamicPlants[pid].reward || 0;
                 }
-            } else {
-                return;
-            }
+            } else { return; }
             
             document.getElementById('welcome-plant-img').src = img;
             document.getElementById('welcome-plant-name').innerText = name;
             document.getElementById('welcome-plant-desc').innerHTML = scoreText;
             
-            // Actualización del título y texto del límite
-            const limitEl = document.getElementById('welcome-plant-limit');
-            limitEl.parentElement.innerHTML = `<strong class="font-black">${limitTitle}</strong> <span id="welcome-plant-limit">${limitText}</span>`;
+            const limitContainer = document.getElementById('welcome-plant-limit').parentElement;
+            limitContainer.innerHTML = `<strong class="font-black">Rango de Supervivencia:</strong> ${limitHtml}`;
             
             document.getElementById('welcome-plant-penalty').innerHTML = `<strong class="font-black">Riesgo de Daño:</strong> ${penaltyText}`;
             document.getElementById('welcome-plant-rules-title').innerText = rulesTitle;
             
-            // Renderizar Estadísticas con Inversión y Ganancia
             const statsContainer = document.getElementById('plant-stats-container');
             if (isCombatPlant) {
                 statsContainer.classList.remove('hidden');
@@ -2322,8 +2336,8 @@ if (typeof window.farmApp === 'undefined') {
         openWaterCalibration(plotId = 8) {
             this.calibration.currentPlotId = plotId;
             let speed = 1.0; 
-            let minSafe = 0;
-            let maxSafe = 100;
+            let minSafe = 20;
+            let maxSafe = 80;
             const plot = this.state.plots[plotId];
             const currentWater = plot.water || 0;
             
@@ -2331,6 +2345,17 @@ if (typeof window.farmApp === 'undefined') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 minSafe = conf.minWater;
                 maxSafe = conf.maxWater;
+            } else if (plot.plant) {
+                const pid = plot.plant.id;
+                if(pid === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
+                else if(pid === 'flower_bamboo' || pid === 'flower_small' || pid === 'flower_moon') { maxSafe = 90; }
+                else if(pid === 'flower_big') { minSafe = 50; maxSafe = 70; }
+            }
+
+            // Actualizar la advertencia roja dinámica
+            const warningEl = document.getElementById('calib-warning-text');
+            if (warningEl) {
+                warningEl.innerText = `¡Cuidado! Si llenas el agua por encima del ${maxSafe}%, la planta se ahogará y se pudrirá.`;
             }
 
             let targetMin = Math.max(0, minSafe - currentWater);
