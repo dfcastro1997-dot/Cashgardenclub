@@ -725,6 +725,8 @@
             document.getElementById('dropdown-username').innerText = `${name} #${shortId}`;
             
             const avatarImg = document.querySelector('#profile-avatar img');
+            const loadingAvatarImg = document.getElementById('loading-avatar-img');
+            
             if(avatarImg) {
                 let profilePic = 'assets/Perfil/defecto.png';
                 if (userData.game_state) {
@@ -734,6 +736,7 @@
                     } catch(e){}
                 }
                 avatarImg.src = profilePic;
+                if(loadingAvatarImg) loadingAvatarImg.src = profilePic;
             }
             
             const balance = userData.balance || 0;

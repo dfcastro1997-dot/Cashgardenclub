@@ -1741,6 +1741,11 @@ def pvp_combat_sync():
             state['turn'] = update_data['initial_turn']
             
         if 'winner' in update_data and not match.get('winner_username'):
+            # Validación básica: Si reportan victoria pero no se han registrado acciones/turnos previos, es un hack
+            if update_data['winner'] != 'opponent_abandoned':
+                if not state.get('last_action') and not state.get('rps_challenger'):
+                    return jsonify({"error": "Combate inválido. Hack detectado."}), 403
+
             winner_name = update_data['winner']
             # Determinar ganador real si fue por abandono
             if winner_name == 'opponent_abandoned':

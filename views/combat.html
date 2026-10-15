@@ -595,8 +595,8 @@
         
         <!-- JUGADOR (LADO IZQUIERDO / EQUIPO PLANTAS) -->
         <div class="wood-banner px-2 sm:px-4 py-1 sm:py-2 flex items-center gap-1.5 sm:gap-3 pointer-events-auto w-[31vw] sm:w-auto sm:min-w-[230px]">
-            <div class="hidden min-[420px]:flex w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-amber-100 border-2 border-white items-center justify-center text-lg sm:text-2xl shadow-md shrink-0">
-                🌱
+            <div class="hidden min-[420px]:flex w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-white border-2 border-white items-center justify-center shadow-md shrink-0 overflow-hidden">
+                <img id="cb-player-avatar" src="assets/Perfil/defecto.png" class="w-full h-full object-cover">
             </div>
             <div class="flex flex-col flex-1 min-w-0">
                 <div class="flex justify-between items-center text-white text-xs sm:text-sm font-black leading-tight drop-shadow">
@@ -973,8 +973,8 @@ window.combatApp = {
     playerReserve: [],
     enemyTeam: [],
     turn: 1,
-    energy: 6,         // ANTES: 5
-    maxEnergy: 20,     // ANTES: 15
+    energy: 3,         // Reducido a 3 para evitar uso de Ultimates en el primer turno
+    maxEnergy: 20,
     actionQueue: [],
     
     currentAttackerIdx: null,
@@ -1545,6 +1545,14 @@ window.combatApp = {
         const nameEl = document.getElementById('cb-player-name');
         if (nameEl) nameEl.innerText = pName;
 
+        // Cargar la imagen de perfil del jugador
+        const avatarEl = document.getElementById('cb-player-avatar');
+        if (avatarEl) {
+            avatarEl.src = (window.farmApp && window.farmApp.state && window.farmApp.state.profilePic) 
+                ? window.farmApp.state.profilePic 
+                : 'assets/Perfil/defecto.png';
+        }
+
         this.active = false;
         this.turn = 1;
         this.energy = 5;
@@ -1657,17 +1665,18 @@ window.combatApp = {
             }
 
             this.enemyTeam = [];
-            const playerAvgPower = squadValue / Math.max(1, this.playerTeam.length);
+            // Multiplicadores fijos por liga para que el jugador sienta la mejora de sus plantas
+            let fixedMultiplier = 1.0;
+            if (squadValue >= 1000) fixedMultiplier = 1.8 + (Math.random() * 0.4);
+            else if (squadValue < 500) fixedMultiplier = 0.7 + (Math.random() * 0.2);
+            else fixedMultiplier = 1.2 + (Math.random() * 0.3);
 
             for(let i=0; i<3; i++) {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
-                const basePower = (rP.hp || 100) + (rP.atk || 40) + (rP.def || 20);
-                
-                const multiplier = (playerAvgPower / basePower) * (0.85 + Math.random() * 0.20);
 
-                const bHp = Math.floor((rP.hp || 100) * multiplier);
-                const bAtk = Math.floor((rP.atk || 40) * multiplier);
-                const bDef = Math.min(75, Math.floor((rP.def || 20) * multiplier));
+                const bHp = Math.floor((rP.hp || 100) * fixedMultiplier);
+                const bAtk = Math.floor((rP.atk || 40) * fixedMultiplier);
+                const bDef = Math.min(75, Math.floor((rP.def || 20) * fixedMultiplier));
 
                 this.enemyTeam.push(buildPlantObj(rP.id || rP.catKey, rP.name, rP.image_url || rP.icon, false, `e_${i}`, bHp, 0, bAtk, bDef));
             }
@@ -3368,7 +3377,8 @@ window.combatApp = {
         } else if (kind === 't_transfusion' || kind === 'transfer') {
             this.showFx('¡TRANSFUSIÓN!');
             this.playSound('tactic', 'Transfusion');
-            const drain = Math.floor(attacker.hp * 0.50);
+            // Cuesta el 30% de la Vida MÁXIMA (Sacrificio real, evita abuso en plantas moribundas)
+            const drain = Math.floor(attacker.maxHp * 0.30);
             attacker.hp = Math.max(1, attacker.hp - drain);
             target.hp = Math.min(target.maxHp, target.hp + drain);
             this.showFloatingDamage(atkId, `-${drain}`, 'text-rose-500');
