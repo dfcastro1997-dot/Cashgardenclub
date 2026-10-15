@@ -1800,37 +1800,8 @@ if (typeof window.farmApp === 'undefined') {
                 console.warn("Bloqueo de seguridad: Evitando sobreescribir la BD porque el servidor estaba caído.");
                 return; 
             }
-            // --------------------------------------------------------
 
-            this.state.lastTick = Date.now();
             this.state.isSaving = true; 
-            
-            const stateObj = {
-                seedsBalance: this.state.seedsBalance,
-                practiceTokens: this.state.practiceTokens || 0, 
-                autoWaterEndTime: this.state.autoWaterEndTime,
-                autoHarvestEndTime: this.state.autoHarvestEndTime || 0,
-                plots: this.state.plots,
-                inventory: this.state.inventory,
-                arsenal: this.state.arsenal || [],
-                lastTick: this.state.lastTick,
-                profilePic: this.state.profilePic,
-                unlockedAvatars: this.state.unlockedAvatars || [],
-                vitoContract: this.state.vitoContract || null // <-- AGREGAR ESTA LÍNEA
-            };
-
-            // SEGURO PVP: Si acabamos de pelear, instruimos al backend de no sobreescribir nuestro balance
-            if (this.state.skipSeedsSave) {
-                stateObj.skipSeedsSave = true;
-                this.state.skipSeedsSave = false; // Se limpia para la próxima guardada
-            }
-            
-            // ¡VITAL! Evita que se borre el regalo al auto-guardar
-            if (this.state.pending_gift) {
-                stateObj.pending_gift = this.state.pending_gift;
-            }
-            
-            const stateToSave = JSON.stringify(stateObj);
 
             const username = sessionStorage.getItem('username');
             const token = sessionStorage.getItem('session_token'); 
@@ -1838,18 +1809,57 @@ if (typeof window.farmApp === 'undefined') {
             if (username && token) {
                 if (this.saveTimeout) clearTimeout(this.saveTimeout);
                 
+                // Generamos un ID único para blindar esta petición específica
+                const currentSaveId = Date.now() + Math.random();
+                this.currentSaveId = currentSaveId;
+
                 this.saveTimeout = setTimeout(() => {
+                    // ACTUALIZAMOS EL RELOJ Y LOS DATOS JUSTO ANTES DE ENVIAR PARA VENCER LA VALIDACIÓN DEL SERVIDOR
+                    this.state.lastTick = Date.now();
+                    
+                    const stateObj = {
+                        seedsBalance: this.state.seedsBalance,
+                        practiceTokens: this.state.practiceTokens || 0, 
+                        autoWaterEndTime: this.state.autoWaterEndTime,
+                        autoHarvestEndTime: this.state.autoHarvestEndTime || 0,
+                        plots: this.state.plots,
+                        inventory: this.state.inventory,
+                        arsenal: this.state.arsenal || [],
+                        lastTick: this.state.lastTick,
+                        profilePic: this.state.profilePic,
+                        unlockedAvatars: this.state.unlockedAvatars || [],
+                        vitoContract: this.state.vitoContract || null
+                    };
+
+                    // SEGURO PVP
+                    if (this.state.skipSeedsSave) {
+                        stateObj.skipSeedsSave = true;
+                        this.state.skipSeedsSave = false; 
+                    }
+                    
+                    // ¡VITAL! Evita que se borre el regalo al auto-guardar
+                    if (this.state.pending_gift) {
+                        stateObj.pending_gift = this.state.pending_gift;
+                    }
+                    
+                    const stateToSave = JSON.stringify(stateObj);
+
                     fetch('/api/save_state', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username: username, session_token: token, game_state: stateToSave }) 
                     }).then(res => {
-                        this.state.isSaving = false;
+                        // Solo apaga el candado si somos la ÚLTIMA petición que se ejecutó
+                        if (this.currentSaveId === currentSaveId) {
+                            this.state.isSaving = false;
+                        }
                         if (res.status === 401 && window.showSessionExpiredModal) {
                             window.showSessionExpiredModal("Tu sesión ha sido invalidada por seguridad.");
                         }
                     }).catch(e => {
-                        this.state.isSaving = false;
+                        if (this.currentSaveId === currentSaveId) {
+                            this.state.isSaving = false;
+                        }
                         console.error("Error guardando progreso:", e);
                     });
                 }, 500); 
@@ -3144,6 +3154,8 @@ if (typeof window.farmApp === 'undefined') {
             plot.plantedAt = 0;
             plot.harvestAt = 0;
             plot.isSpoiled = false;
+            plot.stressMarks = 0; // <--- AÑADIR: Resetea el estrés al cosechar
+            plot.lastShooAt = 0;  // <--- AÑADIR
 
             this.showPlotToast(plotId, iconToast, msg);
 
@@ -3203,8 +3215,14 @@ if (typeof window.farmApp === 'undefined') {
             }
             
             plot.plant = null; 
-            plot.hasCrow = false; plot.crowLeavingAt = 0; plot.scarecrowEndTime = 0;
-            plot.plantedAt = 0; plot.harvestAt = 0; plot.isSpoiled = false;
+            plot.hasCrow = false; 
+            plot.crowLeavingAt = 0; 
+            plot.scarecrowEndTime = 0;
+            plot.plantedAt = 0; 
+            plot.harvestAt = 0; 
+            plot.isSpoiled = false;
+            plot.stressMarks = 0; // <--- AÑADIR: Resetea el estrés al almacenar
+            plot.lastShooAt = 0;  // <--- AÑADIR
 
             this.showPlotToast(plotId, '🛡️', '¡Almacenada!');
 
@@ -3912,9 +3930,18 @@ if (typeof window.farmApp === 'undefined') {
             
             plot.status = 'planted';
             plot.water = initialWater; 
-            plot.plant = { id: seedId, name: window.farmApp.state.inventory[seedId].name, icon: window.farmApp.state.inventory[seedId].image };
-            plot.isReady = false;
-            plot.plantedAt = Date.now();
+            plot.plant = {
+                    id: seedId,
+                    name: this.state.inventory[seedId].name,
+                    icon: this.state.inventory[seedId].image,
+                    reward: plantReward
+                };
+                plot.isReady = false;
+                plot.plantedAt = Date.now();
+                plot.stressMarks = 0; // <--- AÑADIR: Limpia el estrés residual al sembrar
+                plot.lastShooAt = 0;  // <--- AÑADIR: Limpia el timer de cuervos previos
+
+                // 2. Calcular tiempo de duración dinámicamente
             
             let msDuration = 3600000; 
             if (window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[seedId]) {
