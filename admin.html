@@ -141,7 +141,7 @@
                         </div>
                         <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm text-center flex flex-col justify-center">
                             <span class="block text-2xl sm:text-3xl font-black text-cg_gold mb-1" id="metric-cop">$0</span>
-                            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">COP<br>Promedio</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">Créditos<br>Promedio</span>
                         </div>
                         <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm text-center flex flex-col justify-center">
                             <span class="block text-3xl sm:text-4xl font-black text-red-500 mb-1" id="metric-military">0</span>
@@ -157,7 +157,7 @@
                         
                         <div class="flex flex-col gap-6">
                             <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-1">
-                                <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 text-center">Distribución de Riqueza (COP)</h3>
+                                <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 text-center">Distribución de Riqueza (Créditos)</h3>
                                 <div class="relative h-32 w-full"><canvas id="chartWealth"></canvas></div>
                             </div>
                             <div class="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm flex-1">
@@ -184,7 +184,7 @@
                         
                         <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[400px]">
                             <div class="bg-yellow-50 border-b border-yellow-100 p-4 shrink-0">
-                                <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest flex items-center gap-2">💵 Top: Dinero COP</h4>
+                                <h4 class="text-[11px] font-black text-cg_gold uppercase tracking-widest flex items-center gap-2">💵 Top: Créditos Reales</h4>
                             </div>
                             <div class="p-2 space-y-1 flex-1 overflow-y-auto hide-scrollbar" id="top-cop"></div>
                         </div>
@@ -224,7 +224,7 @@
                                         <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Usuario</th>
                                         <th class="p-4 text-[10px] font-black text-orange-500 uppercase tracking-widest">Invitado Por</th>
                                         <th class="p-4 text-[10px] font-black text-green-600 uppercase tracking-widest text-right">Semillas 🌱</th>
-                                        <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo COP 💵</th>
+                                        <th class="p-4 text-[10px] font-black text-cg_gold uppercase tracking-widest text-right">Saldo (Créditos) 💵</th>
                                         <th class="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Auditar</th>
                                     </tr>
                                 </thead>
@@ -1200,10 +1200,10 @@
                 btn.onclick = () => addToCart('seeds', document.getElementById('modal-val').value, 'Semillas');
             } else if (type === 'cop') {
                 content = `
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad COP 💵</label>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cantidad Créditos 💵</label>
                     <input type="number" id="modal-val" placeholder="0" class="w-full bg-gray-50 border border-gray-200 text-cg_gold px-4 py-3.5 rounded-xl font-black outline-none focus:border-yellow-500 text-lg text-center shadow-inner">
                 `;
-                btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Dinero COP');
+                btn.onclick = () => addToCart('cop', document.getElementById('modal-val').value, 'Créditos Reales');
                 
             } else if (type === 'item') {
                 content = `

@@ -88,7 +88,7 @@ def wompi_webhook():
             
             if user:
                 cur.execute(
-                    "INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, %s, %s, %s, %s)",
+                    "INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, %s, %s, %s, %s)",
                     (user['id'], 'deposit', net_amount, reference, 'completed')
                 )
                 conn.commit()
@@ -101,7 +101,7 @@ def wompi_webhook():
 def dispatch_nequi_payout():
     payload = request.get_json() or {}
     token = payload.get('session_token')
-    amount_cop = float(payload.get('amount_cop', 0))
+    amount_credits = float(payload.get('amount_credits', 0))
     phone_nequi = payload.get('phone_nequi')
     
     conn = get_db_connection()
@@ -109,14 +109,14 @@ def dispatch_nequi_payout():
     cur.execute("SELECT id, balance, session_token FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
     user = cur.fetchone()
     
-    if not user or float(user['balance']) < amount_cop or amount_cop < 10000:
+    if not user or float(user['balance']) < amount_credits or amount_credits < 10000:
         cur.close(); conn.close()
         return jsonify({"error": "Fondos insuficientes o menores a $10.000"}), 400
     if user.get('session_token') and user['session_token'] != token:
         cur.close(); conn.close()
         return jsonify({"error": "Sesión inválida"}), 401
         
-    cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (phone_nequi, amount_cop, user['id']))
+    cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (phone_nequi, amount_credits, user['id']))
     payout_ref = f"PO-{user['id']}-{int(time.time())}"
     
     headers = {
@@ -125,7 +125,7 @@ def dispatch_nequi_payout():
     }
     
     wompi_payload = {
-        "amount_in_cents": int(amount_cop * 100),
+        "amount_in_cents": int(amount_credits * 100),
         "currency": "COP",
         "reference": payout_ref,
         "recipient_type": "NEQUI",
@@ -137,7 +137,7 @@ def dispatch_nequi_payout():
         wompi_data = response.json()
         
         if response.status_code == 201:
-            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_cop, payout_ref))
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_credits, payout_ref))
             conn.commit()
             msg = "Retiro en proceso. Llegará a tu Nequi en 24h hábiles."
         else:
@@ -149,7 +149,7 @@ def dispatch_nequi_payout():
         return jsonify({"error": "Error de conexión con el banco"}), 500
         
     cur.close(); conn.close()
-    return jsonify({"message": msg, "reference": payout_ref, "new_balance": float(user['balance']) - amount_cop}), 200
+    return jsonify({"message": msg, "reference": payout_ref, "new_balance": float(user['balance']) - amount_credits}), 200
 
 # Función helper para Telegram (Soporta Imágenes)
 def send_telegram_msg(chat_id, text, image_url=None):
@@ -208,9 +208,9 @@ def init_db():
         CREATE TABLE IF NOT EXISTS tournaments (
             id SERIAL PRIMARY KEY,
             title VARCHAR(100) NOT NULL,
-            entry_fee_cop NUMERIC(10, 2) NOT NULL,
+            entry_fee_credits NUMERIC(10, 2) NOT NULL,
             rake_percentage NUMERIC(5, 2) DEFAULT 15.00,
-            prize_pool_cop NUMERIC(12, 2) DEFAULT 0.00,
+            prize_pool_credits NUMERIC(12, 2) DEFAULT 0.00,
             status VARCHAR(20) DEFAULT 'open'
         );
     ''')
@@ -220,7 +220,7 @@ def init_db():
             tournament_id INTEGER REFERENCES tournaments(id) ON DELETE CASCADE,
             user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             final_score NUMERIC(10, 2) DEFAULT 0.00,
-            reward_cop NUMERIC(10, 2) DEFAULT 0.00,
+            reward_credits NUMERIC(10, 2) DEFAULT 0.00,
             CONSTRAINT unique_entry_per_tournament UNIQUE(tournament_id, user_id)
         );
     ''')
@@ -229,7 +229,7 @@ def init_db():
             id SERIAL PRIMARY KEY,
             user_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
             transaction_type VARCHAR(30) NOT NULL,
-            amount_cop NUMERIC(12, 2) NOT NULL,
+            amount_credits NUMERIC(12, 2) NOT NULL,
             external_reference VARCHAR(120) UNIQUE NOT NULL,
             status VARCHAR(20) NOT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -239,11 +239,11 @@ def init_db():
         CREATE TABLE IF NOT EXISTS tournament_instances (
             id SERIAL PRIMARY KEY,
             template_id INTEGER NOT NULL,
-            entry_fee_cop NUMERIC(10, 2) NOT NULL,
+            entry_fee_credits NUMERIC(10, 2) NOT NULL,
             status VARCHAR(20) DEFAULT 'waiting',
             players_count INTEGER DEFAULT 0,
             max_players INTEGER DEFAULT 10,
-            prize_pool_cop NUMERIC(12, 2) DEFAULT 0.00,
+            prize_pool_credits NUMERIC(12, 2) DEFAULT 0.00,
             start_time BIGINT DEFAULT 0,
             end_time BIGINT DEFAULT 0
         );
@@ -914,15 +914,15 @@ def buy_seeds():
     incoming_inventory = data.get('inventory') 
     
     costs = {
-        "iap_combo_24h": {"seeds": 0, "cop": 7500},
-        "iap_combo_72h": {"seeds": 0, "cop": 18000},
-        "iap_combo_7d": {"seeds": 0, "cop": 30000},
-        "iap_nursery_72h": {"seeds": 0, "cop": 8000},
-        "iap_nursery_7d": {"seeds": 0, "cop": 15000},
-        "iap_elite_7d": {"seeds": 0, "cop": 39000},
-        "exc_10k": {"seeds": 4250, "cop": 10000},
-        "exc_25k": {"seeds": 11000, "cop": 25000},
-        "exc_50k": {"seeds": 22500, "cop": 50000}
+        "iap_combo_24h": {"seeds": 0, "credits": 7500},
+        "iap_combo_72h": {"seeds": 0, "credits": 18000},
+        "iap_combo_7d": {"seeds": 0, "credits": 30000},
+        "iap_nursery_72h": {"seeds": 0, "credits": 8000},
+        "iap_nursery_7d": {"seeds": 0, "credits": 15000},
+        "iap_elite_7d": {"seeds": 0, "credits": 39000},
+        "exc_10k": {"seeds": 4250, "credits": 10000},
+        "exc_25k": {"seeds": 11000, "credits": 25000},
+        "exc_50k": {"seeds": 22500, "credits": 50000}
     }
     
     standard_costs = {
@@ -957,22 +957,22 @@ def buy_seeds():
         state = json.loads(user['game_state'] or '{}')
         
         if package in costs:
-            cost_cop = costs[package]['cop']
+            cost_credits = costs[package]['credits']
             seeds_amount = costs[package]['seeds']
             
-            if float(user['balance']) < cost_cop:
-                return jsonify({"error": "Saldo COP insuficiente. Completa ofertas o torneos para recargar."}), 400
+            if float(user['balance']) < cost_credits:
+                return jsonify({"error": "Saldo de Créditos insuficiente. Completa ofertas o torneos para recargar."}), 400
                 
             if seeds_amount > 0:
                 state['seedsBalance'] = state.get('seedsBalance', 0) + seeds_amount
             
-            cur.execute("UPDATE users SET balance = balance - %s, game_state = %s WHERE id = %s", (cost_cop, json.dumps(state), user['id']))
-            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'iap_purchase', %s, %s, 'completed')", (user['id'], cost_cop, f"IAP-{user['id']}-{int(time.time())}"))
+            cur.execute("UPDATE users SET balance = balance - %s, game_state = %s WHERE id = %s", (cost_credits, json.dumps(state), user['id']))
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'iap_purchase', %s, %s, 'completed')", (user['id'], cost_credits, f"IAP-{user['id']}-{int(time.time())}"))
             conn.commit()
             
             return jsonify({
                 "message": "Transacción exitosa", 
-                "new_balance_cop": float(user['balance']) - cost_cop, 
+                "new_balance_credits": float(user['balance']) - cost_credits, 
                 "new_seeds": state.get('seedsBalance', 0)
             })
             
@@ -1051,7 +1051,7 @@ def process_tournament_lifecycle(inst, conn, cur):
         updated = cur.fetchone()
         
         if updated:
-            prize_pool = float(inst['prize_pool_cop'] or 0)
+            prize_pool = float(inst['prize_pool_credits'] or 0)
             if t_id == 1 and prize_pool < 10000: prize_pool = 10000.0
             
             cur.execute('''
@@ -1080,7 +1080,7 @@ def process_tournament_lifecycle(inst, conn, cur):
                 if i < 3 and prizes_cop[i] > 0:
                     amt = prizes_cop[i]
                     cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (amt, uid))
-                    cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_prize', %s, %s, 'completed')", (uid, amt, f"PRIZE-{inst['id']}-{uid}"))
+                    cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'tournament_prize', %s, %s, 'completed')", (uid, amt, f"PRIZE-{inst['id']}-{uid}"))
                     
                 # Pago Semillas
                 seed_amt = comp_array[i] if i < len(comp_array) else comp_array[-1]
@@ -1129,7 +1129,7 @@ def join_tournament():
         
         if not instance:
             start_time = get_next_schedule_ms(t_id) # <-- Modificado para usar el ID
-            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_cop, max_players, start_time, prize_pool_cop) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, 10000 if t_id == 1 else 0))
+            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_credits, max_players, start_time, prize_pool_credits) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, 10000 if t_id == 1 else 0))
             instance_id = cur.fetchone()['id']
             players_count = 0
             tourney_status = 'waiting'
@@ -1153,8 +1153,8 @@ def join_tournament():
         state['seedsBalance'] -= seed_cost
         if fee > 0:
             prize_addition = fee * 0.85 
-            cur.execute("UPDATE tournament_instances SET prize_pool_cop = prize_pool_cop + %s WHERE id = %s", (prize_addition, instance_id))
-            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_cop, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
+            cur.execute("UPDATE tournament_instances SET prize_pool_credits = prize_pool_credits + %s WHERE id = %s", (prize_addition, instance_id))
+            cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"WOMPI-{user['id']}-{int(time.time())}"))
 
         # NUEVO: Insertamos el current_score calculado en el frontend junto con la precisión
         cur.execute("INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time, current_score) VALUES (%s, %s, %s, %s, %s, %s)", (instance_id, user['id'], username, precision, time_used, score))
@@ -1201,7 +1201,7 @@ def global_leaderboard(t_id):
                 "leaderboard": players,
                 "start_time": last_inst['start_time'],
                 "end_time": last_inst['end_time'],
-                "prize_pool": last_inst['prize_pool_cop']
+                "prize_pool": last_inst['prize_pool_credits']
             })
         cur.close(); conn.close()
         return jsonify({"status": "no_instance", "prize_pool": 10000 if t_id == 1 else 0})
@@ -1216,7 +1216,7 @@ def global_leaderboard(t_id):
     cur.close(); conn.close()
     
     return jsonify({
-        "prize_pool": inst['prize_pool_cop'],
+        "prize_pool": inst['prize_pool_credits'],
         "status": inst['status'],
         "start_time": inst['start_time'],
         "end_time": inst['end_time'],
@@ -1237,10 +1237,10 @@ def check_tournament_status(instance_id):
     if inst:
         inst = process_tournament_lifecycle(inst, conn, cur)
         # FIX: Convertimos Decimal a Float para que JSON lo pueda parsear sin error 500
-        if 'prize_pool_cop' in inst and inst['prize_pool_cop'] is not None:
-            inst['prize_pool_cop'] = float(inst['prize_pool_cop'])
-        if 'entry_fee_cop' in inst and inst['entry_fee_cop'] is not None:
-            inst['entry_fee_cop'] = float(inst['entry_fee_cop'])
+        if 'prize_pool_credits' in inst and inst['prize_pool_credits'] is not None:
+            inst['prize_pool_credits'] = float(inst['prize_pool_credits'])
+        if 'entry_fee_credits' in inst and inst['entry_fee_credits'] is not None:
+            inst['entry_fee_credits'] = float(inst['entry_fee_credits'])
         
     cur.close(); conn.close()
     return jsonify(inst if inst else {})
@@ -1249,7 +1249,7 @@ def check_tournament_status(instance_id):
 def get_leaderboard(instance_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT prize_pool_cop, status, players_count, max_players FROM tournament_instances WHERE id = %s", (instance_id,))
+    cur.execute("SELECT prize_pool_credits, status, players_count, max_players FROM tournament_instances WHERE id = %s", (instance_id,))
     instance = cur.fetchone()
     
     cur.execute('''
@@ -1262,7 +1262,7 @@ def get_leaderboard(instance_id):
     cur.close(); conn.close()
     
     return jsonify({
-        "prize_pool": instance['prize_pool_cop'] if instance else 0,
+        "prize_pool": instance['prize_pool_credits'] if instance else 0,
         "status": instance['status'] if instance else 'unknown',
         "players_count": instance['players_count'] if instance else 0,
         "max_players": instance['max_players'] if instance else 10,
