@@ -206,32 +206,28 @@
     </div>
 
 
-
     <!-- ========================================== -->
     <!-- SISTEMA DE GRANJERO GUÍA (ESTILO PVZ)      -->
     <!-- ========================================== -->
-    <div id="guide-overlay" class="fixed inset-y-0 left-0 z-[9999] pointer-events-none flex items-end sm:items-center pb-10 sm:pb-0">
+    <div id="guide-overlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-end justify-start">
         <!-- Contenedor principal que se desliza desde la izquierda -->
-        <div id="guide-container" class="relative flex items-end sm:items-center transform -translate-x-full transition-transform duration-500 ease-out pl-2 sm:pl-4">
+        <div id="guide-container" class="relative flex items-end transform -translate-x-full transition-transform duration-500 ease-out">
             
-            <!-- Personaje -->
-            <img id="guide-character" src="assets/Granjero/Explicando.png" class="w-40 sm:w-64 md:w-[350px] h-auto object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] relative z-20 pointer-events-auto">
+            <!-- Personaje pegado a la izquierda y abajo -->
+            <img id="guide-character" src="assets/Granjero/Explicando.png" class="w-48 sm:w-64 md:w-[320px] lg:w-[380px] h-auto object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] relative z-20 pointer-events-auto">
             
             <!-- Burbuja de Diálogo -->
-            <div id="guide-bubble" class="absolute bottom-[60%] sm:bottom-auto sm:top-1/4 left-[75%] sm:left-[85%] bg-white text-cg_navy border-4 border-cg_navy rounded-3xl p-4 sm:p-6 shadow-2xl pointer-events-auto w-[250px] sm:w-[320px] md:w-[400px] transform scale-0 transition-transform duration-300 origin-bottom-left sm:origin-left z-30 flex flex-col">
-                <!-- Triángulo de la burbuja (Apunta hacia abajo en móvil, a la izquierda en PC) -->
-                <div class="absolute -bottom-4 left-6 sm:bottom-auto sm:top-12 sm:-left-4 w-0 h-0 
-                            border-l-[15px] sm:border-l-[0px] border-l-transparent sm:border-r-[20px] sm:border-r-cg_navy
-                            border-r-[15px] sm:border-r-[0px] border-r-transparent 
-                            border-t-[20px] sm:border-t-[15px] border-t-cg_navy sm:border-t-transparent
-                            border-b-[0px] sm:border-b-[15px] sm:border-b-transparent"></div>
-                <div class="absolute -bottom-[13px] left-[26px] sm:bottom-auto sm:top-[40px] sm:-left-[13px] w-0 h-0 
-                            border-l-[11px] sm:border-l-[0px] border-l-transparent sm:border-r-[16px] sm:border-r-white
-                            border-r-[11px] sm:border-r-[0px] border-r-transparent 
-                            border-t-[16px] sm:border-t-[11px] border-t-white sm:border-t-transparent
-                            border-b-[0px] sm:border-b-[11px] sm:border-b-transparent"></div>
+            <div id="guide-bubble" class="absolute bottom-[40%] sm:bottom-[50%] left-[75%] sm:left-[85%] bg-white text-cg_navy border-4 border-cg_navy rounded-3xl p-5 shadow-2xl pointer-events-auto w-[250px] sm:w-[320px] md:w-[400px] transform scale-0 transition-transform duration-300 origin-bottom-left z-30 flex flex-col mb-4">
                 
-                <p id="guide-text" class="text-sm md:text-lg font-black leading-tight mb-4 min-h-[3rem] font-comic text-left"></p>
+                <!-- Triángulo de la burbuja apuntando hacia el granjero -->
+                <div class="absolute top-[60%] -left-[19px] w-0 h-0 
+                            border-y-[15px] border-y-transparent 
+                            border-r-[15px] border-r-cg_navy"></div>
+                <div class="absolute top-[60%] -left-[13px] w-0 h-0 mt-[3px]
+                            border-y-[12px] border-y-transparent 
+                            border-r-[12px] border-r-white z-10"></div>
+                
+                <p id="guide-text" class="text-sm md:text-lg font-black leading-snug mb-4 min-h-[4rem] text-left whitespace-pre-wrap break-words"></p>
                 
                 <!-- Botón de Confirmación -->
                 <button onclick="window.closeGuide()" class="self-end bg-cg_gold hover:bg-orange-500 text-white font-black py-2.5 px-5 rounded-xl shadow-[0_4px_0_#c27818] active:translate-y-[4px] active:shadow-none uppercase tracking-widest text-xs transition-all">
@@ -1560,7 +1556,6 @@
             isOpen: false,
             typingTimer: null,
             
-            // emotion puede ser: 'explicando', 'alarma' o 'celebracion'
             show(text, emotion = 'explicando') {
                 const container = document.getElementById('guide-container');
                 const bubble = document.getElementById('guide-bubble');
@@ -1587,17 +1582,18 @@
                     bubble.classList.remove('scale-0');
                     bubble.classList.add('scale-100');
                     
-                    textEl.innerText = '';
+                    textEl.textContent = '';
                     let i = 0;
                     if(this.typingTimer) clearInterval(this.typingTimer);
                     
                     this.typingTimer = setInterval(() => {
-                        textEl.innerText += text.charAt(i);
+                        // Utilizar substring evita que el HTML elimine los espacios al final de la cadena
+                        textEl.textContent = text.substring(0, i + 1);
                         i++;
                         if (i >= text.length) {
                             clearInterval(this.typingTimer);
                         }
-                    }, 30); // 30ms por letra
+                    }, 30); // Velocidad de tipeo
                 }, 400); // Esperar a que termine de deslizarse
             },
 
