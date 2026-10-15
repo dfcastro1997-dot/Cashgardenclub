@@ -14,8 +14,9 @@
 
             <!-- Botón dinámico de entrega para Don Vito -->
             <div id="vito-contract-banner" class="hidden">
-                <button onclick="window.completeVitoContract()" class="h-12 sm:h-14 bg-gradient-to-r from-gray-900 to-black text-amber-400 border-2 border-amber-500 rounded-2xl font-black px-4 flex items-center gap-2 shadow-lg hover:scale-105 transition-all text-xs uppercase tracking-wider">
-                    <span>📜 Entregar a Don Vito</span>
+                <button onclick="window.checkVitoContract()" class="h-12 sm:h-14 bg-white hover:bg-gray-50 text-cg_navy border border-gray-200 rounded-2xl font-black px-4 flex items-center gap-2 shadow-sm transition-all text-xs uppercase tracking-wider">
+                    <span class="text-amber-600 text-lg">📜</span>
+                    <span>Don Vito</span>
                 </button>
             </div>
 
@@ -798,6 +799,39 @@
 </div>
 
 
+
+
+
+
+
+<!-- MODAL ESTADO CONTRATO DON VITO -->
+<div id="vito-status-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeVitoStatusModal()"></div>
+    <div class="bg-[#fdfbf7] rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border-4 border-double border-amber-900 animate-fade-in font-serif">
+        <div class="w-20 h-20 mx-auto mb-3 bg-amber-100 rounded-2xl border border-amber-300 flex items-center justify-center shadow-inner overflow-hidden p-2">
+            <img id="vito-status-img" src="" class="w-full h-full object-contain drop-shadow-md">
+        </div>
+        <h3 class="text-xl font-black text-amber-950 mb-1 uppercase tracking-widest border-b border-amber-200 pb-2">Contrato Activo</h3>
+        <p class="text-xs text-amber-800 mb-4 mt-2 font-medium">Planta requerida:<br><strong id="vito-status-plant" class="text-amber-950 font-black text-sm">---</strong></p>
+        
+        <div class="bg-amber-50 rounded-xl p-3 mb-6 border border-amber-200 shadow-inner">
+            <p class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1">Tiempo Restante</p>
+            <p class="text-2xl font-black text-red-600 font-mono" id="vito-status-time">--:--:--</p>
+        </div>
+        
+        <div class="flex gap-3 font-sans">
+            <button onclick="closeVitoStatusModal()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors text-xs uppercase tracking-widest shadow-sm">Cerrar</button>
+            <button onclick="closeVitoStatusModal(); window.completeVitoContract();" class="flex-[2] bg-amber-900 hover:bg-black text-white font-black py-3 rounded-xl shadow-md transition-colors text-xs uppercase tracking-widest">Entregar Planta</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 <div id="team-selection-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
     <!-- NUEVO: Al hacer clic fuera o en cancelar, ejecutará la nueva función de confirmación -->
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="window.farmApp.closeTeamSelection()"></div>
@@ -829,7 +863,66 @@
 </div>
 
 <script>
+    window.vitoTimer = null;
 
+    window.checkVitoContract = function() {
+        if (!window.farmApp || !window.farmApp.state || !window.farmApp.state.vitoContract) return;
+        const contract = window.farmApp.state.vitoContract;
+        if (!contract.active) return;
+
+        const modal = document.getElementById('vito-status-modal');
+        const plantNameEl = document.getElementById('vito-status-plant');
+        const plantImgEl = document.getElementById('vito-status-img');
+        const timeEl = document.getElementById('vito-status-time');
+
+        let plantName = "Planta Desconocida";
+        let plantImg = "assets/Fondos/logo.png";
+        
+        if (window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[contract.targetSeed]) {
+            plantName = window.farmApp.state.dynamicPlants[contract.targetSeed].name;
+            plantImg = window.farmApp.state.dynamicPlants[contract.targetSeed].image_url;
+            
+            // Garantizar que use la animación (gif) si está disponible en lugar del png estático
+            if (plantImg.includes('assets/Plantas/') && plantImg.endsWith('.png')) {
+                plantImg = plantImg.replace('.png', '.gif');
+            }
+        }
+        
+        plantNameEl.innerText = plantName;
+        plantImgEl.src = plantImg;
+
+        const updateTime = () => {
+            const now = Date.now();
+            const left = contract.expiresAt - now;
+            if (left <= 0) {
+                timeEl.innerText = "00:00:00";
+                clearInterval(window.vitoTimer);
+            } else {
+                const h = Math.floor(left / 3600000);
+                const m = Math.floor((left % 3600000) / 60000);
+                const s = Math.floor((left % 60000) / 1000);
+                timeEl.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+        };
+        
+        updateTime();
+        if (window.vitoTimer) clearInterval(window.vitoTimer);
+        window.vitoTimer = setInterval(updateTime, 1000);
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    window.closeVitoStatusModal = function() {
+        if (window.vitoTimer) clearInterval(window.vitoTimer);
+        const modal = document.getElementById('vito-status-modal');
+        if(modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    };
+
+// Aquí continúa tu código existente:
 if (typeof window.farmApp === 'undefined') {
 
     // 1. ESTADO Y SIMULADOR DE IAS EN LÍNEA
@@ -3970,6 +4063,12 @@ if (typeof window.farmApp === 'undefined') {
                 document.getElementById('farm-alert-icon').innerText = icon;
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
+                
+                // Auto-cerrar el modal a los 3 segundos
+                if (this.alertTimeout) clearTimeout(this.alertTimeout);
+                this.alertTimeout = setTimeout(() => {
+                    this.closeFarmAlert();
+                }, 3000);
             }
         },
 

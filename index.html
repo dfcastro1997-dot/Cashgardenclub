@@ -1742,6 +1742,22 @@
                 if (!data) return;
                 this.currentMerchant = merchantId;
 
+                // --- NUEVO: Generar planta para Vito ANTES de mostrar el mensaje ---
+                let finalQuote = data.quote;
+                if (merchantId === 'vito') {
+                    let randomSeedId = 'dyn_rosa_permafrost'; 
+                    let plantName = 'Rosa Permafrost';
+                    if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
+                        const dynamicKeys = Object.keys(window.farmApp.state.dynamicPlants);
+                        if (dynamicKeys.length > 0) {
+                            randomSeedId = dynamicKeys[Math.floor(Math.random() * dynamicKeys.length)];
+                            plantName = window.farmApp.state.dynamicPlants[randomSeedId].name;
+                        }
+                    }
+                    this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: 35000 };
+                    finalQuote = `Tengo un pedido urgente. Necesito que cultives: ${plantName} en menos de 4 horas. Si cumples, la paga es enorme. Si me fallas... me quedaré con el 30% de tus ahorros.`;
+                }
+
                 const container = document.getElementById('merchant-container');
                 const bubble = document.getElementById('merchant-bubble');
                 const textEl = document.getElementById('merchant-text');
@@ -1766,9 +1782,9 @@
                     if(this.typingTimer) clearInterval(this.typingTimer);
                     
                     this.typingTimer = setInterval(() => {
-                        textEl.textContent = data.quote.substring(0, i + 1);
+                        textEl.textContent = finalQuote.substring(0, i + 1);
                         i++;
-                        if (i >= data.quote.length) clearInterval(this.typingTimer);
+                        if (i >= finalQuote.length) clearInterval(this.typingTimer);
                     }, 30);
                 }, 400);
             },
@@ -1819,15 +1835,24 @@
                     this.close();
 
                 } else if (merchantId === 'bael') {
-                    // Lógica de Bael (Mantener igual que ya tienes)
                     const premiumSeeds = ['dyn_hidra_del_abismo', 'dyn_dragon', 'dyn_golem'];
                     const randomSeed = premiumSeeds[Math.floor(Math.random() * premiumSeeds.length)];
+                    
+                    // Buscar imagen y nombre real de la base de datos
+                    let seedName = 'Semilla Misteriosa';
+                    let seedImg = 'assets/Fondos/logo.png';
+                    if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[randomSeed]) {
+                        seedName = window.farmApp.state.dynamicPlants[randomSeed].name;
+                        seedImg = window.farmApp.state.dynamicPlants[randomSeed].image_url;
+                    }
+
                     if (!window.farmApp.state.inventory[randomSeed]) {
-                        window.farmApp.state.inventory[randomSeed] = { name: 'Semilla Misteriosa', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Fondos/logo.png' };
+                        window.farmApp.state.inventory[randomSeed] = { name: seedName, type: 'seed', reqSize: 'big', qty: 0, image: seedImg };
                     }
                     window.farmApp.state.inventory[randomSeed].qty += 1;
                     window.farmApp.saveState();
                     window.farmApp.updateUI();
+                    
                     window.farmApp.showFarmAlert("Muestra Gratis", "Bael deslizó una semilla exótica en tu bolsillo.", "🧪");
                     this.close();
 
@@ -1841,24 +1866,12 @@
             // NUEVAS FUNCIONES PARA EL CONTRATO Y FIRMA
             // ==========================================
             openVitoContractModal() {
-                let randomSeedId = 'dyn_rosa_permafrost'; 
-                let plantName = 'Rosa Permafrost';
-
-                // Seleccionar planta aleatoria
-                if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
-                    const dynamicKeys = Object.keys(window.farmApp.state.dynamicPlants);
-                    if (dynamicKeys.length > 0) {
-                        randomSeedId = dynamicKeys[Math.floor(Math.random() * dynamicKeys.length)];
-                        plantName = window.farmApp.state.dynamicPlants[randomSeedId].name;
-                    }
-                }
-
-                this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: 35000 };
+                if (!this.pendingVitoContract) return;
 
                 // Inyectar datos al HTML
                 const d = new Date();
                 document.getElementById('vito-contract-user').innerText = sessionStorage.getItem('username') || 'Granjero';
-                document.getElementById('vito-contract-plant').innerText = plantName;
+                document.getElementById('vito-contract-plant').innerText = this.pendingVitoContract.plantName;
                 document.getElementById('vito-contract-reward').innerText = this.pendingVitoContract.reward.toLocaleString() + ' 🌱';
                 document.getElementById('vito-contract-date').innerText = 'Fecha: ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
 
