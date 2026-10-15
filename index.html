@@ -2121,17 +2121,22 @@
 
 
 
-        // Generador de Evento Aleatorio (15% de probabilidad cada 45 segundos)
+        // Generador de Eventos de Mercaderes (Promedio: 5 apariciones por semana)
+        // Se ejecuta cada 10 minutos (600,000 ms). Hay 1008 intervalos en una semana.
         setInterval(() => {
             // Solo intenta sacar un mercader si la granja/dashboard está visible
             const dashboard = document.getElementById('dashboard-screen');
             if (dashboard && !dashboard.classList.contains('hidden') && !window.merchantApp.isOpen) {
-                if (Math.random() < 0.15) {
-                    const mercs = ['silas', 'bael', 'vito'];
-                    window.merchantApp.show(mercs[Math.floor(Math.random() * mercs.length)]);
+                
+                // 0.5% de probabilidad cada 10 minutos = ~5 apariciones a la semana
+                if (Math.random() < 0.005) { 
+                    // Proporción exacta: Bael (1 vez), Don Vito (2 veces), Silas (2 veces)
+                    const mercs = ['bael', 'vito', 'vito', 'silas', 'silas'];
+                    const mercaderElegido = mercs[Math.floor(Math.random() * mercs.length)];
+                    window.merchantApp.show(mercaderElegido);
                 }
             }
-        }, 45000); 
+        }, 600000);
 
     </script>
 </body>
