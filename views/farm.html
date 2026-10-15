@@ -879,7 +879,14 @@ if (typeof window.farmApp === 'undefined') {
 
     window.openInvitationsModal = function() {
         document.getElementById('duelo-entry-choice-modal').classList.replace('flex', 'hidden');
+        
+        // Forzamos la actualización de la lista de IAs si por alguna razón está vacía
+        if (window.activeInvitationsList.length === 0) {
+            window.updateIAsSimulator();
+        }
+        
         window.renderInvitationsTable();
+        
         const modal = document.getElementById('duelo-invitations-modal');
         if (modal) {
             modal.classList.remove('hidden');

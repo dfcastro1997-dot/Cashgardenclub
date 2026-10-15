@@ -1461,10 +1461,16 @@ window.combatApp = {
                 };
             });
 
-            let finalHp = (isArsenal && incomingHp !== undefined) ? incomingHp : pHp;
-            let finalWins = (isArsenal && incomingWins !== undefined) ? incomingWins : 0;
-            // La vida guardada en el arsenal puede superar la base calculada: nunca mostrar hp > maxHp
-            pHp = Math.max(pHp, finalHp);
+            let finalHp = incomingHp !== undefined ? incomingHp : pHp;
+            let finalWins = incomingWins !== undefined ? incomingWins : 0;
+            
+            // Si es un bot de la IA (no es del arsenal pero trae HP asignado), su vida máxima escala a su nivel
+            if (!isArsenal && incomingHp !== undefined) {
+                pHp = incomingHp;
+            } else {
+                // Si es del arsenal herida o una planta base, respetamos los topes
+                pHp = Math.max(pHp, finalHp);
+            }
 
             return {
                 fromArsenal: isArsenal, arsId: isArsenal ? idTag : null, plotId: !isArsenal ? idTag : null,
