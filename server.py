@@ -1955,6 +1955,56 @@ def auto_ia_matchmaking_challenge():
 # Iniciar el hilo demonio de la IA
 threading.Thread(target=auto_ia_matchmaking_challenge, daemon=True).start()
 
+
+
+# ==========================================================
+# MOTOR DE INVITACIONES PERIÓDICAS DE BOTS IA
+# ==========================================================
+def bot_invitation_generator():
+    import random
+    bot_pool = [
+        {"name": "Bot 78SX", "avatar": "assets/Herramientas_y_Servicios/PvR.png"},
+        {"name": "Bot Valkiria", "avatar": "assets/Herramientas_y_Servicios/PvR.png"},
+        {"name": "Bot Titan-X", "avatar": "assets/Herramientas_y_Servicios/PvR.png"},
+        {"name": "Bot Cypher", "avatar": "assets/Herramientas_y_Servicios/PvR.png"},
+        {"name": "Bot Nexus", "avatar": "assets/Herramientas_y_Servicios/PvR.png"}
+    ]
+
+    while True:
+        # Genera un reto de Bot cada 20 a 45 segundos
+        time.sleep(random.randint(20, 45))
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT short_id FROM users WHERE session_token IS NOT NULL")
+            users = cur.fetchall()
+            cur.close(); conn.close()
+
+            if users:
+                for u in users:
+                    bot = random.choice(bot_pool)
+                    bet = random.choice([0, 1000, 2000, 5000, 10000])
+                    
+                    socketio.emit('incoming_challenge', {
+                        'match_id': f"bot_{int(time.time())}_{random.randint(100,999)}",
+                        'challenger_short_id': 'BOT',
+                        'challenger_name': bot['name'],
+                        'avatar': bot['avatar'],
+                        'bet': bet,
+                        'is_bot': True
+                    }, room=f"user_{u['short_id']}")
+        except Exception as e:
+            print("Error en motor de retos de Bots:", e)
+
+# Iniciar hilo demonio de invitaciones
+threading.Thread(target=bot_invitation_generator, daemon=True).start()
+
+
+
+
+
+
+
 def init_daily_tree(cur, date_str):
     cur.execute("SELECT COUNT(id) as c FROM users WHERE balance > 0 OR game_state IS NOT NULL")
     active_users = max(1, cur.fetchone()['c'])

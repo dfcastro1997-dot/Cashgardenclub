@@ -17,15 +17,15 @@
             <!-- Contenedor agrupado para PC (Duelo + Árbol + Clima) -->
             <div class="col-span-3 sm:col-span-1 flex gap-2 w-full sm:w-auto">
 
-                <!-- BOTÓN DUELO PROFESIONAL Y ANCHO -->
-                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[190px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-slate-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-4 gap-3">
-                    <div class="flex items-center gap-2 shrink-0">
-                        <span class="text-xl text-red-500 drop-shadow-sm">⚔️</span> 
-                        <span class="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Duelo</span>
+                <!-- BOTÓN DUELO AJUSTADO SIN DESBORDAMIENTO -->
+                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[150px] md:min-w-[165px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-slate-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-2.5 sm:px-3 gap-1.5 shrink-0">
+                    <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                        <span class="text-base sm:text-lg text-red-500 drop-shadow-sm">⚔️</span> 
+                        <span class="text-[10px] sm:text-xs uppercase tracking-wider font-extrabold">Duelo</span>
                     </div>
-                    <div class="flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-xl shrink-0">
-                        <span class="w-2 h-2 rounded-full bg-cg_blue animate-pulse"></span>
-                        <span id="mm-count-badge" class="text-[10px] sm:text-xs font-black text-cg_blue whitespace-nowrap">0 En Línea</span>
+                    <div class="flex items-center gap-1 bg-blue-50 border border-blue-100 px-1.5 sm:px-2 py-0.5 rounded-xl shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cg_blue animate-pulse shrink-0"></span>
+                        <span id="mm-count-badge" class="text-[9px] sm:text-[10px] font-black text-cg_blue whitespace-nowrap">0 En Línea</span>
                     </div>
                 </button>
 
@@ -231,6 +231,55 @@
 </div>
 
 
+<!-- MODAL DE ENTRADA A DUELO: ELEGIR MODO O VER INVITACIONES -->
+<div id="duelo-entry-choice-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('duelo-entry-choice-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 sm:p-8 text-center border-4 border-cg_blue animate-fade-in">
+        <div class="text-5xl mb-3">⚔️</div>
+        <h3 class="text-xl sm:text-2xl font-black text-cg_navy mb-1 tracking-tight">Centro de Duelos</h3>
+        <p class="text-xs text-gray-500 mb-6 font-medium">¿Qué deseas hacer hoy?</p>
+
+        <div class="flex flex-col gap-3">
+            <button onclick="window.openInvitationsModal()" class="w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-black py-4 rounded-2xl shadow-md transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95">
+                <span>Listado de Invitaciones</span>
+                <span id="entry-badge-count" class="bg-white text-orange-600 px-2 py-0.5 rounded-full text-[10px] font-black shadow-inner">0</span>
+            </button>
+            <button onclick="window.openModeSelectionModal()" class="w-full bg-cg_blue hover:bg-cg_navy text-white font-black py-4 rounded-2xl shadow-md transition-all text-xs sm:text-sm uppercase tracking-widest active:scale-95">
+                Seleccionar Modo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TABLA DE INVITACIONES / RETOS ACTIVOS -->
+<div id="duelo-invitations-modal" class="fixed inset-0 z-[520] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('duelo-invitations-modal').classList.replace('flex', 'hidden')"></div>
+    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-2xl relative z-10 p-5 sm:p-7 border border-gray-100 flex flex-col max-h-[85vh] animate-fade-in">
+        <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3 shrink-0">
+            <div>
+                <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight flex items-center gap-2"><span>📩</span> Invitaciones Recibidas</h3>
+                <p class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mt-0.5">Retos activos de Bots y Jugadores</p>
+            </div>
+            <button onclick="document.getElementById('duelo-invitations-modal').classList.replace('flex', 'hidden')" class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition-colors">✕</button>
+        </div>
+
+        <div class="flex-1 overflow-x-auto overflow-y-auto hide-scrollbar bg-gray-50/50 rounded-2xl p-2 border border-gray-200/60">
+            <table class="w-full text-left border-collapse whitespace-nowrap">
+                <thead class="bg-white sticky top-0 z-10 border-b border-gray-200 shadow-sm">
+                    <tr>
+                        <th class="p-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Retador</th>
+                        <th class="p-3 text-[10px] font-black text-cg_gold uppercase tracking-widest text-center">Recompensa</th>
+                        <th class="p-3 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="invitations-table-body" class="divide-y divide-gray-100 text-xs sm:text-sm font-medium">
+                    <!-- Filas inyectadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL ELECCIÓN DE MODO DE DUELO -->
 <div id="duelo-choice-modal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden')"></div>
@@ -241,7 +290,6 @@
         </div>
         
         <div class="flex flex-col lg:flex-row gap-4 md:gap-6 overflow-y-auto pr-1 pb-1" style="scrollbar-width: thin;">
-            <!-- Botón Campaña PvE (Cuervos) -->
             <button onclick="selectHistoria()" class="flex-1 bg-gray-50 border-2 border-gray-200 hover:border-cg_blue hover:bg-blue-50/30 hover:shadow-2xl p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex flex-col sm:flex-row lg:flex-col items-center justify-start text-center sm:text-left lg:text-center transition-all duration-300 group gap-3 md:gap-0 shrink-0">
                 <img src="assets/Herramientas_y_Servicios/PvC.png" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-36 lg:h-36 object-contain drop-shadow-xl md:mb-4 group-hover:scale-110 transition-transform duration-500 shrink-0" alt="Campaña PvE">
                 <div>
@@ -252,7 +300,6 @@
                 </div>
             </button>
 
-            <!-- Botón Duelo Rápido (Bots IA) -->
             <button onclick="selectBotPvE()" class="flex-1 bg-orange-50 border-2 border-orange-200 hover:border-orange-500 hover:shadow-2xl p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex flex-col sm:flex-row lg:flex-col items-center justify-start text-center sm:text-left lg:text-center transition-all duration-300 group gap-3 md:gap-0 shrink-0">
                 <img src="assets/Herramientas_y_Servicios/PvR.png" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-36 lg:h-36 object-contain drop-shadow-xl md:mb-4 group-hover:scale-110 transition-transform duration-500 shrink-0" alt="Duelo IA">
                 <div>
@@ -263,7 +310,6 @@
                 </div>
             </button>
 
-            <!-- Botón Jugador vs Jugador PvP -->
             <button onclick="selectPvP()" class="flex-1 bg-blue-50 border-2 border-blue-200 hover:border-cg_blue hover:shadow-2xl p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex flex-col sm:flex-row lg:flex-col items-center justify-start text-center sm:text-left lg:text-center transition-all duration-300 group gap-3 md:gap-0 shrink-0">
                 <img src="assets/Herramientas_y_Servicios/PvP.png" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-36 lg:h-36 object-contain drop-shadow-xl md:mb-4 group-hover:scale-110 transition-transform duration-500 shrink-0" alt="Duelo PvP">
                 <div>
@@ -803,10 +849,138 @@
 
 if (typeof window.farmApp === 'undefined') {
 
+    window.activeInvitationsList = [];
+
     window.intentarDuelo = function() {
+        const modal = document.getElementById('duelo-entry-choice-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    };
+
+    window.openModeSelectionModal = function() {
+        document.getElementById('duelo-entry-choice-modal').classList.replace('flex', 'hidden');
         document.getElementById('duelo-choice-modal').classList.remove('hidden');
         document.getElementById('duelo-choice-modal').classList.add('flex');
     };
+
+    window.openInvitationsModal = function() {
+        document.getElementById('duelo-entry-choice-modal').classList.replace('flex', 'hidden');
+        window.renderInvitationsTable();
+        const modal = document.getElementById('duelo-invitations-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    };
+
+    window.renderInvitationsTable = function() {
+        const tbody = document.getElementById('invitations-table-body');
+        if (!tbody) return;
+
+        if (window.activeInvitationsList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-400 font-bold">No tienes invitaciones pendientes por el momento.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = window.activeInvitationsList.map((item, idx) => {
+            const isBot = item.is_bot || item.challenger_name.startsWith('Bot ');
+            const avatarImg = isBot ? 'assets/Herramientas_y_Servicios/PvR.png' : (item.avatar || 'assets/Perfil/defecto.png');
+            const betSeeds = item.bet || item.bet_seeds || 0;
+            const rewardPool = betSeeds > 0 ? (betSeeds * 2).toLocaleString() + ' 🌱' : 'Amistoso';
+
+            return `
+                <tr class="hover:bg-white transition-colors border-b border-gray-100 last:border-0">
+                    <td class="p-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full border-2 ${isBot ? 'border-orange-300 bg-orange-50' : 'border-blue-200 bg-blue-50'} flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                <img src="${avatarImg}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-black text-cg_navy text-xs sm:text-sm flex items-center gap-1">
+                                    ${item.challenger_name}
+                                    ${isBot ? '<span class="text-[8px] bg-orange-100 text-orange-600 font-black px-1.5 py-0.5 rounded">IA</span>' : ''}
+                                </span>
+                                <span class="text-[9px] text-gray-400 font-bold">ID: #${item.challenger_short_id || 'BOT'}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-xl text-xs shadow-inner">
+                            ${rewardPool}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="window.acceptInvitationAt(${idx})" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-3 py-1.5 rounded-xl shadow-sm text-[10px] sm:text-xs uppercase tracking-wider transition-transform active:scale-95">
+                                Aceptar
+                            </button>
+                            <button onclick="window.renegotiateInvitationAt(${idx})" class="bg-blue-50 hover:bg-blue-100 text-cg_blue border border-blue-200 font-black px-2.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider transition-colors">
+                                Renegociar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    };
+
+    window.updateInvitationsBadge = function() {
+        const totalCount = window.activeInvitationsList.length;
+        const badge = document.getElementById('mm-count-badge');
+        const entryBadge = document.getElementById('entry-badge-count');
+
+        if (badge) badge.innerText = `${totalCount} Retos`;
+        if (entryBadge) entryBadge.innerText = totalCount;
+    };
+
+    window.acceptInvitationAt = function(idx) {
+        const item = window.activeInvitationsList[idx];
+        if (!item) return;
+
+        window.activeInvitationsList.splice(idx, 1);
+        window.updateInvitationsBadge();
+        document.getElementById('duelo-invitations-modal').classList.replace('flex', 'hidden');
+
+        if (item.is_bot || item.challenger_name.startsWith('Bot ')) {
+            sessionStorage.setItem('pve_bot_mode', 'true');
+            sessionStorage.removeItem('pvp_match_id');
+            sessionStorage.removeItem('pvp_bet_amount');
+            
+            let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+            window.farmApp.openTeamSelection(readyPlots, window.farmApp.state.arsenal || []);
+        } else {
+            window.currentChallenge = item;
+            window.respondPvP('accepted');
+        }
+    };
+
+    window.renegotiateInvitationAt = function(idx) {
+        const item = window.activeInvitationsList[idx];
+        if (!item) return;
+
+        window.activeInvitationsList.splice(idx, 1);
+        window.updateInvitationsBadge();
+        document.getElementById('duelo-invitations-modal').classList.replace('flex', 'hidden');
+
+        window.currentChallenge = item;
+        window.respondPvP('renegotiate');
+    };
+
+    // --- RECEPTOR DE EVENTOS DE SOCKET Y BOTS ---
+    window.socket.off('incoming_challenge');
+    window.socket.on('incoming_challenge', (data) => {
+        // Evitar retos duplicados por ID de match
+        const exists = window.activeInvitationsList.some(inv => inv.match_id === data.match_id);
+        if (!exists) {
+            window.activeInvitationsList.push(data);
+            window.updateInvitationsBadge();
+            if (document.getElementById('duelo-invitations-modal') && !document.getElementById('duelo-invitations-modal').classList.contains('hidden')) {
+                window.renderInvitationsTable();
+            }
+        }
+    });
 
     window.selectHistoria = function() {
         sessionStorage.removeItem('pvp_match_id');
