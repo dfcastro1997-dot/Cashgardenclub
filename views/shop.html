@@ -742,16 +742,17 @@ window.shopApp = {
             this.showModalAlert(catItem.image, "Combo de Siembra", 1, `-${comboTotal.toLocaleString()} 🌱`, 'Inversión:', 'success', `Incluye: ${qty}x ${catItem.name}, Maceta Peq. y Regadera.`);
             
         } else {
-            this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', "No tienes Semillas (🌱) suficientes para realizar esta compra.");
+            // MENSAJE DE ERROR EXPLICATIVO
+            this.showModalAlert(
+                null, 
+                'Fondos Insuficientes', 
+                null, 
+                null, 
+                null, 
+                'error', 
+                `No tienes semillas suficientes.\nEl Combo de Siembra Obligatorio (Planta + Maceta + Agua) cuesta ${comboTotal.toLocaleString()} 🌱.`
+            );
         }
-    },
-
-    promptBuyIAP(packageId) {
-        this.buyIAP(packageId); // Salta la confirmación
-    },
-
-    promptBuyExchange(packageId, priceCop, seeds) {
-        this.buyExchange(packageId, priceCop, seeds); // Salta la confirmación
     },
 
     closeConfirmModal() {
