@@ -17,15 +17,15 @@
             <!-- Contenedor agrupado para PC (Duelo + Árbol + Clima) -->
             <div class="col-span-3 sm:col-span-1 flex gap-2 w-full sm:w-auto">
 
-                <!-- BOTÓN DUELO AMPLIADO -->
-                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[170px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-3.5 gap-2">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
-                        <span class="text-[10px] sm:text-xs uppercase tracking-widest">Duelo</span>
+                <!-- BOTÓN DUELO PROFESIONAL Y ANCHO -->
+                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[190px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-slate-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-4 gap-3">
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="text-xl text-red-500 drop-shadow-sm">⚔️</span> 
+                        <span class="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Duelo</span>
                     </div>
-                    <div class="flex items-center gap-1 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-xl">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cg_blue animate-ping"></span>
-                        <span id="mm-count-badge" class="text-[10px] font-black text-cg_blue">0 En Línea</span>
+                    <div class="flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-xl shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-cg_blue animate-pulse"></span>
+                        <span id="mm-count-badge" class="text-[10px] sm:text-xs font-black text-cg_blue whitespace-nowrap">0 En Línea</span>
                     </div>
                 </button>
 
