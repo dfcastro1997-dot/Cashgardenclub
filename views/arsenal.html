@@ -119,32 +119,19 @@
     function calculateSellPrice(plant) {
         let shopPrice = 2000; // Precio por defecto si no se encuentra
 
-        // 1. Asignamos el precio exacto de la tienda (Mercado) para las plantas base
-        if (plant.plantId === 'flower_wheat') shopPrice = 5000;
-        else if (plant.plantId === 'flower_bamboo') shopPrice = 4000;
-        else if (plant.plantId === 'flower_cactus') shopPrice = 2000;
-        else if (plant.plantId === 'flower_small') shopPrice = 3000;
-        else if (plant.plantId === 'flower_big') shopPrice = 12000;
-        else if (plant.plantId === 'flower_crystal') shopPrice = 8000;
-        else if (plant.plantId === 'flower_moon') shopPrice = 15000;
-        else if (plant.plantId === 'flower_solar') shopPrice = 5000;
-        else if (plant.plantId === 'flower_neon') shopPrice = 12000;
-
-        // 2. Si es una planta dinámica creada desde el admin, tomamos su precio exacto de la base de datos
+        // 1. Si es una planta dinámica creada desde el admin, tomamos su precio exacto de la base de datos
         if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
             shopPrice = window.farmApp.state.dynamicPlants[plant.plantId].price || shopPrice;
         }
         
-        // 3. El valor base de venta será el 50% de su valor original en la tienda
+        // 2. El valor base de venta será el 50% de su valor original en la tienda
         let baseVal = shopPrice * 0.5;
 
-        // 4. El precio final depende de la salud (HP) actual de la planta. 
-        // Si está a punto de morir (ej. 11/120 HP), su valor se desploma.
+        // 3. El precio final depende de la salud (HP) actual de la planta. 
         let hpFactor = plant.hp / plant.maxHp;
         
-        // CORRECCIÓN: Se elimina el winBonus para evitar inflación y farmeo infinito. 
-        // Las plantas usadas son bienes que se deprecian, no inversiones.
-        let maxResaleBonus = 1.2; // Tope máximo del 20% extra sin importar cuántas victorias tenga
+        // 4. Bonus por victorias (tope de 1.2x)
+        let maxResaleBonus = 1.2; 
         let winBonus = Math.min(maxResaleBonus, 1 + ((plant.wins || 0) * 0.05)); 
         
         return Math.floor(baseVal * hpFactor * winBonus);
@@ -246,15 +233,6 @@
 
             // --- NUEVO: OBTENER EL PRECIO ORIGINAL DE MERCADO ---
             let shopPrice = 2000;
-            if (plant.plantId === 'flower_wheat') shopPrice = 5000;
-            else if (plant.plantId === 'flower_bamboo') shopPrice = 4000;
-            else if (plant.plantId === 'flower_cactus') shopPrice = 2000;
-            else if (plant.plantId === 'flower_small') shopPrice = 3000;
-            else if (plant.plantId === 'flower_big') shopPrice = 12000;
-            else if (plant.plantId === 'flower_crystal') shopPrice = 8000;
-            else if (plant.plantId === 'flower_moon') shopPrice = 15000;
-            else if (plant.plantId === 'flower_solar') shopPrice = 5000;
-            else if (plant.plantId === 'flower_neon') shopPrice = 12000;
 
             if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
                 shopPrice = window.farmApp.state.dynamicPlants[plant.plantId].price || shopPrice;

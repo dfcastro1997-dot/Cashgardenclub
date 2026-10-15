@@ -307,15 +307,15 @@ def init_db():
     cur.execute("SELECT id FROM tree_config LIMIT 1")
     if not cur.fetchone():
         default_vip = json.dumps([
-            {"rank": 1, "items": [{"id": "flower_moon", "qty": 2}]},
-            {"rank": 2, "items": [{"id": "flower_big", "qty": 2}]},
-            {"rank": 3, "items": [{"id": "tool_pot_big", "qty": 2}]}
+            {"rank": 1, "items": [{"id": "tool_pot_small", "qty": 10}]},
+            {"rank": 2, "items": [{"id": "tool_pot_small", "qty": 5}]},
+            {"rank": 3, "items": [{"id": "tool_water", "qty": 10}]}
         ])
         default_miles = json.dumps([
             {"pct": 25, "id": "tool_pot_small", "qty": 5},
             {"pct": 50, "id": "tool_water", "qty": 10},
-            {"pct": 75, "id": "flower_wheat", "qty": 3},
-            {"pct": 100, "id": "flower_bamboo", "qty": 2}
+            {"pct": 75, "id": "tool_water", "qty": 15},
+            {"pct": 100, "id": "tool_pot_small", "qty": 10}
         ])
         cur.execute("INSERT INTO tree_config (id, vip_prizes_json, milestones_json) VALUES (1, %s, %s)", (default_vip, default_miles))
 
@@ -413,16 +413,7 @@ def process_server_tick(game_state_str, chat_id=None):
                     plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
                     
                     min_safe = 20
-                    max_safe = 100
-                    if plant_id == 'flower_wheat': min_safe, max_safe = 60, 100
-                    elif plant_id == 'flower_bamboo': min_safe, max_safe = 50, 90
-                    elif plant_id == 'flower_small': min_safe, max_safe = 30, 90
-                    elif plant_id == 'flower_big': min_safe, max_safe = 50, 70
-                    elif plant_id == 'flower_cactus': min_safe, max_safe = 20, 80
-                    elif plant_id == 'flower_crystal': min_safe, max_safe = 40, 80
-                    elif plant_id == 'flower_moon': min_safe, max_safe = 40, 90
-                    elif plant_id == 'flower_solar': min_safe, max_safe = 30, 70
-                    elif plant_id == 'flower_neon': min_safe, max_safe = 40, 60
+                    max_safe = 80
 
                     # === CORRECCIÓN AUTO-RIEGO ===
                     # Ancla el agua al centro seguro exacto de la planta, asegurando que nunca se ahogue ni se seque
@@ -434,8 +425,7 @@ def process_server_tick(game_state_str, chat_id=None):
 
                     if not plot.get('isReady'):
                         if not is_auto_watering:
-                            evap_rate = 800.0 if plant_id == 'flower_bamboo' else (10.0 if plant_id == 'flower_cactus' else 40.0)
-                            evap_rate = evap_rate * season_multiplier 
+                            evap_rate = 40.0 * season_multiplier 
                             
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
@@ -457,13 +447,6 @@ def process_server_tick(game_state_str, chat_id=None):
                         if plot.get('hasCrow'):
                             crow_arrived = plot.get('crowArrivedAt', now)
                             plot['crowArrivedAt'] = crow_arrived
-                            if plant_id == 'flower_wheat' and (now - crow_arrived) > 900000:
-                                plot['status'] = 'empty'
-                                plot['potUses'] = max(0, plot.get('potUses', 1) - 1)
-                                plot['plant'] = None
-                                plot['hasCrow'] = False
-                                plot['crowArrivedAt'] = 0
-                                plot['crowLeavingAt'] = 0
                         else:
                             plot['crowArrivedAt'] = 0
 
@@ -479,21 +462,11 @@ def process_server_tick(game_state_str, chat_id=None):
                         plot['isReady'] = True
                         
                         if is_auto_harvesting and not plot.get('isSpoiled'):
-                            reward = plot.get('plant', {}).get('reward', 0)
-                            if reward == 0:
-                                if plant_id == 'flower_wheat': reward = 1500
-                                elif plant_id == 'flower_bamboo': reward = 6500
-                                elif plant_id == 'flower_cactus': reward = 3200
-                                elif plant_id == 'flower_small': reward = 4500
-                                elif plant_id == 'flower_big': reward = 26000
-                                elif plant_id == 'flower_crystal': reward = 10000
-                                elif plant_id == 'flower_moon': reward = 55000
-                                elif plant_id == 'flower_solar': reward = 5000
-                                elif plant_id == 'flower_neon': reward = 12000
+                            reward = plot.get('plant', {}).get('reward', 1500)
                             
                             state['seedsBalance'] = state.get('seedsBalance', 0) + reward
                             plot['potUses'] = plot.get('potUses', 0) + 1
-                            max_uses = 5 if plot.get('pot') == 'small' else 10
+                            max_uses = 5 
                             
                             if plot['potUses'] >= max_uses:
                                 plot['status'] = 'empty'
@@ -616,7 +589,6 @@ def process_server_tick(game_state_str, chat_id=None):
     except Exception as e:
         print("Server tick error:", e)
     return game_state_str
-
 
 
 @app.route('/')
@@ -963,7 +935,6 @@ def buy_seeds():
     
     standard_costs = {
         "tool_pot_small": 5000,
-        "tool_pot_big": 15000,
         "tool_water": 500,
         "tool_scarecrow": 6000
     }
@@ -1539,30 +1510,17 @@ def admin_add_items():
     now = int(time.time() * 1000)
 
     icons = {
-        'flower_wheat': '🌾', 'flower_bamboo': '🎋', 'flower_cactus': '🌵', 'flower_small': '🌸',
-        'flower_crystal': '💎', 'flower_big': '🌺', 'flower_moon': '🌙', 'flower_solar': '☀️', 'flower_neon': '🟣',
-        'tool_pot_small': '🪴', 'tool_pot_big': '🏺', 'tool_water': '🚿', 'tool_scarecrow': '🦉', 'tool_duel_ticket': '🎟️'
+        'tool_pot_small': '🪴', 'tool_water': '🚿', 'tool_scarecrow': '🦉'
     }
     
     names = {
-        'flower_wheat': 'Trigo Rápido', 'flower_bamboo': 'Bambú Tryhard', 'flower_cactus': 'Cactus de Cuarzo',
-        'flower_small': 'Flor Pequeña', 'flower_crystal': 'Helecho Cristal', 'flower_big': 'Flor Grande',
-        'flower_moon': 'Lirio Lunar', 'flower_solar': 'Girasol Solar', 'flower_neon': 'Orquídea Neón',
-        'flower_drosera': 'Drosera Pegajosa', 'flower_nepenthes': 'Nepenthes Ácida',
-        'flower_venus': 'Venus Trituradora', 'flower_hidra': 'Hidra del Abismo'
+        'tool_pot_small': 'Maceta Pequeña', 'tool_water': 'Regadera', 'tool_scarecrow': 'Espantapájaros'
     }
+    
     img_icons = {
-        'flower_wheat': 'assets/Plantas/trigo_rapido.png', 
-        'flower_bamboo': 'assets/Plantas/bambu_tryhard.png', 
-        'flower_cactus': 'assets/Plantas/cactus_cuarzo.png', 
-        'flower_small': 'assets/Plantas/flor_pequena.png', 
-        'flower_crystal': 'assets/Plantas/helecho_cristal.png', 
-        'flower_big': 'assets/Plantas/flor_grande.png', 
-        'flower_moon': 'assets/Plantas/lirio_lunar.png',
-        'flower_drosera': 'assets/Plantas/Drosera Pegajosa.gif',
-        'flower_nepenthes': 'assets/Plantas/Nepenthes Acida.gif',
-        'flower_venus': 'assets/Plantas/Venus Trituradora.gif',
-        'flower_hidra': 'assets/Plantas/Hidra del Abismo.gif'
+        'tool_pot_small': 'assets/Herramientas_y_Servicios/maceta_pequena.png', 
+        'tool_water': 'assets/Herramientas_y_Servicios/regadera.png', 
+        'tool_scarecrow': 'assets/Herramientas_y_Servicios/espantapajaros.png'
     }
 
     # --- AÑADIDO: Cargar atributos de plantas dinámicas ---
@@ -1600,7 +1558,7 @@ def admin_add_items():
                 if item_id not in state['inventory']:
                         state['inventory'][item_id] = {
                             'qty': 0, 
-                            'type': 'seed' if ('flower' in item_id or 'dyn_' in item_id) else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'ticket',
+                            'type': 'seed' if ('dyn_' in item_id) else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'item',
                             'name': names.get(item_id, item_id.replace('_', ' ').title()), 
                             'image': img_icons.get(item_id, 'assets/Fondos/logo.png')
                         }
@@ -1612,12 +1570,8 @@ def admin_add_items():
                 pid = raw['id']
                 qty = int(raw['qty'])
                 patk, pdef, php = 40, 20, 100
-                if pid == 'flower_wheat': patk, pdef, php = 34, 15, 100
-                elif pid == 'flower_cactus': patk, pdef, php = 34, 35, 150
-                elif pid == 'flower_bamboo': patk, pdef, php = 50, 20, 100
-                elif pid == 'flower_crystal': patk, pdef, php = 100, 8, 60
-                elif pid == 'flower_moon': patk, pdef, php = 60, 25, 200
-                elif pid in dyn_stats:
+                
+                if pid in dyn_stats:
                     patk = dyn_stats[pid].get('atk', 40)
                     pdef = dyn_stats[pid].get('def', 20)
                     php = dyn_stats[pid].get('hp', 100)
@@ -1986,12 +1940,8 @@ def init_daily_tree(cur, date_str):
     chosen_pool = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
     
     items_ref = {
-        'flower_wheat': ('Trigo Rápido', '🌾'), 'flower_bamboo': ('Bambú Tryhard', '🎋'),
-        'flower_cactus': ('Cactus Cuarzo', '🌵'), 'flower_small': ('Flor Pequeña', '🌸'),
-        'flower_crystal': ('Helecho Cristal', '💎'), 'flower_big': ('Flor Grande', '🌺'),
-        'flower_moon': ('Lirio Lunar', '🌙'), 'tool_pot_small': ('Maceta Peq.', '🪴'),
-        'tool_pot_big': ('Maceta Gde.', '🏺'), 'tool_water': ('Agua', '🚿'),
-        'tool_scarecrow': ('Espantapájaros', '🦉'), 'tool_duel_ticket': ('Ticket Duelo', '🎟️')
+        'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿'),
+        'tool_scarecrow': ('Espantapájaros', '🦉')
     }
     cur.execute("SELECT id, name FROM dynamic_plants")
     for dp in cur.fetchall():
@@ -2035,13 +1985,10 @@ def get_tree_state():
     milestones = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
     
     items_ref = {
-        'flower_wheat': ('Trigo Rápido', '🌾'), 'flower_bamboo': ('Bambú Tryhard', '🎋'),
-        'flower_cactus': ('Cactus Cuarzo', '🌵'), 'flower_small': ('Flor Pequeña', '🌸'),
-        'flower_crystal': ('Helecho Cristal', '💎'), 'flower_big': ('Flor Grande', '🌺'),
-        'flower_moon': ('Lirio Lunar', '🌙'), 'tool_pot_small': ('Maceta Peq.', '🪴'),
-        'tool_pot_big': ('Maceta Gde.', '🏺'), 'tool_water': ('Agua', '🚿'),
-        'tool_scarecrow': ('Espantapájaros', '🦉'), 'tool_duel_ticket': ('Ticket Duelo', '🎟️')
+        'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿'),
+        'tool_scarecrow': ('Espantapájaros', '🦉')
     }
+    
     cur.execute("SELECT id, name FROM dynamic_plants")
     for dp in cur.fetchall():
         items_ref[dp['id']] = (dp['name'], '✨')
@@ -2163,12 +2110,9 @@ def donate_tree():
             milestones = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
 
             items_ref = {
-                'flower_wheat': ('Trigo Rápido', 'assets/Plantas/trigo_rapido.gif'), 'flower_bamboo': ('Bambú Tryhard', 'assets/Plantas/bambu_tryhard.gif'),
-                'flower_cactus': ('Cactus Cuarzo', 'assets/Plantas/cactus_cuarzo.gif'), 'flower_small': ('Flor Pequeña', 'assets/Plantas/flor_pequena.gif'),
-                'flower_crystal': ('Helecho Cristal', 'assets/Plantas/helecho_cristal.gif'), 'flower_big': ('Flor Grande', 'assets/Plantas/flor_grande.gif'),
-                'flower_moon': ('Lirio Lunar', 'assets/Plantas/lirio_lunar.gif'), 'tool_pot_small': ('Maceta Pequeña', 'assets/Herramientas_y_Servicios/maceta_pequena.png'),
-                'tool_pot_big': ('Maceta Grande', 'assets/Herramientas_y_Servicios/maceta_grande.png'), 'tool_water': ('Regadera', 'assets/Herramientas_y_Servicios/regadera.png'),
-                'tool_scarecrow': ('Espantapájaros', 'assets/Herramientas_y_Servicios/espantapajaros.png'), 'tool_duel_ticket': ('Ticket de Duelo', 'assets/Herramientas_y_Servicios/ticket_duelo.png')
+                'tool_pot_small': ('Maceta Pequeña', 'assets/Herramientas_y_Servicios/maceta_pequena.png'),
+                'tool_water': ('Regadera', 'assets/Herramientas_y_Servicios/regadera.png'),
+                'tool_scarecrow': ('Espantapájaros', 'assets/Herramientas_y_Servicios/espantapajaros.png')
             }
             cur.execute("SELECT id, name, image_url FROM dynamic_plants")
             for dp in cur.fetchall():
@@ -2178,9 +2122,7 @@ def donate_tree():
             for m in milestones:
                 name, icon = items_ref.get(m['id'], ('Premio', '🎁'))
                 emoji_ref = {
-                    'flower_wheat': '🌾', 'flower_bamboo': '🎋', 'flower_cactus': '🌵', 'flower_small': '🌸',
-                    'flower_crystal': '💎', 'flower_big': '🌺', 'flower_moon': '🌙', 'tool_pot_small': '🪴',
-                    'tool_pot_big': '🏺', 'tool_water': '🚿', 'tool_scarecrow': '🦉', 'tool_duel_ticket': '🎟️'
+                    'tool_pot_small': '🪴', 'tool_water': '🚿', 'tool_scarecrow': '🦉'
                 }
                 emoji = emoji_ref.get(m['id'], '✨')
                 base_gift_items.append({"icon": emoji, "text": f"{m['qty']}x {name}"})

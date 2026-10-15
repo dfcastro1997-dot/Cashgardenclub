@@ -1348,11 +1348,9 @@
             try {
                 ITEM_ICONS = {
                     'tool_pot_small': '🪴', 
-                    'tool_pot_big': '🏺', 
-                    'tool_water': '🚿', 
-                    'tool_duel_ticket': '🎟️'
+                    'tool_water': '🚿'
                 };
-                currentDynamicPlants.forEach(p => ITEM_ICONS[p.id] = '✨'); 
+                currentDynamicPlants.forEach(p => ITEM_ICONS[p.id] = '✨');
                 
                 let payload = {
                     admin_token: ADMIN_TOKEN,

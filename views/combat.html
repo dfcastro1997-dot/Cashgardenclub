@@ -1197,125 +1197,52 @@ window.combatApp = {
 
     calculateFinalDamage(baseDmg, plantAtk) {
         const atk = (plantAtk !== undefined && plantAtk !== null) ? plantAtk : 50;
-        
-        // 1. Escalado más justo: +5% de daño por cada 10 puntos de ataque (antes era +10% cada 5 puntos)
         const mult = 1 + ((atk - 50) / 10) * 0.05;
-        
-        // 2. Reducción global: Multiplicamos el daño final por 0.65 (65%) para alargar los combates a más rondas.
-        // Aseguramos que el multiplicador nunca sea menor a 0.5 para que los ataques débiles sigan haciendo algo de daño.
         return Math.max(1, Math.floor((baseDmg * 0.65) * Math.max(0.5, mult)));
     },
 
-    // Catálogo de plantas (Plantas.xlsx): [categoría, nombre, gif, vida, ataque, defensa]
-    PLANT_CATALOG: [
-        ['fuego', 'Chispa de Fuego', 'Chispa de Fuego.gif', 100, 45, 5],
-        ['fuego', 'Llama Danzante', 'Llama Danzante.gif', 120, 60, 10],
-        ['fuego', 'Arbusto Volcánico', 'Arbusto Volcánico.gif', 150, 80, 12],
-        ['fuego', 'Girasol de Magma', 'Girasol de Magma.gif', 180, 110, 15],
-        ['fuego', 'Dragón de Ceniza', 'Dragón de Ceniza.gif', 220, 150, 20],
-        ['hielo', 'Brote de Escarcha', 'Brote de Escarcha.gif', 100, 25, 20],
-        ['hielo', 'Lirio de Nieve', 'Lirio de Nieve.gif', 120, 35, 25],
-        ['hielo', 'Helecho Congelado', 'Helecho Congelado.gif', 160, 45, 30],
-        ['hielo', 'Rosa Permafrost', 'Rosa Permafrost.gif', 200, 60, 40],
-        ['hielo', 'Árbol Glaciar', 'Árbol Glaciar.gif', 250, 75, 50],
-        ['electrico', 'Zarza Chispeante', 'Zarza Chispeante.gif', 100, 50, 5],
-        ['electrico', 'Bulbo Estático', 'Bulbo Estático.gif', 120, 70, 8],
-        ['electrico', 'Orquídea de Neón', 'Orquídea de Neón.gif', 140, 100, 10],
-        ['electrico', 'Cactus Relámpago', 'Cactus Relámpago.gif', 160, 140, 12],
-        ['electrico', 'Loto Tormenta', 'Loto Tormenta.gif', 190, 200, 15],
-        ['agua', 'Alga Gota', 'Alga Gota.gif', 110, 30, 15],
-        ['agua', 'Musgo de Río', 'Musgo de Río.gif', 140, 40, 18],
-        ['agua', 'Nenúfar Profundo', 'Nenúfar Profundo.gif', 180, 55, 20],
-        ['agua', 'Coral Espinoso', 'Coral Espinoso.gif', 230, 70, 25],
-        ['agua', 'Flor del Abismo', 'Flor del Abismo.gif', 300, 90, 30],
-        ['roca', 'Guijarro Musgoso', 'Guijarro Musgoso.gif', 150, 20, 30],
-        ['roca', 'Hongo de Cuarzo', 'Hongo de Cuarzo.gif', 180, 30, 35],
-        ['roca', 'Raíz de Granito', 'Raíz de Granito.gif', 220, 40, 40],
-        ['roca', 'Bonsái de Mármol', 'Bonsái de Mármol.gif', 280, 50, 45],
-        ['roca', 'Gólem Botánico', 'Gólem Botánico.gif', 400, 60, 60],
-        ['aire', 'Semilla de Diente de León', 'Semilla de Diente de León.gif', 70, 25, 25],
-        ['aire', 'Orquídea Brisa', 'Orquídea Brisa.gif', 90, 40, 30],
-        ['aire', 'Helecho Flotante', 'Helecho Flotante.gif', 130, 55, 35],
-        ['aire', 'Loto Huracán', 'Loto Huracán.gif', 160, 70, 45],
-        ['aire', 'Árbol Ciclón', 'Árbol Ciclón.gif', 210, 90, 55],
-        ['cosmico', 'Musgo Estelar', 'Musgo Estelar.gif', 110, 35, 15],
-        ['cosmico', 'Asterflora', 'Asterflora.gif', 140, 50, 18],
-        ['cosmico', 'Rosal de Gravedad', 'Rosal de Gravedad.gif', 190, 75, 22],
-        ['cosmico', 'Girasol de Supernova', 'Girasol de Supernova.gif', 250, 110, 28],
-        ['cosmico', 'Árbol Galáctico', 'Árbol Galáctico.gif', 350, 160, 35],
-        ['alien', 'Seta Xenomorfa', 'Seta Xenomorfa.gif', 80, 60, 5],
-        ['alien', 'Enredadera Tentáculo', 'Enredadera Tentáculo.gif', 100, 80, 8],
-        ['alien', 'Flor Depredadora', 'Flor Depredadora.gif', 130, 120, 10],
-        ['alien', 'Bulbo Parasitario', 'Bulbo Parasitario.gif', 170, 170, 12],
-        ['alien', 'Mente Colmena Botánica', 'Mente Colmena Botánica.gif', 220, 240, 15],
-        ['mecha', 'Tuerca Espora', 'Tuerca Espora.gif', 120, 20, 30],
-        ['mecha', 'Engranaje Floral', 'Engranaje Floral.gif', 150, 30, 40],
-        ['mecha', 'Cactus de Titanio', 'Cactus de Titanio.gif', 200, 45, 45],
-        ['mecha', 'Roble Cibernético', 'Roble Cibernético.gif', 280, 65, 55],
-        ['mecha', 'Núcleo Mecha-Yggdrasil', 'Núcleo Mecha-Yggdrasil.gif', 450, 90, 65],
-        ['radiactivo', 'Brote Deforme', 'Brote Deforme.gif', 50, 65, 0],
-        ['radiactivo', 'Lirio Bicéfalo', 'Lirio Bicéfalo.gif', 70, 90, 2],
-        ['radiactivo', 'Zarza Anómala', 'Zarza Anómala.gif', 90, 140, 4],
-        ['radiactivo', 'Quimera Vegetal', 'Quimera Vegetal.gif', 120, 200, 5],
-        ['radiactivo', 'Amalgama de Raíces', 'Amalgama de Raíces.gif', 150, 300, 8],
-        ['radiactivo', 'Hongo Brillante', 'Hongo Brillante.gif', 90, 40, 15],
-        ['radiactivo', 'Helecho de Uranio', 'Helecho de Uranio.gif', 120, 60, 20],
-        ['radiactivo', 'Girasol Tóxico', 'Girasol Tóxico.gif', 160, 90, 25],
-        ['radiactivo', 'Árbol de Plutonio', 'Árbol de Plutonio.gif', 210, 130, 30],
-        ['radiactivo', 'Loto Reactor', 'Loto Reactor.gif', 280, 180, 35],
-        ['jurasico', 'Helecho Fósil', 'Helecho Fósil.gif', 110, 30, 20],
-        ['jurasico', 'Cícada Primordial', 'Cícada Primordial.gif', 140, 45, 25],
-        ['jurasico', 'Gimnosperma Colosal', 'Gimnosperma Colosal.gif', 200, 60, 30],
-        ['jurasico', 'Pino Triásico', 'Pino Triásico.gif', 260, 85, 35],
-        ['jurasico', 'Árbol Titanosaurio', 'Árbol Titanosaurio.gif', 380, 110, 45],
-        ['demoniaco', 'Brote Infernal', 'Brote Infernal.gif', 70, 55, 5],
-        ['demoniaco', 'Lirio de Fuego Oscuro', 'Lirio de Fuego Oscuro.gif', 90, 75, 8],
-        ['demoniaco', 'Zarza del Abismo', 'Zarza del Abismo.gif', 120, 110, 10],
-        ['demoniaco', 'Orquídea Súcubo', 'Orquídea Súcubo.gif', 160, 150, 12],
-        ['demoniaco', 'Árbol de Bafomet', 'Árbol de Bafomet.gif', 220, 220, 15],
-        ['necrotico', 'Hongo Cadavérico', 'Hongo Cadavérico.gif', 100, 25, 25],
-        ['necrotico', 'Raíz Pútrida', 'Raíz Pútrida.gif', 130, 35, 30],
-        ['necrotico', 'Loto Fantasmal', 'Loto Fantasmal.gif', 170, 50, 35],
-        ['necrotico', 'Enredadera Espectral', 'Enredadera Espectral.gif', 230, 70, 40],
-        ['necrotico', 'Sauce de Almas', 'Sauce de Almas.gif', 320, 95, 50],
-        ['explosivo', 'Semilla Pólvora', 'Semilla Pólvora.gif', 40, 70, 0],
-        ['explosivo', 'Bulbo Granada', 'Bulbo Granada.gif', 60, 100, 2],
-        ['explosivo', 'Margarita Dinamita', 'Margarita Dinamita.gif', 80, 160, 4],
-        ['explosivo', 'Cactus C4', 'Cactus C4.gif', 110, 240, 5],
-        ['explosivo', 'Girasol Atómico', 'Girasol Atómico.gif', 140, 350, 8]
-    ],
+    // Catálogo limpiado (todo viene dinámico ahora)
+    PLANT_CATALOG: [],
 
     findCatalogPlant(pid = '', name = '') {
-        const n = this.normName(name), p = this.normName(pid);
-        const row = this.PLANT_CATALOG.find(r => { const k = this.normName(r[1]); return k === n || (p && k === p); });
-        return row ? { catKey: row[0], name: row[1], icon: 'assets/Plantas/' + row[2], hp: row[3], atk: row[4], def: row[5] } : null;
+        return null; // Ahora todo es manejado dinámicamente por la DB
     },
 
     getPlantCategoryKey(pid = '', name = '') {
-        const fromCatalog = this.findCatalogPlant(pid, name);
-        if (fromCatalog) return fromCatalog.catKey;
-        const p = ((pid || '') + ' ' + (name || '')).toLowerCase().replace(/[\s_-]+/g, '');
-        if (p.includes('cactuscuarzo') || p.includes('cuarzo') || p.includes('sonoro') || p.includes('musical') || p.includes('sonido')) return 'sonoro';
-        if (p.includes('rosaceniza') || p.includes('ceniza') || p.includes('fuego') || p.includes('magma') || p.includes('llama')) return 'fuego';
-        if (p.includes('helechocristal') || p.includes('glaciar') || p.includes('hielo') || p.includes('nieve')) return 'hielo';
-        if (p.includes('electrico') || p.includes('tormenta') || p.includes('rayo') || p.includes('trueno')) return 'electrico';
-        if (p.includes('lotocristal') || p.includes('loto') || (p.includes('agua') && !p.includes('inframundo')) || (p.includes('abisal') && !p.includes('inframundo'))) return 'agua';
-        if (p.includes('cactustryhard') || p.includes('cactus') || p.includes('roca') || p.includes('terremoto') || p.includes('sismo')) return 'roca';
-        if (p.includes('aire') || p.includes('ciclone') || p.includes('viento') || p.includes('tornado')) return 'aire';
-        if (p.includes('liriolunar') || p.includes('orquidealunar') || p.includes('lunar') || p.includes('cosmico') || p.includes('espacial')) return 'cosmico';
-        if (p.includes('alien') || p.includes('extraterrestre') || p.includes('xeno')) return 'alien';
-        if (p.includes('mecha') || p.includes('cibernetica') || p.includes('titanio') || p.includes('bambu')) return 'mecha';
-        if (p.includes('radiactivo') || p.includes('mutante') || p.includes('nuclear') || p.includes('uranio')) return 'radiactivo';
-        if (p.includes('neon') || p.includes('ciberpunk') || p.includes('holograf')) return 'neon';
-        if (p.includes('jurasico') || p.includes('prehistorico') || p.includes('dino')) return 'jurasico';
-        if (p.includes('fosil') || p.includes('ambar') || p.includes('petrificad')) return 'fosil';
-        if (p.includes('trigorapido') || p.includes('trigo') || p.includes('tiempo') || p.includes('crono')) return 'tiempo';
-        if (p.includes('demoniaco') || p.includes('inframundo') || p.includes('demonio')) return 'demoniaco';
-        if (p.includes('draconiano') || p.includes('dragon')) return 'draconiano';
-        if (p.includes('necrotico') || p.includes('cripta') || p.includes('zombi')) return 'necrotico';
-        if (p.includes('explosivo') || p.includes('volatil') || p.includes('polvora') || p.includes('bomba')) return 'explosivo';
-        if (p.includes('bonsai') || p.includes('florgrande') || p.includes('primordial') || p.includes('genesis')) return 'primordial';
-        return 'primordial';
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[pid]) {
+            const cat = window.farmApp.state.dynamicPlants[pid].category;
+            if (cat) {
+                if (cat.includes('Fuego') || cat.includes('Ígneas')) return 'fuego';
+                if (cat.includes('Hielo') || cat.includes('Glaciares')) return 'hielo';
+                if (cat.includes('Rayo') || cat.includes('Eléctricas')) return 'electrico';
+                if (cat.includes('Agua') || cat.includes('Acuáticas')) return 'agua';
+                if (cat.includes('Tierra') || cat.includes('Rocosas')) return 'roca';
+                if (cat.includes('Viento') || cat.includes('Aéreas')) return 'aire';
+                if (cat.includes('Cosmos') || cat.includes('Espaciales')) return 'cosmico';
+                if (cat.includes('Xeno') || cat.includes('Alienígenas')) return 'alien';
+                if (cat.includes('Acero') || cat.includes('Mecha')) return 'mecha';
+                if (cat.includes('Nuclear') || cat.includes('Radiactivas')) return 'radiactivo';
+                if (cat.includes('Veneno') || cat.includes('Mutantes')) return 'radiactivo';
+                if (cat.includes('Fósil') || cat.includes('Jurásicas')) return 'jurasico';
+                if (cat.includes('Oscuridad') || cat.includes('Demoníacas')) return 'demoniaco';
+                if (cat.includes('Neón') || cat.includes('Holográficas')) return 'neon';
+            }
+        }
+        return 'primordial'; // Fallback estético base
+    },
+
+    // -------------------------------------------------------------------------
+    // RENDERIZADO DEL MAZO: CARTAS DE PLANTAS VS OPCIONES DE ATAQUE
+    // -------------------------------------------------------------------------
+
+    PLANT_CARD_NAMES: [],
+
+    getPlantCardImage(plant) {
+        if (!plant) return null;
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
+            return window.farmApp.state.dynamicPlants[plant.plantId].image_url;
+        }
+        return plant.icon || 'assets/Fondos/logo.png';
     },
 
     TACTICAS_LIST: [
@@ -1693,7 +1620,14 @@ window.combatApp = {
             if (squadValue >= 1000 && dPlants.length > 5) pool = dPlants.filter(p => p.hp >= 150 || p.atk >= 70);
             else if (squadValue < 500 && dPlants.length > 5) pool = dPlants.filter(p => p.hp <= 120 && p.atk <= 50);
             
-            if (pool.length < 3) pool = this.PLANT_CATALOG.map(c => ({ id: c[0], name: c[1], image_url: 'assets/Plantas/'+c[2], hp: c[3], atk: c[4], def: c[5] }));
+            if (pool.length < 3) {
+                // Failsafe en caso de que no existan dinámicas
+                pool = [
+                    { id: 'dyn_bot_1', name: 'Espectro Bot 1', image_url: 'assets/Fondos/logo.png', hp: 100, atk: 40, def: 20 },
+                    { id: 'dyn_bot_2', name: 'Espectro Bot 2', image_url: 'assets/Fondos/logo.png', hp: 100, atk: 40, def: 20 },
+                    { id: 'dyn_bot_3', name: 'Espectro Bot 3', image_url: 'assets/Fondos/logo.png', hp: 100, atk: 40, def: 20 }
+                ];
+            }
 
             this.enemyTeam = [];
             const playerAvgPower = squadValue / Math.max(1, this.playerTeam.length);
@@ -1702,8 +1636,6 @@ window.combatApp = {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
                 const basePower = (rP.hp || 100) + (rP.atk || 40) + (rP.def || 20);
                 
-                // CORRECCIÓN: El multiplicador ahora permite que la IA sea ligeramente más débil o igual al jugador (85% a 105%).
-                // Se elimina la restricción de Math.max(1, ...) para que los bots no se inflen artificialmente si basePower ya es alto.
                 const multiplier = (playerAvgPower / basePower) * (0.85 + Math.random() * 0.20);
 
                 const bHp = Math.floor((rP.hp || 100) * multiplier);
@@ -1773,16 +1705,6 @@ window.combatApp = {
     // =========================================================================
     // RENDERIZADO DEL MAZO: CARTAS DE PLANTAS VS OPCIONES DE ATAQUE
     // =========================================================================
-
-    // Tarjetas coleccionables de planta disponibles en assets/Tarjetas/Plantas/<nombre>.png
-    PLANT_CARD_NAMES: ["Alga Gota", "Amalgama de Raíces", "Arbusto Volcánico", "Asterflora", "Bonsái de Mármol", "Brote Deforme", "Brote Infernal", "Brote de Escarcha", "Bulbo Estático", "Bulbo Granada", "Bulbo Parasitario", "Cactus C4", "Cactus Relámpago", "Cactus de Titanio", "Chispa de Fuego", "Coral Espinoso", "Cícada Primordial", "Dragón de Ceniza", "Engranaje Floral", "Enredadera Espectral", "Enredadera Tentáculo", "Flor Depredadora", "Flor del Abismo", "Gimnosperma Colosal", "Girasol Atómico", "Girasol Tóxico", "Girasol de Magma", "Girasol de Supernova", "Guijarro Musgoso", "Gólem Botánico", "Helecho Congelado", "Helecho Flotante", "Helecho Fósil", "Helecho de Uranio", "Hongo Brillante", "Hongo Cadavérico", "Hongo de Cuarzo", "Lirio Bicéfalo", "Lirio de Fuego Oscuro", "Lirio de Nieve", "Llama Danzante", "Loto Fantasmal", "Loto Huracán", "Loto Reactor", "Loto Tormenta", "Margarita Dinamita", "Mente Colmena Botánica", "Musgo Estelar", "Musgo de Río", "Nenúfar Profundo", "Núcleo Mecha-Yggdrasil", "Orquídea Brisa", "Orquídea Súcubo", "Orquídea de Neón", "Pino Triásico", "Quimera Vegetal", "Raíz Pútrida", "Raíz de Granito", "Roble Cibernético", "Rosa Permafrost", "Rosal de Gravedad", "Sauce de Almas", "Semilla Pólvora", "Semilla de Diente de León", "Seta Xenomorfa", "Tuerca Espora", "Zarza Anómala", "Zarza Chispeante", "Zarza del Abismo", "Árbol Ciclón", "Árbol Galáctico", "Árbol Glaciar", "Árbol Titanosaurio", "Árbol de Plutonio"],
-
-    getPlantCardImage(plant) {
-        if (!plant) return null;
-        const target = this.normName(plant.name);
-        const match = this.PLANT_CARD_NAMES.find(n => this.normName(n) === target);
-        return match ? `assets/Tarjetas/Plantas/${encodeURIComponent(match)}.png` : null;
-    },
 
     // Tarjetas de poder ilustradas (assets/Tarjetas/Ataques/<Carpeta>/<archivo>.png).
     // Cada categoría lista sus 5 cartas en orden de nivel como [archivo, nombre impreso en la carta].

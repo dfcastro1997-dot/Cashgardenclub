@@ -450,7 +450,7 @@ window.shopApp = {
                 targetInventory[itemId] = { 
                     name: catItem.name, 
                     type: this.catalog.flowers.some(f => f.id === itemId) ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                    reqSize: catItem.potType || (itemId.includes('small') || itemId.includes('wheat') || itemId.includes('cactus') || itemId.includes('bamboo') || itemId.includes('crystal') ? 'small' : (itemId.includes('big') || itemId.includes('moon') ? 'big' : null)),                    
+                    reqSize: catItem.potType || 'small',                    
                     qty: 0, 
                     image: catItem.image 
                 };

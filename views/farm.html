@@ -1368,28 +1368,12 @@ if (typeof window.farmApp === 'undefined') {
             ],
             inventory: {
                 'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
-                'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_grande.png' },
                 'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' },
-                'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' },
-                'tool_duel_ticket': { name: 'Ticket de Duelo', type: 'ticket', qty: 0, image: 'assets/Herramientas_y_Servicios/ticket_duelo.png' },
-                'flower_wheat': { name: 'Trigo Rápido', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/trigo_rapido.gif' },
-                'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/bambu_tryhard.gif' },
-                'flower_cactus': { name: 'Cactus de Cuarzo', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/cactus_cuarzo.gif' },
-                'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/flor_pequena.gif' },
-                'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/flor_grande.gif' },
-                'flower_crystal': { name: 'Helecho de Cristal', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/helecho_cristal.gif' },
-                'flower_moon': { name: 'Lirio Lunar', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/lirio_lunar.gif' }
+                'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' }
             },
             images: {
                 terrain_empty: 'assets/Fondos/terreno_vacio.png',
                 terrain_dry: 'assets/Fondos/terreno_seco.png',
-                plant_wheat: 'assets/Plantas/trigo_rapido.gif',
-                plant_bamboo: 'assets/Plantas/bambu_tryhard.gif',
-                plant_cactus: 'assets/Plantas/cactus_cuarzo.gif',
-                plant_small: 'assets/Plantas/flor_pequena.gif',
-                plant_big: 'assets/Plantas/flor_grande.gif',
-                plant_crystal: 'assets/Plantas/helecho_cristal.gif',
-                plant_moon: 'assets/Plantas/lirio_lunar.gif',
                 crow: 'assets/Enemigos/Cuervos/cuervo_base.png'
             },
             selectedPlotId: null,
@@ -1434,12 +1418,8 @@ if (typeof window.farmApp === 'undefined') {
                 ];
                 window.farmApp.state.inventory = {
                     'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
-                    'tool_pot_big': { name: 'Maceta Grande', type: 'pot', reqSize: 'big', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_grande.png' },
                     'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' },
-                    'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' },
-                    'flower_small': { name: 'Flor Pequeña', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/flor_pequena.gif' },
-                    'flower_big': { name: 'Flor Grande', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Plantas/flor_grande.gif' },
-                    'flower_bamboo': { name: 'Bambú Tryhard', type: 'seed', reqSize: 'small', qty: 0, image: 'assets/Plantas/bambu_tryhard.gif' }
+                    'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' }
                 };
                 window.farmApp.state.seedsBalance = 35000;
                 window.farmApp.state.autoWaterEndTime = 0;
@@ -1846,8 +1826,8 @@ if (typeof window.farmApp === 'undefined') {
                     const displayWater = Math.floor(plot.water || 0);
                     const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                     el.className = `bg-white rounded-2xl border-2 border-gray-200 h-56 sm:h-64 relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm hover:shadow-md'}`;
-                    const potImg = plot.pot === 'small' ? this.state.inventory.tool_pot_small.image : this.state.inventory.tool_pot_big.image;
-                    const potName = plot.pot === 'small' ? 'MACETA PEQ.' : 'MACETA GDE.';
+                    const potImg = this.state.inventory.tool_pot_small ? this.state.inventory.tool_pot_small.image : 'assets/Herramientas_y_Servicios/maceta_pequena.png';
+                    const potName = 'MACETA PEQ.';
                     
                     let protectionHtml = '';
                     if (isAutoWatering) {
@@ -1902,8 +1882,8 @@ if (typeof window.farmApp === 'undefined') {
 
                     el.className = `rounded-2xl border-2 h-56 sm:h-64 relative cursor-pointer transition-all overflow-hidden flex flex-col ${borderStyle}`;
                     
-                    const potImg = plot.pot === 'small' ? this.state.inventory.tool_pot_small.image : this.state.inventory.tool_pot_big.image;
-                    const potName = plot.pot === 'small' ? 'MACETA PEQ' : 'MACETA GDE';
+                    const potImg = this.state.inventory.tool_pot_small ? this.state.inventory.tool_pot_small.image : 'assets/Herramientas_y_Servicios/maceta_pequena.png';
+                    const potName = 'MACETA PEQ';
                     
                     let currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                     
@@ -2137,16 +2117,7 @@ if (typeof window.farmApp === 'undefined') {
                 }
 
                 if (plot.status === 'planted') {
-                    let minSafe = 20, maxSafe = 100;
-                    if (plot.plant) {
-                        if (plot.plant.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
-                        else if (plot.plant.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; }
-                        else if (plot.plant.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
-                        else if (plot.plant.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
-                        else if (plot.plant.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
-                        else if (plot.plant.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
-                        else if (plot.plant.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
-                    }
+                    let minSafe = 20, maxSafe = 80;
 
                     // === CORRECCIÓN: AUTO-RIEGO ANCLA LA HUMEDAD ===
                     if (isAutoWatering) {
@@ -2159,7 +2130,10 @@ if (typeof window.farmApp === 'undefined') {
                     if (!plot.isReady) {
                         if (!isAutoWatering) {
                             if (plot.water > 0) {
-                                let evapRate = (plot.plant && plot.plant.id === 'flower_bamboo') ? 800 : ((plot.plant && plot.plant.id === 'flower_cactus') ? 10 : 40);
+                                let evapRate = 40;
+                                if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id] && this.state.dynamicPlants[plot.plant.id].water_evap) {
+                                    evapRate = this.state.dynamicPlants[plot.plant.id].water_evap;
+                                }
                                 evapRate = evapRate * seasonMultiplier;
                                 plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                                 changesMade = true;
@@ -2195,22 +2169,14 @@ if (typeof window.farmApp === 'undefined') {
                                 let reward = 0;
                                 const currentPlantId = plot.plant ? plot.plant.id : '';
                                 
-                                if (currentPlantId === 'flower_wheat') reward = 1500;
-                                else if (currentPlantId === 'flower_bamboo') reward = 6500;
-                                else if (currentPlantId === 'flower_cactus') reward = 3200;
-                                else if (currentPlantId === 'flower_small') reward = 4500;
-                                else if (currentPlantId === 'flower_big') reward = 26000;
-                                else if (currentPlantId === 'flower_crystal') reward = 10000;
-                                else if (currentPlantId === 'flower_moon') reward = 55000;
-                                // --- NUEVO: RECOMPENSA DE PLANTAS DINÁMICAS ---
-                                else if (this.state.dynamicPlants && this.state.dynamicPlants[currentPlantId]) {
+                                if (this.state.dynamicPlants && this.state.dynamicPlants[currentPlantId]) {
                                     reward = this.state.dynamicPlants[currentPlantId].reward || 0;
                                 }
                                 
                                 this.state.seedsBalance += reward;
                                 plot.potUses += 1;
                                 
-                                const maxUses = plot.pot === 'small' ? 5 : 10;
+                                const maxUses = 5;
                                 if (plot.potUses >= maxUses) {
                                     plot.status = 'empty'; plot.pot = null; plot.potUses = 0;
                                 } else {
@@ -2283,26 +2249,14 @@ if (typeof window.farmApp === 'undefined') {
                 document.getElementById('welcome-water-system').classList.remove('hidden');
                 document.getElementById('welcome-penalty-container').classList.remove('hidden');
             } else if (plot.status === 'planted' && plot.plant) {
-                const PLANT_RULES = {
-                    'flower_wheat': { penalty: 'Inundación inmediata (Plaga automática)' },
-                    'flower_bamboo': { penalty: 'Evaporación brutal y rápida deshidratación' },
-                    'flower_small': { penalty: 'Pudrición (Pausa el crecimiento)' },
-                    'flower_cactus': { penalty: 'Pudrición instantánea (Riesgo de contagio)' },
-                    'flower_big': { penalty: 'Pudrición + 30 Minutos de castigo extra' },
-                    'flower_crystal': { penalty: 'Pudrición temporal' },
-                    'flower_moon': { penalty: 'Atrae cuervos si se seca' }
-                };
-                const rule = PLANT_RULES[plot.plant.id] || { penalty: 'Ninguno' };
                 name = plot.plant.name;
                 img = plot.plant.icon; 
                 
-                scoreText = `<strong class="text-cg_blue">Planta de Cultivo Estándar</strong>. Presta atención al riego.`;
+                scoreText = `<strong class="text-cg_blue">Planta de Cultivo Dinámico</strong>. Presta atención al riego.`;
                 
                 // --- CÁLCULO DE CONSUMO DE AGUA EN TIEMPO REAL ---
                 let baseEvapRate = 40;
-                if (plot.plant.id === 'flower_bamboo') baseEvapRate = 800;
-                else if (plot.plant.id === 'flower_cactus') baseEvapRate = 10;
-                else if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id] && this.state.dynamicPlants[plot.plant.id].water_evap) {
+                if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id] && this.state.dynamicPlants[plot.plant.id].water_evap) {
                     baseEvapRate = this.state.dynamicPlants[plot.plant.id].water_evap;
                 }
                 
@@ -2320,37 +2274,26 @@ if (typeof window.farmApp === 'undefined') {
                 limitText = `Consume ${finalEvapRate}% por hora. Por lo tanto, ${exhaustionText}`;
                 // ----------------------------------------------------
                 
-                penaltyText = `Si excedes el rango, sufrirás: <strong class="text-red-600">${rule.penalty}</strong>.`;
+                penaltyText = `Si excedes el rango, sufrirás pudrición o sequía grave, deteniendo el crecimiento y atrayendo plagas.`;
                 rulesTitle = "INFORMACIÓN DE LA PLANTA";
                 
                 document.getElementById('welcome-water-system').classList.add('hidden');
                 document.getElementById('welcome-penalty-container').classList.add('hidden');
                 
-                // Mapear Estadísticas de Combate
                 // Mapear Estadísticas de Combate e Inversión
                 isCombatPlant = true;
                 const pid = plot.plant.id;
                 
                 pPrice = 0; 
                 pReward = 0;
+                pAtk = 40; pDef = 20; pHp = 100;
                 
-                if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; pPrice = 5000; pReward = 1500; }
-                else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; pPrice = 2000; pReward = 3200; } 
-                else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; pPrice = 4000; pReward = 6500; }
-                else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; pPrice = 8000; pReward = 10000; } 
-                else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; pPrice = 15000; pReward = 55000; } 
-                else if(pid === 'flower_small') { pAtk = 40; pDef = 20; pHp = 100; pPrice = 3000; pReward = 4500; }
-                else if(pid === 'flower_big') { pAtk = 40; pDef = 20; pHp = 100; pPrice = 12000; pReward = 26000; }
-                
-                // Sobrescribir si es planta dinámica (las creadas en el panel Admin)
                 if (this.state.dynamicPlants && this.state.dynamicPlants[pid]) {
                     pAtk = this.state.dynamicPlants[pid].atk || pAtk;
                     pDef = this.state.dynamicPlants[pid].def || pDef;
                     pHp = this.state.dynamicPlants[pid].hp || pHp;
                     pPrice = this.state.dynamicPlants[pid].price || 0;
                     pReward = this.state.dynamicPlants[pid].reward || 0;
-                } else if (!pAtk) {
-                    pAtk = 40; pDef = 20; pHp = 100;
                 }
             } else {
                 return;
@@ -2416,16 +2359,6 @@ if (typeof window.farmApp === 'undefined') {
                 const conf = this.TOURNAMENT_CONFIGS[plot.tournamentId || 1];
                 minSafe = conf.minWater;
                 maxSafe = conf.maxWater;
-            } else {
-                if (plot.plant) {
-                    if (plot.plant.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
-                    else if (plot.plant.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; }
-                    else if (plot.plant.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
-                    else if (plot.plant.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
-                    else if (plot.plant.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
-                    else if (plot.plant.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
-                    else if (plot.plant.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
-                }
             }
 
             let targetMin = Math.max(0, minSafe - currentWater);
@@ -2565,11 +2498,9 @@ if (typeof window.farmApp === 'undefined') {
             const inv = this.state.inventory;
             const eWater = document.getElementById('inv-water');
             const ePotSmall = document.getElementById('inv-pot-small');
-            const ePotBig = document.getElementById('inv-pot-big');
             
             if (eWater) eWater.innerText = inv.tool_water?.qty || 0;
             if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small?.qty || 0;
-            if (ePotBig) ePotBig.innerText = inv.tool_pot_big?.qty || 0;
         },
 
         buyPlotPrompt(id) {
@@ -2612,7 +2543,7 @@ if (typeof window.farmApp === 'undefined') {
             const inv = this.state.inventory;
             const isAutoWatering = this.state.autoWaterEndTime > Date.now();
 
-            ['pot_small', 'pot_big', 'water'].forEach(toolType => { // Eliminado 'scarecrow'
+            ['pot_small', 'water'].forEach(toolType => { // Eliminado 'pot_big' y 'scarecrow'
                 const el = document.getElementById(`inv-item-${toolType}`);
                 if (el) {
                     el.classList.add('opacity-50');
@@ -2626,7 +2557,6 @@ if (typeof window.farmApp === 'undefined') {
 
             if (plot.status === 'empty') {
                 if(inv.tool_pot_small && inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
-                if(inv.tool_pot_big && inv.tool_pot_big.qty > 0) this.enableToolBtn('pot_big');
             } else if (plot.status === 'pot') {
                 
             } else if (plot.status === 'planted') {
@@ -2664,19 +2594,12 @@ if (typeof window.farmApp === 'undefined') {
                 plot.pot = 'small';
                 plot.potUses = 0;
                 this.showPlotToast(plotId, '🪴', 'Maceta Lista');
-            } else if (type === 'pot_big') {
-                this.state.inventory.tool_pot_big.qty -= 1;
-                plot.status = 'pot';
-                plot.pot = 'big';
-                plot.potUses = 0;
-                this.showPlotToast(plotId, '🏺', 'Maceta Lista');
             } else if(type === 'water') {
                 this.state.inventory.tool_water.qty -= 1;
                 this.openWaterCalibration(plotId);
                 this.updateInventoryUI();
                 return; 
             } 
-            // Lógica del espantapájaros eliminada
 
             this.updateInventoryUI();
             this.selectPlot(plotId); 
@@ -2843,15 +2766,7 @@ if (typeof window.farmApp === 'undefined') {
             plot.isReady = false; 
 
             let reward = 0;
-            if (plot.plant.id === 'flower_wheat') reward = 1500;
-            else if (plot.plant.id === 'flower_bamboo') reward = 6500;
-            else if (plot.plant.id === 'flower_cactus') reward = 3200;
-            else if (plot.plant.id === 'flower_small') reward = 4500;
-            else if (plot.plant.id === 'flower_big') reward = 26000;
-            else if (plot.plant.id === 'flower_crystal') reward = 10000;
-            else if (plot.plant.id === 'flower_moon') reward = 55000;
-            // --- NUEVO: RECOMPENSA DE PLANTAS DINÁMICAS ---
-            else if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id]) {
+            if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id]) {
                 reward = this.state.dynamicPlants[plot.plant.id].reward || 0;
             }
                           
@@ -2865,10 +2780,9 @@ if (typeof window.farmApp === 'undefined') {
             }
 
             this.addBalance(reward);
-            
             plot.potUses += 1;
             
-            const maxUses = plot.pot === 'small' ? 5 : 10;
+            const maxUses = 5;
             if (plot.potUses >= maxUses) {
                 plot.status = 'empty';
                 plot.pot = null;
@@ -2906,19 +2820,14 @@ if (typeof window.farmApp === 'undefined') {
 
             if (!this.state.arsenal) this.state.arsenal = [];
 
-            let pAtk = 34, pDef = 20, pHp = 100;
+            let pAtk = 40, pDef = 20, pHp = 100;
             const pid = plot.plant.id;
-            if(pid === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; }
-            else if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
-            else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
-            else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
-            else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
-            // --- NUEVO: ESTADÍSTICAS DE PLANTAS DINÁMICAS ---
-            else if (this.state.dynamicPlants && this.state.dynamicPlants[pid]) {
+            
+            if (this.state.dynamicPlants && this.state.dynamicPlants[pid]) {
                 pAtk = this.state.dynamicPlants[pid].atk;
                 pDef = this.state.dynamicPlants[pid].def;
                 pHp = this.state.dynamicPlants[pid].hp;
-            } 
+            }
             else { pAtk = 40; pDef = 20; pHp = 100; }
 
             this.state.arsenal.push({
@@ -3075,14 +2984,7 @@ if (typeof window.farmApp === 'undefined') {
             } else {
                 seeds.forEach(seed => {
                     // Lógica de compatibilidad de tierra
-                    let minSafe = 20, maxSafe = 100;
-                    if (seed.id === 'flower_wheat') { minSafe = 60; maxSafe = 100; }
-                    else if (seed.id === 'flower_bamboo') { minSafe = 50; maxSafe = 90; } 
-                    else if (seed.id === 'flower_small') { minSafe = 30; maxSafe = 90; }
-                    else if (seed.id === 'flower_big') { minSafe = 50; maxSafe = 70; }
-                    else if (seed.id === 'flower_cactus') { minSafe = 20; maxSafe = 80; }
-                    else if (seed.id === 'flower_crystal') { minSafe = 40; maxSafe = 80; }
-                    else if (seed.id === 'flower_moon') { minSafe = 40; maxSafe = 90; }
+                    let minSafe = 20, maxSafe = 80;
 
                     let warningHtml = '';
                     if (currentWater > maxSafe) {
@@ -3095,7 +2997,6 @@ if (typeof window.farmApp === 'undefined') {
                         warningHtml = `<span class="text-[9px] sm:text-[10px] bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-gray-200">Tierra seca (0%)</span>`;
                     }
 
-                    // --- NUEVO: ESTADÍSTICAS Y TIEMPO DE CRECIMIENTO ---
                     let pHp = 100, pAtk = 40, pDef = 20, pDuration = "1h";
                     if (this.state.dynamicPlants && this.state.dynamicPlants[seed.id]) {
                         pHp = this.state.dynamicPlants[seed.id].hp;
@@ -3444,19 +3345,8 @@ if (typeof window.farmApp === 'undefined') {
             plot.plantedAt = Date.now();
             
             let msDuration = 3600000; 
-            // Validar dinámica primero
             if (window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[seedId]) {
                 msDuration = window.farmApp.state.dynamicPlants[seedId].grow_time_minutes * 60000;
-            } else if (window.farmApp.state.inventory[seedId] && window.farmApp.state.inventory[seedId].durationMins) {
-                msDuration = window.farmApp.state.inventory[seedId].durationMins * 60000;
-            } else {
-                if (seedId === 'flower_wheat') msDuration = 300000; 
-                else if (seedId === 'flower_bamboo') msDuration = 600000; 
-                else if (seedId === 'flower_cactus') msDuration = 1800000; 
-                else if (seedId === 'flower_small') msDuration = 3600000;
-                else if (seedId === 'flower_big') msDuration = 18000000; 
-                else if (seedId === 'flower_crystal') msDuration = 7200000;
-                else if (seedId === 'flower_moon') msDuration = 43200000;
             }
             
             plot.harvestAt = plot.plantedAt + msDuration;
@@ -3648,12 +3538,6 @@ if (typeof window.farmApp === 'undefined') {
                                 pHp = this.state.dynamicPlants[pid].hp;
                                 pAtk = this.state.dynamicPlants[pid].atk;
                                 pDef = this.state.dynamicPlants[pid].def;
-                            } else {
-                                if(pid === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; } 
-                                else if(pid === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; }
-                                else if(pid === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; } 
-                                else if(pid === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; } 
-                                else if(pid === 'flower_wheat' || pid === 'flower_small' || pid === 'flower_big') { pAtk = 40; pDef = 20; pHp = 100; }
                             }
                         }
                     }
@@ -3768,17 +3652,8 @@ if (typeof window.farmApp === 'undefined') {
                     msDuration = this.state.dynamicPlants[seedId].grow_time_minutes * 60000;
                 } 
                 // Fallback para variables en inventario
-                else if (this.state.inventory[seedId].durationMins) {
+                else if (this.state.inventory[seedId] && this.state.inventory[seedId].durationMins) {
                     msDuration = this.state.inventory[seedId].durationMins * 60000;
-                } else {
-                    // Fallback para las plantas base
-                    if (seedId === 'flower_wheat') msDuration = 300000;
-                    else if (seedId === 'flower_bamboo') msDuration = 600000; 
-                    else if (seedId === 'flower_cactus') msDuration = 1800000;
-                    else if (seedId === 'flower_small') msDuration = 3600000;
-                    else if (seedId === 'flower_crystal') msDuration = 7200000;
-                    else if (seedId === 'flower_big') msDuration = 18000000;
-                    else if (seedId === 'flower_moon') msDuration = 43200000;
                 }
 
                 plot.harvestAt = plot.plantedAt + msDuration;
