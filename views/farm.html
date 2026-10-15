@@ -7,52 +7,34 @@
             <p class="text-[11px] sm:text-sm text-gray-500 font-medium mt-1">Produce Semillas (🌱) para acceder a los torneos Freeroll de la Arena.</p>
         </div>
         
-        <!-- BOTONES CON MISMO TAMAÑO EN MÓVIL (Grid) -->
-        <div class="grid grid-cols-4 gap-3 sm:flex sm:flex-wrap sm:items-center w-full sm:w-auto mt-1 sm:mt-0">
-            <!-- Botón Herramientas (1 Columna en móvil, Oculto en PC) -->
-            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden col-span-1 w-full h-full min-h-[48px] bg-white border border-gray-200 rounded-xl shadow-sm font-black text-cg_navy flex items-center justify-center transition-all active:scale-95 text-xl">
+        <!-- BOTONES SUPERIORES CON ESPACIO Y DISEÑO INTEGRADO -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto mt-1 sm:mt-0">
+            <!-- Botón Herramientas (Solo Móvil) -->
+            <button onclick="window.farmApp.toggleToolsMobile(true)" class="lg:hidden w-12 h-12 bg-white border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-center transition-all active:scale-95 text-xl">
                 🛠
             </button>
 
-            <!-- Contenedor agrupado para PC (Duelo + Árbol + Clima) -->
-            <div class="col-span-3 sm:col-span-1 flex gap-2 w-full sm:w-auto">
-
-                <!-- BOTÓN DUELO AJUSTADO SIN DESBORDAMIENTO -->
-                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[150px] md:min-w-[165px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-slate-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-2.5 sm:px-3 gap-1.5 shrink-0">
-                    <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                        <span class="text-base sm:text-lg text-red-500 drop-shadow-sm">⚔️</span> 
-                        <span class="text-[10px] sm:text-xs uppercase tracking-wider font-extrabold">Duelo</span>
-                    </div>
-                    <div class="flex items-center gap-1 bg-blue-50 border border-blue-100 px-1.5 sm:px-2 py-0.5 rounded-xl shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cg_blue animate-pulse shrink-0"></span>
-                        <span id="mm-count-badge" class="text-[9px] sm:text-[10px] font-black text-cg_blue whitespace-nowrap">0 En Línea</span>
-                    </div>
-                </button>
-
-                <!-- BOTÓN REFERIDOS (NUEVO CLARO CON BRILLO CADA 5S) -->
-                <style>
-                    @keyframes glowOrange5s {
-                        0%, 80%, 100% { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); border-color: #fed7aa; }
-                        90% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.6), inset 0 0 10px rgba(249, 115, 22, 0.1); border-color: #f97316; }
-                    }
-                    .btn-referidos-glow {
-                        animation: glowOrange5s 5s infinite;
-                    }
-                </style>
-                <button onclick="loadView('referrals')" class="btn-referidos-glow relative flex-1 sm:w-auto sm:min-w-[130px] h-full min-h-[48px] sm:min-h-[56px] bg-gradient-to-br from-orange-50 to-white hover:from-orange-100 hover:to-orange-50 border-2 border-orange-200 rounded-2xl font-black text-orange-600 flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3">
-                    <span class="text-xl drop-shadow-sm">🤝</span> 
-                    <span class="text-[10px] sm:text-xs uppercase tracking-widest z-10">Referidos</span>
-                </button>
-                
-                <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Escritorio) -->
-                <div id="season-widget" onclick="loadView('calendar')" class="hidden sm:flex w-full sm:min-w-[320px] h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-cg_blue cursor-pointer items-center px-4 relative overflow-hidden transition-all">
-                    <!-- Se inyecta por JS -->
+            <!-- BOTÓN DUELO AMPLIADO (PÍLDORA AZUL DENTRO) -->
+            <button onclick="intentarDuelo()" class="relative flex-1 sm:flex-initial sm:min-w-[170px] md:min-w-[190px] h-12 sm:h-14 bg-white hover:bg-slate-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-3 sm:px-4 gap-2 overflow-hidden">
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="text-base sm:text-lg text-red-500 drop-shadow-sm">⚔️</span> 
+                    <span class="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Duelo</span>
                 </div>
-            </div>
+                <div class="flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-2 py-1 rounded-xl shrink-0">
+                    <span class="w-2 h-2 rounded-full bg-cg_blue animate-pulse shrink-0"></span>
+                    <span id="mm-count-badge" class="text-[10px] sm:text-xs font-black text-cg_blue whitespace-nowrap">18 IAs</span>
+                </div>
+            </button>
+
+            <!-- BOTÓN REFERIDOS CON BRILLO -->
+            <button onclick="loadView('referrals')" class="btn-referidos-glow relative flex-1 sm:flex-initial sm:min-w-[140px] h-12 sm:h-14 bg-gradient-to-br from-orange-50 to-white hover:from-orange-100 hover:to-orange-50 border-2 border-orange-200 rounded-2xl font-black text-orange-600 flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3.5">
+                <span class="text-xl drop-shadow-sm">🤝</span> 
+                <span class="text-xs uppercase tracking-wider font-extrabold z-10">Referidos</span>
+            </button>
             
-            <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Solo Móvil - Ocupa ancho total abajo) -->
-            <div id="season-widget-mobile" onclick="loadView('calendar')" class="col-span-4 sm:hidden w-full h-full min-h-[56px] bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-cg_blue cursor-pointer flex items-center px-4 relative overflow-hidden transition-all">
-                <!-- Se inyecta por JS - La misma función de clima llenará ambos -->
+            <!-- WIDGET DE CLIMA / ESTACIÓN ACTUAL (Escritorio) -->
+            <div id="season-widget" onclick="loadView('calendar')" class="hidden sm:flex min-w-[280px] lg:min-w-[320px] h-14 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-cg_blue cursor-pointer items-center px-4 relative overflow-hidden transition-all">
+                <!-- Se inyecta por JS -->
             </div>
         </div>
     </div>
@@ -849,7 +831,6 @@
 
 if (typeof window.farmApp === 'undefined') {
 
-    window.activeInvitationsList = [];
 
     window.intentarDuelo = function() {
         const modal = document.getElementById('duelo-entry-choice-modal');
@@ -926,14 +907,11 @@ if (typeof window.farmApp === 'undefined') {
         }).join('');
     };
 
-    window.updateInvitationsBadge = function() {
-        const totalCount = window.activeInvitationsList.length;
-        const badge = document.getElementById('mm-count-badge');
-        const entryBadge = document.getElementById('entry-badge-count');
 
-        if (badge) badge.innerText = `${totalCount} Retos`;
-        if (entryBadge) entryBadge.innerText = totalCount;
-    };
+
+
+
+
 
     window.acceptInvitationAt = function(idx) {
         const item = window.activeInvitationsList[idx];
@@ -968,13 +946,54 @@ if (typeof window.farmApp === 'undefined') {
         window.respondPvP('renegotiate');
     };
 
-    // --- RECEPTOR DE EVENTOS DE SOCKET Y BOTS ---
+    // SIMULACIÓN DINÁMICA DE IAS EN LÍNEA (Inicia entre 10 y 35, fluctuante)
+    window.iaOnlineCount = Math.floor(Math.random() * (35 - 10 + 1)) + 10;
+    window.activeInvitationsList = [];
+
+    // Nombres y Avatares de IAs para el listado
+    const BOT_NAMES = ["Bot 78SX", "Bot Valkiria", "Bot Titan-X", "Bot Cypher", "Bot Nexus", "Bot Hydra", "Bot Omega", "Bot Sparta", "Bot Zeus", "Bot Kratos"];
+
+    window.updateIAsSimulator = function() {
+        // Generar lista inicial de retos según la cantidad de IAs en línea
+        window.activeInvitationsList = [];
+        for (let i = 0; i < window.iaOnlineCount; i++) {
+            const botName = BOT_NAMES[i % BOT_NAMES.length] + (i >= BOT_NAMES.length ? ` #${i+1}` : '');
+            const betSeeds = [0, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+            window.activeInvitationsList.push({
+                match_id: `bot_sim_${i}_${Date.now()}`,
+                challenger_short_id: 'BOT',
+                challenger_name: botName,
+                bet: betSeeds,
+                is_bot: true
+            });
+        }
+        window.updateInvitationsBadge();
+    };
+
+    // Bucle para hacer fluctuar las IAs en línea periódicamente
+    setInterval(() => {
+        const delta = Math.floor(Math.random() * 5) - 2; // Sube o baja entre -2 y +2
+        window.iaOnlineCount = Math.max(10, Math.min(35, window.iaOnlineCount + delta));
+        window.updateIAsSimulator();
+    }, 8000);
+
+    window.updateInvitationsBadge = function() {
+        const badge = document.getElementById('mm-count-badge');
+        const entryBadge = document.getElementById('entry-badge-count');
+
+        if (badge) badge.innerText = `${window.iaOnlineCount} IAs`;
+        if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
+    };
+
+    // Inicializar el simulador al cargar
+    window.updateIAsSimulator();
+
+    // DESACTIVAR VENTANAS POPUP EMERGENTES AUTOMÁTICAS (Solo se verán al abrir el listado)
     window.socket.off('incoming_challenge');
     window.socket.on('incoming_challenge', (data) => {
-        // Evitar retos duplicados por ID de match
         const exists = window.activeInvitationsList.some(inv => inv.match_id === data.match_id);
         if (!exists) {
-            window.activeInvitationsList.push(data);
+            window.activeInvitationsList.unshift(data);
             window.updateInvitationsBadge();
             if (document.getElementById('duelo-invitations-modal') && !document.getElementById('duelo-invitations-modal').classList.contains('hidden')) {
                 window.renderInvitationsTable();
