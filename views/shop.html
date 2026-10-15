@@ -672,17 +672,22 @@ window.shopApp = {
         const qty = this.state.shopQuantities[itemId];
         const total = unitPrice * qty;
         
-        // Revisar el inventario actual
+        // Revisar el inventario actual y la granja
         const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
         const targetInventory = farmState.inventory || {};
         
         const isPlant = this.catalog.flowers.some(f => f.id === itemId);
-        const pots = targetInventory['tool_pot_small'] ? targetInventory['tool_pot_small'].qty : 0;
+        
+        // Contar macetas en inventario y macetas vacías puestas en la granja
+        const potsInInv = targetInventory['tool_pot_small'] ? targetInventory['tool_pot_small'].qty : 0;
+        const potsOnField = (farmState.plots || []).filter(p => p.status === 'pot').length;
+        const totalPots = potsInInv + potsOnField;
+        
         const water = targetInventory['tool_water'] ? targetInventory['tool_water'].qty : 0;
         
-        // Ejecución de compra directa (se salta la confirmación). 
-        // Si falta agua o macetas para la planta, compra el combo automáticamente.
-        if (isPlant && (pots === 0 || water === 0)) {
+        // Ejecución de compra directa. 
+        // Si falta agua o NO hay ninguna maceta (ni en inv ni en granja), compra el combo automáticamente.
+        if (isPlant && (totalPots === 0 || water === 0)) {
             const comboTotal = total + 5500; // Costo adicional de la maceta y el agua
             this.buyCombo(itemId, unitPrice, qty, comboTotal);
         } else {

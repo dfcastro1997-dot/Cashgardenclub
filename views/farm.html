@@ -3008,27 +3008,45 @@ if (typeof window.farmApp === 'undefined') {
                 .map(key => ({ id: key, ...this.state.inventory[key] }));
 
             if (seeds.length === 0) {
-                let fallbackImg = 'assets/Fondos/logo.png';
+                // RENDERIZAR TIENDA RÁPIDA DENTRO DEL MODAL
+                let affordablePlantsHtml = '';
                 if (this.state.dynamicPlants) {
-                    const plantKeys = Object.keys(this.state.dynamicPlants);
-                    if (plantKeys.length > 0) {
-                        const randomKey = plantKeys[Math.floor(Math.random() * plantKeys.length)];
-                        fallbackImg = this.state.dynamicPlants[randomKey].image_url;
+                    const availablePlants = Object.values(this.state.dynamicPlants).filter(p => p.price <= this.state.seedsBalance);
+                    
+                    if (availablePlants.length > 0) {
+                        availablePlants.slice(0, 5).forEach(dp => {
+                            affordablePlantsHtml += `
+                                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm hover:border-cg_blue transition-colors">
+                                    <img src="${dp.image_url}" class="w-10 h-10 object-contain drop-shadow-sm shrink-0">
+                                    <div class="flex-1 text-left min-w-0">
+                                        <h5 class="font-black text-cg_navy text-xs truncate">${dp.name}</h5>
+                                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Precio: <span class="text-green-600">${dp.price.toLocaleString()} 🌱</span></p>
+                                    </div>
+                                    <button onclick="window.farmApp.quickBuyAndPlant('${dp.id}', ${dp.price})" class="bg-cg_blue hover:bg-cg_navy text-white text-[10px] font-black px-3 py-2 rounded-lg shadow-sm transition-colors shrink-0 uppercase tracking-widest">
+                                        Comprar
+                                    </button>
+                                </div>
+                            `;
+                        });
                     }
                 }
 
                 list.innerHTML = `
-                    <div class="text-center py-8 sm:py-10 bg-white rounded-2xl border border-gray-100 flex flex-col items-center mx-1 sm:mx-0">
-                        <img src="${fallbackImg}" class="w-12 h-12 sm:w-16 sm:h-16 mb-4 opacity-60 object-contain drop-shadow-sm">
-                        <h4 class="font-black text-carbon text-sm sm:text-lg mb-1">Sin Flores Compatibles</h4>
-                        <p class="text-gray-500 text-[10px] sm:text-sm">Ve al Mercado y compra semillas adecuadas para esta maceta.</p>
-                        <button onclick="window.farmApp.closeModals(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="mt-4 bg-cg_blue hover:bg-cg_navy text-white text-[10px] sm:text-xs font-bold py-2 px-4 rounded-lg shadow-sm transition-colors">Ir al Mercado</button>
+                    <div class="text-center py-6 bg-white rounded-2xl flex flex-col items-center">
+                        <span class="text-4xl drop-shadow-sm mb-3">🛒</span>
+                        <h4 class="font-black text-cg_navy text-base sm:text-lg mb-1">Sin Semillas en Inventario</h4>
+                        <p class="text-gray-500 text-xs mb-4">Adquiere una semilla directamente aquí o ve al Mercado.</p>
+                        ${affordablePlantsHtml !== '' ? `
+                            <div class="w-full space-y-2 mb-4">
+                                <p class="text-left text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Disponibles para tu saldo:</p>
+                                ${affordablePlantsHtml}
+                            </div>
+                        ` : '<p class="text-[10px] text-red-500 font-bold mb-4 uppercase tracking-widest">No tienes semillas suficientes para comprar.</p>'}
+                        <button onclick="window.farmApp.closeModals(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 rounded-xl shadow-sm transition-colors text-xs uppercase tracking-widest">Ir al Mercado Completo</button>
                     </div>`;
             } else {
                 seeds.forEach(seed => {
-                    // Lógica de compatibilidad de tierra
                     let minSafe = 20, maxSafe = 80;
-
                     let warningHtml = '';
                     if (currentWater > maxSafe) {
                         warningHtml = `<span class="text-[9px] sm:text-[10px] bg-red-100 text-red-600 font-bold px-2 py-0.5 rounded-md mt-1 inline-block border border-red-200">⚠️ Tierra muy húmeda para esta planta</span>`;
@@ -3047,14 +3065,6 @@ if (typeof window.farmApp === 'undefined') {
                         pDef = this.state.dynamicPlants[seed.id].def;
                         let mins = this.state.dynamicPlants[seed.id].grow_time_minutes;
                         pDuration = mins < 60 ? `${mins}m` : `${(mins/60).toFixed(1).replace('.0','')}h`;
-                    } else {
-                        if(seed.id === 'flower_wheat') { pAtk = 34; pDef = 15; pHp = 100; pDuration = "5m"; }
-                        else if(seed.id === 'flower_cactus') { pAtk = 34; pDef = 35; pHp = 150; pDuration = "30m"; } 
-                        else if(seed.id === 'flower_bamboo') { pAtk = 50; pDef = 20; pHp = 100; pDuration = "10m"; }
-                        else if(seed.id === 'flower_crystal') { pAtk = 100; pDef = 8; pHp = 60; pDuration = "2h"; } 
-                        else if(seed.id === 'flower_moon') { pAtk = 60; pDef = 25; pHp = 200; pDuration = "12h"; } 
-                        else if(seed.id === 'flower_small') { pAtk = 40; pDef = 20; pHp = 100; pDuration = "1h"; }
-                        else if(seed.id === 'flower_big') { pAtk = 40; pDef = 20; pHp = 100; pDuration = "5h"; }
                     }
 
                     let statsHtml = `
@@ -3065,7 +3075,6 @@ if (typeof window.farmApp === 'undefined') {
                             <span class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100 uppercase font-black" title="Defensa">🛡️ ${pDef}%</span>
                         </div>
                     `;
-                    // ----------------------------------------------------
 
                     list.innerHTML += `
                         <div class="p-3 sm:p-5 bg-white border border-gray-200 rounded-2xl hover:border-cg_blue flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-sm transition-colors">
@@ -3091,6 +3100,27 @@ if (typeof window.farmApp === 'undefined') {
             }
             document.getElementById('plant-modal').classList.remove('hidden');
             document.getElementById('plant-modal').classList.add('flex');
+        },
+
+        quickBuyAndPlant(seedId, price) {
+            if (this.state.seedsBalance >= price) {
+                this.state.seedsBalance -= price;
+                if (!this.state.inventory[seedId]) {
+                    const dp = this.state.dynamicPlants[seedId];
+                    this.state.inventory[seedId] = {
+                        name: dp.name, type: 'seed', reqSize: dp.pot_type || 'small',
+                        qty: 1, image: dp.image_url
+                    };
+                } else {
+                    this.state.inventory[seedId].qty += 1;
+                }
+                const balEl = document.getElementById('global-seeds-display');
+                if (balEl) balEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+                this.saveState();
+                this.plantSeed(seedId); // Siembra automáticamente
+            } else {
+                this.showFarmAlert('Fondos Insuficientes', 'No tienes semillas suficientes.', '❌');
+            }
         },
 
         ritual: {
