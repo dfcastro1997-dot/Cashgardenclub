@@ -1748,6 +1748,7 @@
                 let btnAction = () => this.accept(merchantId);
 
                 // Lógica de Don Vito
+                // Lógica de Don Vito
                 if (merchantId === 'vito') {
                     // Verificar si ya hay un contrato activo
                     const hasActiveContract = window.farmApp && window.farmApp.state && window.farmApp.state.vitoContract && window.farmApp.state.vitoContract.active;
@@ -1763,15 +1764,23 @@
                         // Generar nuevo contrato si no tiene ninguno activo
                         let randomSeedId = 'dyn_rosa_permafrost'; 
                         let plantName = 'Rosa Permafrost';
+                        let plantBaseReward = 15000;
+
                         if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
                             const dynamicKeys = Object.keys(window.farmApp.state.dynamicPlants);
                             if (dynamicKeys.length > 0) {
                                 randomSeedId = dynamicKeys[Math.floor(Math.random() * dynamicKeys.length)];
-                                plantName = window.farmApp.state.dynamicPlants[randomSeedId].name;
+                                const selectedPlant = window.farmApp.state.dynamicPlants[randomSeedId];
+                                plantName = selectedPlant.name;
+                                plantBaseReward = selectedPlant.reward || 15000; // Extrae la cosecha normal de la planta
                             }
                         }
-                        this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: 35000 };
-                        finalQuote = `Tengo un pedido urgente. Necesito que cultives: ${plantName} en menos de 4 horas. Si cumples, la paga es enorme. Si me fallas... me quedaré con el 30% de tus ahorros.`;
+                        
+                        // MECÁNICA DON VITO: Paga el 180% (80% extra) de lo que da la planta al cosecharse normal
+                        let vitoPayment = Math.floor(plantBaseReward * 1.8);
+                        
+                        this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: vitoPayment };
+                        finalQuote = `Tengo un pedido urgente. Necesito que cultives: ${plantName} en menos de 4 horas. Si cumples, te pagaré la suma de ${vitoPayment.toLocaleString()} 🌱. Si me fallas... me quedaré con el 30% de tus ahorros.`;
                     }
                 }
 
@@ -1871,10 +1880,10 @@
                     if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
                         const allPlants = Object.values(window.farmApp.state.dynamicPlants);
                         
-                        // Filtrar para que Bael solo entregue semillas económicas/básicas (precio <= 15000)
-                        let basicPlants = allPlants.filter(p => p.price <= 15000);
+                        // Filtrar para que Bael solo entregue semillas con máximo 150 de Vida (HP)
+                        let basicPlants = allPlants.filter(p => p.hp <= 150);
                         
-                        // Si no hay plantas baratas creadas, toma cualquiera del catálogo
+                        // Si no hay plantas que cumplan el requisito, toma cualquiera del catálogo
                         if (basicPlants.length === 0) basicPlants = allPlants; 
                         
                         if (basicPlants.length > 0) {
