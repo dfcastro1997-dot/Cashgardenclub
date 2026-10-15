@@ -1961,7 +1961,7 @@ if (typeof window.farmApp === 'undefined') {
             // Agrega esto al final de init() en farmApp
             setTimeout(() => {
                 if(window.guideApp && !sessionStorage.getItem('guide_welcomed')) {
-                    window.guideApp.show("¡Buenas vecino! Revisa la humedad de la tierra. Si la planta baja de su límite, se estresará.", "explicando");
+                    window.guideApp.show("¡Buenas Granjero! Revisa la humedad de la tierra. Si la planta baja de su límite, se estresará.", "explicando");
                     sessionStorage.setItem('guide_welcomed', 'true'); // Para que solo lo salude una vez por sesión
                 }
             }, 1000);
@@ -2939,6 +2939,15 @@ if (typeof window.farmApp === 'undefined') {
             
             this.showPlotToast(plotId, '🧹', 'Planta removida');
 
+            // NUEVO: Reacción del guía al remover planta mala
+            if (window.guideApp) {
+                window.guideApp.show("Es una lástima... pero a veces se gana y a veces se aprende. ¡Limpia esa tierra y vuelve a sembrar!", "explicando");
+            }
+
+
+
+
+
             if (this.state.selectedPlotId === plotId) {
                 this.selectPlot(plotId);
             } else {
@@ -3115,6 +3124,13 @@ if (typeof window.farmApp === 'undefined') {
 
             this.showPlotToast(plotId, iconToast, msg);
 
+
+            // NUEVO: Reacción del guía al cosechar con éxito
+            if (window.guideApp && !plot.isSpoiled && Math.random() < 0.4) { 
+                // 40% de probabilidad de que celebre para no ser tan repetitivo en cada cosecha
+                window.guideApp.show("¡Cha-ching! Esa fue una cosecha espectacular. ¡Sigue así, Granjero!", "celebracion");
+            }
+
             if (this.state.selectedPlotId === plotId) {
                 this.selectPlot(plotId);
             } else {
@@ -3259,6 +3275,7 @@ if (typeof window.farmApp === 'undefined') {
             // Limpiamos intervalos anteriores si existían
             if(this.state.simulationInterval) clearInterval(this.state.simulationInterval);
             if(this.state.visualInterval) clearInterval(this.state.visualInterval);
+            if(this.guideInterval) clearInterval(this.guideInterval); // NUEVO INTERVALO GUÍA
             
             this.processTick(); // Ejecución inmediata
             
@@ -3267,10 +3284,18 @@ if (typeof window.farmApp === 'undefined') {
                 this.processTick();
             }, 10000);
             
-            // NUEVO: Intervalo Visual (Actualiza relojes de forma suave cada 1 segundo)
+            // Intervalo Visual (Actualiza relojes de forma suave cada 1 segundo)
             this.state.visualInterval = setInterval(() => {
                 this.updateVisualTimers();
             }, 1000);
+
+            // NUEVO: Intervalo del Granjero Guía (Evalúa la granja cada 45 segundos)
+            this.guideInterval = setInterval(() => {
+                this.evaluateGuideAdvice();
+            }, 45000);
+            
+            // Llamar una vez al inicio con un pequeño retraso para saludar
+            setTimeout(() => this.evaluateGuideAdvice(), 2500);
         },
 
         updateVisualTimers() {
@@ -3312,6 +3337,72 @@ if (typeof window.farmApp === 'undefined') {
                 }
             });
         },
+
+
+
+        evaluateGuideAdvice() {
+            // Si el granjero ya está en pantalla hablando, no lo interrumpimos
+            if (!window.guideApp || window.guideApp.isOpen) return; 
+
+            const plots = this.state.plots;
+            const inventory = this.state.inventory;
+            const balance = this.state.seedsBalance;
+
+            // 1. Prioridad Máxima: Cuervos / Plagas en el campo
+            const hasCrow = plots.some(p => p.hasCrow);
+            if (hasCrow) {
+                window.guideApp.show("¡Por las barbas de mi abuelo! ¡Un cuervo se está comiendo tu cosecha! Toca la planta rápido para espantarlo.", "alarma");
+                return;
+            }
+
+            // 2. Prioridad Alta: Plantas a punto de secarse (menos del 25% de agua)
+            const isThirsty = plots.some(p => p.status === 'planted' && p.water > 0 && p.water <= 25);
+            if (isThirsty) {
+                window.guideApp.show("¡Se encienden las alarmas! Tienes una planta muy seca. Si el agua llega a 0%, dejará de crecer y se llenará de plagas.", "alarma");
+                return;
+            }
+
+            // 3. Prioridad Media: Cosechas listas para recoger
+            const isReady = plots.some(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+            if (isReady) {
+                window.guideApp.show("¡Huele a dinero! Tienes una planta lista para cosechar. Recógela antes de que vengan los carroñeros.", "celebracion");
+                return;
+            }
+
+            // 4. Consejo: Macetas vacías listas para sembrar
+            const hasEmptyPot = plots.some(p => p.status === 'pot');
+            if (hasEmptyPot) {
+                window.guideApp.show("Veo que tienes una maceta con tierra lista y sin usar. ¡No pierdas tiempo, siembra una semilla para que empiece a producir!", "explicando");
+                return;
+            }
+
+            // 5. Consejo de Economía: Pocas semillas y sin herramientas
+            if (balance < 5000 && balance > 0) {
+                const noWater = !inventory.tool_water || inventory.tool_water.qty === 0;
+                const noPots = !inventory.tool_pot_small || inventory.tool_pot_small.qty === 0;
+                
+                if (noWater || noPots) {
+                    window.guideApp.show("Tu reserva de semillas está bajando. Recuerda comprar siempre Regaderas y Macetas en el Mercado ANTES de gastarte todo en semillas nuevas.", "explicando");
+                    return;
+                }
+            }
+            
+            // 6. Consejo: Terrenos libres y dinero de sobra
+            const hasEmptyPlot = plots.some(p => p.status === 'empty');
+            if (hasEmptyPlot && balance > 15000) {
+                window.guideApp.show("Tienes terrenos libres y semillas de sobra en el bolsillo. Ve al Mercado, compra una maceta y pongamos a producir esa tierra.", "explicando");
+                return;
+            }
+        },
+
+
+
+
+
+
+
+
+
 
         openPlantSelector(plotId) {
             this.state.selectedPlotId = plotId;
