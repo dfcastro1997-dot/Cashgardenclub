@@ -30,8 +30,8 @@
                 <input type="text" id="filter-search" oninput="window.shopApp.renderShopItems()" placeholder="Buscar producto por nombre..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white transition-colors shadow-inner placeholder-slate-400">
             </div>
             
-            <!-- Tipo de Producto -->
-            <select id="filter-type" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+            <!-- Tipo de Producto (CON EL NUEVO ONCHANGE) -->
+            <select id="filter-type" onchange="window.shopApp.togglePlantFilters(); window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
                 <option value="all">📦 Todos los Tipos</option>
                 <option value="tools">🛠️ Herramientas y Defensa</option>
                 <option value="iap">⭐ Servicios VIP (Automáticos)</option>
@@ -64,6 +64,29 @@
                 <option value="free_cop">🌱 Comprar con Semillas</option>
                 <option value="premium">💵 Comprar con CRÉDITOS</option>
             </select>
+        </div>
+
+        <!-- SUB-FILTROS DE PLANTAS (NUEVO - Oculto por defecto) -->
+        <div id="plant-advanced-filters" class="hidden mt-4 pt-4 border-t border-gray-100 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-fade-in">
+            <!-- Duración / Tiempo -->
+            <select id="filter-plant-duration" onchange="window.shopApp.renderShopItems()" class="w-full bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-green-500 cursor-pointer shadow-inner transition-colors">
+                <option value="all">⏱️ Cualquier Duración</option>
+                <option value="fast">Rápida (< 1h)</option>
+                <option value="medium">Media (1h - 6h)</option>
+                <option value="slow">Lenta (> 6h)</option>
+            </select>
+            
+            <!-- Cosecha (Recompensa) -->
+            <select id="filter-plant-reward" onchange="window.shopApp.renderShopItems()" class="w-full bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-green-500 cursor-pointer shadow-inner transition-colors">
+                <option value="all">💰 Cualquier Cosecha</option>
+                <option value="low">Baja (< 10,000 🌱)</option>
+                <option value="medium">Media (10k - 30k 🌱)</option>
+                <option value="high">Alta (> 30,000 🌱)</option>
+            </select>
+
+            <!-- Rango de Precio -->
+            <input type="number" id="filter-price-min" oninput="window.shopApp.renderShopItems()" placeholder="Precio Min (🌱)..." class="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-yellow-500 transition-colors shadow-inner placeholder-yellow-600/50">
+            <input type="number" id="filter-price-max" oninput="window.shopApp.renderShopItems()" placeholder="Precio Max (🌱)..." class="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-yellow-500 transition-colors shadow-inner placeholder-yellow-600/50">
         </div>
     </div>
 
@@ -205,6 +228,36 @@ window.shopApp = {
         if (globalCopEl) globalCopEl.innerText = "$" + this.state.balance.toLocaleString();
     },
 
+
+
+
+
+    togglePlantFilters() {
+        const typeSelect = document.getElementById('filter-type');
+        const advancedFilters = document.getElementById('plant-advanced-filters');
+        if (typeSelect && advancedFilters) {
+            if (typeSelect.value === 'flowers') {
+                advancedFilters.classList.remove('hidden');
+                advancedFilters.classList.add('grid');
+            } else {
+                advancedFilters.classList.add('hidden');
+                advancedFilters.classList.remove('grid');
+                
+                // Reiniciar filtros avanzados al ocultarlos
+                document.getElementById('filter-plant-duration').value = 'all';
+                document.getElementById('filter-plant-reward').value = 'all';
+                document.getElementById('filter-price-min').value = '';
+                document.getElementById('filter-price-max').value = '';
+            }
+        }
+    },
+
+
+
+
+
+
+
     renderShopItems() {
         const container = document.getElementById('shop-main-grid');
         container.innerHTML = '';
@@ -217,33 +270,60 @@ window.shopApp = {
             ...this.catalog.flowers.map(i => ({...i, _type: 'flowers'}))
         ];
 
-        // 2. Obtener valores de los filtros
+        // 2. Obtener valores de los filtros estándar
         const searchF = document.getElementById('filter-search') ? document.getElementById('filter-search').value.toLowerCase().trim() : '';
         const typeF = document.getElementById('filter-type') ? document.getElementById('filter-type').value : 'all';
         const catF = document.getElementById('filter-category') ? document.getElementById('filter-category').value : 'all';
         const priceF = document.getElementById('filter-price') ? document.getElementById('filter-price').value : 'all';
 
-        // 3. Filtrar
+        // 3. Obtener valores de los NUEVOS filtros botánicos
+        const durationF = document.getElementById('filter-plant-duration') ? document.getElementById('filter-plant-duration').value : 'all';
+        const rewardF = document.getElementById('filter-plant-reward') ? document.getElementById('filter-plant-reward').value : 'all';
+        const minPriceF = document.getElementById('filter-price-min') ? parseInt(document.getElementById('filter-price-min').value) : NaN;
+        const maxPriceF = document.getElementById('filter-price-max') ? parseInt(document.getElementById('filter-price-max').value) : NaN;
+
+        // 4. Filtrar
         allItems = allItems.filter(item => {
             if (searchF && !item.name.toLowerCase().includes(searchF)) return false;
-            
             if (typeF !== 'all' && item._type !== typeF) return false;
-            
-            if (catF !== 'all' && item._type === 'flowers' && item.category !== catF) return false;
-            
             if (priceF === 'free_cop' && item.price_cop) return false; 
             if (priceF === 'premium' && !item.price_cop) return false; 
+            
+            // Sub-filtros aplicables SOLO a Plantas
+            if (item._type === 'flowers') {
+                if (catF !== 'all' && item.category !== catF) return false;
+                
+                // Filtro de Duración
+                if (durationF !== 'all') {
+                    const mins = item.durationMins || 0;
+                    if (durationF === 'fast' && mins >= 60) return false;
+                    if (durationF === 'medium' && (mins < 60 || mins > 360)) return false;
+                    if (durationF === 'slow' && mins <= 360) return false;
+                }
+                
+                // Filtro de Cosecha
+                if (rewardF !== 'all') {
+                    const rew = item.reward || 0;
+                    if (rewardF === 'low' && rew >= 10000) return false;
+                    if (rewardF === 'medium' && (rew < 10000 || rew > 30000)) return false;
+                    if (rewardF === 'high' && rew <= 30000) return false;
+                }
+                
+                // Filtro de Rango de Precio
+                if (!isNaN(minPriceF) && item.price < minPriceF) return false;
+                if (!isNaN(maxPriceF) && item.price > maxPriceF) return false;
+            }
             
             return true;
         });
 
-        // 4. Renderizar Vacío
+        // 5. Renderizar Vacío
         if (allItems.length === 0) {
             container.innerHTML = '<div class="col-span-full text-center py-16 bg-white border border-gray-100 rounded-3xl shadow-sm"><span class="text-4xl mb-3 block opacity-30">🔍</span><p class="text-gray-400 font-black text-base uppercase tracking-widest">No hay resultados</p><p class="text-sm font-medium text-gray-500 mt-2">Intenta cambiar los filtros de búsqueda.</p></div>';
             return;
         }
 
-        // 5. Generar Tarjetas
+        // 6. Generar Tarjetas (El resto de tu función queda igual desde el forEach)
         allItems.forEach(item => {
             if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
             const qty = this.state.shopQuantities[item.id];
