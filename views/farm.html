@@ -820,17 +820,52 @@
 </div>
 
 <script>
-// ==============================================================
-// SOLUCIÓN ROBUSTA: PREVENCIÓN DE RACE CONDITION Y LAG DE ESTADO
-// ==============================================================
-
-// ==============================================================
-// SOLUCIÓN ROBUSTA: PREVENCIÓN DE RACE CONDITION Y LAG DE ESTADO
-// ==============================================================
 
 if (typeof window.farmApp === 'undefined') {
 
+    // 1. ESTADO Y VARIABLES GLOBALES
+    window.iaOnlineCount = Math.floor(Math.random() * (35 - 10 + 1)) + 10;
+    window.activeInvitationsList = [];
+    const BOT_NAMES = ["Bot 78SX", "Bot Valkiria", "Bot Titan-X", "Bot Cypher", "Bot Nexus", "Bot Hydra", "Bot Omega", "Bot Sparta", "Bot Zeus", "Bot Kratos"];
 
+    // 2. FUNCIÓN ACTUALIZADORA DE CONTADORES
+    window.updateInvitationsBadge = function() {
+        const badge = document.getElementById('mm-count-badge');
+        const entryBadge = document.getElementById('entry-badge-count');
+
+        if (badge) badge.innerText = `${window.iaOnlineCount} IAs`;
+        if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
+    };
+
+    // 3. SIMULADOR DE IAS EN LÍNEA
+    window.updateIAsSimulator = function() {
+        window.activeInvitationsList = [];
+        for (let i = 0; i < window.iaOnlineCount; i++) {
+            const botName = BOT_NAMES[i % BOT_NAMES.length] + (i >= BOT_NAMES.length ? ` #${i+1}` : '');
+            const betSeeds = [0, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+            window.activeInvitationsList.push({
+                match_id: `bot_sim_${i}_${Date.now()}`,
+                challenger_short_id: 'BOT',
+                challenger_name: botName,
+                bet: betSeeds,
+                is_bot: true
+            });
+        }
+        window.updateInvitationsBadge();
+    };
+
+    // Inicialización del simulador
+    window.updateIAsSimulator();
+
+    // Fluctuación periódica de IAs en línea
+    if (window._iaSimulatorInterval) clearInterval(window._iaSimulatorInterval);
+    window._iaSimulatorInterval = setInterval(() => {
+        const delta = Math.floor(Math.random() * 5) - 2;
+        window.iaOnlineCount = Math.max(10, Math.min(35, window.iaOnlineCount + delta));
+        window.updateIAsSimulator();
+    }, 8000);
+
+    // 4. CONTROLADORES DE MODALES
     window.intentarDuelo = function() {
         const modal = document.getElementById('duelo-entry-choice-modal');
         if (modal) {
@@ -865,7 +900,7 @@ if (typeof window.farmApp === 'undefined') {
         }
 
         tbody.innerHTML = window.activeInvitationsList.map((item, idx) => {
-            const isBot = item.is_bot || item.challenger_name.startsWith('Bot ');
+            const isBot = item.is_bot || (item.challenger_name && item.challenger_name.startsWith('Bot '));
             const avatarImg = isBot ? 'assets/Herramientas_y_Servicios/PvR.png' : (item.avatar || 'assets/Perfil/defecto.png');
             const betSeeds = item.bet || item.bet_seeds || 0;
             const rewardPool = betSeeds > 0 ? (betSeeds * 2).toLocaleString() + ' 🌱' : 'Amistoso';
@@ -875,7 +910,7 @@ if (typeof window.farmApp === 'undefined') {
                     <td class="p-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full border-2 ${isBot ? 'border-orange-300 bg-orange-50' : 'border-blue-200 bg-blue-50'} flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                                <img src="${avatarImg}" class="w-full h-full object-cover">
+                                <img src="${avatarImg}" class="w-full h-full object-cover" onerror="this.src='assets/Perfil/defecto.png'">
                             </div>
                             <div class="flex flex-col">
                                 <span class="font-black text-cg_navy text-xs sm:text-sm flex items-center gap-1">
@@ -896,21 +931,21 @@ if (typeof window.farmApp === 'undefined') {
                             <button onclick="window.acceptInvitationAt(${idx})" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-3 py-1.5 rounded-xl shadow-sm text-[10px] sm:text-xs uppercase tracking-wider transition-transform active:scale-95">
                                 Aceptar
                             </button>
-                            <button onclick="window.renegotiateInvitationAt(${idx})" class="bg-blue-50 hover:bg-blue-100 text-cg_blue border border-blue-200 font-black px-2.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider transition-colors">
-                                Renegociar
-                            </button>
+                            ${isBot ? `
+                                <button disabled class="bg-gray-50 text-gray-400 border border-gray-200 font-black px-3 py-1.5 rounded-xl text-[10px] uppercase tracking-wider opacity-60 cursor-not-allowed" title="Las IA no negocian">
+                                    Fijo
+                                </button>
+                            ` : `
+                                <button onclick="window.renegotiateInvitationAt(${idx})" class="bg-blue-50 hover:bg-blue-100 text-cg_blue border border-blue-200 font-black px-2.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider transition-colors">
+                                    Renegociar
+                                </button>
+                            `}
                         </div>
                     </td>
                 </tr>
             `;
         }).join('');
     };
-
-
-
-
-
-
 
     window.acceptInvitationAt = function(idx) {
         const item = window.activeInvitationsList[idx];
@@ -937,6 +972,12 @@ if (typeof window.farmApp === 'undefined') {
         const item = window.activeInvitationsList[idx];
         if (!item) return;
 
+        const isBot = item.is_bot || (item.challenger_name && item.challenger_name.startsWith('Bot '));
+        if (isBot) {
+            alert("Los bots de inteligencia artificial no negocian sus apuestas.");
+            return;
+        }
+
         window.activeInvitationsList.splice(idx, 1);
         window.updateInvitationsBadge();
         document.getElementById('duelo-invitations-modal').classList.replace('flex', 'hidden');
@@ -945,58 +986,12 @@ if (typeof window.farmApp === 'undefined') {
         window.respondPvP('renegotiate');
     };
 
-    
-
-    // 1. Declarar primero la función para evitar el error de referencia
-    window.iaOnlineCount = Math.floor(Math.random() * (35 - 10 + 1)) + 10;
-    window.activeInvitationsList = [];
-
-    window.updateInvitationsBadge = function() {
-        const badge = document.getElementById('mm-count-badge');
-        const entryBadge = document.getElementById('entry-badge-count');
-
-        if (badge) badge.innerText = `${window.iaOnlineCount} IAs`;
-        if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
-    };
-
-    // Nombres y Avatares de IAs para el listado
-    const BOT_NAMES = ["Bot 78SX", "Bot Valkiria", "Bot Titan-X", "Bot Cypher", "Bot Nexus", "Bot Hydra", "Bot Omega", "Bot Sparta", "Bot Zeus", "Bot Kratos"];
-
-    window.updateIAsSimulator = function() {
-        window.activeInvitationsList = [];
-        for (let i = 0; i < window.iaOnlineCount; i++) {
-            const botName = BOT_NAMES[i % BOT_NAMES.length] + (i >= BOT_NAMES.length ? ` #${i+1}` : '');
-            const betSeeds = [0, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
-            window.activeInvitationsList.push({
-                match_id: `bot_sim_${i}_${Date.now()}`,
-                challenger_short_id: 'BOT',
-                challenger_name: botName,
-                bet: betSeeds,
-                is_bot: true
-            });
-        }
-        window.updateInvitationsBadge();
-    };
-
-    // Inicializar el simulador e indicadores
-    window.updateIAsSimulator();
-
-    // Fluctuación periódica de IAs en línea
-    setInterval(() => {
-        const delta = Math.floor(Math.random() * 5) - 2;
-        window.iaOnlineCount = Math.max(10, Math.min(35, window.iaOnlineCount + delta));
-        window.updateIAsSimulator();
-    }, 8000);
-
-    // RECEPTOR FILTRADO: Bloquea modales de bots y recibe solo jugadores reales
+    // 5. RECEPTOR DE SOCKET FILTRADO (SOLO JUGADORES REALES)
     window.socket.off('incoming_challenge');
     window.socket.on('incoming_challenge', (data) => {
         const isBot = data.is_bot || data.is_bot_challenge || (data.challenger_name && data.challenger_name.startsWith('Bot '));
-        
-        // Bloquear cualquier reto automático de Bot para que no abra modal emergente
         if (isBot) return;
 
-        // Registrar únicamente retos de usuarios reales en la lista
         const exists = window.activeInvitationsList.some(inv => inv.match_id === data.match_id);
         if (!exists) {
             window.activeInvitationsList.unshift(data);
