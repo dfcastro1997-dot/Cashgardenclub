@@ -2007,6 +2007,8 @@ window.combatApp = {
                 const overlays = `
                     ${queuedCount > 0 ? `<div class="absolute -top-2 -right-1 bg-red-600 text-white font-black text-[9px] sm:text-[11px] px-1.5 rounded-full border-2 border-white shadow-md z-30">⚔️ ${queuedCount}</div>` : ''}
                     ${this.isExhausted(plant) ? `<div class="cb-status absolute left-1/2 -translate-x-1/2 bg-amber-600 text-white font-black uppercase rounded-full shadow-lg z-30 whitespace-nowrap pointer-events-none">💤 Descansa</div>` : ''}`;
+                
+                // Usamos cardHTML para generar la tarjeta
                 html += this.cardHTML({
                     idx, widthClass: width, animClass: `anim-tarjeta-float-${idx % 3}`, above, overlays,
                     enabled: true, selected: false, hotkey: shown,
