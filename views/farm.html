@@ -3347,50 +3347,55 @@ if (typeof window.farmApp === 'undefined') {
             const plots = this.state.plots;
             const inventory = this.state.inventory;
             const balance = this.state.seedsBalance;
+            
+            // Verificamos qué recursos reales tiene el jugador
+            const hasSeeds = Object.values(inventory).some(item => item.type === 'seed' && item.qty > 0);
+            const waterQty = inventory.tool_water ? inventory.tool_water.qty : 0;
+            const potQty = inventory.tool_pot_small ? inventory.tool_pot_small.qty : 0;
 
             // 1. Prioridad Máxima: Cuervos / Plagas en el campo
-            const hasCrow = plots.some(p => p.hasCrow);
-            if (hasCrow) {
+            if (plots.some(p => p.hasCrow)) {
                 window.guideApp.show("¡Por las barbas de mi abuelo! ¡Un cuervo se está comiendo tu cosecha! Toca la planta rápido para espantarlo.", "alarma");
                 return;
             }
 
-            // 2. Prioridad Alta: Plantas a punto de secarse (menos del 25% de agua)
-            const isThirsty = plots.some(p => p.status === 'planted' && p.water > 0 && p.water <= 25);
-            if (isThirsty) {
-                window.guideApp.show("¡Se encienden las alarmas! Tienes una planta muy seca. Si el agua llega a 0%, dejará de crecer y se llenará de plagas.", "alarma");
+            // 2. Prioridad Alta: Plantas a punto de secarse (0% - 25% de agua)
+            if (plots.some(p => p.status === 'planted' && p.water > 0 && p.water <= 25)) {
+                window.guideApp.show("¡Se encienden las alarmas! Tienes una planta muy seca. Échale agua antes de que se llene de plagas.", "alarma");
                 return;
             }
 
-            // 3. Prioridad Media: Cosechas listas para recoger
-            const isReady = plots.some(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-            if (isReady) {
+            // 3. Prioridad Alta: Plantas podridas
+            if (plots.some(p => p.status === 'planted' && p.isSpoiled)) {
+                window.guideApp.show("¡Qué desastre! Tienes una planta marchita y dañada. Límpiala pronto o contagiará a las demás.", "alarma");
+                return;
+            }
+
+            // 4. Prioridad Media: Cosechas listas para recoger
+            if (plots.some(p => p.status === 'planted' && p.isReady && !p.isSpoiled)) {
                 window.guideApp.show("¡Huele a dinero! Tienes una planta lista para cosechar. Recógela antes de que vengan los carroñeros.", "celebracion");
                 return;
             }
 
-            // 4. Consejo: Macetas vacías listas para sembrar
-            const hasEmptyPot = plots.some(p => p.status === 'pot');
-            if (hasEmptyPot) {
-                window.guideApp.show("Veo que tienes una maceta con tierra lista y sin usar. ¡No pierdas tiempo, siembra una semilla para que empiece a producir!", "explicando");
+            // 5. Consejo: Macetas vacías listas para sembrar (CORREGIDO)
+            if (plots.some(p => p.status === 'pot')) {
+                if (hasSeeds) {
+                    window.guideApp.show("Veo que tienes una maceta lista en la tierra. ¡Selecciona la parcela y siembra una semilla de tu inventario!", "explicando");
+                } else {
+                    window.guideApp.show("Tienes una maceta con tierra lista, pero te quedaste sin semillas. ¡Ve al Mercado a comprar algunas!", "explicando");
+                }
                 return;
             }
 
-            // 5. Consejo de Economía: Pocas semillas y sin herramientas
-            if (balance < 5000 && balance > 0) {
-                const noWater = !inventory.tool_water || inventory.tool_water.qty === 0;
-                const noPots = !inventory.tool_pot_small || inventory.tool_pot_small.qty === 0;
-                
-                if (noWater || noPots) {
-                    window.guideApp.show("Tu reserva de semillas está bajando. Recuerda comprar siempre Regaderas y Macetas en el Mercado ANTES de gastarte todo en semillas nuevas.", "explicando");
-                    return;
-                }
+            // 6. Consejo: Sin herramientas básicas (NUEVO)
+            if (plots.some(p => p.status === 'empty') && potQty === 0 && waterQty === 0) {
+                window.guideApp.show("¡Oye! Tienes tierra libre pero no tienes ni macetas ni agua en tu inventario. Un buen granjero siempre está preparado. ¡Visita el Mercado!", "explicando");
+                return;
             }
-            
-            // 6. Consejo: Terrenos libres y dinero de sobra
-            const hasEmptyPlot = plots.some(p => p.status === 'empty');
-            if (hasEmptyPlot && balance > 15000) {
-                window.guideApp.show("Tienes terrenos libres y semillas de sobra en el bolsillo. Ve al Mercado, compra una maceta y pongamos a producir esa tierra.", "explicando");
+
+            // 7. Consejo: Expansión de negocio (NUEVO)
+            if (plots.some(p => p.status === 'locked') && balance >= 25000) {
+                window.guideApp.show("Veo que tienes bastantes semillas ahorradas. ¿Has pensado en comprar un nuevo terreno para expandir el negocio?", "celebracion");
                 return;
             }
         },

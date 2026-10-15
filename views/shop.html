@@ -209,11 +209,21 @@ window.shopApp = {
             }
         } catch(e) { console.error("Error cargando plantas dinámicas", e); }
         
-        // SE ELIMINÓ EL BLOQUE "INYECTAR PLANTAS DE REFERIDOS" MANUAL.
-        // AHORA LAS TOMA DIRECTAMENTE DE LA BASE DE DATOS (EXCEL) SIN DUPLICARLAS.
-        
         this.updateBalancesUI();
         this.renderShopItems();
+
+        // --- NUEVO: Mensajes aleatorios del guía al entrar al mercado ---
+        setTimeout(() => {
+            if(window.guideApp) {
+                const shopQuotes = [
+                    "¡Bienvenido al Mercado! Aquí encontrarás desde regaderas hasta semillas exóticas. ¡Invierte con sabiduría!",
+                    "Recuerda: antes de comprar las plantas más caras, asegúrate de tener suficientes macetas y agua de sobra.",
+                    "¡Buenas ofertas hoy! Échale un ojo a los pases de automatización si te vas a desconectar un buen rato."
+                ];
+                const quote = shopQuotes[Math.floor(Math.random() * shopQuotes.length)];
+                window.guideApp.show(quote, "explicando");
+            }
+        }, 1000);
     },
 
     updateBalancesUI() {
