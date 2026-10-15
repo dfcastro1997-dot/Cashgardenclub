@@ -1984,11 +1984,11 @@ if (typeof window.farmApp === 'undefined') {
 
                     if (progress < 80) {
                         currentPlantImg = `assets/Semillas/${plantCategoryName}.png`;
-                        // Fallback Inteligente: Si no existe el .png, intentará cargar el .jpg
                         imgOnError = `onerror="this.onerror=null; this.src='assets/Semillas/${plantCategoryName}.jpg';"`;
                         
-                        plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md"; // Más pequeña
-                        plantImgStyle = "transform: translateY(0%);"; // Sentada sobre la tierra sin flotar
+                        plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md"; 
+                        // Ajustado: un poco más arriba y un poco más a la izquierda
+                        plantImgStyle = "transform: translate(-12%, -35%);"; 
                     }
 
                     let crowHtml = '';
@@ -2033,36 +2033,34 @@ if (typeof window.farmApp === 'undefined') {
                         <div class="absolute inset-0 flex items-center justify-center pb-12 z-10 pointer-events-none">
                             <div class="relative w-full h-32 sm:h-40 flex items-center justify-center">
                                 <img src="${currentTerrain}" class="absolute h-32 sm:h-40 w-auto object-contain drop-shadow-sm" alt="Terreno">
-                                <!-- La imagen ahora es dinámica (Semilla o Planta) con fallback de extensión -->
                                 <img src="${currentPlantImg}" ${imgOnError} class="${plantImgClass}" style="${plantImgStyle}" alt="Planta">
                             </div>
                         </div>
 
-                        <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 p-3 flex flex-col gap-3 z-20 rounded-b-2xl cursor-default shadow-[0_-4px_10px_rgba(0,0,0,0.03)]" onclick="event.stopPropagation()">
+                        <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 p-3 flex flex-col gap-2.5 z-20 rounded-b-2xl cursor-default shadow-[0_-4px_10px_rgba(0,0,0,0.03)]" onclick="event.stopPropagation()">
                             
-                            <!-- Fila 1: Estadísticas Limpias (Info, Agua, Tiempo) -->
+                            <!-- Fila 1: Estadísticas Limpias (Sin badge de ROI) -->
                             <div class="flex justify-between items-center px-1">
                                 <div class="flex items-center gap-2 sm:gap-3">
-                                    <!-- Botón 'i' -->
+                                    <!-- Botón 'i' de Información -->
                                     <button onclick="window.farmApp.showPlantInfoModal(${plot.id}); event.stopPropagation();" class="w-7 h-7 sm:w-8 sm:h-8 bg-blue-50 text-blue-500 border border-blue-200 rounded-full flex items-center justify-center font-black shadow-sm hover:bg-blue-100 hover:text-blue-600 transition-colors text-sm font-serif shrink-0 cursor-pointer pointer-events-auto">i</button>
                                     
-                                    <!-- Gota y Porcentaje (Alineados Horizontalmente) -->
+                                    <!-- Gota y Porcentaje Alineados Horizontalmente -->
                                     <div class="flex items-center gap-1.5 leading-none">
                                         <span class="text-lg sm:text-xl drop-shadow-sm">💧</span>
                                         <span class="text-sm sm:text-base font-black ${waterColorClass}">${displayWater}%</span>
-                                        ${stressBadge}
                                     </div>
                                 </div>
                                 
-                                <!-- Tiempo Formato Reloj (CON ID PARA ACTUALIZAR EN VIVO) -->
-                                <div class="text-sm sm:text-base font-mono font-black ${isAlert ? 'text-red-500' : 'text-slate-700'} bg-gray-100 px-3 py-2 rounded-xl border border-gray-200 shadow-sm pointer-events-none flex items-center gap-1.5 shrink-0">
+                                <!-- Tiempo Formato Reloj -->
+                                <div class="text-sm sm:text-base font-mono font-black ${isAlert ? 'text-red-500' : 'text-slate-700'} bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200 shadow-sm pointer-events-none flex items-center gap-1.5 shrink-0">
                                     <span class="text-base">⏳</span> 
                                     <span id="plot-timer-${plot.id}" class="min-w-[45px] text-center">${isAlert ? 'PAUSADO' : timeLeftText}</span>
                                 </div>
                             </div>
                             
-                            <!-- Fila 2: Botones de Acción (Ancho Completo y Uniforme) -->
-                            <div class="flex items-center justify-between gap-1.5 sm:gap-2 w-full mt-1">
+                            <!-- Fila 2: Botones de Acción Completo -->
+                            <div class="flex items-center justify-between gap-1.5 sm:gap-2 w-full mt-0.5">
                                 ${plot.isReady ? `
                                     ${plot.isSpoiled ? `
                                         <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="flex-1 text-[9px] sm:text-[10px] bg-orange-600 hover:bg-orange-700 text-white font-bold transition-colors uppercase tracking-widest py-2 rounded-lg shadow-sm animate-pulse">
@@ -3077,7 +3075,7 @@ if (typeof window.farmApp === 'undefined') {
                 .map(key => ({ id: key, ...this.state.inventory[key] }));
 
             if (seeds.length === 0) {
-                // RENDERIZAR TIENDA RÁPIDA DENTRO DEL MODAL
+                // RENDERIZAR TIENDA RÁPIDA CON STATS COMPLETAS
                 let affordablePlantsHtml = '';
                 if (this.state.dynamicPlants) {
                     const availablePlants = Object.values(this.state.dynamicPlants).filter(p => p.price <= this.state.seedsBalance);
@@ -3085,15 +3083,40 @@ if (typeof window.farmApp === 'undefined') {
                     if (availablePlants.length > 0) {
                         availablePlants.slice(0, 5).forEach(dp => {
                             affordablePlantsHtml += `
-                                <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-sm hover:border-cg_blue transition-colors">
-                                    <img src="${dp.image_url}" class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-sm shrink-0">
-                                    <div class="flex-1 text-left min-w-0">
-                                        <h5 class="font-black text-cg_navy text-sm sm:text-base truncate leading-tight">${dp.name}</h5>
-                                        <p class="text-[10px] sm:text-xs text-gray-500 font-black uppercase tracking-widest mt-0.5">PRECIO: <span class="text-green-600">${dp.price.toLocaleString()} 🌱</span></p>
+                                <div class="bg-white border border-gray-200 rounded-2xl p-3.5 sm:p-4 flex flex-col gap-2.5 shadow-sm hover:border-cg_blue transition-colors">
+                                    <!-- Fila Superior: Imagen, Nombre y Botón -->
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3 min-w-0 flex-1">
+                                            <img src="${dp.image_url}" class="w-12 h-12 object-contain drop-shadow-sm shrink-0">
+                                            <div class="min-w-0 flex-1 text-left">
+                                                <h5 class="font-black text-cg_navy text-sm sm:text-base truncate leading-tight">${dp.name}</h5>
+                                                <p class="text-[10px] sm:text-xs text-gray-500 font-black uppercase tracking-widest mt-0.5">PRECIO: <span class="text-green-600">${dp.price.toLocaleString()} 🌱</span></p>
+                                            </div>
+                                        </div>
+                                        <button onclick="window.farmApp.quickBuyAndPlant('${dp.id}', ${dp.price})" class="bg-cg_blue hover:bg-blue-500 text-white text-[10px] sm:text-xs font-black px-4 sm:px-5 py-2.5 rounded-xl shadow-sm transition-colors shrink-0 uppercase tracking-widest active:scale-95">
+                                            COMPRAR
+                                        </button>
                                     </div>
-                                    <button onclick="window.farmApp.quickBuyAndPlant('${dp.id}', ${dp.price})" class="bg-cg_blue hover:bg-blue-500 text-white text-[10px] sm:text-xs font-black px-4 sm:px-6 py-2.5 rounded-lg shadow-sm transition-colors shrink-0 uppercase tracking-widest active:scale-95">
-                                        COMPRAR
-                                    </button>
+
+                                    <!-- Fila Inferior: Stats (Vida, Ataque, Defensa, Cosecha Estimada) -->
+                                    <div class="grid grid-cols-4 gap-1.5 w-full text-center pt-2 border-t border-gray-100">
+                                        <div class="bg-red-50/80 rounded-lg p-1 border border-red-100">
+                                            <span class="block text-[8px] font-bold text-red-400 uppercase leading-none">Vida</span>
+                                            <span class="font-black text-red-600 text-[10px] sm:text-xs leading-tight">${dp.hp || 100}</span>
+                                        </div>
+                                        <div class="bg-orange-50/80 rounded-lg p-1 border border-orange-100">
+                                            <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none">Ataque</span>
+                                            <span class="font-black text-orange-600 text-[10px] sm:text-xs leading-tight">${dp.atk || 40}</span>
+                                        </div>
+                                        <div class="bg-blue-50/80 rounded-lg p-1 border border-blue-100">
+                                            <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none">Defensa</span>
+                                            <span class="font-black text-blue-600 text-[10px] sm:text-xs leading-tight">${dp.def || 20}%</span>
+                                        </div>
+                                        <div class="bg-green-50/80 rounded-lg p-1 border border-green-200">
+                                            <span class="block text-[8px] font-bold text-green-700 uppercase leading-none">Cosecha</span>
+                                            <span class="font-black text-green-600 text-[10px] sm:text-xs leading-tight">+${(dp.reward || 0).toLocaleString()}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             `;
                         });
@@ -3102,14 +3125,14 @@ if (typeof window.farmApp === 'undefined') {
 
                 list.innerHTML = `
                     <div class="text-center bg-white flex flex-col items-center w-full">
-                        <p class="text-gray-500 text-xs sm:text-sm font-medium mb-6">Adquiere una semilla directamente aquí o ve al Mercado.</p>
+                        <p class="text-gray-500 text-xs sm:text-sm font-medium mb-4">Adquiere una semilla directamente aquí o ve al Mercado.</p>
                         ${affordablePlantsHtml !== '' ? `
-                            <div class="w-full space-y-3 mb-6">
-                                <p class="text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-2">DISPONIBLES PARA TU SALDO:</p>
+                            <div class="w-full space-y-3 mb-5">
+                                <p class="text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-1">DISPONIBLES PARA TU SALDO:</p>
                                 ${affordablePlantsHtml}
                             </div>
-                        ` : '<p class="text-[10px] sm:text-xs text-red-500 font-bold mb-6 uppercase tracking-widest bg-red-50 p-4 rounded-xl border border-red-100">No tienes semillas suficientes para comprar.</p>'}
-                        <button onclick="window.farmApp.closeModals(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-4 rounded-xl shadow-sm transition-colors text-xs sm:text-sm uppercase tracking-widest active:scale-95">IR AL MERCADO COMPLETO</button>
+                        ` : '<p class="text-[10px] sm:text-xs text-red-500 font-bold mb-5 uppercase tracking-widest bg-red-50 p-4 rounded-xl border border-red-100">No tienes semillas suficientes para comprar.</p>'}
+                        <button onclick="window.farmApp.closeModals(); loadView('shop', document.querySelectorAll('.nav-btn')[2]);" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3.5 rounded-xl shadow-sm transition-colors text-xs sm:text-sm uppercase tracking-widest active:scale-95">IR AL MERCADO COMPLETO</button>
                     </div>`;
             } else {
                 seeds.forEach(seed => {
