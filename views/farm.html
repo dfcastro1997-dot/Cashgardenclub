@@ -3075,13 +3075,16 @@ if (typeof window.farmApp === 'undefined') {
                 .map(key => ({ id: key, ...this.state.inventory[key] }));
 
             if (seeds.length === 0) {
-                // RENDERIZAR TIENDA RÁPIDA CON STATS COMPLETAS
+                // RENDERIZAR TIENDA RÁPIDA CON STATS COMPLETAS Y TIEMPO DE CRECIMIENTO
                 let affordablePlantsHtml = '';
                 if (this.state.dynamicPlants) {
                     const availablePlants = Object.values(this.state.dynamicPlants).filter(p => p.price <= this.state.seedsBalance);
                     
                     if (availablePlants.length > 0) {
                         availablePlants.slice(0, 5).forEach(dp => {
+                            let mins = dp.grow_time_minutes || 60;
+                            let durationTxt = mins < 60 ? `${mins}m` : `${(mins/60).toFixed(1).replace('.0','')}h`;
+
                             affordablePlantsHtml += `
                                 <div class="bg-white border border-gray-200 rounded-2xl p-3.5 sm:p-4 flex flex-col gap-2.5 shadow-sm hover:border-cg_blue transition-colors">
                                     <!-- Fila Superior: Imagen, Nombre y Botón -->
@@ -3098,8 +3101,12 @@ if (typeof window.farmApp === 'undefined') {
                                         </button>
                                     </div>
 
-                                    <!-- Fila Inferior: Stats (Vida, Ataque, Defensa, Cosecha Estimada) -->
-                                    <div class="grid grid-cols-4 gap-1.5 w-full text-center pt-2 border-t border-gray-100">
+                                    <!-- Fila Inferior: Stats (Tiempo, Vida, Ataque, Defensa, Cosecha Estimada) -->
+                                    <div class="grid grid-cols-5 gap-1 sm:gap-1.5 w-full text-center pt-2 border-t border-gray-100">
+                                        <div class="bg-purple-50/80 rounded-lg p-1 border border-purple-100">
+                                            <span class="block text-[8px] font-bold text-purple-400 uppercase leading-none">Tiempo</span>
+                                            <span class="font-black text-purple-600 text-[10px] sm:text-xs leading-tight">⏳ ${durationTxt}</span>
+                                        </div>
                                         <div class="bg-red-50/80 rounded-lg p-1 border border-red-100">
                                             <span class="block text-[8px] font-bold text-red-400 uppercase leading-none">Vida</span>
                                             <span class="font-black text-red-600 text-[10px] sm:text-xs leading-tight">${dp.hp || 100}</span>
