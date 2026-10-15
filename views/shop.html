@@ -279,6 +279,8 @@ window.shopApp = {
 
     renderShopItems() {
         const container = document.getElementById('shop-main-grid');
+        if (!container) return; // <--- AÑADE ESTA LÍNEA PARA EVITAR EL ERROR
+
         container.innerHTML = '';
 
         // 1. Unificar todos los catálogos con una marca interna en el ORDEN solicitado

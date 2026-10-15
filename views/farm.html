@@ -3103,10 +3103,12 @@ if (typeof window.farmApp === 'undefined') {
             // Bloqueo anti doble-clic inmediato
             plot.isReady = false; 
 
-            let reward = 0;
+            // --- INICIO DE CÓDIGO A REEMPLAZAR ---
+            let reward = plot.plant.reward || 1500; // Toma el valor guardado o 1500 por defecto
             if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id]) {
-                reward = this.state.dynamicPlants[plot.plant.id].reward || 0;
+                reward = this.state.dynamicPlants[plot.plant.id].reward || reward;
             }
+            // --- FIN DE CÓDIGO A REEMPLAZAR ---
 
             // APLICAR PENALIZACIÓN DE ESTRÉS (15% menos por cada marca, tope máximo 90% de pérdida)
             let stress = plot.stressMarks || 0;

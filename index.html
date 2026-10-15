@@ -2061,14 +2061,17 @@
 
 
 
-        // Generador de Evento Aleatorio (Ejemplo: 10% de probabilidad cada vez que se recarga la granja)
-        setTimeout(() => {
-            if (Math.random() < 0.15 && !window.merchantApp.isOpen) {
-                const mercs = ['silas', 'bael', 'vito'];
-                window.merchantApp.show(mercs[Math.floor(Math.random() * mercs.length)]);
+        // Generador de Evento Aleatorio (15% de probabilidad cada 45 segundos)
+        setInterval(() => {
+            // Solo intenta sacar un mercader si la granja/dashboard está visible
+            const dashboard = document.getElementById('dashboard-screen');
+            if (dashboard && !dashboard.classList.contains('hidden') && !window.merchantApp.isOpen) {
+                if (Math.random() < 0.15) {
+                    const mercs = ['silas', 'bael', 'vito'];
+                    window.merchantApp.show(mercs[Math.floor(Math.random() * mercs.length)]);
+                }
             }
-        }, 5000);
-
+        }, 45000); 
 
     </script>
 </body>
