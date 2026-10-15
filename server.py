@@ -1920,7 +1920,40 @@ def broadcast_matchmaking_count():
     count = len(matchmaking_queue['global'])
     socketio.emit('matchmaking_count', {'count': count})
 
+def auto_ia_matchmaking_challenge():
+    import random
+    while True:
+        # Revisa cada 30 a 60 segundos
+        time.sleep(random.randint(30, 60))
+        try:
+            # Selecciona un bot aleatorio
+            bot_names = ["Bot 78SX", "Bot Valkiria", "Bot Titan-X", "Bot Cypher", "Bot Nexus"]
+            chosen_bot = random.choice(bot_names)
+            
+            # Revisa si hay usuarios conectados en salas activas
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT short_id, username FROM users WHERE session_token IS NOT NULL ORDER BY RANDOM() LIMIT 1")
+            target_user = cur.fetchone()
+            cur.close(); conn.close()
 
+            if target_user:
+                bets = [0, 1000, 2000, 5000]
+                bet_val = random.choice(bets)
+                
+                # Emite la invitación directa por WebSockets al usuario objetivo
+                socketio.emit('incoming_challenge', {
+                    'match_id': f"bot_match_{int(time.time())}",
+                    'challenger_short_id': 'BOT',
+                    'challenger_name': chosen_bot,
+                    'bet': bet_val,
+                    'is_bot_challenge': True
+                }, room=f"user_{target_user['short_id']}")
+        except Exception as e:
+            print("Error en hilo de IA Matchmaking:", e)
+
+# Iniciar el hilo demonio de la IA
+threading.Thread(target=auto_ia_matchmaking_challenge, daemon=True).start()
 
 def init_daily_tree(cur, date_str):
     cur.execute("SELECT COUNT(id) as c FROM users WHERE balance > 0 OR game_state IS NOT NULL")
@@ -1980,7 +2013,7 @@ def get_tree_state():
         'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿'),
         'tool_scarecrow': ('Espantapájaros', '🦉')
     }
-    
+
     cur.execute("SELECT id, name FROM dynamic_plants")
     for dp in cur.fetchall():
         items_ref[dp['id']] = (dp['name'], '✨')

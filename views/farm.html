@@ -17,11 +17,16 @@
             <!-- Contenedor agrupado para PC (Duelo + Árbol + Clima) -->
             <div class="col-span-3 sm:col-span-1 flex gap-2 w-full sm:w-auto">
 
-                <!-- BOTÓN DUELO -->
-                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[120px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-center gap-1.5 transition-all active:scale-95 px-3">
-                    <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
-                    <span class="text-[10px] sm:text-xs uppercase tracking-widest">Duelo</span>
-                    <span id="mm-count-badge" class="absolute -top-2 -right-2 bg-cg_blue text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md animate-pulse">0</span>
+                <!-- BOTÓN DUELO AMPLIADO -->
+                <button onclick="intentarDuelo()" class="relative flex-1 sm:w-auto sm:min-w-[170px] h-full min-h-[48px] sm:min-h-[56px] bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl shadow-sm font-black text-cg_navy flex items-center justify-between transition-all active:scale-95 px-3.5 gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-lg text-red-500 drop-shadow-sm">⚔️</span> 
+                        <span class="text-[10px] sm:text-xs uppercase tracking-widest">Duelo</span>
+                    </div>
+                    <div class="flex items-center gap-1 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-xl">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cg_blue animate-ping"></span>
+                        <span id="mm-count-badge" class="text-[10px] font-black text-cg_blue">0 En Línea</span>
+                    </div>
                 </button>
 
                 <!-- BOTÓN REFERIDOS (NUEVO CLARO CON BRILLO CADA 5S) -->
@@ -901,9 +906,9 @@ if (typeof window.farmApp === 'undefined') {
             const el = document.getElementById('mm-count');
             if (el) el.innerText = data.count;
             
-            // Nueva línea para actualizar el botón exterior
+            // Actualización del botón ampliado exterior
             const badge = document.getElementById('mm-count-badge');
-            if (badge) badge.innerText = data.count;
+            if (badge) badge.innerText = `${data.count} Buscando`;
         });
 
         // --- MANEJO DE NEGOCIACIÓN DE MATCHMAKING ---
