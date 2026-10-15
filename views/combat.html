@@ -1231,18 +1231,25 @@ window.combatApp = {
         return 'primordial'; // Fallback estético base
     },
 
-    // -------------------------------------------------------------------------
-    // RENDERIZADO DEL MAZO: CARTAS DE PLANTAS VS OPCIONES DE ATAQUE
-    // -------------------------------------------------------------------------
-
-    PLANT_CARD_NAMES: [],
+    // Tarjetas coleccionables de planta disponibles en assets/Tarjetas/Plantas/<nombre>.png
+    PLANT_CARD_NAMES: ["Alga Gota", "Amalgama de Raíces", "Arbusto Volcánico", "Asterflora", "Bonsái de Mármol", "Brote Deforme", "Brote Infernal", "Brote de Escarcha", "Bulbo Estático", "Bulbo Granada", "Bulbo Parasitario", "Cactus C4", "Cactus Relámpago", "Cactus de Titanio", "Chispa de Fuego", "Coral Espinoso", "Cícada Primordial", "Dragón de Ceniza", "Engranaje Floral", "Enredadera Espectral", "Enredadera Tentáculo", "Flor Depredadora", "Flor del Abismo", "Gimnosperma Colosal", "Girasol Atómico", "Girasol Tóxico", "Girasol de Magma", "Girasol de Supernova", "Guijarro Musgoso", "Gólem Botánico", "Helecho Congelado", "Helecho Flotante", "Helecho Fósil", "Helecho de Uranio", "Hongo Brillante", "Hongo Cadavérico", "Hongo de Cuarzo", "Lirio Bicéfalo", "Lirio de Fuego Oscuro", "Lirio de Nieve", "Llama Danzante", "Loto Fantasmal", "Loto Huracán", "Loto Reactor", "Loto Tormenta", "Margarita Dinamita", "Mente Colmena Botánica", "Musgo Estelar", "Musgo de Río", "Nenúfar Profundo", "Núcleo Mecha-Yggdrasil", "Orquídea Brisa", "Orquídea Súcubo", "Orquídea de Neón", "Pino Triásico", "Quimera Vegetal", "Raíz Pútrida", "Raíz de Granito", "Roble Cibernético", "Rosa Permafrost", "Rosal de Gravedad", "Sauce de Almas", "Semilla Pólvora", "Semilla de Diente de León", "Seta Xenomorfa", "Tuerca Espora", "Zarza Anómala", "Zarza Chispeante", "Zarza del Abismo", "Árbol Ciclón", "Árbol Galáctico", "Árbol Glaciar", "Árbol Titanosaurio", "Árbol de Plutonio"],
 
     getPlantCardImage(plant) {
         if (!plant) return null;
+        
+        // 1. Intentar buscar la tarjeta oficial en formato PNG
+        const target = this.normName(plant.name);
+        const match = this.PLANT_CARD_NAMES.find(n => this.normName(n) === target);
+        if (match) {
+            return `assets/Tarjetas/Plantas/${encodeURIComponent(match)}.png`;
+        }
+        
+        // 2. Si es una planta dinámica creada desde el admin sin tarjeta PNG, fallback a su imagen base
         if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
             return window.farmApp.state.dynamicPlants[plant.plantId].image_url;
         }
-        return plant.icon || 'assets/Fondos/logo.png';
+        
+        return plant.icon || null;
     },
 
     TACTICAS_LIST: [
