@@ -3377,23 +3377,28 @@ if (typeof window.farmApp === 'undefined') {
                 return;
             }
 
-            // 5. Consejo: Macetas vacías listas para sembrar (CORREGIDO)
-            if (plots.some(p => p.status === 'pot')) {
-                if (hasSeeds) {
-                    window.guideApp.show("Veo que tienes una maceta lista en la tierra. ¡Selecciona la parcela y siembra una semilla de tu inventario!", "explicando");
-                } else {
-                    window.guideApp.show("Tienes una maceta con tierra lista, pero te quedaste sin semillas. ¡Ve al Mercado a comprar algunas!", "explicando");
+            // 5. Consejo de Emergencia: Semillas Críticas (REEMPLAZA EL MENSAJE ANTERIOR)
+            if (balance < 1000 && !hasSeeds) {
+                // Solo te regaña si tienes plantas sembradas, ya que dependes de ellas para sobrevivir
+                if (plots.some(p => p.status === 'planted')) {
+                    window.guideApp.show("¡Ten cuidado con tus plantas! Casi no te quedan semillas ni para la planta más barata. ¡Necesitas cosechar con urgencia para recuperar capital!", "alarma");
+                    return;
                 }
+            }
+
+            // 6. Consejo: Macetas vacías listas para sembrar (SOLO SI TIENE SEMILLAS)
+            if (plots.some(p => p.status === 'pot') && hasSeeds) {
+                window.guideApp.show("Veo que tienes una maceta lista en la tierra. ¡Selecciona la parcela y siembra una semilla de tu inventario!", "explicando");
                 return;
             }
 
-            // 6. Consejo: Sin herramientas básicas (NUEVO)
-            if (plots.some(p => p.status === 'empty') && potQty === 0 && waterQty === 0) {
+            // 7. Consejo: Sin herramientas básicas
+            if (plots.some(p => p.status === 'empty') && potQty === 0 && waterQty === 0 && balance >= 5500) {
                 window.guideApp.show("¡Oye! Tienes tierra libre pero no tienes ni macetas ni agua en tu inventario. Un buen granjero siempre está preparado. ¡Visita el Mercado!", "explicando");
                 return;
             }
 
-            // 7. Consejo: Expansión de negocio (NUEVO)
+            // 8. Consejo: Expansión de negocio
             if (plots.some(p => p.status === 'locked') && balance >= 25000) {
                 window.guideApp.show("Veo que tienes bastantes semillas ahorradas. ¿Has pensado en comprar un nuevo terreno para expandir el negocio?", "celebracion");
                 return;
