@@ -836,17 +836,35 @@ if (typeof window.farmApp === 'undefined') {
         if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
     };
 
+    // Lista de avatares permitidos (excluyendo los de recompensa de referidos)
+    const BOT_AVATARS = [
+        'assets/Perfil/defecto.png',
+        'assets/Perfil/Astronauta.jpg',
+        'assets/Perfil/Cazador.jpg',
+        'assets/Perfil/Granjero.jpg',
+        'assets/Perfil/Formal.jpg',
+        'assets/Perfil/Hockie.jpg',
+        'assets/Perfil/Ingeniero.jpg',
+        'assets/Perfil/Militar.jpg',
+        'assets/Perfil/Millonario.jpg',
+        'assets/Perfil/Payaso.jpg',
+        'assets/Perfil/Fiestero.jpg'
+    ];
+
     window.updateIAsSimulator = function() {
         window.activeInvitationsList = [];
         for (let i = 0; i < window.iaOnlineCount; i++) {
             const botName = BOT_NAMES[i % BOT_NAMES.length] + (i >= BOT_NAMES.length ? ` #${i+1}` : '');
             const betSeeds = [0, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+            const randomAvatar = BOT_AVATARS[Math.floor(Math.random() * BOT_AVATARS.length)];
+            
             window.activeInvitationsList.push({
                 match_id: `bot_sim_${i}_${Date.now()}`,
                 challenger_short_id: 'BOT',
                 challenger_name: botName,
                 bet: betSeeds,
-                is_bot: true
+                is_bot: true,
+                avatar: randomAvatar // Asignamos el avatar aleatorio
             });
         }
         window.updateInvitationsBadge();
@@ -903,11 +921,20 @@ if (typeof window.farmApp === 'undefined') {
             return;
         }
 
+        // Obtener el saldo de semillas actual del jugador
+        const userSeeds = (window.farmApp && window.farmApp.state) ? window.farmApp.state.seedsBalance : 0;
+
         tbody.innerHTML = window.activeInvitationsList.map((item, idx) => {
             const isBot = item.is_bot || (item.challenger_name && item.challenger_name.startsWith('Bot '));
-            const avatarImg = isBot ? 'assets/Herramientas_y_Servicios/PvR.png' : (item.avatar || 'assets/Perfil/defecto.png');
+            const avatarImg = item.avatar || 'assets/Perfil/defecto.png';
             const betSeeds = item.bet || item.bet_seeds || 0;
             const rewardPool = betSeeds > 0 ? (betSeeds * 2).toLocaleString() + ' 🌱' : 'Amistoso';
+
+            // Verificación de saldo
+            const canAfford = userSeeds >= betSeeds;
+            const btnAcceptClass = canAfford 
+                ? "bg-emerald-500 hover:bg-emerald-600 text-white active:scale-95 transition-transform" 
+                : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60";
 
             return `
                 <tr class="hover:bg-white transition-colors border-b border-gray-100 last:border-0">
@@ -932,7 +959,7 @@ if (typeof window.farmApp === 'undefined') {
                     </td>
                     <td class="p-3 text-center">
                         <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="window.acceptInvitationAt(${idx})" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-3 py-1.5 rounded-xl shadow-sm text-[10px] sm:text-xs uppercase tracking-wider transition-transform active:scale-95">
+                            <button ${canAfford ? `onclick="window.acceptInvitationAt(${idx})"` : ''} class="${btnAcceptClass} font-black px-3 py-1.5 rounded-xl shadow-sm text-[10px] sm:text-xs uppercase tracking-wider" ${!canAfford ? 'disabled title="Semillas insuficientes"' : ''}>
                                 Aceptar
                             </button>
                             ${isBot ? `
