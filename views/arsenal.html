@@ -314,4 +314,25 @@
     }, 60000); // Se actualiza la curación visual cada 1 minuto
 
     renderArsenal();
+
+    // --- NUEVO: Saludos y consejos del guía en el Arsenal ---
+    setTimeout(() => {
+        if(window.guideApp) {
+            const lastArsenalGreeting = sessionStorage.getItem('last_arsenal_greeting') || 0;
+            const now = Date.now();
+            
+            if (now - lastArsenalGreeting > 180000) { 
+                const arsenalQuotes = [
+                    "Este es tu Arsenal Estratégico. Mantén a tus mejores guerreras descansando aquí.",
+                    "Una planta a mitad de vida en la Arena es abono seguro. ¡Recuerda usar la curación si tienes semillas!",
+                    "Si ya no te sirve alguna especie o necesitas capital urgente, puedes venderla desde aquí para recuperar semillas.",
+                    "¡Vaya plantas tienes! Mientras estén aquí, irán recuperando vida lentamente de forma natural."
+                ];
+                const quote = arsenalQuotes[Math.floor(Math.random() * arsenalQuotes.length)];
+                
+                window.guideApp.show(quote, "explicando");
+                sessionStorage.setItem('last_arsenal_greeting', now.toString());
+            }
+        }
+    }, 1000);
 </script>

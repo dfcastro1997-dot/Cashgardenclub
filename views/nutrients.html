@@ -847,5 +847,28 @@
     }
     setInterval(updateGlobalTournamentCountdown, 1000);
     updateGlobalTournamentCountdown();
+
+    // --- NUEVO: Saludos y consejos del guía en Torneos ---
+    setTimeout(() => {
+        if(window.guideApp) {
+            const lastTourneyGreeting = sessionStorage.getItem('last_tourney_greeting') || 0;
+            const now = Date.now();
+            
+            // Habla cada 3 minutos (180,000 ms) para no ser intrusivo
+            if (now - lastTourneyGreeting > 180000) { 
+                const tourneyQuotes = [
+                    "¡Bienvenido a la Arena! Aquí es donde las plantas se vuelven leyendas y tú ganas Créditos de verdad.",
+                    "Revisa bien a los guardianes del torneo antes de entrar. ¡La estrategia es clave!",
+                    "Si no quieres arriesgar tus Créditos, el torneo Freeroll 'El Entrenador' es perfecto para probar nuevas plantas.",
+                    "Recuerda que si sobrevives con mucha vida y terminas rápido el combate, ¡obtendrás más puntos para el ranking!"
+                ];
+                const quote = tourneyQuotes[Math.floor(Math.random() * tourneyQuotes.length)];
+                const randomEmotion = Math.random() > 0.5 ? "celebracion" : "explicando";
+                
+                window.guideApp.show(quote, randomEmotion);
+                sessionStorage.setItem('last_tourney_greeting', now.toString());
+            }
+        }
+    }, 1200);
 </script>
 </div>
