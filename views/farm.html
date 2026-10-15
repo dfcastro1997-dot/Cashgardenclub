@@ -945,15 +945,24 @@ if (typeof window.farmApp === 'undefined') {
         window.respondPvP('renegotiate');
     };
 
-    // SIMULACIÓN DINÁMICA DE IAS EN LÍNEA (Inicia entre 10 y 35, fluctuante)
+    
+
+    // 1. Declarar primero la función para evitar el error de referencia
     window.iaOnlineCount = Math.floor(Math.random() * (35 - 10 + 1)) + 10;
     window.activeInvitationsList = [];
+
+    window.updateInvitationsBadge = function() {
+        const badge = document.getElementById('mm-count-badge');
+        const entryBadge = document.getElementById('entry-badge-count');
+
+        if (badge) badge.innerText = `${window.iaOnlineCount} IAs`;
+        if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
+    };
 
     // Nombres y Avatares de IAs para el listado
     const BOT_NAMES = ["Bot 78SX", "Bot Valkiria", "Bot Titan-X", "Bot Cypher", "Bot Nexus", "Bot Hydra", "Bot Omega", "Bot Sparta", "Bot Zeus", "Bot Kratos"];
 
     window.updateIAsSimulator = function() {
-        // Generar lista inicial de retos según la cantidad de IAs en línea
         window.activeInvitationsList = [];
         for (let i = 0; i < window.iaOnlineCount; i++) {
             const botName = BOT_NAMES[i % BOT_NAMES.length] + (i >= BOT_NAMES.length ? ` #${i+1}` : '');
@@ -969,37 +978,25 @@ if (typeof window.farmApp === 'undefined') {
         window.updateInvitationsBadge();
     };
 
+    // Inicializar el simulador e indicadores
+    window.updateIAsSimulator();
+
+    // Fluctuación periódica de IAs en línea
     setInterval(() => {
         const delta = Math.floor(Math.random() * 5) - 2;
         window.iaOnlineCount = Math.max(10, Math.min(35, window.iaOnlineCount + delta));
-        window.updateInvitationsBadge();
+        window.updateIAsSimulator();
     }, 8000);
 
-
-    window.updateInvitationsBadge();
-
-
-    window.updateInvitationsBadge = function() {
-        const badge = document.getElementById('mm-count-badge');
-        const entryBadge = document.getElementById('entry-badge-count');
-
-        if (badge) badge.innerText = `${window.iaOnlineCount} IAs`;
-        if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
-    };
-
-
-    // Inicializar el simulador al cargar
-    window.updateIAsSimulator();
-
-    // RECEPTOR FILTRADO: Bloquea invitaciones emergentes de Bots y guarda solo las de Jugadores Reales
+    // RECEPTOR FILTRADO: Bloquea modales de bots y recibe solo jugadores reales
     window.socket.off('incoming_challenge');
     window.socket.on('incoming_challenge', (data) => {
         const isBot = data.is_bot || data.is_bot_challenge || (data.challenger_name && data.challenger_name.startsWith('Bot '));
         
-        // Si la invitación viene de un Bot, la ignoramos completamente
+        // Bloquear cualquier reto automático de Bot para que no abra modal emergente
         if (isBot) return;
 
-        // Guardamos únicamente retos de usuarios reales
+        // Registrar únicamente retos de usuarios reales en la lista
         const exists = window.activeInvitationsList.some(inv => inv.match_id === data.match_id);
         if (!exists) {
             window.activeInvitationsList.unshift(data);
@@ -1010,6 +1007,13 @@ if (typeof window.farmApp === 'undefined') {
             }
         }
     });
+
+
+
+
+
+
+
 
     window.selectHistoria = function() {
         sessionStorage.removeItem('pvp_match_id');
