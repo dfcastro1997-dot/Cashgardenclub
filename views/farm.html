@@ -823,12 +823,11 @@
 
 if (typeof window.farmApp === 'undefined') {
 
-    // 1. ESTADO Y VARIABLES GLOBALES
+    // 1. ESTADO Y SIMULADOR DE IAS EN LÍNEA
     window.iaOnlineCount = Math.floor(Math.random() * (35 - 10 + 1)) + 10;
     window.activeInvitationsList = [];
     const BOT_NAMES = ["Bot 78SX", "Bot Valkiria", "Bot Titan-X", "Bot Cypher", "Bot Nexus", "Bot Hydra", "Bot Omega", "Bot Sparta", "Bot Zeus", "Bot Kratos"];
 
-    // 2. FUNCIÓN ACTUALIZADORA DE CONTADORES
     window.updateInvitationsBadge = function() {
         const badge = document.getElementById('mm-count-badge');
         const entryBadge = document.getElementById('entry-badge-count');
@@ -837,7 +836,6 @@ if (typeof window.farmApp === 'undefined') {
         if (entryBadge) entryBadge.innerText = window.activeInvitationsList.length;
     };
 
-    // 3. SIMULADOR DE IAS EN LÍNEA
     window.updateIAsSimulator = function() {
         window.activeInvitationsList = [];
         for (let i = 0; i < window.iaOnlineCount; i++) {
@@ -854,10 +852,9 @@ if (typeof window.farmApp === 'undefined') {
         window.updateInvitationsBadge();
     };
 
-    // Inicialización del simulador
+    // Inicializar simulador
     window.updateIAsSimulator();
 
-    // Fluctuación periódica de IAs en línea
     if (window._iaSimulatorInterval) clearInterval(window._iaSimulatorInterval);
     window._iaSimulatorInterval = setInterval(() => {
         const delta = Math.floor(Math.random() * 5) - 2;
@@ -865,7 +862,7 @@ if (typeof window.farmApp === 'undefined') {
         window.updateIAsSimulator();
     }, 8000);
 
-    // 4. CONTROLADORES DE MODALES
+    // 2. CONTROLADORES DE MODALES
     window.intentarDuelo = function() {
         const modal = document.getElementById('duelo-entry-choice-modal');
         if (modal) {
@@ -986,7 +983,7 @@ if (typeof window.farmApp === 'undefined') {
         window.respondPvP('renegotiate');
     };
 
-    // 5. RECEPTOR DE SOCKET FILTRADO (SOLO JUGADORES REALES)
+    // 3. RECEPTOR FILTRADO (SOLO JUGADORES REALES, SIN POPUPS DE BOTS)
     window.socket.off('incoming_challenge');
     window.socket.on('incoming_challenge', (data) => {
         const isBot = data.is_bot || data.is_bot_challenge || (data.challenger_name && data.challenger_name.startsWith('Bot '));
@@ -1002,7 +999,6 @@ if (typeof window.farmApp === 'undefined') {
             }
         }
     });
-
 
 
 
@@ -2202,12 +2198,10 @@ if (typeof window.farmApp === 'undefined') {
                     if (plot.hasCrow) {
                         if (!plot.crowArrivedAt) plot.crowArrivedAt = now;
                         crowHtml = `
-                            </div>
                             <div class="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-1 cursor-pointer hover:scale-110 transition-transform z-50 pointer-events-auto" onclick="window.farmApp.openCrowModal(${plot.id}); event.stopPropagation();">
                                 <img src="${this.state.images.crow}" alt="Cuervo" class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md animate-bounce" />
                                 <span class="bg-red-600 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">¡CLICK AQUÍ!</span>
                             </div>
-                            <div class="hidden">
                         `;
                     } else {
                         plot.crowArrivedAt = 0;
