@@ -237,10 +237,70 @@
 
 
 
+    <!-- MODAL CONTRATO DON VITO (ESTILO DOCUMENTO) -->
+    <div id="vito-contract-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="window.merchantApp.cancelVitoContract()"></div>
+        <div class="bg-[#fdfbf7] rounded-sm shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col border-4 border-double border-amber-900 animate-fade-in p-6 sm:p-8 text-amber-950 font-serif">
+            <h3 class="text-xl sm:text-2xl font-black text-center mb-2 uppercase tracking-widest border-b-2 border-amber-900 pb-2">Acuerdo Comercial Vinculante</h3>
+            
+            <div class="mt-4 text-xs sm:text-sm leading-relaxed space-y-3">
+                <p class="text-right italic font-sans font-bold" id="vito-contract-date">Fecha: ...</p>
+                <p>Yo, <strong id="vito-contract-user" class="uppercase">Granjero</strong>, me comprometo formalmente con el sindicato de Don Vito a cultivar y entregar en perfectas condiciones la especie botánica conocida como:</p>
+                
+                <p class="text-center text-lg sm:text-xl font-black bg-amber-100 py-3 border border-amber-300 shadow-inner uppercase tracking-wider font-sans text-cg_navy" id="vito-contract-plant">PLANTA</p>
+                
+                <p>El plazo máximo para la entrega es de <strong>4 horas</strong> exactas a partir de la firma de este documento. Si cumplo, recibiré una compensación inmediata de <strong id="vito-contract-reward" class="text-green-700 font-sans font-black text-base">35,000 🌱</strong>.</p>
+                
+                <div class="bg-red-50 p-2 sm:p-3 border border-red-200 mt-2">
+                    <p class="text-red-700 font-bold text-[10px] sm:text-xs font-sans leading-tight">Cláusula de Incumplimiento: Si el tiempo expira sin la entrega acordada, autorizo el embargo automático e irreversible del 30% del total de mis fondos.</p>
+                </div>
+            </div>
+            
+            <!-- Zona de Firma -->
+            <div class="mt-6 flex flex-col items-center">
+                <p class="text-[10px] uppercase tracking-widest text-amber-800 mb-1 font-sans font-black">Firma del Granjero</p>
+                <canvas id="signature-pad" width="300" height="100" class="bg-white border-2 border-dashed border-amber-400 rounded-lg cursor-crosshair touch-none shadow-inner w-full max-w-[300px]"></canvas>
+                <button onclick="window.merchantApp.clearSignature()" class="mt-2 text-[10px] text-amber-700 underline hover:text-amber-900 font-sans font-bold transition-colors">Limpiar Firma</button>
+            </div>
+
+            <div class="flex gap-3 mt-6 font-sans">
+                <button onclick="window.merchantApp.cancelVitoContract()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-black py-3.5 rounded-xl uppercase text-xs sm:text-sm border border-gray-300 transition-colors">Cancelar</button>
+                <button onclick="window.merchantApp.finalizeVitoContract()" class="flex-[2] bg-amber-900 hover:bg-black text-white font-black py-3.5 rounded-xl uppercase text-xs sm:text-sm shadow-md transition-colors">Firmar y Aceptar</button>
+            </div>
+        </div>
+    </div>
 
 
 
+    <!-- OVERLAY DE MERCADERES (Sale de Derecha a Izquierda) -->
+    <div id="merchant-overlay" class="fixed inset-0 z-[9998] pointer-events-none flex items-end justify-end">
+        <div id="merchant-container" class="relative flex items-end transform translate-x-full transition-transform duration-500 ease-out">
+            
+            <!-- Burbuja de Diálogo (A la izquierda del mercader) -->
+            <div id="merchant-bubble" class="absolute bottom-[40%] sm:bottom-[50%] right-[80%] sm:right-[95%] lg:right-[100%] bg-gray-900 text-white border-4 border-gray-700 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl pointer-events-auto w-[220px] sm:w-[320px] md:w-[400px] transform scale-0 transition-transform duration-300 origin-bottom-right z-30 flex flex-col mb-2 sm:mb-0">
+                
+                <!-- Triángulo de la burbuja apuntando hacia el mercader a la derecha -->
+                <div class="absolute top-[60%] -right-[19px] w-0 h-0 border-y-[15px] border-y-transparent border-l-[15px] border-l-gray-700"></div>
+                <div class="absolute top-[60%] -right-[13px] w-0 h-0 mt-[3px] border-y-[12px] border-y-transparent border-l-[12px] border-l-gray-900 z-10"></div>
+                
+                <h4 id="merchant-name" class="text-[10px] sm:text-xs font-black text-cg_gold uppercase tracking-widest mb-1">Mercader</h4>
+                <p id="merchant-text" class="text-xs sm:text-sm font-bold leading-snug mb-4 min-h-[3.5rem] text-left whitespace-pre-wrap break-words"></p>
+                
+                <!-- Botones de Decisión -->
+                <div class="flex gap-2 justify-end relative z-50">
+                    <button onclick="window.merchantApp.reject()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-black py-2 rounded-xl text-[10px] sm:text-xs transition-all uppercase tracking-wider">
+                        Rechazar
+                    </button>
+                    <button id="merchant-accept-btn" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-black py-2 rounded-xl text-[10px] sm:text-xs shadow-md transition-all uppercase tracking-wider">
+                        Aceptar Trato
+                    </button>
+                </div>
+            </div>
 
+            <!-- Personaje pegado a la derecha -->
+            <img id="merchant-character" src="" class="w-40 sm:w-64 md:w-[320px] lg:w-[380px] h-auto object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)] relative z-40 pointer-events-auto">
+        </div>
+    </div>
 
 
 
@@ -1652,6 +1712,344 @@
 
 
 
+        window.merchantApp = {
+            isOpen: false,
+            typingTimer: null,
+            currentMerchant: null,
+            
+            merchants: {
+                'silas': {
+                    name: "Silas, el Coleccionista",
+                    img: "assets/Mercaderes/Silas.png",
+                    quote: "Esa planta de élite que escondes... conozco a un aristócrata que pagaría una fortuna por ella. Dámela y te haré rico. Ni hagas preguntas."
+                },
+                'bael': {
+                    name: "Bael, el Traficante",
+                    img: "assets/Mercaderes/Bael.png",
+                    quote: "Oye... psst. Mira lo que traje de la frontera. Dicen que es inestable, pero a ti te la dejo gratis. Pruébala... sé que volverás por más."
+                },
+                'vito': {
+                    name: "Don Vito, el Contratista",
+                    img: "assets/Mercaderes/Don_Vito.png",
+                    quote: "Tengo un pedido urgente. Cultiva esta especie en menos de 4 horas. Si cumples, la paga es enorme. Si me fallas... me quedaré con el 30% de tus ahorros."
+                }
+            },
+
+            show(merchantId) {
+                if (this.isOpen || (window.guideApp && window.guideApp.isOpen)) return; // No solapar con el Granjero
+                
+                const data = this.merchants[merchantId];
+                if (!data) return;
+                this.currentMerchant = merchantId;
+
+                const container = document.getElementById('merchant-container');
+                const bubble = document.getElementById('merchant-bubble');
+                const textEl = document.getElementById('merchant-text');
+                
+                document.getElementById('merchant-character').src = data.img;
+                document.getElementById('merchant-name').innerText = data.name;
+
+                // Configurar acción de aceptar según mercader
+                document.getElementById('merchant-accept-btn').onclick = () => this.accept(merchantId);
+
+                // Deslizar desde la derecha (Quitar translate-x-full, poner translate-x-0)
+                container.classList.remove('translate-x-full');
+                container.classList.add('translate-x-0');
+                this.isOpen = true;
+
+                setTimeout(() => {
+                    bubble.classList.remove('scale-0');
+                    bubble.classList.add('scale-100');
+                    
+                    textEl.textContent = '';
+                    let i = 0;
+                    if(this.typingTimer) clearInterval(this.typingTimer);
+                    
+                    this.typingTimer = setInterval(() => {
+                        textEl.textContent = data.quote.substring(0, i + 1);
+                        i++;
+                        if (i >= data.quote.length) clearInterval(this.typingTimer);
+                    }, 30);
+                }, 400);
+            },
+
+            close() {
+                if (!this.isOpen) return;
+                const container = document.getElementById('merchant-container');
+                const bubble = document.getElementById('merchant-bubble');
+                
+                bubble.classList.remove('scale-100');
+                bubble.classList.add('scale-0');
+                
+                setTimeout(() => {
+                    container.classList.remove('translate-x-0');
+                    container.classList.add('translate-x-full');
+                    this.isOpen = false;
+                    this.currentMerchant = null;
+                }, 200);
+            },
+
+            reject() {
+                this.close();
+                if (window.farmApp) window.farmApp.showFarmAlert("Trato Rechazado", "Has ignorado la oferta del mercader.", "🚫");
+            },
+
+            accept(merchantId) {
+                if (!window.farmApp || !window.farmApp.state) return;
+
+                if (merchantId === 'silas') {
+                    // Lógica de Silas (Mantener igual que ya tienes)
+                    let arsenal = window.farmApp.state.arsenal;
+                    if (!arsenal || arsenal.length === 0) {
+                        alert("Silas: No tienes plantas en tu arsenal que me interesen. Vuelve cuando tengas mercancía de verdad.");
+                        this.close();
+                        return;
+                    }
+                    let bestPlant = arsenal.reduce((prev, current) => ((prev.hp + prev.atk) > (current.hp + current.atk)) ? prev : current);
+                    let basePrice = 5000;
+                    if (window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[bestPlant.plantId]) {
+                        basePrice = window.farmApp.state.dynamicPlants[bestPlant.plantId].price || 5000;
+                    }
+                    let payout = Math.floor(basePrice * 1.8);
+                    window.farmApp.state.seedsBalance += payout;
+                    window.farmApp.state.arsenal = arsenal.filter(p => p.id !== bestPlant.id);
+                    window.farmApp.saveState();
+                    window.farmApp.updateUI();
+                    window.farmApp.showFarmAlert("Venta Ilegal Exitosa", `Silas se llevó a ${bestPlant.name} por ${payout} 🌱`, "💼");
+                    this.close();
+
+                } else if (merchantId === 'bael') {
+                    // Lógica de Bael (Mantener igual que ya tienes)
+                    const premiumSeeds = ['dyn_hidra_del_abismo', 'dyn_dragon', 'dyn_golem'];
+                    const randomSeed = premiumSeeds[Math.floor(Math.random() * premiumSeeds.length)];
+                    if (!window.farmApp.state.inventory[randomSeed]) {
+                        window.farmApp.state.inventory[randomSeed] = { name: 'Semilla Misteriosa', type: 'seed', reqSize: 'big', qty: 0, image: 'assets/Fondos/logo.png' };
+                    }
+                    window.farmApp.state.inventory[randomSeed].qty += 1;
+                    window.farmApp.saveState();
+                    window.farmApp.updateUI();
+                    window.farmApp.showFarmAlert("Muestra Gratis", "Bael deslizó una semilla exótica en tu bolsillo.", "🧪");
+                    this.close();
+
+                } else if (merchantId === 'vito') {
+                    // Don Vito: EN VEZ DE ACEPTAR DIRECTO, ABRIMOS EL MODAL DEL CONTRATO
+                    this.openVitoContractModal();
+                }
+            },
+
+            // ==========================================
+            // NUEVAS FUNCIONES PARA EL CONTRATO Y FIRMA
+            // ==========================================
+            openVitoContractModal() {
+                let randomSeedId = 'dyn_rosa_permafrost'; 
+                let plantName = 'Rosa Permafrost';
+
+                // Seleccionar planta aleatoria
+                if (window.farmApp && window.farmApp.state && window.farmApp.state.dynamicPlants) {
+                    const dynamicKeys = Object.keys(window.farmApp.state.dynamicPlants);
+                    if (dynamicKeys.length > 0) {
+                        randomSeedId = dynamicKeys[Math.floor(Math.random() * dynamicKeys.length)];
+                        plantName = window.farmApp.state.dynamicPlants[randomSeedId].name;
+                    }
+                }
+
+                this.pendingVitoContract = { targetSeed: randomSeedId, plantName: plantName, reward: 35000 };
+
+                // Inyectar datos al HTML
+                const d = new Date();
+                document.getElementById('vito-contract-user').innerText = sessionStorage.getItem('username') || 'Granjero';
+                document.getElementById('vito-contract-plant').innerText = plantName;
+                document.getElementById('vito-contract-reward').innerText = this.pendingVitoContract.reward.toLocaleString() + ' 🌱';
+                document.getElementById('vito-contract-date').innerText = 'Fecha: ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+
+                // Mostrar Modal
+                document.getElementById('vito-contract-modal').classList.remove('hidden');
+                document.getElementById('vito-contract-modal').classList.add('flex');
+
+                this.setupSignaturePad();
+            },
+
+            setupSignaturePad() {
+                const canvas = document.getElementById('signature-pad');
+                // Recrear canvas para limpiar eventListeners previos (Evitar bugs de dibujo)
+                const newCanvas = canvas.cloneNode(true);
+                canvas.parentNode.replaceChild(newCanvas, canvas);
+                
+                const ctx = newCanvas.getContext('2d');
+                ctx.clearRect(0, 0, newCanvas.width, newCanvas.height);
+                ctx.strokeStyle = '#1e3a8a'; // Tinta azul bolígrafo
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                
+                this.isSigned = false;
+                let drawing = false;
+
+                const getPos = (e) => {
+                    const rect = newCanvas.getBoundingClientRect();
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    return {
+                        x: (clientX - rect.left) * (newCanvas.width / rect.width),
+                        y: (clientY - rect.top) * (newCanvas.height / rect.height)
+                    };
+                };
+
+                const startDraw = (e) => {
+                    e.preventDefault(); // Evita scroll en táctiles
+                    drawing = true;
+                    this.isSigned = true;
+                    const pos = getPos(e);
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x, pos.y);
+                };
+
+                const draw = (e) => {
+                    if (!drawing) return;
+                    e.preventDefault();
+                    const pos = getPos(e);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+                };
+
+                const stopDraw = (e) => {
+                    if (!drawing) return;
+                    e.preventDefault();
+                    drawing = false;
+                    ctx.closePath();
+                };
+
+                newCanvas.addEventListener('mousedown', startDraw, {passive: false});
+                newCanvas.addEventListener('mousemove', draw, {passive: false});
+                newCanvas.addEventListener('mouseup', stopDraw);
+                newCanvas.addEventListener('mouseout', stopDraw);
+
+                newCanvas.addEventListener('touchstart', startDraw, {passive: false});
+                newCanvas.addEventListener('touchmove', draw, {passive: false});
+                newCanvas.addEventListener('touchend', stopDraw);
+                newCanvas.addEventListener('touchcancel', stopDraw);
+            },
+
+            clearSignature() {
+                const canvas = document.getElementById('signature-pad');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                this.isSigned = false;
+            },
+
+            cancelVitoContract() {
+                document.getElementById('vito-contract-modal').classList.add('hidden');
+                document.getElementById('vito-contract-modal').classList.remove('flex');
+                this.pendingVitoContract = null;
+                this.close(); // Cierra el overlay del mercader
+                if (window.farmApp) window.farmApp.showFarmAlert("Contrato Rechazado", "Te negaste a firmar. Vito lo recordará.", "🚫");
+            },
+
+            finalizeVitoContract() {
+                if (!this.isSigned) {
+                    alert("¡La firma es obligatoria! Debes firmar el documento en el recuadro para validar el acuerdo.");
+                    return;
+                }
+
+                document.getElementById('vito-contract-modal').classList.add('hidden');
+                document.getElementById('vito-contract-modal').classList.remove('flex');
+
+                // Aplicar la lógica que antes estaba en accept()
+                window.farmApp.state.vitoContract = {
+                    active: true,
+                    targetSeed: this.pendingVitoContract.targetSeed,
+                    expiresAt: Date.now() + (4 * 3600000), // 4 horas
+                    reward: this.pendingVitoContract.reward
+                };
+                
+                window.farmApp.saveState();
+                window.farmApp.updateUI(); 
+                window.farmApp.showFarmAlert("Contrato Firmado", `Acuerdo sellado. Tienes 4 horas exactas para entregar: ${this.pendingVitoContract.plantName}.`, "📜");
+                
+                this.pendingVitoContract = null;
+                this.close(); // Cierra el overlay del mercader
+            }
+        };
+
+
+
+
+        window.completeVitoContract = function() {
+            if (!window.farmApp || !window.farmApp.state || !window.farmApp.state.vitoContract) return;
+            
+            const contract = window.farmApp.state.vitoContract;
+
+            // 1. Validar que el contrato siga activo y no haya expirado
+            if (!contract.active) {
+                window.farmApp.showFarmAlert("Sin Contrato", "No tienes ningún contrato pendiente con Don Vito.", "📜");
+                return;
+            }
+
+            if (Date.now() >= contract.expiresAt) {
+                window.farmApp.showFarmAlert("Tiempo Agotado", "El plazo de 4 horas expiró. Don Vito no acepta entregas tardías.", "⌛");
+                return;
+            }
+            
+            const targetId = contract.targetSeed;
+            let delivered = false;
+
+            // 2. Opción A: Buscar si la planta ya creció y está lista en alguna parcela
+            const readyPlot = window.farmApp.state.plots.find(p => 
+                p.status === 'planted' && 
+                p.isReady && 
+                !p.isSpoiled && 
+                p.plant && 
+                p.plant.id === targetId
+            );
+
+            if (readyPlot) {
+                // Consumir la cosecha de la parcela
+                readyPlot.isReady = false;
+                readyPlot.potUses += 1;
+                if (readyPlot.potUses >= 5) {
+                    readyPlot.status = 'empty';
+                    readyPlot.pot = null;
+                    readyPlot.potUses = 0;
+                } else {
+                    readyPlot.status = 'pot';
+                }
+                readyPlot.plant = null;
+                readyPlot.hasCrow = false;
+                readyPlot.plantedAt = 0;
+                readyPlot.harvestAt = 0;
+                delivered = true;
+            }
+
+            // 3. Opción B: Buscar si la planta madura fue guardada previamente en el Arsenal
+            if (!delivered && window.farmApp.state.arsenal) {
+                const arsIndex = window.farmApp.state.arsenal.findIndex(p => p.plantId === targetId);
+                if (arsIndex !== -1) {
+                    window.farmApp.state.arsenal.splice(arsIndex, 1);
+                    delivered = true;
+                }
+            }
+
+            // 4. Procesar pago o rechazo
+            if (delivered) {
+                contract.active = false;
+                contract.completed = true;
+
+                window.farmApp.state.seedsBalance += contract.reward;
+                window.farmApp.saveState();
+                window.farmApp.updateUI();
+                
+                window.farmApp.showFarmAlert(
+                    "Contrato Cumplido", 
+                    `¡Don Vito inspeccionó la planta y está complacido! Te pagó ${contract.reward.toLocaleString()} 🌱`, 
+                    "💰"
+                );
+            } else {
+                window.farmApp.showFarmAlert(
+                    "Entrega Incompleta", 
+                    "Debes tener la planta lista para cosechar en tu Granja o almacenada en tu Arsenal.", 
+                    "🌱"
+                );
+            }
+        };
 
 
 
@@ -1660,6 +2058,16 @@
 
 
 
+
+
+
+        // Generador de Evento Aleatorio (Ejemplo: 10% de probabilidad cada vez que se recarga la granja)
+        setTimeout(() => {
+            if (Math.random() < 0.15 && !window.merchantApp.isOpen) {
+                const mercs = ['silas', 'bael', 'vito'];
+                window.merchantApp.show(mercs[Math.floor(Math.random() * mercs.length)]);
+            }
+        }, 5000);
 
 
     </script>

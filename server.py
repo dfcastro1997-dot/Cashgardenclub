@@ -362,7 +362,8 @@ def get_season_multiplier(now_ms):
 def process_server_tick(game_state_str, chat_id=None):
     import random
     
-    if not game_state_str: return game_state_str
+    if not game_state_str:
+        return game_state_str
     try:
         state = json.loads(game_state_str)
         now = int(time.time() * 1000)
@@ -391,6 +392,12 @@ def process_server_tick(game_state_str, chat_id=None):
                 if 'notifyFlags' not in plot: 
                     plot['notifyFlags'] = {'crow': False, 'ready': False, 'water': False, 'spoiled': False}
                 flags = plot['notifyFlags']
+
+                # Liberar embargo temporal de parcela si el tiempo expiró
+                if plot.get('embargoEndTime', 0) > 0 and now >= plot.get('embargoEndTime', 0):
+                    plot['embargoEndTime'] = 0
+                    if plot.get('status') == 'embargoed':
+                        plot['status'] = 'empty'
 
                 # Omitir daño a la planta del torneo si aún está "en espera" (waiting)
                 if plot.get('status') in ['tournament_waiting']:
@@ -576,12 +583,31 @@ def process_server_tick(game_state_str, chat_id=None):
                         p['crowArrivedAt'] = now
                         break # Solo propaga a 1 planta sana a la vez
 
+            # --- LÓGICA DE CASTIGO DE DON VITO (CONTRATO EXPIRADO) ---
+            vito_contract = state.get('vitoContract')
+            if vito_contract and vito_contract.get('active'):
+                if now >= vito_contract.get('expiresAt', 0):
+                    current_seeds = state.get('seedsBalance', 0)
+                    penalty_seeds = int(current_seeds * 0.30)
+                    state['seedsBalance'] = max(0, current_seeds - penalty_seeds)
+                    
+                    vito_contract['active'] = False
+                    vito_contract['failed'] = True
+                    
+                    penalty_msg = f"⚖️ Don Vito ha embargado {penalty_seeds:,} 🌱 de tu cuenta por no cumplir el contrato en el plazo establecido de 4 horas."
+                    state['pending_gift'] = {
+                        "message": penalty_msg,
+                        "items": [{"icon": "📜", "text": f"-{penalty_seeds:,} Semillas (Embargo)"}]
+                    }
+                    
+                    if chat_id:
+                        send_telegram_msg(chat_id, f"💼 Don Vito: 'Se agotó tu tiempo. Te advertí que no juego con los plazos. He confiscado {penalty_seeds:,} 🌱 de tu cuenta por incumplir nuestro acuerdo.'")
+
             state['lastTick'] = now
             return json.dumps(state)
     except Exception as e:
         print("Server tick error:", e)
     return game_state_str
-
 
 @app.route('/')
 def serve_index(): return send_from_directory('.', 'index.html')
