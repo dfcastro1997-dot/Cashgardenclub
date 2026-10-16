@@ -1280,6 +1280,58 @@ window.combatApp = {
             cardImg: 'assets/Tarjetas/TacticasUniversales/Group 575.png'
         },
         { 
+            id: 't_lluvia_espinas', 
+            name: 'Lluvia de Espinas', 
+            cost: 3, 
+            dmg: 45, // Daño base que se aplicará a TODOS
+            type: 'dmg_aoe', 
+            badge: '☄️ AoE', 
+            badgeColor: 'bg-red-700',
+            isBeneficial: false, // Se lanza hacia los enemigos
+            icon: '🌵', 
+            desc: 'Dispara espinas en área. Inflige 45 de daño a TODOS los enemigos vivos.',
+            cardImg: 'assets/Tarjetas/TacticasUniversales/Lluvia.png' // Reemplaza con tu imagen
+        },
+        { 
+            id: 't_polinizacion', 
+            name: 'Polinización Cruzada', 
+            cost: 3, 
+            dmg: 0, 
+            type: 'heal_aoe', 
+            badge: '💚 GLOBAL', 
+            badgeColor: 'bg-emerald-500',
+            isBeneficial: true, 
+            icon: '🌸', 
+            desc: 'Rocía polen curativo. Restaura un 20% de la vida máxima a TODO tu escuadrón.',
+            cardImg: 'assets/Tarjetas/TacticasUniversales/Polinizacion.png'
+        },
+        { 
+            id: 't_feromona', 
+            name: 'Feromona Provocadora', 
+            cost: 1, 
+            dmg: 0, 
+            type: 'taunt', 
+            badge: '🎯 SEÑUELO', 
+            badgeColor: 'bg-pink-600',
+            isBeneficial: true, 
+            icon: '💨', 
+            desc: 'Libera un aroma irresistible. Obliga a los enemigos a concentrar sus ataques en esta planta.',
+            cardImg: 'assets/Tarjetas/TacticasUniversales/Feromona.png'
+        },
+        { 
+            id: 't_drenaje', 
+            name: 'Raíces Drenantes', 
+            cost: 2, 
+            dmg: 40, 
+            type: 'lifesteal', 
+            badge: '🧛 DRENAJE', 
+            badgeColor: 'bg-purple-800',
+            isBeneficial: false, 
+            icon: '🧛', 
+            desc: 'Drena la savia del rival. Causa 40 de daño y cura al usuario la misma cantidad.',
+            cardImg: 'assets/Tarjetas/TacticasUniversales/Drenaje.png'
+        },
+        { 
             id: 't_abono', 
             name: 'Abono Furia Carmesí', 
             cost: 2, 
@@ -2195,6 +2247,12 @@ window.combatApp = {
             return;
         }
 
+        // Evitar el spam: Límite de 1 uso por táctica por ronda
+        if (this.actionQueue.some(a => a.skill.id === tacticId)) {
+            this.setInstruction(`⏳ Solo puedes usar ${t.name} una vez por ronda`, 'warn');
+            return;
+        }
+
         // Segundo toque: se aplica al objetivo más lógico
         if (this.pendingSkill && this.pendingSkill.id === tacticId && this.currentAttackerIdx === plantIdx) {
             const autoIdx = t.id === 't_transfusion' ? this.weakestIdx(this.playerTeam, plantIdx) : plantIdx;
@@ -2217,6 +2275,24 @@ window.combatApp = {
         });
         return best;
     },
+
+
+
+    getSmartTarget(team, isBoss = false) {
+        const alive = team.map((p, idx) => ({ p, idx })).filter(x => x.p.hp > 0);
+        if (alive.length === 0) return -1;
+
+        // 50% de probabilidad de rematar al más débil
+        // 50% de probabilidad de atacar a la planta que más daño ha hecho (Aggro)
+        if (Math.random() < 0.5) {
+            return alive.reduce((prev, curr) => (curr.p.hp < prev.p.hp ? curr : prev)).idx;
+        } else {
+            return alive.reduce((prev, curr) => ((curr.p.aggro || 0) > (prev.p.aggro || 0) ? curr : prev)).idx;
+        }
+    },
+
+
+
 
     isValidAllyTarget(index) {
         const t = this.pendingSkill;
@@ -3319,7 +3395,6 @@ window.combatApp = {
         return actualDamage;
     },
 
-    // Resuelve una acción de cualquiera de los dos bandos ('player' = mis plantas, 'enemy' = rival PvP)
     async resolveAction(action, side) {
         const mine = side === 'player';
         const own = mine ? this.playerTeam : this.enemyTeam;
@@ -3356,32 +3431,34 @@ window.combatApp = {
             attacker._exhaustFresh = true; // no descuenta en el cierre de esta ronda
             this.showFloatingDamage(atkId, '+2 ⚡', 'text-cyan-300');
             this.showFloatingDamage(atkId, '💤 2 rondas', 'text-amber-300');
+            
         } else if (kind === 't_espinas' || kind === 'shield_hp') {
             this.showFx('¡BROTE DE ESPINAS!');
             this.playSound('tactic', 'Escudo Clorofila');
             const shieldAmt = Math.floor(target.maxHp * 0.40);
             target.hasShield = true;
-            target.shieldHp = (target.shieldHp || 0) + shieldAmt;
+            target.shieldHp = Math.min(target.maxHp, (target.shieldHp || 0) + shieldAmt); // Límite al 100% de la vida máxima
             this.showFloatingDamage(tgtId, `🛡️+${shieldAmt}`, 'text-blue-300');
+            
         } else if (kind === 't_abono' || kind === 'buff') {
             this.showFx('¡FURIA CARMESÍ!');
             this.playSound('tactic', 'Abono Ferocidad');
-            // CORRECCIÓN: Cuesta el 30% de la VIDA MÁXIMA, forzando un sacrificio real.
             const hpCost = Math.floor(target.maxHp * 0.30);
-            target.hp = Math.max(1, target.hp - hpCost); // Puede dejarla en 1 HP, pero el costo fue alto.
+            target.hp = Math.max(1, target.hp - hpCost); // Sacrificio real del 30%
             target.hasBuff = true;
             this.showFloatingDamage(tgtId, `-${hpCost} HP`, 'text-rose-500');
             this.showFloatingDamage(tgtId, 'ATK x2 🔥', 'text-amber-300');
+            
         } else if (kind === 't_baluarte' || kind === 'shield_block' || kind === 'shield') {
             this.showFx('¡BALUARTE!');
             this.playSound('tactic', 'Escudo Clorofila');
             target.hasShield = true;
             target.blockHit = true;
             this.showFloatingDamage(tgtId, '🔰 BLOQUEO', 'text-emerald-300');
+            
         } else if (kind === 't_transfusion' || kind === 'transfer') {
             this.showFx('¡TRANSFUSIÓN!');
             this.playSound('tactic', 'Transfusion');
-            // Cuesta el 30% de la Vida MÁXIMA (Sacrificio real, evita abuso en plantas moribundas)
             const drain = Math.floor(attacker.maxHp * 0.30);
             attacker.hp = Math.max(1, attacker.hp - drain);
             target.hp = Math.min(target.maxHp, target.hp + drain);
@@ -3391,14 +3468,56 @@ window.combatApp = {
                 this.energy = Math.min(this.maxEnergy, this.energy + 1);
                 this.showFloatingDamage(tgtId, '+1 ⚡', 'text-cyan-300');
             }
+            
         } else if (kind === 'heal') {
             this.showFx('¡CURACIÓN!');
             this.playSound('tactic', 'Savia Concentrada');
             const healAmt = Math.floor(target.maxHp * 0.5);
             target.hp = Math.min(target.maxHp, target.hp + healAmt);
             this.showFloatingDamage(tgtId, `+${healAmt}`, 'text-emerald-400');
+
+        // --- NUEVAS TÁCTICAS ---
+        } else if (kind === 't_feromona' || kind === 'taunt') {
+            this.showFx('¡SEÑUELO!');
+            this.playSound('tactic', 'Escudo Clorofila'); 
+            target.aggro = (target.aggro || 0) + 5000;
+            this.showFloatingDamage(tgtId, '🎯 ¡MÍRAME!', 'text-pink-400');
+            
+        } else if (kind === 't_polinizacion' || kind === 'heal_aoe') {
+            this.showFx('¡POLINIZACIÓN!');
+            this.playSound('tactic', 'Savia Concentrada');
+            own.forEach((p, idx) => {
+                if (p.hp > 0) {
+                    const healAmt = Math.floor(p.maxHp * 0.20);
+                    p.hp = Math.min(p.maxHp, p.hp + healAmt);
+                    const allyId = `${ownP}-${idx}`;
+                    this.showFloatingDamage(allyId, `+${healAmt}`, 'text-emerald-400');
+                }
+            });
+
+        } else if (kind === 't_lluvia_espinas' || kind === 'dmg_aoe') {
+            this.showFx('¡LLUVIA DE ESPINAS!');
+            this.playSound('attack'); 
+            this.shakeScreen();
+            opp.forEach((e, idx) => {
+                if (e.hp > 0) {
+                    const enemyId = `${oppP}-${idx}`;
+                    const dealt = this.applyHit(e, enemyId, skill.dmg, mine ? 'text-red-500' : 'text-rose-500', { hits: 3, size: 'text-2xl sm:text-3xl', screenShake: false });
+                    if (dealt > 0) this.burstAt(enemyId, 'aire', '#f87171', 4);
+                }
+            });
+
+        } else if (kind === 't_drenaje' || kind === 'lifesteal') {
+            this.showFx('¡DRENAJE!');
+            this.playSound('attack');
+            const dealt = this.applyHit(target, tgtId, skill.dmg, mine ? 'text-purple-500' : 'text-purple-400', { hits: 1, size: 'text-3xl sm:text-4xl' });
+            if (dealt > 0) {
+                attacker.hp = Math.min(attacker.maxHp, attacker.hp + dealt);
+                this.showFloatingDamage(atkId, `+${dealt}`, 'text-emerald-400');
+            }
+            
+        // --- ATAQUES OFENSIVOS ESTÁNDAR ---
         } else {
-            // ATAQUE OFENSIVO: los de Nivel IV/V tienen cinemática propia
             const tier = this.getSkillTier(skill);
             const themeKey = skill.catKey || attacker.category || 'primordial';
             const color = skill.catColor || attacker.catColor || '#f59e0b';
@@ -3406,6 +3525,7 @@ window.combatApp = {
             const style = this.ATTACK_STYLES[lvl];
             const theme = this.FX_THEMES[themeKey] || this.FX_THEMES.primordial;
             const ctx = { atkId, tgtId, skill, themeKey, color, theme, icon: skill.icon || theme.p[0] };
+            
             if (tier) {
                 await this.playCinematic({
                     tier, side: ownP, title: skill.name, themeKey, color,
@@ -3418,22 +3538,27 @@ window.combatApp = {
             } else {
                 this.showFx(skill.name || '¡ATAQUE!');
             }
+            
             this.playSound('attack');
             await this.animateAttackByLevel(lvl, ctx);
             if (this.combatEnded) return;
+            
             if (lvl >= 3) this.playSound('attack');
+            
             let dmg = skill.dmg || 0;
             if (attacker.hasBuff) { dmg *= 2; attacker.hasBuff = false; }
+            
             const dealt = this.applyHit(target, tgtId, dmg, mine ? 'text-red-500' : 'text-rose-500', {
                 hits: style.hits, size: style.size, screenShake: lvl >= 2
             });
+            
             this.impactByLevel(lvl, ctx, dealt);
             if (dealt > 0 && mine) this.bumpCombo();
 
-            // SLOW-MOTION Y ZOOM CINEMATOGRÁFICO EN GOLPE FINAL
             const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
             const isBossCrow = target.name && target.name.toLowerCase().includes('alfa') && target.hp <= 0;
             const isLastEnemy = mine && aliveEnemies.length === 0;
+            
             if (dealt > 0 && (isLastEnemy || isBossCrow)) {
                 await this.triggerFinisherCinematic(tgtId, target);
             }
@@ -3445,7 +3570,7 @@ window.combatApp = {
         this.actingUnit = null;
         this.updateUI();
         await this.sleep(700);
-    },
+    }
 
     tickExhaustion() {
         this.playerTeam.forEach(p => {
@@ -3533,7 +3658,8 @@ window.combatApp = {
                 const enemy = this.enemyTeam[i];
                 if (enemy.hp <= 0) continue;
 
-                const tIdx = this.weakestIdx(this.playerTeam);
+                // La IA ahora toma decisiones tácticas en base a la amenaza (Aggro) y la debilidad
+                const tIdx = this.getSmartTarget(this.playerTeam);
                 if (tIdx === -1) break;
                 
                 // Seleccionar skill al azar (preferencia por costo bajo para no complicar la IA de energía)
