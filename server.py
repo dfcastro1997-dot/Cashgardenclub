@@ -1999,15 +1999,59 @@ def broadcast_matchmaking_count():
     socketio.emit('matchmaking_count', {'count': count})
 
 def init_daily_tree(cur, date_str):
+    import random
+    
     cur.execute("SELECT COUNT(id) as c FROM users WHERE balance > 0 OR game_state IS NOT NULL")
     active_users = max(1, cur.fetchone()['c'])
     daily_goal = active_users * 15000  
     
     current_day = datetime.now(timezone.utc).weekday()
-    cur.execute("SELECT vip_prizes_json, milestones_json FROM tree_config WHERE id = %s", (current_day,))
-    conf = cur.fetchone()
-    chosen_pool = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
     
+    # 1. Obtener plantas con sus estadísticas excluyendo las exclusivas de referidos
+    cur.execute("SELECT id, price, hp, atk FROM dynamic_plants WHERE name NOT IN ('Drosera Pegajosa', 'Nepenthes Ácida', 'Venus Trituradora', 'Hidra del Abismo')")
+    all_plants = cur.fetchall()
+    
+    powerful_plants = []
+    basic_plants = []
+    
+    # 2. Clasificación Inteligente
+    for p in all_plants:
+        # Es poderosa si cuesta 25k+ semillas, tiene 200+ HP, o 90+ Ataque
+        if (p.get('price') and p['price'] >= 25000) or (p.get('hp') and p['hp'] >= 200) or (p.get('atk') and p['atk'] >= 90):
+            powerful_plants.append(p['id'])
+        else:
+            basic_plants.append(p['id'])
+            
+    # Respaldo por si no hay plantas poderosas creadas aún
+    if not powerful_plants and basic_plants:
+        powerful_plants = basic_plants
+        
+    tools = ['tool_pot_small', 'tool_water']
+    # Pool básico con mayor probabilidad (doble peso) de entregar herramientas
+    basic_pool = basic_plants + tools + tools 
+    if not basic_pool:
+        basic_pool = tools
+
+    # 3. Generar Premios VIP (Ranking)
+    # El 1er Lugar asegura 1 Planta Poderosa + un botín básico extra.
+    vip_prizes = [
+        {"rank": 1, "items": [{"id": random.choice(powerful_plants) if powerful_plants else random.choice(tools), "qty": 1}, {"id": random.choice(basic_pool), "qty": random.randint(5, 15)}]},
+        {"rank": 2, "items": [{"id": random.choice(basic_pool), "qty": random.randint(3, 8)}, {"id": random.choice(tools), "qty": random.randint(5, 10)}]},
+        {"rank": 3, "items": [{"id": random.choice(basic_pool), "qty": random.randint(2, 5)}, {"id": random.choice(tools), "qty": random.randint(3, 8)}]}
+    ]
+
+    # 4. Generar Hitos Comunitarios (Enfocado en insumos y plantas básicas)
+    milestones = [
+        {"pct": 25, "id": random.choice(tools), "qty": random.randint(3, 6)},
+        {"pct": 50, "id": random.choice(tools), "qty": random.randint(6, 12)},
+        {"pct": 75, "id": random.choice(basic_plants) if basic_plants else random.choice(tools), "qty": random.randint(1, 3)},
+        {"pct": 100, "id": random.choice(basic_plants) if basic_plants else random.choice(tools), "qty": random.randint(2, 5)}
+    ]
+    
+    # 5. Actualizar la configuración del día actual
+    cur.execute("UPDATE tree_config SET vip_prizes_json = %s, milestones_json = %s WHERE id = %s", (json.dumps(vip_prizes), json.dumps(milestones), current_day))
+    
+    # 6. Configurar nombres e iconos para inyectar al estado
     items_ref = {
         'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿'),
         'tool_scarecrow': ('Espantapájaros', '🦉')
@@ -2016,12 +2060,12 @@ def init_daily_tree(cur, date_str):
     for dp in cur.fetchall():
         items_ref[dp['id']] = (dp['name'], '✨')
 
-    for m in chosen_pool:
+    for m in milestones:
         name, icon = items_ref.get(m['id'], ('Objeto', '📦'))
         m['name'] = f"{m['qty']}x {name}"
         m['icon'] = icon
 
-    cur.execute("INSERT INTO tree_state (date_str, daily_goal, rewards_json, status) VALUES (%s, %s, %s, 'active') ON CONFLICT DO NOTHING", (date_str, daily_goal, json.dumps(chosen_pool)))
+    cur.execute("INSERT INTO tree_state (date_str, daily_goal, rewards_json, status) VALUES (%s, %s, %s, 'active') ON CONFLICT DO NOTHING", (date_str, daily_goal, json.dumps(milestones)))
 
 @app.route('/api/tree', methods=['GET'])
 def get_tree_state():
