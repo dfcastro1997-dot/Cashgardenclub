@@ -1702,15 +1702,15 @@ def admin_tree_control():
     cur = conn.cursor()
     
     if action == 'reset':
-        # CORRECCIÓN: Ahora también resetea el donation_count a 0
-        cur.execute("UPDATE tree_state SET total_donated = 0, donation_count = 0, status = 'active' WHERE date_str = %s", (date_str,))
+        # NUEVO: Borramos los rastros de hoy y forzamos la regeneración inteligente
+        cur.execute("DELETE FROM tree_state WHERE date_str = %s", (date_str,))
         cur.execute("DELETE FROM tree_donations WHERE date_str = %s", (date_str,))
-        msg = "El Árbol de la Vida ha sido reseteado a 0."
+        init_daily_tree(cur, date_str)
+        msg = "El Árbol ha sido reseteado y se autogeneraron nuevos premios inteligentes."
     elif action == 'add':
         cur.execute("UPDATE tree_state SET total_donated = total_donated + %s WHERE date_str = %s", (amount, date_str))
         msg = f"Se inyectaron {amount:,} semillas al Árbol de la Vida exitosamente."
         
-        # Opcional: Re-evaluar si llegó a la meta con esta inyección (simplificado)
         cur.execute("SELECT id, total_donated, daily_goal FROM tree_state WHERE date_str = %s", (date_str,))
         tree = cur.fetchone()
         if tree and tree['total_donated'] >= tree['daily_goal']:
@@ -2002,7 +2002,8 @@ def init_daily_tree(cur, date_str):
     import random
     
     cur.execute("SELECT COUNT(id) as c FROM users WHERE balance > 0 OR game_state IS NOT NULL")
-    active_users = max(1, cur.fetchone()['c'])
+    row = cur.fetchone()
+    active_users = max(1, row['c'] if row else 1)
     daily_goal = active_users * 15000  
     
     current_day = datetime.now(timezone.utc).weekday()
@@ -2051,21 +2052,9 @@ def init_daily_tree(cur, date_str):
     # 5. Actualizar la configuración del día actual
     cur.execute("UPDATE tree_config SET vip_prizes_json = %s, milestones_json = %s WHERE id = %s", (json.dumps(vip_prizes), json.dumps(milestones), current_day))
     
-    # 6. Configurar nombres e iconos para inyectar al estado
-    items_ref = {
-        'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿'),
-        'tool_scarecrow': ('Espantapájaros', '🦉')
-    }
-    cur.execute("SELECT id, name FROM dynamic_plants")
-    for dp in cur.fetchall():
-        items_ref[dp['id']] = (dp['name'], '✨')
-
-    for m in milestones:
-        name, icon = items_ref.get(m['id'], ('Objeto', '📦'))
-        m['name'] = f"{m['qty']}x {name}"
-        m['icon'] = icon
-
-    cur.execute("INSERT INTO tree_state (date_str, daily_goal, rewards_json, status) VALUES (%s, %s, %s, 'active') ON CONFLICT DO NOTHING", (date_str, daily_goal, json.dumps(milestones)))
+    # 6. Borrar el estado viejo si existía y recrearlo
+    cur.execute("DELETE FROM tree_state WHERE date_str = %s", (date_str,))
+    cur.execute("INSERT INTO tree_state (date_str, daily_goal, rewards_json, status) VALUES (%s, %s, %s, 'active')", (date_str, daily_goal, json.dumps(milestones)))
 
 @app.route('/api/tree', methods=['GET'])
 def get_tree_state():
