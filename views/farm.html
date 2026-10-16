@@ -1090,6 +1090,12 @@ if (typeof window.farmApp === 'undefined') {
 
         if (item.is_bot || item.challenger_name.startsWith('Bot ')) {
             sessionStorage.setItem('pve_bot_mode', 'true');
+            sessionStorage.setItem('bot_bet_amount', item.bet || 0);
+            
+            // DESCONTAR LAS SEMILLAS AL ACEPTAR EL RETO DEL BOT
+            window.farmApp.state.seedsBalance -= (item.bet || 0);
+            window.farmApp.saveState();
+
             sessionStorage.removeItem('pvp_match_id');
             sessionStorage.removeItem('pvp_bet_amount');
             
@@ -1146,6 +1152,7 @@ if (typeof window.farmApp === 'undefined') {
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
         sessionStorage.removeItem('pve_bot_mode'); // Asegura que se limpien banderas de Bot
+        sessionStorage.removeItem('bot_bet_amount');
         document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
         
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
@@ -1163,6 +1170,7 @@ if (typeof window.farmApp === 'undefined') {
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
         sessionStorage.setItem('pve_bot_mode', 'true'); // Marca que vamos contra Bot
+        sessionStorage.setItem('bot_bet_amount', '0');
         document.getElementById('duelo-choice-modal').classList.replace('flex', 'hidden');
         
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
@@ -4217,6 +4225,8 @@ if (typeof window.farmApp === 'undefined') {
             if (isPvP) {
                 const bet = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
                 totalReward = bet * 2; 
+            } else if (isBotMode && botBetAmount > 0) {
+                totalReward = botBetAmount * 2;
             } else if (!isTourney) {
                 // Calcular squadValue para reflejar el mismo rango de recompensas que combat.html
                 let squadValue = 0;
@@ -4261,9 +4271,9 @@ if (typeof window.farmApp === 'undefined') {
                     rewardText.className = `text-xl md:text-2xl font-black text-cg_gold`;
                     rewardText.innerText = `Clasificatoria`;
                 } else {
-                    let rewardColor = isPvP ? 'text-cg_gold' : (totalReward >= 6000 ? 'text-red-500' : (totalReward >= 4000 ? 'text-orange-500' : 'text-green-600'));
+                    let rewardColor = (isPvP || (isBotMode && botBetAmount > 0)) ? 'text-cg_gold' : (totalReward >= 6000 ? 'text-red-500' : (totalReward >= 4000 ? 'text-orange-500' : 'text-green-600'));
                     rewardText.className = `text-xl md:text-2xl font-black ${rewardColor}`;
-                    rewardText.innerText = isPvP ? `+${totalReward.toLocaleString()} 🌱` : `Hasta +${totalReward.toLocaleString()} 🌱`;
+                    rewardText.innerText = (isPvP || (isBotMode && botBetAmount > 0)) ? `+${totalReward.toLocaleString()} 🌱` : `Hasta +${totalReward.toLocaleString()} 🌱`;
                 }
 
                 btn.disabled = false;

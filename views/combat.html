@@ -3804,11 +3804,15 @@ window.combatApp = {
         // ===== REEMPLAZAR DENTRO DE endCombat(victory) =====
         if (victory) {
             const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
+            const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true';
+            const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0;
             let grossReward = 0;
             let survivalBonus = 0;
 
             if (this.isPvP) {
                 grossReward = betAmount * 2;
+            } else if (isBotMode && botBetAmount > 0) {
+                grossReward = botBetAmount * 2;
             } else {
                 // Cálculo de HP restante de todo el equipo (incluyendo reservas)
                 let currentHpSum = 0;
@@ -3843,20 +3847,20 @@ window.combatApp = {
                 window.farmApp.state.arsenal.push({
                     id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: Math.max(1, pt.hp), maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                    hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef, // <-- Ahora siempre vuelven con Full Vida tras ganar
                     wins: pt.wins + 1, lastRecover: Date.now()
                 });
             });
 
             const sub = document.getElementById('combat-victory-sub');
-            if (sub) sub.innerText = this.isPvP ? 'Has vencido a tu rival.' : `Los cuervos han sido derrotados en ${this.turn} ronda(s).`;
+            if (sub) sub.innerText = this.isPvP ? 'Has vencido a tu rival.' : `Los cuervos/rivales han sido derrotados en ${this.turn} ronda(s).`;
 
             const invoiceBox = document.getElementById('combat-victory-invoice');
             if (grossReward > 0) {
                 if (invoiceBox) invoiceBox.classList.remove('hidden');
                 
                 const grossEl = document.getElementById('combat-victory-gross');
-                if (!this.isPvP) {
+                if (!this.isPvP && !(isBotMode && botBetAmount > 0)) {
                     grossEl.innerHTML = `<span class="text-[9px] text-gray-400 font-normal mr-1 border border-gray-600 px-1 rounded shadow-inner">Base: ${this.pveBaseReward} + Bono HP: ${survivalBonus}</span> ${grossReward.toLocaleString()} 🌱`;
                 } else {
                     grossEl.innerText = `${grossReward.toLocaleString()} 🌱`;
