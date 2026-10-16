@@ -988,7 +988,28 @@ def buy_seeds():
     cur2.close(); conn2.close()
 
 
-
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS tree_config (
+            id INTEGER PRIMARY KEY,
+            vip_prizes_json TEXT,
+            milestones_json TEXT
+        );
+    ''')
+    cur.execute("SELECT COUNT(id) as c FROM tree_config")
+    if cur.fetchone()['c'] == 0:
+        default_vip = json.dumps([
+            {"rank": 1, "items": [{"id": "tool_pot_small", "qty": 10}]},
+            {"rank": 2, "items": [{"id": "tool_pot_small", "qty": 5}]},
+            {"rank": 3, "items": [{"id": "tool_water", "qty": 10}]}
+        ])
+        default_miles = json.dumps([
+            {"pct": 25, "id": "tool_pot_small", "qty": 5},
+            {"pct": 50, "id": "tool_water", "qty": 10},
+            {"pct": 75, "id": "tool_water", "qty": 15},
+            {"pct": 100, "id": "tool_pot_small", "qty": 10}
+        ])
+        for i in range(7):
+            cur.execute("INSERT INTO tree_config (id, vip_prizes_json, milestones_json) VALUES (%s, %s, %s)", (i, default_vip, default_miles))
 
     
     conn = get_db_connection()
@@ -1351,24 +1372,28 @@ def admin_tree_config():
         if data.get('admin_token') != ADMIN_SECRET: return jsonify({"error": "No autorizado"}), 403
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("UPDATE tree_config SET vip_prizes_json = %s, milestones_json = %s WHERE id = 1", (json.dumps(data['vip_prizes']), json.dumps(data['milestones'])))
+        configs = data.get('configs', [])
+        for i, conf in enumerate(configs):
+            cur.execute("UPDATE tree_config SET vip_prizes_json = %s, milestones_json = %s WHERE id = %s", 
+                        (json.dumps(conf.get('vip_prizes', [])), json.dumps(conf.get('milestones', [])), i))
         conn.commit()
         cur.close(); conn.close()
-        return jsonify({"message": "Configuración del Árbol guardada exitosamente."})
+        return jsonify({"message": "Configuración del Árbol de los 7 días guardada exitosamente."})
     else:
         admin_token = request.args.get('admin_token')
         if admin_token != ADMIN_SECRET: return jsonify({"error": "No autorizado"}), 403
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM tree_config WHERE id = 1")
-        conf = cur.fetchone()
+        cur.execute("SELECT * FROM tree_config ORDER BY id ASC")
+        rows = cur.fetchall()
         cur.close(); conn.close()
-        if conf:
-            return jsonify({
+        configs = []
+        for conf in rows:
+            configs.append({
                 "vip_prizes": json.loads(conf['vip_prizes_json']) if conf['vip_prizes_json'] else [],
                 "milestones": json.loads(conf['milestones_json']) if conf['milestones_json'] else []
             })
-        return jsonify({"vip_prizes": [], "milestones": []})
+        return jsonify({"configs": configs})
 
 
 # --- NUEVA RUTA PARA GUARDAR Y LEER LOS GUARDIANES DEL TORNEO ---
@@ -1978,7 +2003,8 @@ def init_daily_tree(cur, date_str):
     active_users = max(1, cur.fetchone()['c'])
     daily_goal = active_users * 15000  
     
-    cur.execute("SELECT milestones_json FROM tree_config WHERE id = 1")
+    current_day = datetime.now(timezone.utc).weekday()
+    cur.execute("SELECT vip_prizes_json, milestones_json FROM tree_config WHERE id = %s", (current_day,))
     conf = cur.fetchone()
     chosen_pool = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
     
@@ -2021,8 +2047,8 @@ def get_tree_state():
         u_don = cur.fetchone()
         if u_don: user_donation = u_don['amount']
 
-    # --- FORZAR LECTURA DE CONFIGURACIÓN DEL ADMIN PARA REFLEJO INMEDIATO ---
-    cur.execute("SELECT vip_prizes_json, milestones_json FROM tree_config WHERE id = 1")
+    current_day = datetime.now(timezone.utc).weekday()
+    cur.execute("SELECT vip_prizes_json, milestones_json FROM tree_config WHERE id = %s", (current_day,))
     conf = cur.fetchone()
     vip_prizes = json.loads(conf['vip_prizes_json']) if conf and conf['vip_prizes_json'] else []
     milestones = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
@@ -2146,8 +2172,8 @@ def donate_tree():
             cur.execute("SELECT user_id, username, amount FROM tree_donations WHERE date_str = %s ORDER BY amount DESC", (date_str,))
             donators = cur.fetchall()
             
-            # --- LEER LA CONFIGURACIÓN DEL ADMIN (VIP Y MILESTONES) ---
-            cur.execute("SELECT vip_prizes_json, milestones_json FROM tree_config WHERE id = 1")
+            current_day = datetime.now(timezone.utc).weekday()
+            cur.execute("SELECT vip_prizes_json, milestones_json FROM tree_config WHERE id = %s", (current_day,))
             conf = cur.fetchone()
             vip_prizes = json.loads(conf['vip_prizes_json']) if conf and conf['vip_prizes_json'] else []
             milestones = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []

@@ -440,7 +440,17 @@
                 <div id="view-arbol" class="admin-view hidden animate-fade-in max-w-5xl mx-auto w-full">
                     <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 sm:p-8">
                         <h2 class="text-2xl font-black text-cg_navy mb-1 flex items-center gap-2">🌲 Configuración del Árbol de la Vida</h2>
-                        <p class="text-xs text-gray-500 mb-6 font-medium border-b border-gray-100 pb-4">Define los premios VIP del ranking diario y las fases de botín comunitarias (Los cambios aplicarán para el siguiente ciclo si el actual ya tiene donadores).</p>
+                        <p class="text-xs text-gray-500 mb-4 font-medium">Define los premios VIP del ranking diario y las fases de botín comunitarias para cada día de la semana.</p>
+                        
+                        <div class="flex gap-2 overflow-x-auto hide-scrollbar mb-6 border-b border-gray-200 pb-3" id="tree-tabs">
+                            <button onclick="switchTreeDay(0)" id="tab-day-0" class="px-4 py-2 font-black rounded-lg bg-cg_blue text-white shadow-sm transition-colors text-xs uppercase tracking-widest shrink-0">Lunes</button>
+                            <button onclick="switchTreeDay(1)" id="tab-day-1" class="px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0">Martes</button>
+                            <button onclick="switchTreeDay(2)" id="tab-day-2" class="px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0">Miércoles</button>
+                            <button onclick="switchTreeDay(3)" id="tab-day-3" class="px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0">Jueves</button>
+                            <button onclick="switchTreeDay(4)" id="tab-day-4" class="px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0">Viernes</button>
+                            <button onclick="switchTreeDay(5)" id="tab-day-5" class="px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0">Sábado</button>
+                            <button onclick="switchTreeDay(6)" id="tab-day-6" class="px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0">Domingo</button>
+                        </div>
                         
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <!-- Beneficios VIP -->
@@ -1415,6 +1425,88 @@
             }
         }
 
+        let globalTreeConfigs = Array(7).fill().map(() => ({ vip_prizes: [], milestones: [] }));
+        let currentTreeDay = new Date().getUTCDay(); 
+        currentTreeDay = currentTreeDay === 0 ? 6 : currentTreeDay - 1; // Ajuste a formato Lunes=0 a Domingo=6
+
+        function switchTreeDay(day) {
+            saveCurrentFormToMemory();
+            currentTreeDay = day;
+            for(let i=0; i<7; i++) {
+                const tab = document.getElementById(`tab-day-${i}`);
+                if (i === day) tab.className = "px-4 py-2 font-black rounded-lg bg-cg_blue text-white shadow-sm transition-colors text-xs uppercase tracking-widest shrink-0";
+                else tab.className = "px-4 py-2 font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs uppercase tracking-widest shrink-0";
+            }
+            loadMemoryToForm();
+        }
+
+        function saveCurrentFormToMemory() {
+            const getVipItems = (rank) => {
+                const items = [];
+                const id1 = document.getElementById(`vip-${rank}-1-id`).value;
+                const qty1 = parseInt(document.getElementById(`vip-${rank}-1-qty`).value);
+                if(id1 && id1 !== 'none' && !isNaN(qty1)) items.push({ id: id1, qty: qty1 });
+                
+                const id2 = document.getElementById(`vip-${rank}-2-id`).value;
+                const qty2 = parseInt(document.getElementById(`vip-${rank}-2-qty`).value);
+                if(id2 && id2 !== 'none' && !isNaN(qty2)) items.push({ id: id2, qty: qty2 });
+                return items;
+            };
+            globalTreeConfigs[currentTreeDay] = {
+                vip_prizes: [
+                    { rank: 1, items: getVipItems(1) },
+                    { rank: 2, items: getVipItems(2) },
+                    { rank: 3, items: getVipItems(3) }
+                ],
+                milestones: [
+                    { pct: 25, id: document.getElementById('mile-25-id').value, qty: parseInt(document.getElementById('mile-25-qty').value) || 1 },
+                    { pct: 50, id: document.getElementById('mile-50-id').value, qty: parseInt(document.getElementById('mile-50-qty').value) || 1 },
+                    { pct: 75, id: document.getElementById('mile-75-id').value, qty: parseInt(document.getElementById('mile-75-qty').value) || 1 },
+                    { pct: 100, id: document.getElementById('mile-100-id').value, qty: parseInt(document.getElementById('mile-100-qty').value) || 1 }
+                ]
+            };
+        }
+
+        function setTSValue(id, val, defaultQtyId) {
+            const el = document.getElementById(id);
+            if (el && el.tomselect) el.tomselect.setValue(val || 'none');
+            else if (el) el.value = val || 'none';
+            
+            if (defaultQtyId) {
+                document.getElementById(defaultQtyId).value = val && val !== 'none' ? (document.getElementById(defaultQtyId).value || 1) : 1;
+            }
+        }
+
+        function loadMemoryToForm() {
+            const conf = globalTreeConfigs[currentTreeDay];
+            
+            // Limpiar formulario por defecto
+            [1,2,3].forEach(r => {
+                setTSValue(`vip-${r}-1-id`, 'none', `vip-${r}-1-qty`);
+                setTSValue(`vip-${r}-2-id`, 'none', `vip-${r}-2-qty`);
+            });
+            setTSValue('mile-25-id', 'none', 'mile-25-qty');
+            setTSValue('mile-50-id', 'none', 'mile-50-qty');
+            setTSValue('mile-75-id', 'none', 'mile-75-qty');
+            setTSValue('mile-100-id', 'none', 'mile-100-qty');
+
+            if (conf.vip_prizes && conf.vip_prizes.length >= 3) {
+                [1,2,3].forEach(r => {
+                    const vp = conf.vip_prizes.find(p => p.rank === r);
+                    if (vp && vp.items) {
+                        if(vp.items[0]) { setTSValue(`vip-${r}-1-id`, vp.items[0].id); document.getElementById(`vip-${r}-1-qty`).value = vp.items[0].qty; }
+                        if(vp.items[1]) { setTSValue(`vip-${r}-2-id`, vp.items[1].id); document.getElementById(`vip-${r}-2-qty`).value = vp.items[1].qty; }
+                    }
+                });
+            }
+            if (conf.milestones && conf.milestones.length >= 4) {
+                setTSValue('mile-25-id', conf.milestones[0].id); document.getElementById('mile-25-qty').value = conf.milestones[0].qty;
+                setTSValue('mile-50-id', conf.milestones[1].id); document.getElementById('mile-50-qty').value = conf.milestones[1].qty;
+                setTSValue('mile-75-id', conf.milestones[2].id); document.getElementById('mile-75-qty').value = conf.milestones[2].qty;
+                setTSValue('mile-100-id', conf.milestones[3].id); document.getElementById('mile-100-qty').value = conf.milestones[3].qty;
+            }
+        }
+
         async function loadTreeConfig() {
             const selects = [
                 'vip-1-1-id', 'vip-1-2-id', 
@@ -1434,45 +1526,35 @@
             selects.forEach(id => { 
                 const el = document.getElementById(id);
                 if (el) {
-                    // Si ya existía un autocompletado, lo destruimos para actualizar la lista
                     if (el.tomselect) el.tomselect.destroy();
                     el.innerHTML = optionsHtml; 
                 }
             });
 
+            // 1. INICIALIZAR AUTOCOMPLETADO PRIMERO (para que setValue funcione luego)
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    new TomSelect(el, {
+                        create: false,
+                        maxOptions: null, 
+                        sortField: { field: "text", direction: "asc" }
+                    });
+                }
+            });
+
             try {
-                // Cargar Configuración del Árbol
+                // Cargar Configuración del Árbol (Traer todos los días)
                 const res = await fetch('/api/admin/tree_config?admin_token=' + ADMIN_TOKEN);
                 if (res.ok) {
-                    const conf = await res.json();
-                    if (conf.vip_prizes && conf.vip_prizes.length >= 3) {
-                        const v1 = conf.vip_prizes.find(p=>p.rank===1);
-                        if(v1 && v1.items) {
-                            if(v1.items[0]) { document.getElementById('vip-1-1-id').value = v1.items[0].id; document.getElementById('vip-1-1-qty').value = v1.items[0].qty; }
-                            if(v1.items[1]) { document.getElementById('vip-1-2-id').value = v1.items[1].id; document.getElementById('vip-1-2-qty').value = v1.items[1].qty; }
-                        }
-                        const v2 = conf.vip_prizes.find(p=>p.rank===2);
-                        if(v2 && v2.items) {
-                            if(v2.items[0]) { document.getElementById('vip-2-1-id').value = v2.items[0].id; document.getElementById('vip-2-1-qty').value = v2.items[0].qty; }
-                            if(v2.items[1]) { document.getElementById('vip-2-2-id').value = v2.items[1].id; document.getElementById('vip-2-2-qty').value = v2.items[1].qty; }
-                        }
-                        const v3 = conf.vip_prizes.find(p=>p.rank===3);
-                        if(v3 && v3.items) {
-                            if(v3.items[0]) { document.getElementById('vip-3-1-id').value = v3.items[0].id; document.getElementById('vip-3-1-qty').value = v3.items[0].qty; }
-                            if(v3.items[1]) { document.getElementById('vip-3-2-id').value = v3.items[1].id; document.getElementById('vip-3-2-qty').value = v3.items[1].qty; }
-                        }
-                    }
-                    if (conf.milestones && conf.milestones.length >= 4) {
-                        document.getElementById('mile-25-id').value = conf.milestones[0].id;
-                        document.getElementById('mile-25-qty').value = conf.milestones[0].qty;
-                        document.getElementById('mile-50-id').value = conf.milestones[1].id;
-                        document.getElementById('mile-50-qty').value = conf.milestones[1].qty;
-                        document.getElementById('mile-75-id').value = conf.milestones[2].id;
-                        document.getElementById('mile-75-qty').value = conf.milestones[2].qty;
-                        document.getElementById('mile-100-id').value = conf.milestones[3].id;
-                        document.getElementById('mile-100-qty').value = conf.milestones[3].qty;
+                    const data = await res.json();
+                    if (data.configs && data.configs.length === 7) {
+                        globalTreeConfigs = data.configs;
                     }
                 }
+                
+                // Mostrar la pestaña del día actual por defecto
+                switchTreeDay(currentTreeDay);
 
                 // Cargar Configuración de Guardianes (Torneos)
                 const tRes = await fetch('/api/admin/tournament_config?admin_token=' + ADMIN_TOKEN);
@@ -1485,47 +1567,15 @@
                     });
                 }
             } catch(e) {}
-
-            // INICIALIZAR AUTOCOMPLETADO
-            selects.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    new TomSelect(el, {
-                        create: false,
-                        maxOptions: null, // Muestra todos los resultados al buscar
-                        sortField: { field: "text", direction: "asc" }
-                    });
-                }
-            });
         }
 
         async function saveTreeConfig() {
-            const getVipItems = (rank) => {
-                const items = [];
-                const id1 = document.getElementById(`vip-${rank}-1-id`).value;
-                const qty1 = parseInt(document.getElementById(`vip-${rank}-1-qty`).value);
-                if(id1 !== 'none' && !isNaN(qty1)) items.push({ id: id1, qty: qty1 });
-                
-                const id2 = document.getElementById(`vip-${rank}-2-id`).value;
-                const qty2 = parseInt(document.getElementById(`vip-${rank}-2-qty`).value);
-                if(id2 !== 'none' && !isNaN(qty2)) items.push({ id: id2, qty: qty2 });
-                
-                return items;
-            };
+            // Guardar en memoria la pestaña actual antes de enviar todo
+            saveCurrentFormToMemory();
 
             const payload = {
                 admin_token: ADMIN_TOKEN,
-                vip_prizes: [
-                    { rank: 1, items: getVipItems(1) },
-                    { rank: 2, items: getVipItems(2) },
-                    { rank: 3, items: getVipItems(3) }
-                ],
-                milestones: [
-                    { pct: 25, id: document.getElementById('mile-25-id').value, qty: parseInt(document.getElementById('mile-25-qty').value) },
-                    { pct: 50, id: document.getElementById('mile-50-id').value, qty: parseInt(document.getElementById('mile-50-qty').value) },
-                    { pct: 75, id: document.getElementById('mile-75-id').value, qty: parseInt(document.getElementById('mile-75-qty').value) },
-                    { pct: 100, id: document.getElementById('mile-100-id').value, qty: parseInt(document.getElementById('mile-100-qty').value) }
-                ]
+                configs: globalTreeConfigs
             };
 
             const tPayload = { admin_token: ADMIN_TOKEN };
