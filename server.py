@@ -1998,6 +1998,8 @@ def broadcast_matchmaking_count():
     count = len(matchmaking_queue['global'])
     socketio.emit('matchmaking_count', {'count': count})
 
+
+
 def init_daily_tree(cur, date_str):
     import random
     
@@ -2008,44 +2010,75 @@ def init_daily_tree(cur, date_str):
     
     current_day = datetime.now(timezone.utc).weekday()
     
-    # 1. Obtener plantas con sus estadísticas excluyendo exclusivas
+    # 1. Obtener plantas excluyendo exclusivas
     cur.execute("SELECT id, price, hp, atk FROM dynamic_plants WHERE name NOT IN ('Drosera Pegajosa', 'Nepenthes Ácida', 'Venus Trituradora', 'Hidra del Abismo')")
     all_plants = cur.fetchall()
     
     powerful_plants = []
-    basic_plants = []
+    mid_plants = []
+    very_basic_plants = []
     
-    # 2. Clasificación Inteligente
+    # 2. Clasificación Ultra Estricta (3 Niveles)
     for p in all_plants:
-        if (p.get('price') and p['price'] >= 25000) or (p.get('hp') and p['hp'] >= 200) or (p.get('atk') and p['atk'] >= 90):
+        price = p.get('price') or 0
+        hp = p.get('hp') or 0
+        atk = p.get('atk') or 0
+        
+        # Poderosas: Muy caras o stats altos (Top 1)
+        if price >= 25000 or hp >= 200 or atk >= 90:
             powerful_plants.append(p['id'])
+        # MUY Básicas: Menos de 2500 semillas o stats muy débiles (Para botines comunitarios)
+        elif price <= 2500 or (price == 0 and hp <= 110 and atk <= 50):
+            very_basic_plants.append(p['id'])
+        # Intermedias: Todo lo que esté en el medio (Top 2)
         else:
-            basic_plants.append(p['id'])
+            mid_plants.append(p['id'])
             
-    if not powerful_plants and basic_plants:
-        powerful_plants = basic_plants
+    # Respaldos en caso de que alguna lista quede vacía según tu catálogo actual
+    if not very_basic_plants:
+        very_basic_plants = mid_plants if mid_plants else ['tool_pot_small']
+    if not mid_plants:
+        mid_plants = very_basic_plants
+    if not powerful_plants:
+        powerful_plants = mid_plants
         
     tools = ['tool_pot_small', 'tool_water']
-    basic_pool = basic_plants + tools + tools 
-    if not basic_pool:
-        basic_pool = tools
-
-    # 3. Generar Premios VIP
-    vip_prizes = [
-        {"rank": 1, "items": [{"id": random.choice(powerful_plants) if powerful_plants else random.choice(tools), "qty": 1}, {"id": random.choice(basic_pool), "qty": random.randint(5, 15)}]},
-        {"rank": 2, "items": [{"id": random.choice(basic_pool), "qty": random.randint(3, 8)}, {"id": random.choice(tools), "qty": random.randint(5, 10)}]},
-        {"rank": 3, "items": [{"id": random.choice(basic_pool), "qty": random.randint(2, 5)}, {"id": random.choice(tools), "qty": random.randint(3, 8)}]}
-    ]
-
-    # 4. Generar Hitos Comunitarios
-    milestones = [
-        {"pct": 25, "id": random.choice(tools), "qty": random.randint(3, 6)},
-        {"pct": 50, "id": random.choice(tools), "qty": random.randint(6, 12)},
-        {"pct": 75, "id": random.choice(basic_plants) if basic_plants else random.choice(tools), "qty": random.randint(1, 3)},
-        {"pct": 100, "id": random.choice(basic_plants) if basic_plants else random.choice(tools), "qty": random.randint(2, 5)}
-    ]
     
-    # 5. Inserción forzada (UPSERT) para evitar errores si el día no existe
+    # Mezclamos las listas para que sean aleatorias y creamos un sistema para NO REPETIR
+    random.shuffle(powerful_plants)
+    random.shuffle(mid_plants)
+    random.shuffle(very_basic_plants)
+    
+    def get_unique_plant(plant_list):
+        # Saca y elimina la planta de la lista para que no vuelva a salir hoy
+        return plant_list.pop() if len(plant_list) > 0 else random.choice(tools)
+
+    # 3. Generar Premios VIP (Rankings)
+    vip_prizes = [
+        {"rank": 1, "items": [{"id": get_unique_plant(powerful_plants), "qty": 1}, {"id": random.choice(tools), "qty": random.randint(5, 10)}]},
+        {"rank": 2, "items": [{"id": get_unique_plant(mid_plants), "qty": 1}, {"id": random.choice(tools), "qty": random.randint(4, 8)}]},
+        {"rank": 3, "items": [{"id": 'tool_pot_small', "qty": random.randint(3, 5)}, {"id": 'tool_water', "qty": random.randint(5, 10)}]}
+    ]
+
+    # 4. Generar Hitos Comunitarios ("Una que otra planta muy básica, máximo 1 o 2")
+    milestones = []
+    
+    # Fase 25%: Siempre Herramientas
+    milestones.append({"pct": 25, "id": random.choice(tools), "qty": random.randint(3, 6)})
+    
+    # Fase 50%: 50% de probabilidad de dar 1 sola Planta Muy Básica, si no, herramientas
+    if random.random() < 0.5:
+        milestones.append({"pct": 50, "id": get_unique_plant(very_basic_plants), "qty": 1})
+    else:
+        milestones.append({"pct": 50, "id": random.choice(tools), "qty": random.randint(5, 10)})
+        
+    # Fase 75%: Siempre Herramientas
+    milestones.append({"pct": 75, "id": random.choice(tools), "qty": random.randint(8, 12)})
+    
+    # Fase 100%: Siempre 1 o 2 Plantas Muy Básicas (Al llegar a la meta final)
+    milestones.append({"pct": 100, "id": get_unique_plant(very_basic_plants), "qty": random.randint(1, 2)})
+    
+    # 5. Inserción forzada (UPSERT)
     cur.execute("""
         INSERT INTO tree_config (id, vip_prizes_json, milestones_json) 
         VALUES (%s, %s, %s)
@@ -2057,6 +2090,7 @@ def init_daily_tree(cur, date_str):
     # 6. Recrear el estado del día
     cur.execute("DELETE FROM tree_state WHERE date_str = %s", (date_str,))
     cur.execute("INSERT INTO tree_state (date_str, daily_goal, rewards_json, status) VALUES (%s, %s, %s, 'active')", (date_str, daily_goal, json.dumps(milestones)))
+
 
 @app.route('/api/tree', methods=['GET'])
 def get_tree_state():
