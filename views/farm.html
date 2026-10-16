@@ -2685,9 +2685,9 @@ if (typeof window.farmApp === 'undefined') {
                 }
                 const finalEvapRate = baseEvapRate * this.getSeasonData(Date.now()).mult;
                 
-                let exhaustionText = "Ya está en peligro por sequía.";
+                let exhaustionText = `Ya está en peligro por sequía (${minSafe}% o menos).`;
                 if (plot.water > minSafe) {
-                    // Calcula el tiempo hasta llegar al mínimo seguro, no a cero
+                    // Calcula el tiempo restante restando el límite mínimo de humedad (ej. 20%), no cero
                     const hoursLeft = (plot.water - minSafe) / finalEvapRate;
                     const exhaustionTime = new Date(Date.now() + hoursLeft * 3600000);
                     exhaustionText = `a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</strong> llegará al límite de sequía (${minSafe}%).`;

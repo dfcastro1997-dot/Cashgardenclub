@@ -293,6 +293,29 @@ def init_db():
         );
     ''')
 
+
+
+
+
+
+
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS dynamic_plants (
+            id VARCHAR(50) PRIMARY KEY,
+            category VARCHAR(50),
+            name VARCHAR(100),
+            image_url VARCHAR(255),
+            hp INTEGER,
+            atk INTEGER,
+            def INTEGER,
+            price INTEGER,
+            reward INTEGER,
+            grow_time_minutes INTEGER
+        );
+    ''')
+    # AÑADE ESTA LÍNEA PARA CREAR LA COLUMNA FALTANTE:
+    cur.execute("ALTER TABLE dynamic_plants ADD COLUMN IF NOT EXISTS water_evap INTEGER DEFAULT 40;")
+
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_precision NUMERIC(6,3) DEFAULT 0.000;")
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_time NUMERIC(5,2) DEFAULT 0.00;")
     cur.execute("ALTER TABLE tree_state ADD COLUMN IF NOT EXISTS donation_count INTEGER DEFAULT 0;")
@@ -862,13 +885,13 @@ def admin_plants():
             plant_id = 'dyn_' + data['name'].lower().replace(' ', '_')
             
         cur.execute("""
-            INSERT INTO dynamic_plants (id, category, name, image_url, hp, atk, def, price, reward, grow_time_minutes)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO dynamic_plants (id, category, name, image_url, hp, atk, def, price, reward, grow_time_minutes, water_evap)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (id) DO UPDATE SET
             category=EXCLUDED.category, name=EXCLUDED.name, image_url=EXCLUDED.image_url,
             hp=EXCLUDED.hp, atk=EXCLUDED.atk, def=EXCLUDED.def, price=EXCLUDED.price,
-            reward=EXCLUDED.reward, grow_time_minutes=EXCLUDED.grow_time_minutes
-        """, (plant_id, data['category'], data['name'], data['image_url'], int(data['hp']), int(data['atk']), int(data['def']), int(data['price']), int(data['reward']), int(data['grow_time_minutes'])))
+            reward=EXCLUDED.reward, grow_time_minutes=EXCLUDED.grow_time_minutes, water_evap=EXCLUDED.water_evap
+        """, (plant_id, data['category'], data['name'], data['image_url'], int(data['hp']), int(data['atk']), int(data['def']), int(data['price']), int(data['reward']), int(data['grow_time_minutes']), int(data.get('water_evap', 40))))
         conn.commit()
         cur.close(); conn.close()
         return jsonify({"message": "Planta guardada correctamente en el sistema."})
@@ -878,7 +901,6 @@ def admin_plants():
         conn.commit()
         cur.close(); conn.close()
         return jsonify({"message": "Planta eliminada."})
-
 
 
 
