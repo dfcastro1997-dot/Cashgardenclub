@@ -2359,17 +2359,19 @@ if (typeof window.farmApp === 'undefined') {
 
                     // 2. Lógica de Evolución: Semilla (<80%) -> Planta (>=80%)
 
+                    // 2. Lógica de Evolución: Semilla (<80%) -> Planta (>=80%)
+
                     let currentPlantImg = plot.plant && plot.plant.icon ? plot.plant.icon : this.state.images.plant_small;
                     let plantImgClass = "absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md";
                     let plantImgStyle = "transform: translateY(-20%);";
                     let imgOnError = "";
 
                     if (progress < 80) {
-                        currentPlantImg = `assets/Semillas/${plantCategoryName}.png`;
-                        // CORRECCIÓN: Fallback seguro para evitar error 404 de red
-                        imgOnError = `onerror="this.onerror=null; this.src='assets/Fondos/logo.png';"`; 
+                        // FIX: Asignación directa y segura de una imagen existente (Logo) para evitar 404
+                        currentPlantImg = `assets/Fondos/logo.png`;
+                        imgOnError = ``; 
                         
-                        plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md"; 
+                        plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md opacity-70"; 
                         plantImgStyle = "transform: translate(-12%, -35%);"; 
                     }
 

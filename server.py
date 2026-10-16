@@ -2008,7 +2008,7 @@ def init_daily_tree(cur, date_str):
     
     current_day = datetime.now(timezone.utc).weekday()
     
-    # 1. Obtener plantas con sus estadísticas excluyendo las exclusivas de referidos
+    # 1. Obtener plantas con sus estadísticas excluyendo exclusivas
     cur.execute("SELECT id, price, hp, atk FROM dynamic_plants WHERE name NOT IN ('Drosera Pegajosa', 'Nepenthes Ácida', 'Venus Trituradora', 'Hidra del Abismo')")
     all_plants = cur.fetchall()
     
@@ -2017,31 +2017,27 @@ def init_daily_tree(cur, date_str):
     
     # 2. Clasificación Inteligente
     for p in all_plants:
-        # Es poderosa si cuesta 25k+ semillas, tiene 200+ HP, o 90+ Ataque
         if (p.get('price') and p['price'] >= 25000) or (p.get('hp') and p['hp'] >= 200) or (p.get('atk') and p['atk'] >= 90):
             powerful_plants.append(p['id'])
         else:
             basic_plants.append(p['id'])
             
-    # Respaldo por si no hay plantas poderosas creadas aún
     if not powerful_plants and basic_plants:
         powerful_plants = basic_plants
         
     tools = ['tool_pot_small', 'tool_water']
-    # Pool básico con mayor probabilidad (doble peso) de entregar herramientas
     basic_pool = basic_plants + tools + tools 
     if not basic_pool:
         basic_pool = tools
 
-    # 3. Generar Premios VIP (Ranking)
-    # El 1er Lugar asegura 1 Planta Poderosa + un botín básico extra.
+    # 3. Generar Premios VIP
     vip_prizes = [
         {"rank": 1, "items": [{"id": random.choice(powerful_plants) if powerful_plants else random.choice(tools), "qty": 1}, {"id": random.choice(basic_pool), "qty": random.randint(5, 15)}]},
         {"rank": 2, "items": [{"id": random.choice(basic_pool), "qty": random.randint(3, 8)}, {"id": random.choice(tools), "qty": random.randint(5, 10)}]},
         {"rank": 3, "items": [{"id": random.choice(basic_pool), "qty": random.randint(2, 5)}, {"id": random.choice(tools), "qty": random.randint(3, 8)}]}
     ]
 
-    # 4. Generar Hitos Comunitarios (Enfocado en insumos y plantas básicas)
+    # 4. Generar Hitos Comunitarios
     milestones = [
         {"pct": 25, "id": random.choice(tools), "qty": random.randint(3, 6)},
         {"pct": 50, "id": random.choice(tools), "qty": random.randint(6, 12)},
@@ -2049,10 +2045,16 @@ def init_daily_tree(cur, date_str):
         {"pct": 100, "id": random.choice(basic_plants) if basic_plants else random.choice(tools), "qty": random.randint(2, 5)}
     ]
     
-    # 5. Actualizar la configuración del día actual
-    cur.execute("UPDATE tree_config SET vip_prizes_json = %s, milestones_json = %s WHERE id = %s", (json.dumps(vip_prizes), json.dumps(milestones), current_day))
+    # 5. Inserción forzada (UPSERT) para evitar errores si el día no existe
+    cur.execute("""
+        INSERT INTO tree_config (id, vip_prizes_json, milestones_json) 
+        VALUES (%s, %s, %s)
+        ON CONFLICT (id) DO UPDATE SET 
+        vip_prizes_json = EXCLUDED.vip_prizes_json, 
+        milestones_json = EXCLUDED.milestones_json
+    """, (current_day, json.dumps(vip_prizes), json.dumps(milestones)))
     
-    # 6. Borrar el estado viejo si existía y recrearlo
+    # 6. Recrear el estado del día
     cur.execute("DELETE FROM tree_state WHERE date_str = %s", (date_str,))
     cur.execute("INSERT INTO tree_state (date_str, daily_goal, rewards_json, status) VALUES (%s, %s, %s, 'active')", (date_str, daily_goal, json.dumps(milestones)))
 
