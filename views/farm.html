@@ -8,9 +8,8 @@
         </div>
         
         <!-- BOTONES SUPERIORES CON ESPACIO Y DISEÑO INTEGRADO -->
+        <!-- BOTONES SUPERIORES CON ESPACIO Y DISEÑO INTEGRADO -->
         <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto mt-1 sm:mt-0">
-            <!-- Botón Herramientas (Solo Móvil) -->
-            <button onclick="window.farmApp.toggleToolsMobile(true)" ...>🛠</button>
 
             <!-- Botón dinámico de entrega para Don Vito -->
             <div id="vito-contract-banner" class="hidden">
@@ -2681,16 +2680,17 @@ if (typeof window.farmApp === 'undefined') {
                 else if(pid === 'flower_big') { minSafe = 50; maxSafe = 70; }
 
                 let baseEvapRate = 40;
-                if (this.state.dynamicPlants && this.state.dynamicPlants[pid] && this.state.dynamicPlants[pid].water_evap) {
+                if (this.state.dynamicPlants && this.state.dynamicPlants[pid] && this.state.dynamicPlants[pid].water_evap !== undefined && this.state.dynamicPlants[pid].water_evap !== null) {
                     baseEvapRate = this.state.dynamicPlants[pid].water_evap;
                 }
                 const finalEvapRate = baseEvapRate * this.getSeasonData(Date.now()).mult;
                 
-                let exhaustionText = "Ya está seca.";
-                if (plot.water > 0) {
-                    const hoursLeft = plot.water / finalEvapRate;
+                let exhaustionText = "Ya está en peligro por sequía.";
+                if (plot.water > minSafe) {
+                    // Calcula el tiempo hasta llegar al mínimo seguro, no a cero
+                    const hoursLeft = (plot.water - minSafe) / finalEvapRate;
                     const exhaustionTime = new Date(Date.now() + hoursLeft * 3600000);
-                    exhaustionText = `a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</strong> se agotará el agua.`;
+                    exhaustionText = `a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</strong> llegará al límite de sequía (${minSafe}%).`;
                 }
 
                 scoreText = `Consume ${finalEvapRate}% por hora. Por lo tanto, ${exhaustionText}`;
