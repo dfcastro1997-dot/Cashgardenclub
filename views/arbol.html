@@ -300,10 +300,28 @@ window.treeApp = {
         let vipPrizes = data.vip_prizes || [];
         const vipList = document.querySelector('ul.text-amber-900');
         if(vipList && vipPrizes.length >= 3) {
+            
+            // Corrección: Mapeo manual directo a los íconos y nombres si la API no los trae formateados
             const getPrizeStringClean = (rank) => {
-                const prize = vipPrizes.find(p=>p.rank === rank);
-                if(!prize || !prize.items || prize.items.length === 0) return 'Sin premio';
-                return prize.items.map(i => i.name).join(' + ');
+                const prize = vipPrizes.find(p => p.rank === rank);
+                if (!prize || !prize.items || prize.items.length === 0) return 'Sin premio asignado';
+                
+                return prize.items.map(item => {
+                    let name = item.name || '';
+                    if (!name) {
+                        // Respaldo por si falla el mapeo del backend
+                        if (item.id === 'tool_pot_small') name = 'Maceta Pequeña';
+                        else if (item.id === 'tool_water') name = 'Regadera';
+                        else if (item.id === 'tool_scarecrow') name = 'Espantapájaros';
+                        else {
+                            // Buscar en plantas dinámicas
+                            const dyn = this.dynamicPlants.find(dp => dp.id === item.id);
+                            name = dyn ? dyn.name : 'Premio Sorpresa';
+                        }
+                        name = `${item.qty}x ${name}`;
+                    }
+                    return name;
+                }).join(' + ');
             };
             
             vipList.innerHTML = `
@@ -376,14 +394,26 @@ window.treeApp = {
         const msContainer = document.getElementById('milestones-container');
         let html = '';
         data.rewards.forEach(r => {
+            // Corrección: Mapeo de imagen y nombre manual si falló la inyección de Flask
             let imgSrc = this.imgMap[r.id] || 'assets/Fondos/logo.png';
+            let rName = r.name || '';
+            if (!rName) {
+                if (r.id === 'tool_pot_small') rName = `${r.qty}x Maceta Pequeña`;
+                else if (r.id === 'tool_water') rName = `${r.qty}x Regadera`;
+                else if (r.id === 'tool_scarecrow') rName = `${r.qty}x Espantapájaros`;
+                else {
+                    const dyn = this.dynamicPlants.find(dp => dp.id === r.id);
+                    rName = dyn ? `${r.qty}x ${dyn.name}` : `${r.qty}x Premio Especial`;
+                }
+            }
+
             html += `
                 <div class="flex items-center gap-3 relative z-10 bg-white p-2.5 rounded-2xl shadow-sm border border-gray-100 transition-all duration-500 milestone-item w-full">
                     <div class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 flex items-center justify-center shrink-0 z-20 transition-colors duration-500 milestone-circle bg-slate-50 border-slate-200 relative shadow-inner">
                         <span class="text-[10px] md:text-[11px] font-black text-slate-400 milestone-text">${r.pct}%</span>
                     </div>
                     <div class="flex flex-col flex-1 min-w-0">
-                        <span class="text-[10px] md:text-xs font-black text-slate-700 leading-tight truncate">${r.name}</span>
+                        <span class="text-[10px] md:text-xs font-black text-slate-700 leading-tight truncate">${rName}</span>
                     </div>
                     <img src="${imgSrc}" class="w-7 h-7 md:w-8 md:h-8 object-contain shrink-0 drop-shadow-sm transition-transform group-hover:scale-110">
                 </div>
