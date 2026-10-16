@@ -3557,6 +3557,7 @@ window.combatApp = {
 
             const aliveEnemies = this.enemyTeam.filter(e => e.hp > 0);
             const isBossCrow = target.name && target.name.toLowerCase().includes('alfa') && target.hp <= 0;
+            // ... [resto del código de ataques ofensivos estándar] ...
             const isLastEnemy = mine && aliveEnemies.length === 0;
             
             if (dealt > 0 && (isLastEnemy || isBossCrow)) {
@@ -3570,7 +3571,7 @@ window.combatApp = {
         this.actingUnit = null;
         this.updateUI();
         await this.sleep(700);
-    }
+    }, // <--- AÑADE ESTA COMA AQUÍ
 
     tickExhaustion() {
         this.playerTeam.forEach(p => {
