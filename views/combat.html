@@ -3800,36 +3800,34 @@ window.combatApp = {
         if (!window.farmApp.state.arsenal) window.farmApp.state.arsenal = [];
 
         const finalTeam = [...this.playerTeam, ...this.playerReserve];
+        
+        // Variables para los modos
+        const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true';
+        const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0;
 
-        // ===== REEMPLAZAR DENTRO DE endCombat(victory) =====
         if (victory) {
             const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
-            const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true';
-            const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0;
             let grossReward = 0;
             let survivalBonus = 0;
 
             if (this.isPvP) {
                 grossReward = betAmount * 2;
             } else if (isBotMode && botBetAmount > 0) {
-                grossReward = botBetAmount * 2;
+                grossReward = botBetAmount * 2; // Apuesta x2 al ganar el reto del bot
             } else {
-                // Cálculo de HP restante de todo el equipo (incluyendo reservas)
+                // Cálculo de Campaña PvE (HP Restante)
                 let currentHpSum = 0;
                 let maxHpSum = 0;
-                const fullTeam = [...this.playerTeam, ...this.playerReserve];
                 
-                fullTeam.forEach(p => {
+                finalTeam.forEach(p => {
                     if (p.hp > 0) {
                         currentHpSum += p.hp;
                     }
                     maxHpSum += p.maxHp;
                 });
 
-                // Calcula porcentaje de vida sobrante y aplica el bono
                 const hpPercent = maxHpSum > 0 ? (currentHpSum / maxHpSum) : 0;
                 survivalBonus = Math.floor((this.pveMaxBonus || 0) * hpPercent);
-                
                 grossReward = (this.pveBaseReward || 0) + survivalBonus;
             }
 
@@ -3838,7 +3836,6 @@ window.combatApp = {
 
             window.farmApp.state.seedsBalance += netReward;
             if (this.isPvP) {
-                // El servidor ya registró el premio: evitamos que un auto-guardado lo pise
                 window.farmApp.state.skipSeedsSave = true;
                 setTimeout(() => { if (window.syncUserData) window.syncUserData(); }, 1500);
             }
@@ -3847,19 +3844,20 @@ window.combatApp = {
                 window.farmApp.state.arsenal.push({
                     id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef, // <-- Ahora siempre vuelven con Full Vida tras ganar
+                    hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef, // <--- FULL VIDA AL GANAR (pt.maxHp)
                     wins: pt.wins + 1, lastRecover: Date.now()
                 });
             });
 
             const sub = document.getElementById('combat-victory-sub');
-            if (sub) sub.innerText = this.isPvP ? 'Has vencido a tu rival.' : `Los cuervos/rivales han sido derrotados en ${this.turn} ronda(s).`;
+            if (sub) sub.innerText = this.isPvP ? 'Has vencido a tu rival.' : `El oponente ha sido derrotado en ${this.turn} ronda(s).`;
 
             const invoiceBox = document.getElementById('combat-victory-invoice');
             if (grossReward > 0) {
                 if (invoiceBox) invoiceBox.classList.remove('hidden');
                 
                 const grossEl = document.getElementById('combat-victory-gross');
+                // Mostrar solo "Base + Bono" si es modo campaña normal
                 if (!this.isPvP && !(isBotMode && botBetAmount > 0)) {
                     grossEl.innerHTML = `<span class="text-[9px] text-gray-400 font-normal mr-1 border border-gray-600 px-1 rounded shadow-inner">Base: ${this.pveBaseReward} + Bono HP: ${survivalBonus}</span> ${grossReward.toLocaleString()} 🌱`;
                 } else {
@@ -3874,7 +3872,6 @@ window.combatApp = {
 
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
-        // ==============================================================
         } else {
             if (this.isPvP) window.farmApp.state.skipSeedsSave = true;
 
@@ -3882,7 +3879,7 @@ window.combatApp = {
                 window.farmApp.state.arsenal.push({
                     id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: 1, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
+                    hp: 1, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef, // <--- 1 HP AL PERDER
                     wins: pt.wins, lastRecover: Date.now()
                 });
             });
@@ -3891,7 +3888,6 @@ window.combatApp = {
             document.getElementById('combat-defeat-modal').classList.add('flex');
         }
 
-        // Vaciar memoria de combate para prevenir duplicaciones en doble llamado
         this.playerTeam = [];
         this.playerReserve = [];
         this.actionQueue = [];
@@ -3899,6 +3895,7 @@ window.combatApp = {
         if (window.farmApp.saveState) window.farmApp.saveState();
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
+        sessionStorage.removeItem('bot_bet_amount');
     },
 
     confirmFlee() {

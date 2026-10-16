@@ -2359,6 +2359,7 @@ if (typeof window.farmApp === 'undefined') {
                     }
 
                     // 2. Lógica de Evolución: Semilla (<80%) -> Planta (>=80%)
+
                     let currentPlantImg = plot.plant && plot.plant.icon ? plot.plant.icon : this.state.images.plant_small;
                     let plantImgClass = "absolute h-24 sm:h-32 w-auto object-contain z-10 drop-shadow-md";
                     let plantImgStyle = "transform: translateY(-20%);";
@@ -2366,10 +2367,10 @@ if (typeof window.farmApp === 'undefined') {
 
                     if (progress < 80) {
                         currentPlantImg = `assets/Semillas/${plantCategoryName}.png`;
-                        imgOnError = `onerror="this.onerror=null; this.src='assets/Semillas/${plantCategoryName}.jpg';"`;
+                        // CORRECCIÓN: Fallback seguro para evitar error 404 de red
+                        imgOnError = `onerror="this.onerror=null; this.src='assets/Fondos/logo.png';"`; 
                         
                         plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md"; 
-                        // Ajustado: un poco más arriba y un poco más a la izquierda
                         plantImgStyle = "transform: translate(-12%, -35%);"; 
                     }
 
@@ -4220,15 +4221,16 @@ if (typeof window.farmApp === 'undefined') {
             let totalReward = 0;
             const isPvP = !!sessionStorage.getItem('pvp_match_id');
             const isTourney = !!sessionStorage.getItem('pve_tournament_id');
+            // CORRECCIÓN: Declaración de las variables faltantes para los Bots
+            const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true'; 
+            const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0; 
 
-            // ===== REEMPLAZAR DENTRO DE updateTeamBtn() =====
             if (isPvP) {
                 const bet = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
                 totalReward = bet * 2; 
             } else if (isBotMode && botBetAmount > 0) {
-                totalReward = botBetAmount * 2;
+                totalReward = botBetAmount * 2; // Apuesta del bot multiplicada x2
             } else if (!isTourney) {
-                // Calcular squadValue para reflejar el mismo rango de recompensas que combat.html
                 let squadValue = 0;
                 
                 this.state.selectedCombatants.forEach(c => {
@@ -4252,7 +4254,6 @@ if (typeof window.farmApp === 'undefined') {
                     squadValue += (pHp + pAtk + pDef);
                 });
 
-                // Determinar recompensa máxima posible (Base + Bono HP Total)
                 if (squadValue < 500) { totalReward = 500 + 2000; } 
                 else if (squadValue >= 1000) { totalReward = 2000 + 6000; } 
                 else { totalReward = 1000 + 4000; }
@@ -4279,7 +4280,6 @@ if (typeof window.farmApp === 'undefined') {
                 btn.disabled = false;
                 btn.className = "flex-[2] bg-cg_blue hover:bg-cg_navy text-white font-black py-3.5 sm:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-[10px] sm:text-xs";
             } else {
-            // ==============================================================
                 statsBox.classList.add('opacity-50', 'grayscale');
                 rewardText.className = "text-xl md:text-2xl font-black text-gray-500";
                 rewardText.innerText = "+0 🌱";
