@@ -3,10 +3,10 @@
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Torneos y Ligas Competitivas</span>
+                <span class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Casino de Destreza (Skill-Based)</span>
             </div>
-            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Arena de Torneos</h2>
-            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Multiplica tu dinero destruyendo a los guardianes. Participa en eventos gratuitos o ligas Sit & Go.</p>
+            <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Arena de Minijuegos</h2>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Gana dinero real demostrando tu precisión y reflejos. 100% habilidad, 0% azar. El torneo inicia automáticamente al llenarse la sala.</p>
         </div>
     </div>
 
@@ -26,8 +26,6 @@
             
             <!-- Panel de Pozo (Freeroll) -->
             <div class="bg-green-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-green-200 relative z-10 mt-auto shadow-sm text-center">
-                
-                <!-- BANDERIN DE INVERSIÓN MOTIVACIONAL -->
                 <div class="w-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-2.5 mb-3 shadow-md border border-green-400 transform transition-transform hover:scale-105">
                     <span class="block text-xs font-black text-white uppercase tracking-widest drop-shadow-sm">🔥 ¡Entrada 100% Gratis!</span>
                     <span class="block text-[9px] font-black text-green-100 uppercase tracking-widest mt-0.5">Reparte premios cada 2 días 👇</span>
@@ -64,165 +62,102 @@
                 <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
+                <!-- Redirige al modal pre-torneo que ahora explica el minijuego -->
                 <button onclick="openPreTournamentModal(1, 0, '0 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
-                    ¡Entrar Gratis!
+                    ¡Jugar Pachinko!
                 </button>
             </div>
         </div>
 
-        <!-- Liga Intermedia (BLOQUEADA - CON POZO VISIBLE) -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-blue-200 shadow-sm opacity-95 select-none">
-            
-            <!-- OVERLAY PRÓXIMAMENTE -->
-            <div class="absolute inset-0 z-50 bg-white/40 backdrop-blur-[3px] flex flex-col items-center justify-center pointer-events-none">
+        <!-- Liga Intermedia (BLOQUEADA) -->
+        <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-gray-200 shadow-sm opacity-90 select-none">
+            <div class="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
                 <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase mb-12">
                     ¡Próximamente!
                 </div>
             </div>
-
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
-                <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Intermedia</h3>
-                <span class="bg-blue-100 text-blue-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Estándar</span>
+                <h3 class="text-lg md:text-xl font-black text-gray-500">Liga Intermedia</h3>
+                <span class="bg-gray-200 text-gray-500 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Estándar</span>
             </div>
-            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-80">
-                <img src="assets/Herramientas_y_Servicios/T2.png" class="h-full w-auto object-contain" alt="Liga Intermedia">
+            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-60">
+                <img src="assets/Herramientas_y_Servicios/T2.png" class="h-full w-auto object-contain">
             </div>
             
-            <div class="bg-blue-50/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-blue-100 relative z-10 mt-auto text-center shadow-inner">
-                <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    Pozo de Premios Sit & Go
-                </span>
-                <span class="text-2xl md:text-3xl font-black text-blue-500 font-mono tracking-tight">$80,000</span>
-                
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-blue-200/50">
-                    <div class="text-left">
-                        <span class="block text-[8px] text-blue-700 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm">$56,000</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="block text-[8px] text-blue-700 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-blue-600 text-sm">$24,000</span>
-                    </div>
-                </div>
-
-                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-blue-200 flex justify-between items-center">
+            <div class="bg-blue-50/40 rounded-2xl p-4 flex flex-col items-center justify-center border border-blue-100/50 relative z-10 mt-auto text-center shadow-inner">
+                <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">Pozo de Premios Sit & Go</span>
+                <span class="text-2xl md:text-3xl font-black text-blue-400/80 font-mono tracking-tight">$80,000</span>
+                <div class="w-full mt-3 bg-gray-50 rounded-xl p-2 border border-gray-200 flex justify-between items-center">
                     <span class="text-[10px] font-black text-gray-400 uppercase">Cupos Llenos:</span>
                     <span class="text-xs font-black text-gray-400"><span class="text-gray-400 text-base font-mono">0</span> / 10</span>
                 </div>
             </div>
-
             <div class="flex gap-2 relative z-10 mt-3">
-                <button disabled class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
-                    📊
-                </button>
-                <button disabled class="flex-1 bg-gray-200 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">
-                    Entrar: $10k
-                </button>
+                <button disabled class="bg-gray-200 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">📊</button>
+                <button disabled class="flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">No Disponible</button>
             </div>
         </div>
 
-        <!-- Liga Avanzada (BLOQUEADA - CON POZO VISIBLE) -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-orange-200 shadow-sm opacity-95 select-none">
-            
-            <div class="absolute inset-0 z-50 bg-white/40 backdrop-blur-[3px] flex flex-col items-center justify-center pointer-events-none">
+        <!-- Liga Avanzada (BLOQUEADA) -->
+        <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-gray-200 shadow-sm opacity-90 select-none">
+            <div class="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
                 <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase mb-12">
                     ¡Próximamente!
                 </div>
             </div>
-
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
-                <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Avanzada</h3>
-                <span class="bg-orange-100 text-orange-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Pro</span>
+                <h3 class="text-lg md:text-xl font-black text-gray-500">Liga Avanzada</h3>
+                <span class="bg-gray-200 text-gray-500 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Pro</span>
             </div>
-            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-80">
-                <img src="assets/Herramientas_y_Servicios/T3.png" class="h-full w-auto object-contain" alt="Liga Avanzada">
+            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-60">
+                <img src="assets/Herramientas_y_Servicios/T3.png" class="h-full w-auto object-contain">
             </div>
             
-            <div class="bg-orange-50/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-orange-100 relative z-10 mt-auto text-center shadow-inner">
-                <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    Pozo de Premios Sit & Go
-                </span>
-                <span class="text-2xl md:text-3xl font-black text-orange-500 font-mono tracking-tight">$240,000</span>
-                
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-orange-200/50">
-                    <div class="text-left">
-                        <span class="block text-[8px] text-orange-700 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm">$168,000</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="block text-[8px] text-orange-700 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-orange-600 text-sm">$72,000</span>
-                    </div>
-                </div>
-
-                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-orange-200 flex justify-between items-center">
+            <div class="bg-orange-50/40 rounded-2xl p-4 flex flex-col items-center justify-center border border-orange-100/50 relative z-10 mt-auto text-center shadow-inner">
+                <span class="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">Pozo de Premios Sit & Go</span>
+                <span class="text-2xl md:text-3xl font-black text-orange-400/80 font-mono tracking-tight">$240,000</span>
+                <div class="w-full mt-3 bg-gray-50 rounded-xl p-2 border border-gray-200 flex justify-between items-center">
                     <span class="text-[10px] font-black text-gray-400 uppercase">Cupos Llenos:</span>
                     <span class="text-xs font-black text-gray-400"><span class="text-gray-400 text-base font-mono">0</span> / 10</span>
                 </div>
             </div>
-
             <div class="flex gap-2 relative z-10 mt-3">
-                <button disabled class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
-                    📊
-                </button>
-                <button disabled class="flex-1 bg-gray-200 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">
-                    Entrar: $30k
-                </button>
+                <button disabled class="bg-gray-200 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">📊</button>
+                <button disabled class="flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">No Disponible</button>
             </div>
         </div>
 
-        <!-- Liga Élite (BLOQUEADA - CON POZO VISIBLE) -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-yellow-200 shadow-sm opacity-95 select-none">
-            
-            <div class="absolute inset-0 z-50 bg-white/40 backdrop-blur-[3px] flex flex-col items-center justify-center pointer-events-none">
+        <!-- Liga Élite (BLOQUEADA) -->
+        <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-gray-200 shadow-sm opacity-90 select-none">
+            <div class="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
                 <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase mb-12">
                     ¡Próximamente!
                 </div>
             </div>
-
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
-                <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Élite</h3>
-                <span class="bg-amber-100 text-amber-800 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">High Roller</span>
+                <h3 class="text-lg md:text-xl font-black text-gray-500">Liga Élite</h3>
+                <span class="bg-gray-200 text-gray-500 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">High Roller</span>
             </div>
-            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-80">
-                <img src="assets/Herramientas_y_Servicios/T4.png" class="h-full w-auto object-contain" alt="Liga Élite">
+            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-60">
+                <img src="assets/Herramientas_y_Servicios/T4.png" class="h-full w-auto object-contain">
             </div>
             
-            <div class="bg-yellow-50/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-yellow-200 relative z-10 mt-auto text-center shadow-inner">
-                <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    Pozo de Premios Sit & Go
-                </span>
-                <span class="text-2xl md:text-3xl font-black text-amber-500 font-mono tracking-tight">$400,000</span>
-                
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-yellow-200/50">
-                    <div class="text-left">
-                        <span class="block text-[8px] text-amber-800 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm">$280,000</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="block text-[8px] text-amber-800 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-amber-600 text-sm">$120,000</span>
-                    </div>
-                </div>
-
-                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-yellow-200 flex justify-between items-center">
+            <div class="bg-yellow-50/40 rounded-2xl p-4 flex flex-col items-center justify-center border border-yellow-100/50 relative z-10 mt-auto text-center shadow-inner">
+                <span class="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">Pozo de Premios Sit & Go</span>
+                <span class="text-2xl md:text-3xl font-black text-yellow-500/80 font-mono tracking-tight">$400,000</span>
+                <div class="w-full mt-3 bg-gray-50 rounded-xl p-2 border border-gray-200 flex justify-between items-center">
                     <span class="text-[10px] font-black text-gray-400 uppercase">Cupos Llenos:</span>
                     <span class="text-xs font-black text-gray-400"><span class="text-gray-400 text-base font-mono">0</span> / 10</span>
                 </div>
             </div>
-
             <div class="flex gap-2 relative z-10 mt-3">
-                <button disabled class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
-                    📊
-                </button>
-                <button disabled class="flex-1 bg-gray-200 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">
-                    Entrar: $50k
-                </button>
+                <button disabled class="bg-gray-200 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">📊</button>
+                <button disabled class="flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">No Disponible</button>
             </div>
         </div>
     </div>
 
-    <!-- LEADERBOARD EN TIEMPO REAL (Luminoso) -->
+    <!-- LEADERBOARD EN TIEMPO REAL -->
     <div id="live-leaderboard-container" class="mt-10 bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden hidden animate-fade-in relative">
         <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cg_blue via-green-400 to-cg_gold"></div>
         <div class="bg-white border-b border-gray-100 p-5 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center relative gap-4 mt-2">
@@ -236,7 +171,7 @@
             </div>
             
             <div class="text-left md:text-right w-full md:w-auto bg-gray-50 p-4 md:p-5 rounded-2xl border border-gray-200 shadow-inner">
-                <p class="text-[10px] md:text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Pozo Acumulado</p>
+                <p class="text-[10px] md:text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Pozo Acumulado de la Sala</p>
                 <p class="text-3xl md:text-4xl font-black text-green-600 mb-4 tracking-tight" id="lb-prize-pool">$0</p>
                 <div class="flex flex-wrap items-center md:justify-end gap-3 md:gap-4 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-600 bg-white px-3 md:px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
                     <div class="flex items-center gap-1.5" title="Primer Puesto"><span class="text-base md:text-lg">🥇</span> <span id="lb-prize-1" class="text-cg_gold">$0</span></div>
@@ -251,7 +186,7 @@
                     <tr>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center w-24">Rank</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest">Jugador</th>
-                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center">Bono Supervivencia</th>
+                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center">Bono Minijuego</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Puntaje Final</th>
                     </tr>
                 </thead>
@@ -261,96 +196,70 @@
     </div>
 </div>
 
-<!-- VENTANA MODAL PRE-TORNEO -->
+<!-- VENTANA MODAL PRE-TORNEO (NUEVAS REGLAS CASINO DE DESTREZA) -->
 <div id="pre-tournament-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePreTournamentModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 sm:p-8 text-center border-b border-gray-100 relative shrink-0">
             <button onclick="closePreTournamentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
-            <span class="text-cg_gold text-[10px] md:text-xs font-black uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full border border-orange-200">Clasificatoria de Liga</span>
-            <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mt-4" id="pt-title">Contrato de Torneo</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">Derrota a los guardianes. Ganas puntos extra si sobrevives con mucha vida y terminas rápido.</p>
+            <span class="text-cg_gold text-[10px] md:text-xs font-black uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full border border-orange-200">Juego de Habilidad (Sin RNG)</span>
+            <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mt-4" id="pt-title">Pachinko de Polinización</h3>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">Suelta las semillas controlando el péndulo y la fuerza. La física es 100% predecible y depende de tu destreza, sin rebotes aleatorios.</p>
         </div>
 
         <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
-            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Guardianes a Enfrentar (Casa)</h4>
+            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Fórmula Estándar de Balance</h4>
             
-            <div id="pt-guardians-list" class="flex flex-col gap-3 mb-6">
-                <!-- Se inyectan las 3 plantas dinámicas enemigas aquí -->
-                <p class="text-center text-xs font-bold text-gray-400">Cargando guardianes...</p>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-gray-400 font-bold uppercase">Puntaje Base Max</span>
+                    <span class="font-black text-cg_navy text-sm">10.000 Puntos</span>
+                </div>
+                <div class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-gray-400 font-bold uppercase">Tiempo Límite</span>
+                    <span class="font-black text-cg_navy text-sm">60 Segundos</span>
+                </div>
+                <div class="bg-green-50 border border-green-200 p-3 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-green-700 font-bold uppercase">Bono Velocidad</span>
+                    <span class="font-black text-green-600 text-sm">+10 Pts x Seg</span>
+                </div>
+                <div class="bg-red-50 border border-red-200 p-3 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-red-700 font-bold uppercase">Penalización</span>
+                    <span class="font-black text-red-600 text-sm">-50 Pts x Fallo</span>
+                </div>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm">
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="text-xl drop-shadow-sm">❤️</span>
-                        <h5 class="font-black text-blue-900 text-xs sm:text-sm">Bono de Supervivencia</h5>
-                    </div>
-                    <p class="text-[10px] sm:text-xs text-blue-800 leading-relaxed"><strong class="font-black">+10 Puntos</strong> por cada punto de HP con el que sobreviva tu escuadrón. Usa escudos inteligentemente.</p>
+            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas Mecánicas de tu Planta</h4>
+            <div class="space-y-3">
+                <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center gap-3">
+                    <span class="text-2xl">❤️</span>
+                    <p class="text-[10px] sm:text-xs text-red-900 leading-snug"><strong class="font-black">Vida (HP):</strong> Determina tus "Oportunidades". A mayor HP, más semillas tienes para lanzar en 60s.</p>
                 </div>
-                <div class="bg-orange-50 border border-orange-100 p-4 rounded-xl shadow-sm">
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="text-xl drop-shadow-sm">⏱️</span>
-                        <h5 class="font-black text-orange-900 text-xs sm:text-sm">Penalización de Tiempo</h5>
-                    </div>
-                    <p class="text-[10px] sm:text-xs text-orange-800 leading-relaxed"><strong class="font-black">-50 Puntos</strong> por cada turno que te demores en aniquilarlos. Sé letal y rápido.</p>
+                <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3">
+                    <span class="text-2xl">⚔️</span>
+                    <p class="text-[10px] sm:text-xs text-orange-900 leading-snug"><strong class="font-black">Ataque (ATK):</strong> Define el "Multiplicador". A mayor ATK, más puntos te da cada canasta acertada.</p>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center gap-3">
+                    <span class="text-2xl">🛡️</span>
+                    <p class="text-[10px] sm:text-xs text-blue-900 leading-snug"><strong class="font-black">Defensa (DEF):</strong> Otorga "Margen de Tolerancia". A mayor DEF, las canastas ganadoras son más anchas.</p>
                 </div>
             </div>
         </div>
 
         <div class="p-4 md:p-5 border-t border-gray-200 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
             <button onclick="closePreTournamentModal()" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold py-3 md:py-4 rounded-xl transition-colors shadow-sm text-sm md:text-base">Cancelar</button>
-            <button onclick="confirmJoinTournament()" id="btn-confirm-tournament" class="flex-[2] bg-cg_gold hover:bg-orange-500 text-white font-black py-3 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2 text-sm md:text-base">Entrar al Combate</button>
+            <button onclick="confirmJoinTournament()" id="btn-confirm-tournament" class="flex-[2] bg-cg_gold hover:bg-orange-500 text-white font-black py-3 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2 text-sm md:text-base">Elegir Planta y Jugar</button>
         </div>
-    </div>
-</div>
-
-<!-- VENTANA MODAL: LIGA RESTRINGIDA -->
-<div id="liga-restringida-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('liga-restringida-modal').classList.replace('flex', 'hidden')"></div>
-    <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col overflow-hidden animate-fade-in text-center border-4 border-red-500 max-h-[85vh]">
-        <div class="p-6 border-b border-red-100 shrink-0 bg-red-50 relative">
-            <button onclick="document.getElementById('liga-restringida-modal').classList.replace('flex', 'hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 font-bold text-xl w-8 h-8 rounded-full bg-white flex items-center justify-center transition-colors">✕</button>
-            <div class="w-16 h-16 bg-white rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-3 shadow-inner">
-                <span class="absolute text-3xl">⚠️</span>
-            </div>
-            <h3 class="text-xl md:text-2xl font-black text-cg_navy tracking-tight">Liga Restringida</h3>
-            <p class="text-xs md:text-sm text-red-600 font-bold mt-1">El torneo <strong id="lr-league-name" class="font-black"></strong> admite solo ciertas Especies Dinámicas. Tienes plantas que no cumplen los requisitos listas en tu granja o arsenal.</p>
-        </div>
-        <div class="p-4 md:p-6 bg-gray-50 flex-1 overflow-y-auto">
-            <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 text-left border-b border-gray-200 pb-2">Especies Dinámicas Permitidas:</h4>
-            <div id="lr-allowed-list" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
-        </div>
-        <div class="p-4 border-t border-gray-100 shrink-0 bg-white">
-            <button onclick="document.getElementById('liga-restringida-modal').classList.replace('flex', 'hidden')" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95">
-                Entendido
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- VENTANA MODAL DE ALERTA/ERROR -->
-<div id="alert-modal" class="fixed inset-0 z-[800] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeAlertModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden animate-fade-in text-center p-6 md:p-8 border border-red-500">
-        <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
-            <span class="text-2xl md:text-3xl" id="alert-modal-icon">⚠️</span>
-        </div>
-        <h3 class="text-lg md:text-xl font-black text-cg_navy mb-2 leading-tight" id="alert-modal-title">Aviso</h3>
-        <p class="text-xs md:text-sm text-gray-500 mb-6" id="alert-modal-msg">Mensaje.</p>
-        <button onclick="closeAlertModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-cg_navy border border-gray-200 font-black py-3 md:py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest text-[10px] md:text-xs">
-            Aceptar
-        </button>
     </div>
 </div>
 
 <script>
     window.TOURNAMENT_INFO = {
-        1: { name: 'Liga Novato', img: 'assets/Herramientas_y_Servicios/T1.png' },
-        3: { name: 'Liga Intermedia', img: 'assets/Herramientas_y_Servicios/T2.png' },
-        4: { name: 'Liga Avanzada', img: 'assets/Herramientas_y_Servicios/T3.png' },
-        5: { name: 'Liga Élite', img: 'assets/Herramientas_y_Servicios/T4.png' }
+        1: { name: 'Liga Novato' },
+        3: { name: 'Liga Intermedia' },
+        4: { name: 'Liga Avanzada' },
+        5: { name: 'Liga Élite' }
     };
 
     window.BASE_POOLS = {
@@ -361,23 +270,19 @@
     };
 
     window.pendingTournament = null;
-    window.serverTournamentConfig = {};
-    window.dynamicPlantsCache = [];
 
     // Lógica para que los cupos Falsos (FOMO) de la liga 1 comiencen bajos (2 a 4)
     if(!window.fakePlayersCounts) {
         window.fakePlayersCounts = {
             1: Math.floor(Math.random() * 3) + 2, 
-            3: 0, 
-            4: 0, 
-            5: 0
+            3: 0, 4: 0, 5: 0
         };
         window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
     }
 
     // --- LÓGICA DEL TEMPORIZADOR BIDIARIO ---
     const FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; // 48 Horas
-    const FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime(); // Punto de origen fijo
+    const FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime();
     
     function updateFreerollTimer() {
         const now = Date.now();
@@ -386,17 +291,14 @@
         const deadline = FREEROLL_ORIGIN + (currentCycle + 1) * FREEROLL_CYCLE_MS;
         
         let diff = deadline - now;
-        
         const timerEl = document.getElementById('freeroll-timer');
         if(!timerEl) return;
 
-        if (diff <= 1000) { // El tiempo llegó a 0
+        if (diff <= 1000) { 
             timerEl.innerText = "00h 00m 00s";
             timerEl.classList.add('text-red-500', 'animate-pulse');
-            
-            // Simular reinicio y limpieza
             setTimeout(() => {
-                window.fakePlayersCounts[1] = Math.floor(Math.random() * 2) + 1; // Reinicia a 1 o 2
+                window.fakePlayersCounts[1] = Math.floor(Math.random() * 2) + 1; 
                 renderPlayerCounts();
                 timerEl.classList.remove('text-red-500', 'animate-pulse');
             }, 5000); 
@@ -412,9 +314,8 @@
 
     if(window.freerollInterval) clearInterval(window.freerollInterval);
     window.freerollInterval = setInterval(updateFreerollTimer, 1000);
-    updateFreerollTimer(); // Ejecutar inicial
+    updateFreerollTimer(); 
 
-    // Función de animación progresiva de números
     function animateValue(obj, start, end, duration) {
         let startTimestamp = null;
         const step = (timestamp) => {
@@ -443,76 +344,20 @@
     }
     setTimeout(initCardAnimations, 100);
 
-    async function fetchTournamentGuardians() {
-        try {
-            const pRes = await fetch('/api/plants');
-            if(pRes.ok) window.dynamicPlantsCache = await pRes.json();
-
-            const cRes = await fetch('/api/admin/tournament_config');
-            if(cRes.ok) window.serverTournamentConfig = await cRes.json();
-        } catch(e) {}
-    }
-    fetchTournamentGuardians();
-
-    function showAlertModal(title, msg, icon = '⚠️') {
-        document.getElementById('alert-modal-title').innerText = title;
-        document.getElementById('alert-modal-msg').innerText = msg;
-        document.getElementById('alert-modal-icon').innerText = icon;
-        document.getElementById('alert-modal').classList.remove('hidden');
-        document.getElementById('alert-modal').classList.add('flex');
-    }
-
-    function closeAlertModal() {
-        document.getElementById('alert-modal').classList.remove('flex');
-        document.getElementById('alert-modal').classList.add('hidden');
-    }
-
-    function showLigaRestringidaModal(leagueName, allowedIds) {
-        document.getElementById('lr-league-name').innerText = leagueName;
-        const listEl = document.getElementById('lr-allowed-list');
-        listEl.innerHTML = '';
-        
-        if (allowedIds.length === 0) {
-            listEl.innerHTML = '<p class="text-xs col-span-full text-center text-gray-500 font-bold py-4">No hay especies en la base de datos que cumplan los requisitos exactos de esta liga.</p>';
-        } else {
-            allowedIds.forEach(id => {
-                let dp = window.dynamicPlantsCache.find(p => p.id === id);
-                if (dp) {
-                    listEl.innerHTML += `
-                        <div class="bg-white border border-gray-200 rounded-xl p-3 flex flex-col items-center shadow-sm hover:border-cg_blue transition-colors">
-                            <img src="${dp.image_url}" onerror="this.src='assets/Fondos/logo.png'" class="w-10 h-10 object-contain drop-shadow-md mb-2">
-                            <span class="text-[9px] sm:text-[10px] font-black text-cg_navy text-center leading-tight mb-1">${dp.name}</span>
-                            <div class="flex gap-1.5 mt-auto text-[7px] font-bold text-gray-500 uppercase">
-                                <span class="text-red-500">❤️ ${dp.hp}</span>
-                                <span class="text-orange-500">⚔️ ${dp.atk}</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        }
-        document.getElementById('liga-restringida-modal').classList.remove('hidden');
-        document.getElementById('liga-restringida-modal').classList.add('flex');
-    }
-
     window.openPreTournamentModal = async function(t_id, fee_cop, seedCostStr) {
         if (!window.farmApp || !window.farmApp.state) {
-            showAlertModal('Aviso de la Arena', 'Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón y tus recursos.', '🌾');
+            alert('Aviso: Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón.');
             return;
         }
         
-        if (!window.dynamicPlantsCache || window.dynamicPlantsCache.length === 0) {
-            await fetchTournamentGuardians();
-        }
-
         let seedCost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}[fee_cop] || 0;
         
         if (window.farmApp.state.seedsBalance < seedCost) {
-            showAlertModal('Semillas Insuficientes', `Necesitas ${seedCost.toLocaleString()} 🌱 para entrar a este torneo.`, '❌');
+            alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para entrar a este torneo.`);
             return;
         }
         if (fee_cop > 0 && window.farmApp.state.balance < fee_cop) {
-            showAlertModal('Saldo COP Insuficiente', `Necesitas $${fee_cop.toLocaleString()} COP para la entrada. Recarga en el Banco Wompi.`, '❌');
+            alert(`Necesitas $${fee_cop.toLocaleString()} COP para la entrada.`);
             return;
         }
 
@@ -520,80 +365,14 @@
         let arsenal = window.farmApp.state.arsenal || [];
 
         if (readyPlots.length === 0 && arsenal.length === 0) {
-            showAlertModal('Sin Escuadrón', 'Debes tener al menos 1 planta lista en la granja o en el Arsenal para combatir.', '🌱');
+            alert('Debes tener al menos 1 planta lista en la granja o en el Arsenal para competir.');
             return;
         }
-
-        // --- RESTRICCIONES DINÁMICAS ESTRICTAS POR ESTADÍSTICAS ---
-        let allowedIds = [];
-        if (t_id === 1) { 
-            allowedIds = window.dynamicPlantsCache.filter(dp => dp.hp <= 110 && dp.atk <= 60 && dp.def <= 30).map(dp => dp.id);
-        } else if (t_id === 3) { 
-            allowedIds = window.dynamicPlantsCache.filter(dp => dp.hp <= 160 && dp.atk <= 90 && dp.def <= 40).map(dp => dp.id);
-        } else if (t_id === 4) { 
-            allowedIds = window.dynamicPlantsCache.filter(dp => dp.hp <= 250 && dp.atk <= 120 && dp.def <= 60).map(dp => dp.id);
-        } else { 
-            allowedIds = window.dynamicPlantsCache.map(dp => dp.id);
-        }
-
-        let validArsenal = arsenal.filter(p => p.plantId && allowedIds.includes(p.plantId));
-        let validPlots = readyPlots.filter(p => p.plant && allowedIds.includes(p.plant.id));
-        
-        if (validArsenal.length === 0 && validPlots.length === 0) {
-            let leagueName = window.TOURNAMENT_INFO[t_id].name;
-            showLigaRestringidaModal(leagueName, allowedIds);
-            return;
-        }
-
-        sessionStorage.setItem('tourney_allowed_plants', JSON.stringify(allowedIds));
 
         window.pendingTournament = { id: t_id, fee: fee_cop };
         
-        document.getElementById('pt-title').innerText = window.TOURNAMENT_INFO[t_id].name;
-        
         const btn = document.getElementById('btn-confirm-tournament');
-        btn.innerText = fee_cop === 0 ? `Entrar Gratis` : `Pagar $${fee_cop.toLocaleString()} + ${seedCostStr}`;
-        
-        // --- Generar Guardianes ---
-        const list = document.getElementById('pt-guardians-list');
-        list.innerHTML = '';
-        
-        let enemiesIds = [];
-        if (t_id === 1) enemiesIds = ['dyn_cuervo', 'dyn_cuervo', 'dyn_cuervo'];
-        else if (t_id === 3) enemiesIds = ['dyn_lobo', 'dyn_lobo', 'dyn_lobo'];
-        else if (t_id === 4) enemiesIds = ['dyn_golem', 'dyn_golem', 'dyn_golem'];
-        else enemiesIds = ['dyn_dragon', 'dyn_dragon', 'dyn_dragon'];
-
-        if (window.serverTournamentConfig) {
-            if (window.serverTournamentConfig[`t${t_id}-e1`] && window.serverTournamentConfig[`t${t_id}-e1`] !== 'none') enemiesIds[0] = window.serverTournamentConfig[`t${t_id}-e1`];
-            if (window.serverTournamentConfig[`t${t_id}-e2`] && window.serverTournamentConfig[`t${t_id}-e2`] !== 'none') enemiesIds[1] = window.serverTournamentConfig[`t${t_id}-e2`];
-            if (window.serverTournamentConfig[`t${t_id}-e3`] && window.serverTournamentConfig[`t${t_id}-e3`] !== 'none') enemiesIds[2] = window.serverTournamentConfig[`t${t_id}-e3`];
-        }
-
-        enemiesIds.forEach((eid, idx) => {
-            let dp = window.dynamicPlantsCache.find(p => p.id === eid);
-            if (!dp && window.dynamicPlantsCache.length > 0) {
-                dp = window.dynamicPlantsCache[Math.floor(Math.random() * window.dynamicPlantsCache.length)];
-            }
-            
-            if (dp) {
-                list.innerHTML += `
-                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
-                        <div class="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center border border-red-100 p-1 shrink-0">
-                            <img src="${dp.image_url}" onerror="this.src='assets/Fondos/logo.png'" class="w-full h-full object-contain">
-                        </div>
-                        <div class="text-left flex-1">
-                            <h4 class="font-black text-cg_navy text-sm">${dp.name} <span class="text-[8px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded uppercase">Jefe</span></h4>
-                            <div class="flex gap-2 mt-1 text-[9px] font-bold text-gray-500 uppercase">
-                                <span class="text-red-500">❤️ ${dp.hp}</span>
-                                <span class="text-orange-500">⚔️ ${dp.atk}</span>
-                                <span class="text-blue-500">🛡️ ${dp.def}%</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        });
+        btn.innerText = fee_cop === 0 ? `Elegir Planta y Jugar` : `Pagar $${fee_cop.toLocaleString()} y Jugar`;
 
         document.getElementById('pre-tournament-modal').classList.remove('hidden');
         document.getElementById('pre-tournament-modal').classList.add('flex');
@@ -611,10 +390,8 @@
             if (window.farmApp) {
                 let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
                 let arsenal = window.farmApp.state.arsenal || [];
-                let allowedIdsStr = sessionStorage.getItem('tourney_allowed_plants');
-                let allowedIds = allowedIdsStr ? JSON.parse(allowedIdsStr) : null;
-                
-                window.farmApp.openTeamSelection(readyPlots, arsenal, allowedIds);
+                // Redirigir al Minijuego (pachinko.html) en lugar de la arena de combate vieja
+                window.farmApp.openTeamSelection(readyPlots, arsenal, null, 'pachinko');
             }
         };
 
@@ -647,15 +424,12 @@
         let basePool = window.BASE_POOLS[tId];
         if (prizePool < basePool) prizePool = basePool; 
         
-        // POZO DEL LEADERBOARD
         document.getElementById('lb-prize-pool').innerText = "$" + prizePool.toLocaleString() + " COP";
         
         if (tId === 1) {
-            // DISTRIBUCIÓN LIGA NOVATO: Fijo 15k y 10k 
             document.getElementById('lb-prize-1').innerText = "$15,000";
             document.getElementById('lb-prize-2').innerText = "$10,000";
         } else {
-            // DISTRIBUCIÓN LIGAS MAYORES: 70% / 30%
             document.getElementById('lb-prize-1').innerText = "$" + (prizePool * 0.70).toLocaleString();
             document.getElementById('lb-prize-2').innerText = "$" + (prizePool * 0.30).toLocaleString();
         }
@@ -669,14 +443,13 @@
             badge.innerHTML = `🏆 CERRADO`;
             badge.className = "bg-gray-100 text-gray-600 border border-gray-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1 w-fit mb-2 shadow-sm";
         } else {
-            // Reflejar la cuenta FOMO o Real
             let currentDisplayCount = window.fakePlayersCounts[tId] || data.players_count || 0;
             if (tId === 1) {
                 countText.innerText = `Puntajes registrados: ${currentDisplayCount}`;
             } else {
                 countText.innerText = `Puntajes registrados: ${currentDisplayCount} / 10`;
             }
-            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span> Registrando Jugadores`;
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span> Activo`;
             badge.className = "bg-orange-50 text-orange-600 border border-orange-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1.5 w-fit mb-2 shadow-sm";
         } 
 
@@ -710,13 +483,11 @@
                 `;
             });
         } else {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-gray-500 font-bold bg-gray-50 rounded-b-xl border-t border-gray-100">La sala está vacía. Sé el primero en combatir.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-gray-500 font-bold bg-gray-50 rounded-b-xl border-t border-gray-100">La sala está vacía. Sé el primero en jugar.</td></tr>`;
         }
     }
 
-    // --- LÓGICA FOMO (FAKE INCREMENT) Y ACTUALIZACIÓN ---
     function renderPlayerCounts() {
-        // Solo T1 tiene actualización de contadores falsos/reales visible en la tarjeta
         const countEl = document.getElementById('card-players-1');
         if (countEl && countEl.innerText != window.fakePlayersCounts[1]) {
             countEl.innerText = window.fakePlayersCounts[1];
@@ -726,38 +497,20 @@
     }
 
     async function updateAllTournamentCounts() {
-        // Solo actualizamos T1 desde la base de datos para la UI
         try {
             const res = await fetch('/api/tournaments/global_leaderboard/1');
             if (res.ok) {
                 const data = await res.json();
-                
                 let realCount = data.players_count || 0;
                 
-                if (realCount < window.realPlayersCounts[1]) {
-                    window.fakePlayersCounts[1] = Math.floor(Math.random() * 3) + 2; 
-                }
+                if (realCount < window.realPlayersCounts[1]) window.fakePlayersCounts[1] = Math.floor(Math.random() * 3) + 2; 
                 window.realPlayersCounts[1] = realCount;
-                
-                if (window.fakePlayersCounts[1] < realCount) {
-                    window.fakePlayersCounts[1] = realCount;
-                }
-
-                if(data.prize_pool !== undefined) {
-                    const poolEl = document.getElementById('lb-pool-1');
-                    let pool = parseFloat(data.prize_pool);
-                    let basePool = window.BASE_POOLS[1];
-                    if (pool < basePool) pool = basePool; 
-                    
-                    if(poolEl) poolEl.innerText = '$' + pool.toLocaleString();
-                }
+                if (window.fakePlayersCounts[1] < realCount) window.fakePlayersCounts[1] = realCount;
             }
         } catch(e) {}
-        
         renderPlayerCounts();
     }
 
-    // Intervalo de FOMO Fake Increment (cada 18 segundos para ser sutil) SÓLO PARA T1
     if(window.fomoInterval) clearInterval(window.fomoInterval);
     window.fomoInterval = setInterval(() => {
         let bump = Math.random() > 0.6 ? 2 : 1; 
@@ -779,7 +532,6 @@
     if(window.lbInterval) clearInterval(window.lbInterval);
     window.lbInterval = setInterval(window.refreshLeaderboard, 5000); 
 
-    // Arranque inicial
     updateAllTournamentCounts();
     if(window.tourneyFetchInterval) clearInterval(window.tourneyFetchInterval);
     window.tourneyFetchInterval = setInterval(updateAllTournamentCounts, 10000);
