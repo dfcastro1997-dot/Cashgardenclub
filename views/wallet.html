@@ -85,10 +85,22 @@
                 <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Retirar (CRÉDITOS)</label>
                 <input type="number" id="cashout-amount" min="10000" placeholder="Mínimo $10.000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-black text-cg_navy text-lg transition-all" required>
             </div>
-
-            <div>
-                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">N° Celular Nequi o Cuenta Bancaria</label>
-                <input type="tel" id="nequi-phone" placeholder="Ej: 300 000 0000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-bold text-cg_navy transition-all" required>
+            
+            <!-- CONTENEDOR INTELIGENTE DE NEQUI -->
+            <div id="legacy-nequi-container" class="hidden">
+                <div class="bg-red-50 border-red-200 border rounded-xl p-4 mb-3 text-center">
+                    <p class="text-[11px] text-red-600 font-bold">Eres un usuario antiguo. Por seguridad, debes enlazar tu Nequi permanentemente antes de retirar.</p>
+                </div>
+                <label class="block text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Enlazar Nequi</label>
+                <input type="tel" id="nequi-phone" placeholder="Ej: 300 000 0000" class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-orange-400 outline-none font-bold text-cg_navy transition-all">
+                
+                <button type="button" onclick="linkLegacyNequi()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-sm py-3 rounded-xl mt-3 transition-all uppercase tracking-widest">
+                    Guardar Nequi Definitivo
+                </button>
+            </div>
+            
+            <div id="secure-nequi-msg" class="bg-orange-50 border-orange-200 border rounded-xl p-4 text-center hidden">
+                <p class="text-xs text-orange-800 font-bold">Tus ganancias serán enviadas a tu cuenta Nequi registrada de forma segura.</p>
             </div>
             
             <button type="button" id="btn-withdraw" onclick="processCashout()" class="w-full bg-cg_navy hover:bg-black text-white font-black text-base md:text-lg py-4 md:py-5 rounded-xl shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none transition-all mt-2 uppercase tracking-widest">
@@ -214,14 +226,54 @@
     let currentDepositAmount = 0;
     const FEE_PERCENTAGE = 0.05; // 5% Aporte de Mantenimiento
 
+    // Añade esto dentro de la función initWallet()
     function initWallet() {
         if (!window.farmApp) return;
         const balance = window.farmApp.state.balance || 0;
         document.getElementById('wallet-balance-display').innerText = "$" + balance.toLocaleString() + " CRÉDITOS";
         
-        const maxInput = document.getElementById('cashout-amount');
-        if (maxInput) {
-            maxInput.max = balance;
+        // Lógica inteligente de Nequi
+        const hasNequi = window.farmApp.state.phone_nequi;
+        if (!hasNequi) {
+            document.getElementById('legacy-nequi-container').classList.remove('hidden');
+            document.getElementById('secure-nequi-msg').classList.add('hidden');
+            document.getElementById('btn-withdraw').classList.add('hidden'); // Ocultar retiro hasta enlazar
+        } else {
+            document.getElementById('legacy-nequi-container').classList.add('hidden');
+            document.getElementById('secure-nequi-msg').classList.remove('hidden');
+            document.getElementById('btn-withdraw').classList.remove('hidden');
+        }
+    }
+
+    // Nueva función para guardar el Nequi de usuarios viejos
+    async function linkLegacyNequi() {
+        const phone = document.getElementById('nequi-phone').value;
+        if (!phone || phone.length < 10) {
+            showWalletAlertModal('Datos Inválidos', 'Ingresa un número de Nequi válido.', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/user/link_nequi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    username: sessionStorage.getItem('username'), 
+                    session_token: sessionStorage.getItem('session_token'), 
+                    phone_nequi: phone 
+                })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                window.farmApp.state.phone_nequi = phone;
+                showWalletAlertModal('Nequi Enlazado', 'Tu cuenta Nequi ha sido registrada con éxito. Ya puedes retirar.', 'success');
+                initWallet(); // Refresca la vista para ocultar el input y mostrar el botón de retiro
+            } else {
+                showWalletAlertModal('Error', data.error, 'error');
+            }
+        } catch(e) {
+            showWalletAlertModal('Error', 'Falla de conexión', 'error');
         }
     }
 
@@ -431,13 +483,8 @@
 
     async function processCashout() {
         const amount = parseInt(document.getElementById('cashout-amount').value);
-        const phone = document.getElementById('nequi-phone').value;
         const btnWithdraw = document.getElementById('btn-withdraw');
         
-        if (!phone || phone.length < 10) { 
-            showWalletAlertModal('Datos Inválidos', 'El número de Nequi o cuenta debe tener al menos 10 dígitos.', 'error');
-            return; 
-        }
         if (isNaN(amount) || amount < 10000) { 
             showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 CRÉDITOS.', 'error');
             return; 
@@ -456,7 +503,7 @@
             const res = await fetch('/api/wallet/payout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, session_token: token, amount_cop: amount, phone_nequi: phone })
+                body: JSON.stringify({ username: username, session_token: token, amount_credits: amount })
             });
             const data = await res.json();
             
@@ -466,7 +513,6 @@
                     window.farmApp.saveState();
                 }
                 
-                // MUESTRA EL BOLETO DE VICTORIA EN VEZ DE LA ALERTA
                 showVictoryTicket(amount, data.reference);
                 
                 document.getElementById('cashout-amount').value = '';

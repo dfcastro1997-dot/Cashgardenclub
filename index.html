@@ -13,7 +13,7 @@
     <title>CASHGARDEN CLUB - Arena Competitiva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -69,158 +69,627 @@
                 padding-bottom: env(safe-area-inset-bottom);
             }
         }
+
+        /* =====================================================================
+           LOGIN / REGISTRO — estilo cartoon del juego (bordes gruesos navy,
+           sombras sólidas, amarillos y cyan del logo)
+           ===================================================================== */
+        :root {
+            --cg-ink: #1C2634;
+            --cg-cream: #FFF7E3;
+            --cg-cream-2: #FCE9BE;
+            --cg-gold: #ED9925;
+            --cg-yellow: #FDE062;
+            --cg-cyan: #64D7FF;
+            --cg-blue: #2996DA;
+            --cg-leaf: #4CAF50;
+            --cg-leaf-2: #7ED957;
+            --cg-red: #E5484D;
+            --cg-spring: cubic-bezier(.34, 1.56, .64, 1);
+            --cg-out: cubic-bezier(.2, .9, .3, 1);
+        }
+
+        /* Los fondos de temporada traen el logo dibujado en el 30% superior: lo dejamos fuera de
+           pantalla (imagen más alta que la vista y anclada abajo) para no repetirlo con el nuestro. */
+        .cg-auth { background-size: auto max(150%, 56vw) !important; background-position: center bottom !important; }
+        .cg-auth { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; font-family: 'Nunito', 'Inter', sans-serif; color: var(--cg-ink); }
+        .cg-auth__shade {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background:
+                radial-gradient(ellipse at 50% 40%, rgba(28,38,52,0) 0%, rgba(28,38,52,.25) 60%, rgba(28,38,52,.6) 100%),
+                linear-gradient(180deg, rgba(28,38,52,.15), rgba(28,38,52,.35));
+            /* Desenfoque leve para que la tarjeta resalte sobre la ilustración */
+            -webkit-backdrop-filter: blur(2px) saturate(1.1);
+            backdrop-filter: blur(2px) saturate(1.1);
+        }
+        .cg-auth__particles { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .cg-auth__scroll {
+            position: relative; z-index: 2; min-height: 100%; display: flex; align-items: center; justify-content: center;
+            padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+        }
+        .cg-auth__layout { width: 100%; max-width: 1100px; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: center; gap: 24px; }
+
+        /* ---------- Héroe (escritorio) ---------- */
+        .cg-hero { display: none; }
+        .cg-hero__logo { width: min(460px, 100%); filter: drop-shadow(0 10px 0 rgba(28,38,52,.35)); animation: cgFloat 5s ease-in-out infinite; }
+        .cg-hero__tagline { font-family: 'Lilita One', sans-serif; color: #fff; font-size: 28px; line-height: 1.15; margin: 18px 0 22px; text-shadow: 0 3px 0 var(--cg-ink), 0 0 20px rgba(0,0,0,.4); -webkit-text-stroke: 1px var(--cg-ink); }
+        .cg-hero__chips { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+        .cg-hero__chips li {
+            display: flex; align-items: center; gap: 12px; width: fit-content;
+            background: rgba(255,247,227,.95); border: 3px solid var(--cg-ink); border-radius: 999px; padding: 8px 18px 8px 8px;
+            font-weight: 900; font-size: 15px; box-shadow: 0 4px 0 var(--cg-ink);
+            opacity: 0; transform: translateX(-30px); animation: cgChipIn .6s var(--cg-spring) forwards; animation-delay: calc(.35s + var(--i) * .12s);
+            transition: transform .25s var(--cg-spring);
+        }
+        .cg-hero__chips li:hover { transform: translateX(8px) rotate(-1deg); }
+        .cg-hero__chips li span { width: 34px; height: 34px; display: grid; place-items: center; background: var(--cg-yellow); border: 2.5px solid var(--cg-ink); border-radius: 50%; font-size: 17px; }
+        .cg-season {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 6px 14px; border-radius: 999px;
+            background: var(--cg-ink); color: var(--cg-yellow); font-weight: 900; font-size: 13px; letter-spacing: .04em; text-transform: uppercase;
+            box-shadow: 0 3px 0 rgba(0,0,0,.35);
+        }
+        .cg-season--mini { margin: 0; padding: 3px 10px; font-size: 10px; box-shadow: none; }
+
+        /* ---------- Escenario ---------- */
+        .cg-stage { width: 100%; min-width: 0; max-width: 430px; display: flex; flex-direction: column; align-items: center; }
+        .cg-mobile-logo { width: min(230px, 60vw); margin-bottom: 2px; filter: drop-shadow(0 5px 0 rgba(28,38,52,.4)); animation: cgDrop .8s var(--cg-spring) both; }
+
+        .cg-mascot-wrap {
+            /* --k = px por cada pixel de las imágenes del granjero (1264px de ancho) */
+            --h: 132px; --k: calc(var(--h) / 730);
+            position: relative; width: 100%; height: var(--h); z-index: 3; margin-bottom: -4px; pointer-events: none;
+            clip-path: inset(-400px -400px 0 -400px); /* corta solo abajo: parece asomarse detrás de la tarjeta */
+            animation: cgRise .9s var(--cg-spring) .15s both;
+        }
+        .cg-farmer { position: absolute; inset: 0; }
+        .cg-rig {
+            position: absolute; left: calc(50% - var(--k) * 470); top: calc(var(--k) * -50);
+            width: calc(var(--k) * 1264); height: calc(var(--k) * 1560);
+            transform-origin: calc(var(--k) * 470) calc(var(--k) * 830);
+            transform: rotate(var(--cg-tilt, 0deg)); transition: transform .5s var(--cg-out);
+        }
+        .cg-farmer.is-idle .cg-rig, .cg-farmer.is-look .cg-rig { animation: cgBreath 3.6s ease-in-out infinite; }
+        .cg-farmer.is-error .cg-rig { animation: cgNo .45s ease-in-out 2; }
+        .cg-farmer.is-happy .cg-rig { animation: cgHop .5s var(--cg-spring) 2; }
+
+        .cg-pose { position: absolute; left: 0; top: 0; width: 100%; height: auto; opacity: 0; transition: opacity .2s ease; user-select: none; -webkit-user-drag: none; }
+        .cg-pose--error { top: calc(var(--k) * 20); }
+        .cg-farmer[data-pose="idle"] .cg-pose--idle,
+        .cg-farmer[data-pose="error"] .cg-pose--error,
+        .cg-farmer[data-pose="happy"] .cg-pose--happy { opacity: 1; }
+        /* Al taparse los ojos se oculta el brazo que saluda (lo reemplaza la mano animada) */
+        .cg-pose--idle { clip-path: inset(0 0 0 0); transition: opacity .2s ease, clip-path 0s linear .5s; }
+        .cg-farmer.is-hide .cg-pose--idle, .cg-farmer.is-peek .cg-pose--idle { clip-path: inset(0 30% 0 0); transition: opacity .2s ease, clip-path 0s; }
+
+        /* Solo la mano que saluda en Explicando.png (sin antebrazo, máscara ovalada).
+           Izquierda = original, derecha = espejo: así cada antebrazo queda hacia afuera y no se cruzan. */
+        .cg-hand {
+            position: absolute; left: calc(var(--k) * 900); top: calc(var(--k) * 560);
+            width: calc(var(--k) * 330); height: calc(var(--k) * 360);
+            background: url('assets/Granjero/Explicando.png') no-repeat;
+            background-size: calc(var(--k) * 1264) auto;
+            background-position: calc(var(--k) * -900) calc(var(--k) * -560);
+            -webkit-mask-image: radial-gradient(ellipse 47% 47% at 52% 47%, #000 78%, transparent 100%);
+            mask-image: radial-gradient(ellipse 47% 47% at 52% 47%, #000 78%, transparent 100%);
+            transform-origin: 50% 60%;
+            transition: transform .5s var(--cg-spring);
+        }
+        /* Escondidas detrás de la tarjeta */
+        .cg-hand--l { transform: translate(calc(var(--k) * -699), calc(var(--k) * 560)) scale(.8); }
+        .cg-hand--r { transform: translate(calc(var(--k) * -511), calc(var(--k) * 560)) scaleX(-1) scale(.8); transition-delay: .04s; }
+        /* Tapándose los ojos: cada palma sobre un lente */
+        .cg-farmer.is-hide .cg-hand--l, .cg-farmer.is-peek .cg-hand--l { transform: translate(calc(var(--k) * -699), calc(var(--k) * -403)) rotate(-8deg) scale(.8); }
+        .cg-farmer.is-hide .cg-hand--r { transform: translate(calc(var(--k) * -511), calc(var(--k) * -403)) scaleX(-1) rotate(-8deg) scale(.8); }
+        /* Espiando: la mano derecha baja a la mejilla y deja ver un lente */
+        .cg-farmer.is-peek .cg-hand--r { transform: translate(calc(var(--k) * -470), calc(var(--k) * -250)) scaleX(-1) rotate(-30deg) scale(.8); }
+        .cg-farmer.is-error .cg-hand, .cg-farmer.is-happy .cg-hand { opacity: 0; transition: none; }
+
+        /* Burbuja de diálogo */
+        .cg-bubble {
+            position: absolute; z-index: 2; top: 2px; right: calc(50% + 46px); max-width: min(190px, calc(50% - 48px));
+            background: #fff; border: 3px solid var(--cg-ink); border-radius: 16px 16px 4px 16px; padding: 7px 11px;
+            font-weight: 900; font-size: 12.5px; line-height: 1.2; box-shadow: 0 4px 0 var(--cg-ink); overflow-wrap: anywhere;
+            transform-origin: 100% 100%; animation: cgBubble .45s var(--cg-spring) both;
+        }
+        .cg-bubble::before { content: ''; position: absolute; right: -11px; bottom: 6px; border: 7px solid transparent; border-left-color: var(--cg-ink); border-bottom-color: var(--cg-ink); }
+        .cg-bubble.is-pop { animation: cgBubble .45s var(--cg-spring); }
+        .cg-bubble.is-error { background: #FFE3E3; color: #9B1C1C; }
+
+        /* ---------- Tarjeta ---------- */
+        .cg-card {
+            position: relative; z-index: 2; width: 100%;
+            background:
+                radial-gradient(circle at 20% 0%, rgba(255,255,255,.7), transparent 40%),
+                repeating-linear-gradient(0deg, rgba(237,153,37,.05) 0 2px, transparent 2px 26px),
+                var(--cg-cream);
+            border: 4px solid var(--cg-ink); border-radius: 28px;
+            box-shadow: 0 10px 0 var(--cg-ink), 0 30px 60px rgba(0,0,0,.35);
+            padding: 22px 18px 18px;
+            animation: cgCardIn .7s var(--cg-spring) both;
+        }
+        .cg-card.is-shake { animation: cgShake .5s ease-in-out; }
+        .cg-card__nail { position: absolute; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: #C9A040; border: 2.5px solid var(--cg-ink); box-shadow: inset -2px -2px 0 rgba(0,0,0,.2); }
+        .cg-card__nail--l { left: 14px; } .cg-card__nail--r { right: 14px; }
+
+        /* Pestañas */
+        .cg-tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--cg-cream-2); border: 3px solid var(--cg-ink); border-radius: 999px; padding: 4px; margin: 4px 0 16px; }
+        .cg-tabs__thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: var(--cg-yellow); border: 2.5px solid var(--cg-ink); box-shadow: 0 3px 0 var(--cg-ink); transition: transform .45s var(--cg-spring), background .3s; }
+        .cg-tabs[data-mode="register"] .cg-tabs__thumb { transform: translateX(100%); background: #FFC46B; }
+        .cg-tabs button { position: relative; z-index: 1; font-family: 'Lilita One', sans-serif; font-size: 16px; letter-spacing: .02em; padding: 9px 4px; color: rgba(28,38,52,.55); transition: color .25s, transform .2s; border-radius: 999px; }
+        .cg-tabs button[aria-selected="true"] { color: var(--cg-ink); }
+        .cg-tabs button:active { transform: scale(.95); }
+
+        .cg-panels { position: relative; transition: height .4s var(--cg-out); }
+        .cg-panels.is-animating, .cg-steps.is-animating { overflow: hidden; }
+        .cg-panel { display: flex; flex-direction: column; gap: 12px; }
+        .cg-panel[hidden], .cg-step[hidden] { display: none !important; }
+        .cg-title { font-family: 'Lilita One', sans-serif; font-size: 25px; line-height: 1.05; text-align: center; color: var(--cg-ink); letter-spacing: .01em; }
+        .cg-sub { text-align: center; font-weight: 700; font-size: 13.5px; color: rgba(28,38,52,.65); margin-top: -6px; }
+
+        /* Campos */
+        .cg-field { display: flex; flex-direction: column; gap: 5px; }
+        .cg-field__label { font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; padding-left: 4px; display: flex; align-items: center; gap: 6px; }
+        .cg-tag { font-style: normal; font-size: 9.5px; padding: 2px 7px; border-radius: 999px; background: var(--cg-ink); color: var(--cg-yellow); letter-spacing: .06em; }
+        .cg-tag--soft { background: #FFE2BF; color: #B4570B; }
+        .cg-field__box {
+            position: relative; display: flex; align-items: center; gap: 4px;
+            background: #fff; border: 3px solid var(--cg-ink); border-radius: 16px; padding: 0 8px 0 4px;
+            box-shadow: inset 0 -3px 0 rgba(28,38,52,.08), 0 3px 0 rgba(28,38,52,.9);
+            transition: border-color .2s, box-shadow .2s, transform .25s var(--cg-spring);
+        }
+        .cg-field__box:focus-within { border-color: var(--cg-blue); box-shadow: 0 0 0 4px rgba(41,150,218,.22), 0 3px 0 var(--cg-blue); transform: translateY(-2px); }
+        .cg-field--orange .cg-field__box:focus-within { border-color: var(--cg-gold); box-shadow: 0 0 0 4px rgba(237,153,37,.25), 0 3px 0 var(--cg-gold); }
+        .cg-field__icon { width: 38px; flex: none; display: grid; place-items: center; font-size: 18px; transition: transform .35s var(--cg-spring); }
+        .cg-field__box:focus-within .cg-field__icon { transform: scale(1.2) rotate(-10deg); }
+        .cg-field__prefix { flex: none; font-weight: 900; font-size: 14px; padding: 6px 9px; margin: 0 2px 0 4px; background: var(--cg-cream-2); border: 2px solid var(--cg-ink); border-radius: 10px; white-space: nowrap; }
+        .cg-field input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; padding: 13px 4px; font-family: inherit; font-weight: 800; font-size: 16px; color: var(--cg-ink); }
+        .cg-field input::placeholder { color: #A9B0B8; font-weight: 700; }
+        #referred_by_input { text-transform: uppercase; letter-spacing: .25em; color: #C25E00; }
+        #reg-nequi { letter-spacing: .06em; }
+        .cg-field__msg { min-height: 0; font-size: 11.5px; font-weight: 700; color: rgba(28,38,52,.55); padding-left: 6px; transition: color .2s; }
+        .cg-field__msg:empty { display: none; }
+        .cg-field.is-invalid .cg-field__box { border-color: var(--cg-red); box-shadow: 0 0 0 4px rgba(229,72,77,.18), 0 3px 0 var(--cg-red); animation: cgWiggle .35s; }
+        .cg-field.is-invalid .cg-field__msg { color: var(--cg-red); }
+        .cg-field.is-valid .cg-field__box { border-color: var(--cg-leaf); }
+        .cg-field.is-valid .cg-field__msg { color: #2E7D32; }
+        .cg-field__status { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; font-size: 13px; font-weight: 900; color: #fff; transform: scale(0); transition: transform .35s var(--cg-spring), background .2s; }
+        .cg-field.is-valid .cg-field__status { background: var(--cg-leaf); transform: scale(1); }
+        .cg-field.is-valid .cg-field__status::after { content: '✓'; }
+        .cg-field.is-invalid .cg-field__status { background: var(--cg-red); transform: scale(1); }
+        .cg-field.is-invalid .cg-field__status::after { content: '!'; }
+        .cg-field.is-checking .cg-field__status { transform: scale(1); background: transparent; border: 3px solid #D7DCE1; border-top-color: var(--cg-blue); animation: cgSpin .7s linear infinite; }
+        .cg-eye { flex: none; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; font-size: 18px; transition: transform .25s var(--cg-spring), background .2s; filter: grayscale(1); opacity: .6; }
+        .cg-eye:hover { background: var(--cg-cream-2); }
+        .cg-eye.is-on { filter: none; opacity: 1; transform: scale(1.1); }
+        .cg-caps { font-size: 11px; font-weight: 900; color: #B4570B; padding-left: 6px; }
+
+        /* Fuerza de contraseña */
+        .cg-strength { display: flex; align-items: center; gap: 10px; padding: 4px 6px 0; margin-top: -4px; }
+        .cg-strength__plant { width: 32px; height: 32px; display: grid; place-items: center; font-size: 22px; transition: transform .4s var(--cg-spring); }
+        .cg-strength__plant.is-grow { animation: cgGrow .5s var(--cg-spring); }
+        .cg-strength__bars { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .cg-strength__bars i { height: 9px; border-radius: 99px; background: #E6DFCF; border: 2px solid var(--cg-ink); transition: background .3s, transform .3s var(--cg-spring); }
+        .cg-strength[data-level="1"] .cg-strength__bars i:nth-child(-n+1) { background: #E5484D; }
+        .cg-strength[data-level="2"] .cg-strength__bars i:nth-child(-n+2) { background: #F5A524; }
+        .cg-strength[data-level="3"] .cg-strength__bars i:nth-child(-n+3) { background: #9BD34B; }
+        .cg-strength[data-level="4"] .cg-strength__bars i { background: var(--cg-leaf); }
+        .cg-strength__label { width: 66px; text-align: right; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+
+        /* Pasos */
+        .cg-steps-bar { position: relative; list-style: none; padding: 0; margin: 0 6px 2px; display: flex; justify-content: space-between; }
+        .cg-steps-bar li { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 70px; }
+        .cg-steps-bar__dot { width: 38px; height: 38px; display: grid; place-items: center; font-size: 17px; border-radius: 50%; background: #EDE3CC; border: 3px solid var(--cg-ink); filter: grayscale(1); transition: all .4s var(--cg-spring); }
+        .cg-steps-bar__txt { font-weight: 900; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: rgba(28,38,52,.45); transition: color .3s; }
+        .cg-steps-bar li.is-active .cg-steps-bar__dot { background: var(--cg-yellow); filter: none; transform: scale(1.12); box-shadow: 0 3px 0 var(--cg-ink); }
+        .cg-steps-bar li.is-done .cg-steps-bar__dot { background: var(--cg-leaf-2); filter: none; }
+        .cg-steps-bar li.is-active .cg-steps-bar__txt, .cg-steps-bar li.is-done .cg-steps-bar__txt { color: var(--cg-ink); }
+        .cg-steps-bar__line { position: absolute; left: 35px; right: 35px; top: 17px; height: 6px; background: #EDE3CC; border: 2px solid var(--cg-ink); border-radius: 9px; overflow: hidden; }
+        .cg-steps-bar__line span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cg-leaf-2), var(--cg-leaf)); transition: width .5s var(--cg-out); }
+        .cg-steps-bar[data-step="2"] .cg-steps-bar__line span { width: 50%; }
+        .cg-steps-bar[data-step="3"] .cg-steps-bar__line span { width: 100%; }
+        .cg-steps { position: relative; transition: height .4s var(--cg-out); }
+        .cg-step { display: flex; flex-direction: column; gap: 12px; padding-top: 2px; }
+        .cg-step-actions { display: flex; gap: 10px; }
+        .cg-step-actions .cg-btn--ghost { flex: 0 0 34%; }
+        .cg-step-actions .cg-btn--gold { flex: 1; }
+
+        /* Checkbox de términos */
+        .cg-check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: #fff; border: 3px dashed rgba(28,38,52,.35); border-radius: 16px; cursor: pointer; transition: border-color .2s, background .2s; }
+        .cg-check:hover { border-color: var(--cg-ink); }
+        .cg-check input { position: absolute; opacity: 0; pointer-events: none; }
+        .cg-check__box { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border: 3px solid var(--cg-ink); border-radius: 8px; background: #fff; color: transparent; font-weight: 900; transition: all .3s var(--cg-spring); }
+        .cg-check input:checked + .cg-check__box { background: var(--cg-leaf); color: #fff; transform: rotate(-8deg) scale(1.1); }
+        .cg-check input:focus-visible + .cg-check__box { box-shadow: 0 0 0 4px rgba(41,150,218,.35); }
+        .cg-check:has(input:checked) { border-style: solid; border-color: var(--cg-leaf); background: #F1FBEA; }
+        .cg-check__txt { font-size: 12px; font-weight: 700; line-height: 1.35; color: rgba(28,38,52,.8); }
+        .cg-check__txt a { color: var(--cg-blue); font-weight: 900; text-decoration: underline; text-underline-offset: 2px; }
+        .cg-field.is-invalid + .cg-check, .cg-check.is-invalid { border-color: var(--cg-red); animation: cgWiggle .35s; }
+
+        /* Captcha */
+        .cg-captcha { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px; background: #fff; border: 3px solid var(--cg-ink); border-radius: 16px; box-shadow: 0 3px 0 var(--cg-ink); text-align: left; transition: transform .2s var(--cg-spring), background .3s; }
+        .cg-captcha:hover { transform: translateY(-2px); }
+        .cg-captcha:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--cg-ink); }
+        .cg-captcha__box { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border: 3px solid var(--cg-ink); border-radius: 8px; background: #fff; color: #fff; transition: all .35s var(--cg-spring); }
+        .cg-captcha__box svg { width: 18px; height: 18px; stroke-dasharray: 30; stroke-dashoffset: 30; transition: stroke-dashoffset .45s ease .1s; }
+        .cg-captcha__txt { flex: 1; font-weight: 900; font-size: 14px; }
+        .cg-captcha__icon { font-size: 22px; transition: transform .4s var(--cg-spring); }
+        .cg-captcha.is-checked { background: #F1FBEA; border-color: var(--cg-leaf); box-shadow: 0 3px 0 var(--cg-leaf); }
+        .cg-captcha.is-checked .cg-captcha__box { background: var(--cg-leaf); transform: scale(1.1); }
+        .cg-captcha.is-checked .cg-captcha__box svg { stroke-dashoffset: 0; }
+        .cg-captcha.is-checked .cg-captcha__icon { transform: translateX(40px) rotate(30deg); opacity: 0; transition: transform .6s ease-in, opacity .6s; }
+        .cg-captcha.is-invalid { border-color: var(--cg-red); box-shadow: 0 3px 0 var(--cg-red); animation: cgWiggle .35s; }
+
+        /* Botones 3D */
+        .cg-btn {
+            position: relative; overflow: hidden; isolation: isolate; width: 100%; min-height: 54px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-family: 'Lilita One', sans-serif; font-size: 19px; letter-spacing: .03em; color: #fff;
+            border: 3px solid var(--cg-ink); border-radius: 18px; box-shadow: 0 6px 0 var(--cg-ink);
+            text-shadow: 0 2px 0 rgba(28,38,52,.55);
+            transition: transform .15s ease, box-shadow .15s ease, filter .2s;
+            -webkit-tap-highlight-color: transparent; user-select: none;
+        }
+        .cg-btn::before { content: ''; position: absolute; inset: 3px 6px auto; height: 38%; border-radius: 12px; background: linear-gradient(rgba(255,255,255,.45), rgba(255,255,255,.05)); z-index: -1; }
+        .cg-btn::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); z-index: -1; }
+        .cg-btn:hover::after { animation: cgShine .8s ease; }
+        .cg-btn:hover { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 8px 0 var(--cg-ink); }
+        .cg-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--cg-ink); }
+        .cg-btn:focus-visible { outline: 4px solid rgba(41,150,218,.5); outline-offset: 3px; }
+        .cg-btn--green { background: linear-gradient(180deg, #7ED957, #3FA34D); }
+        .cg-btn--gold { background: linear-gradient(180deg, #FFC24B, #ED7E1C); }
+        .cg-btn--blue { background: linear-gradient(180deg, #64D7FF, #2996DA); }
+        .cg-btn--ghost { background: #fff; color: var(--cg-ink); text-shadow: none; font-size: 16px; }
+        .cg-btn__label { display: inline-flex; align-items: center; gap: 8px; transition: transform .25s var(--cg-spring), opacity .2s; }
+        .cg-btn__arrow { display: inline-block; transition: transform .3s var(--cg-spring); }
+        .cg-btn:hover .cg-btn__arrow { transform: translateX(5px); }
+        .cg-btn__spinner { position: absolute; font-size: 26px; opacity: 0; transform: scale(0); transition: all .3s var(--cg-spring); }
+        .cg-btn.is-loading { pointer-events: none; }
+        .cg-btn.is-loading .cg-btn__label { opacity: 0; transform: translateY(-14px); }
+        .cg-btn.is-loading .cg-btn__spinner { opacity: 1; transform: scale(1); animation: cgSpin 1s linear infinite; }
+        .cg-btn .cg-ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,.55); transform: scale(0); animation: cgRipple .6s ease-out forwards; pointer-events: none; z-index: -1; }
+
+        .cg-switch { text-align: center; font-weight: 800; font-size: 13px; color: rgba(28,38,52,.6); padding-top: 4px; }
+        .cg-switch button { color: var(--cg-blue); font-weight: 900; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+        .cg-switch button:hover { color: #1B6FA6; }
+
+        .cg-alert { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px; background: #FFE8E8; border: 3px solid var(--cg-red); border-radius: 14px; color: #9B1C1C; font-weight: 800; font-size: 13px; box-shadow: 0 3px 0 var(--cg-red); animation: cgPopIn .4s var(--cg-spring); }
+        .cg-alert.hidden { display: none; }
+        .cg-alert__icon { font-size: 20px; }
+
+        /* Carga post-login */
+        .cg-loading { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 4px 4px; animation: cgPopIn .5s var(--cg-spring); }
+        .cg-loading.hidden { display: none; }
+        .cg-loading__avatar { position: relative; width: 104px; height: 104px; margin-bottom: 14px; }
+        .cg-loading__avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 4px solid var(--cg-ink); background: #fff; position: relative; z-index: 1; }
+        .cg-loading__ring { position: absolute; inset: -8px; border-radius: 50%; border: 5px dashed var(--cg-gold); animation: cgSpin 6s linear infinite; }
+        .cg-loading__check { position: absolute; z-index: 2; right: -4px; bottom: -2px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--cg-leaf); color: #fff; font-weight: 900; border: 3px solid var(--cg-ink); transform: scale(0); transition: transform .45s var(--cg-spring); }
+        .cg-loading__check.is-on { transform: scale(1); }
+        .cg-loading__step { margin: 4px 0 16px; font-weight: 900; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--cg-blue); min-height: 16px; }
+        .cg-loading__bar { position: relative; width: 100%; height: 18px; background: #EDE3CC; border: 3px solid var(--cg-ink); border-radius: 99px; }
+        .cg-loading__bar > div { height: 100%; width: 0; border-radius: 99px; background: repeating-linear-gradient(45deg, #7ED957 0 10px, #5CC245 10px 20px); transition: width .25s linear; animation: cgStripes 1s linear infinite; background-size: 28px 28px; }
+        .cg-loading__sprout { position: absolute; top: -24px; left: 0; font-size: 22px; transform: translateX(-50%); transition: left .25s linear; }
+        .cg-loading__meta { width: 100%; display: flex; justify-content: space-between; margin-top: 8px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: rgba(28,38,52,.55); }
+        .cg-loading__meta span:last-child { color: var(--cg-ink); }
+
+        .cg-auth__foot { display: flex; align-items: center; gap: 8px; margin-top: 22px; font-weight: 800; font-size: 11px; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .12em; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+        .cg-auth__foot a:hover, .cg-auth__foot button:hover { color: #fff; }
+        .cg-auth__foot button { text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.35); }
+
+        /* Modal (captcha) */
+        .cg-modal { position: relative; z-index: 10; width: 100%; max-width: 360px; background: var(--cg-cream); border: 4px solid var(--cg-ink); border-radius: 26px; box-shadow: 0 10px 0 var(--cg-ink); padding: 26px 22px 22px; text-align: center; display: flex; flex-direction: column; gap: 10px; font-family: 'Nunito', sans-serif; }
+        .cg-modal__close { position: absolute; top: 10px; right: 14px; width: 34px; height: 34px; border-radius: 50%; font-weight: 900; color: var(--cg-ink); }
+        .cg-modal__close:hover { background: var(--cg-cream-2); }
+        .cg-modal__icon { font-size: 44px; margin: -50px auto 0; width: 76px; height: 76px; display: grid; place-items: center; background: var(--cg-yellow); border: 4px solid var(--cg-ink); border-radius: 50%; box-shadow: 0 4px 0 var(--cg-ink); animation: cgFloat 3s ease-in-out infinite; }
+        .cg-modal__question { background: #fff; border: 3px solid var(--cg-ink); border-radius: 16px; padding: 10px; }
+        .cg-modal__question span { display: block; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: rgba(28,38,52,.5); }
+        .cg-modal__question strong { font-family: 'Lilita One', sans-serif; font-size: 36px; color: var(--cg-blue); letter-spacing: .1em; }
+        .cg-modal__input { width: 100%; text-align: center; font-family: inherit; font-weight: 900; font-size: 20px; padding: 12px; border: 3px solid var(--cg-ink); border-radius: 16px; outline: none; background: #fff; }
+        .cg-modal__input:focus { border-color: var(--cg-blue); box-shadow: 0 0 0 4px rgba(41,150,218,.22); }
+        .cg-modal__error { font-weight: 900; font-size: 12px; color: var(--cg-red); }
+        .cg-modal__error.hidden { display: none; }
+        .cg-pop { animation: cgPopIn .45s var(--cg-spring); }
+
+        /* Confeti */
+        .cg-confetti { position: fixed; left: 0; top: 0; z-index: 10000; pointer-events: none; font-size: 22px; will-change: transform, opacity; }
+
+        /* ---------- Responsive ---------- */
+        @media (min-width: 400px) {
+            .cg-card { padding: 24px 24px 20px; }
+            .cg-mascot-wrap { --h: 144px; }
+            .cg-bubble { font-size: 13px; }
+        }
+        @media (min-width: 1024px) {
+            .cg-auth__layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 56px; }
+            .cg-hero { display: flex; flex-direction: column; align-items: flex-start; justify-self: stretch; padding-left: 12px; }
+            .cg-mobile-logo, .cg-auth__foot .cg-season { display: none; }
+            .cg-auth__foot .cg-season + span { display: none; }
+            .cg-stage { justify-self: center; }
+            .cg-mascot-wrap { --h: 160px; }
+            .cg-bubble { right: calc(50% + 60px); max-width: 200px; top: 12px; }
+        }
+        @media (min-width: 640px) and (max-width: 1023px) and (min-height: 761px) {
+            .cg-mobile-logo { width: 320px; }
+            .cg-mascot-wrap { --h: 156px; }
+        }
+        @media (max-height: 760px) and (max-width: 1023px) {
+            .cg-mobile-logo { width: min(180px, 48vw); }
+            .cg-mascot-wrap { --h: 118px; }
+        }
+        @media (max-height: 640px) and (max-width: 1023px) {
+            .cg-mobile-logo { display: none; }
+        }
+        @media (max-width: 360px) {
+            .cg-card { padding: 20px 14px 16px; border-radius: 24px; }
+            .cg-title { font-size: 22px; }
+            .cg-tabs button { font-size: 14.5px; }
+            .cg-bubble { font-size: 11px; right: calc(50% + 40px); max-width: calc(50% - 40px); padding: 6px 8px; }
+            .cg-steps-bar__txt { font-size: 9px; }
+            .cg-field__prefix { font-size: 12.5px; padding: 6px 6px; }
+            .cg-strength__label { width: 58px; font-size: 10px; }
+        }
+
+        /* ---------- Keyframes ---------- */
+        @keyframes cgFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes cgDrop { from { opacity: 0; transform: translateY(-40px) scale(.8); } }
+        @keyframes cgRise { from { opacity: 0; transform: translateY(50px); } }
+        @keyframes cgCardIn { from { opacity: 0; transform: translateY(40px) scale(.94); } }
+        @keyframes cgChipIn { to { opacity: 1; transform: none; } }
+        @keyframes cgBubble { 0% { opacity: 0; transform: scale(.4) rotate(-8deg); } 100% { opacity: 1; transform: none; } }
+        @keyframes cgPopIn { 0% { opacity: 0; transform: scale(.85); } 100% { opacity: 1; transform: none; } }
+        @keyframes cgBreath { 0%,100% { transform: rotate(var(--cg-tilt, 0deg)) translateY(0); } 50% { transform: rotate(var(--cg-tilt, 0deg)) translateY(2.5px); } }
+        @keyframes cgNo { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+        @keyframes cgHop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes cgShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-12px) rotate(-1deg); } 40% { transform: translateX(10px) rotate(1deg); } 60% { transform: translateX(-7px); } 80% { transform: translateX(4px); } }
+        @keyframes cgWiggle { 0%,100% { transform: translateX(0); } 33% { transform: translateX(-5px); } 66% { transform: translateX(5px); } }
+        @keyframes cgSpin { to { transform: rotate(360deg); } }
+        @keyframes cgShine { to { left: 130%; } }
+        @keyframes cgRipple { to { transform: scale(2.6); opacity: 0; } }
+        @keyframes cgGrow { 0% { transform: scale(.4) translateY(8px); } 100% { transform: none; } }
+        @keyframes cgStripes { to { background-position: 28px 0; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cg-auth *, .cg-auth *::before, .cg-auth *::after, .cg-modal, .cg-modal * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+            .cg-auth__particles { display: none; }
+        }
     </style>
 </head>
 <body class="bg-bone text-cg_navy h-screen overflow-hidden relative flex flex-col">
 
-    <div id="login-screen" class="absolute inset-0 w-full h-full bg-fixed z-[200] flex items-center justify-center transition-opacity duration-500 px-4 bg-cover bg-center bg-no-repeat" style="background-image: url('assets/Fondos/login_bg.jpg');">
-        <!-- Capa oscura -->
-        <div class="absolute inset-0 bg-gray-900/30"></div>
-        
-        <!-- Tarjeta de Login -->
-        <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md p-6 sm:p-8 relative z-10 border border-white/50 transform transition-all max-h-[95vh] overflow-y-auto" style="scrollbar-width: none;">
-            
-            <div class="flex flex-col items-center justify-center mb-5 sm:mb-6 relative">
-                <div class="absolute inset-0 bg-white rounded-full blur-2xl opacity-60 w-24 h-24 mx-auto"></div>
-                <!-- Título Nuevo en lugar del Logo -->
-                <h2 class="text-3xl sm:text-4xl font-black text-cg_navy relative z-10 drop-shadow-lg text-center uppercase tracking-widest">Ingreso de Granjeros</h2>
-            </div>
-            
-            <form id="auth-form" class="space-y-3 sm:space-y-4 relative z-10">
-                
-                <!-- (La etiqueta de Simulador Skill-Based fue eliminada de aquí) -->
-                
-                <h3 id="form-title" class="text-center font-black text-cg_navy text-xl sm:text-2xl hidden mb-3">Crear tu Cuenta</h3>
-                
-                <div class="space-y-2.5 sm:space-y-3">
-                    <!-- Usuario -->
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">👤</span>
-                        </div>
-                        <input type="text" id="username" placeholder="Tu usuario o correo" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
-                    </div>
-                    
-                    <!-- Contraseña -->
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">🔒</span>
-                        </div>
-                        <input type="password" id="password" placeholder="Tu contraseña secreta" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
-                    </div>
+    <!-- ===================================================================
+         LOGIN / REGISTRO — CASHGARDEN CLUB
+         Mascota interactiva + registro en 3 pasos con Nequi único.
+         Ver NOTA_LOGIN_REGISTRO.md para la parte de backend.
+         =================================================================== -->
+    <div id="login-screen" class="cg-auth absolute inset-0 w-full h-full z-[200] bg-no-repeat transition-opacity duration-500" style="background-image: url('assets/Fondos/login_bg.jpg');">
+        <div class="cg-auth__shade"></div>
+        <canvas id="cg-particles" class="cg-auth__particles" aria-hidden="true"></canvas>
 
-                    <!-- Confirmar Contraseña (Oculto en Login) -->
-                    <div id="confirm-password-container" class="relative group hidden">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-cg_blue transition-colors text-base sm:text-lg">🛡️</span>
-                        </div>
-                        <input type="password" id="confirm_password" placeholder="Repite tu contraseña" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-gray-50/50 border-2 border-gray-200 focus:border-cg_blue focus:bg-white outline-none font-black text-cg_navy transition-all placeholder-gray-400 text-sm">
-                    </div>
+        <div class="cg-auth__scroll">
+            <div class="cg-auth__layout">
 
-                    <!-- NUEVO: Código de Referido (Opcional, oculto en login) -->
-                    <div id="referral-input-container" class="relative group hidden">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="text-gray-400 group-focus-within:text-orange-500 transition-colors text-base sm:text-lg">🤝</span>
-                        </div>
-                        <input type="text" id="referred_by_input" placeholder="Código de Invitación (Opcional)" maxlength="5" class="w-full pl-11 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-orange-50/50 border-2 border-orange-200 focus:border-orange-500 focus:bg-white outline-none font-black text-orange-600 transition-all placeholder-orange-400 text-sm uppercase">
-                    </div>
-                </div>
-                
-                <!-- CHECKBOXES LEGALES Y CAPTCHA -->
-                <div id="register-extras-container" class="hidden flex-col gap-2 mt-2">
-                    <label class="flex items-start gap-2.5 cursor-pointer p-2 sm:p-3 bg-gray-50/50 rounded-lg transition-colors border border-gray-100 hover:border-gray-200">
-                        <input type="checkbox" id="chk-terms" class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 text-cg_blue rounded border-gray-300 focus:ring-cg_blue shrink-0 cursor-pointer">
-                        <span class="text-[10px] sm:text-[11px] text-gray-600 font-medium leading-tight">Acepto los <a href="legales.html" target="_blank" class="text-cg_blue font-bold hover:underline">Términos y Condiciones</a>, confirmo ser <strong>mayor de 18 años</strong> y autorizo el Tratamiento de mis Datos Personales.</span>
-                    </label>
+                <!-- Columna héroe (solo escritorio) -->
+                <aside class="cg-hero">
+                    <img src="assets/Fondos/logo.png" alt="CashGarden Club" class="cg-hero__logo">
+                    <span class="cg-season" data-cg-season>🍂 Temporada de Otoño</span>
+                    <p class="cg-hero__tagline">Siembra, combate y cosecha.<br>La granja más competitiva te espera.</p>
+                    <ul class="cg-hero__chips">
+                        <li style="--i:0"><span>🌱</span> Cultiva y evoluciona tus plantas</li>
+                        <li style="--i:1"><span>⚔️</span> Combates PvP, PvC y PvR</li>
+                        <li style="--i:2"><span>🤝</span> Invita amigos y gana recompensas</li>
+                        <li style="--i:3"><span>💸</span> Retiros directo a tu Nequi</li>
+                    </ul>
+                </aside>
 
-                    <!-- CAPTCHA Interactivo -->
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 sm:p-3 flex items-center justify-between shadow-sm mt-1">
-                        <div class="flex items-center gap-2 sm:gap-3 cursor-pointer pl-1" onclick="openCaptchaModal()">
-                            <div id="captcha-checkbox-ui" class="w-5 h-5 sm:w-6 sm:h-6 bg-white border-2 border-gray-300 rounded flex items-center justify-center transition-all shadow-inner">
-                                <svg id="captcha-checkmark" class="w-4 h-4 text-green-500 hidden animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <!-- Escenario: mascota + tarjeta -->
+                <main class="cg-stage">
+                    <img src="assets/Fondos/logo.png" alt="CashGarden Club" class="cg-mobile-logo">
+
+                    <div class="cg-mascot-wrap">
+                        <div class="cg-bubble" id="cg-bubble" aria-live="polite">¡Bienvenido a la granja, granjero!</div>
+
+                        <div id="cg-mascot" class="cg-farmer is-idle" data-pose="idle" aria-hidden="true">
+                            <div id="cg-head" class="cg-rig">
+                                <img class="cg-pose cg-pose--idle" src="assets/Granjero/Explicando.png" alt="" draggable="false">
+                                <img class="cg-pose cg-pose--error" src="assets/Granjero/Alarma.png" alt="" draggable="false">
+                                <img class="cg-pose cg-pose--happy" src="assets/Granjero/Celebración.png" alt="" draggable="false">
+                                <!-- Manos recortadas de Explicando.png: suben a taparse las gafas en la contraseña -->
+                                <span class="cg-hand cg-hand--l"></span>
+                                <span class="cg-hand cg-hand--r"></span>
                             </div>
-                            <input type="checkbox" id="chk-captcha" class="hidden">
-                            <span class="text-xs sm:text-sm font-bold text-gray-700">No soy un robot</span>
-                        </div>
-                        <div class="flex flex-col items-center justify-center">
-                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="h-6 sm:h-8 w-auto object-contain opacity-90" alt="reCAPTCHA">
-                            <span class="text-[6px] sm:text-[7px] text-gray-400 mt-0.5">Privacidad - Términos</span>
                         </div>
                     </div>
-                </div>
 
-                <div id="auth-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded-r-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm">
-                    <span class="text-lg">⚠️</span>
-                    <span id="auth-error-msg">Error en la autenticación.</span>
-                </div>
-                
-                <div class="pt-2 sm:pt-3">
-                    <button type="button" onclick="handleAuth('login')" id="btn-login" class="w-full bg-gradient-to-r from-cg_blue to-blue-600 hover:from-blue-600 hover:to-blue-800 text-white font-black text-sm sm:text-base py-3.5 sm:py-4 rounded-xl shadow-[0_8px_15px_rgba(41,150,218,0.25)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
-                        <span>Ingresar a la Granja</span> <span>➔</span>
-                    </button>
-                    
-                    <button type="button" onclick="handleAuth('register')" id="btn-register" class="hidden w-full bg-gradient-to-r from-cg_gold to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-black text-sm sm:text-base py-3.5 sm:py-4 rounded-xl shadow-[0_8px_15px_rgba(237,153,37,0.25)] transition-all transform hover:-translate-y-1 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
-                        <span>Crear Cuenta</span> <span>➔</span>
-                    </button>
-                </div>
-                
-                <div class="text-center mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200/60">
-                    <button type="button" onclick="toggleAuthMode()" id="btn-toggle-mode" class="text-[11px] sm:text-xs font-black text-gray-500 hover:text-cg_blue transition-colors focus:outline-none">
-                        ¿No tienes cuenta? <span class="text-cg_blue underline decoration-2 underline-offset-4">Regístrate gratis</span>
-                    </button>
-                </div>
-            </form>
+                    <div class="cg-card" id="cg-card">
+                        <span class="cg-card__nail cg-card__nail--l"></span>
+                        <span class="cg-card__nail cg-card__nail--r"></span>
 
+                        <div id="auth-form">
+                            <!-- Pestañas -->
+                            <div class="cg-tabs" role="tablist" data-mode="login">
+                                <span class="cg-tabs__thumb"></span>
+                                <button type="button" role="tab" id="cg-tab-login" aria-selected="true" onclick="cgSwitchTab('login')">Ingresar</button>
+                                <button type="button" role="tab" id="cg-tab-register" aria-selected="false" onclick="cgSwitchTab('register')">Crear cuenta</button>
+                            </div>
 
-            <!-- PANTALLA DE PROGRESO Y VALIDACIÓN DEL GRANJERO -->
-            <div id="login-loading-view" class="hidden flex-col items-center justify-center py-6 text-center animate-fade-in">
-                <!-- Avatar Circular Centrado -->
-                <div class="relative w-28 h-28 mx-auto mb-5">
-                    <div class="absolute inset-0 rounded-full border-4 border-cg_blue/30 animate-ping opacity-60"></div>
-                    <div id="loading-avatar-spinner" class="absolute -inset-1 rounded-full border-4 border-transparent border-t-cg_blue animate-spin"></div>
-                    <div class="w-full h-full rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gray-100 flex items-center justify-center relative z-10">
-                        <img id="loading-avatar-img" src="assets/Perfil/defecto.png" class="w-full h-full object-cover">
+                            <div class="cg-panels" id="cg-panels">
+
+                                <!-- ============ LOGIN ============ -->
+                                <form id="cg-login-form" class="cg-panel" novalidate>
+                                    <h2 class="cg-title">¡Hola de nuevo, granjero!</h2>
+                                    <p class="cg-sub">Tus cultivos te extrañaron. Entra y cosecha.</p>
+
+                                    <label class="cg-field" data-field="username">
+                                        <span class="cg-field__label">Usuario</span>
+                                        <span class="cg-field__box">
+                                            <span class="cg-field__icon">👤</span>
+                                            <input type="text" id="username" name="username" placeholder="Tu nombre de granjero" autocomplete="username" autocapitalize="off" spellcheck="false" data-cg-look>
+                                        </span>
+                                        <span class="cg-field__msg"></span>
+                                    </label>
+
+                                    <label class="cg-field" data-field="password">
+                                        <span class="cg-field__label">Contraseña</span>
+                                        <span class="cg-field__box">
+                                            <span class="cg-field__icon">🔒</span>
+                                            <input type="password" id="password" name="password" placeholder="Tu contraseña secreta" autocomplete="current-password" data-cg-secret>
+                                            <button type="button" class="cg-eye" aria-label="Mostrar contraseña" onclick="cgTogglePass(this)">👁️</button>
+                                        </span>
+                                        <span class="cg-field__msg"></span>
+                                    </label>
+
+                                    <button type="submit" id="btn-login" class="cg-btn cg-btn--green">
+                                        <span class="cg-btn__label">Entrar a la granja <span class="cg-btn__arrow">➔</span></span>
+                                        <span class="cg-btn__spinner" aria-hidden="true">🌻</span>
+                                    </button>
+
+                                    <p class="cg-switch">¿Aún no tienes granja? <button type="button" id="btn-toggle-mode" onclick="cgSwitchTab('register')">Regístrate gratis</button></p>
+                                </form>
+
+                                <!-- ============ REGISTRO (3 pasos) ============ -->
+                                <form id="cg-register-form" class="cg-panel" novalidate hidden>
+                                    <h2 class="cg-title" id="form-title">Crea tu granja</h2>
+
+                                    <!-- Indicador de pasos -->
+                                    <ol class="cg-steps-bar" id="cg-steps-bar" data-step="1">
+                                        <li class="is-active"><span class="cg-steps-bar__dot">🧑‍🌾</span><span class="cg-steps-bar__txt">Granjero</span></li>
+                                        <li><span class="cg-steps-bar__dot">🔐</span><span class="cg-steps-bar__txt">Seguridad</span></li>
+                                        <li><span class="cg-steps-bar__dot">📜</span><span class="cg-steps-bar__txt">Pacto</span></li>
+                                        <span class="cg-steps-bar__line"><span></span></span>
+                                    </ol>
+
+                                    <div class="cg-steps" id="cg-steps">
+                                        <!-- Paso 1 -->
+                                        <section class="cg-step" data-step="1">
+                                            <label class="cg-field" data-field="reg-username">
+                                                <span class="cg-field__label">Nombre de granjero</span>
+                                                <span class="cg-field__box">
+                                                    <span class="cg-field__icon">👤</span>
+                                                    <input type="text" id="reg-username" placeholder="Ej: Rey_Calabaza" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" data-cg-look>
+                                                    <span class="cg-field__status"></span>
+                                                </span>
+                                                <span class="cg-field__msg">3 a 16 caracteres: letras, números o _</span>
+                                            </label>
+
+                                            <label class="cg-field" data-field="reg-nequi">
+                                                <span class="cg-field__label">Número Nequi <em class="cg-tag">1 por persona</em></span>
+                                                <span class="cg-field__box">
+                                                    <span class="cg-field__prefix">+57</span>
+                                                    <input type="tel" id="reg-nequi" inputmode="numeric" placeholder="300 123 4567" maxlength="12" autocomplete="tel-national" data-cg-look>
+                                                    <span class="cg-field__status"></span>
+                                                </span>
+                                                <span class="cg-field__msg">Aquí recibirás tus retiros. No se puede repetir.</span>
+                                            </label>
+                                        </section>
+
+                                        <!-- Paso 2 -->
+                                        <section class="cg-step" data-step="2" hidden>
+                                            <label class="cg-field" data-field="reg-password">
+                                                <span class="cg-field__label">Contraseña</span>
+                                                <span class="cg-field__box">
+                                                    <span class="cg-field__icon">🔒</span>
+                                                    <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" data-cg-secret>
+                                                    <button type="button" class="cg-eye" aria-label="Mostrar contraseña" onclick="cgTogglePass(this)">👁️</button>
+                                                </span>
+                                                <span class="cg-field__msg"></span>
+                                            </label>
+
+                                            <div class="cg-strength" id="cg-strength" data-level="0">
+                                                <span class="cg-strength__plant" id="cg-strength-plant">🌰</span>
+                                                <div class="cg-strength__bars"><i></i><i></i><i></i><i></i></div>
+                                                <span class="cg-strength__label" id="cg-strength-label">Semilla</span>
+                                            </div>
+
+                                            <label class="cg-field" data-field="confirm_password">
+                                                <span class="cg-field__label">Repite la contraseña</span>
+                                                <span class="cg-field__box">
+                                                    <span class="cg-field__icon">🛡️</span>
+                                                    <input type="password" id="confirm_password" placeholder="Igualita a la anterior" autocomplete="new-password" data-cg-secret>
+                                                    <span class="cg-field__status"></span>
+                                                </span>
+                                                <span class="cg-field__msg"></span>
+                                            </label>
+                                        </section>
+
+                                        <!-- Paso 3 -->
+                                        <section class="cg-step" data-step="3" hidden>
+                                            <label class="cg-field cg-field--orange" data-field="referred_by_input">
+                                                <span class="cg-field__label">Código de invitación <em class="cg-tag cg-tag--soft">opcional</em></span>
+                                                <span class="cg-field__box">
+                                                    <span class="cg-field__icon">🤝</span>
+                                                    <input type="text" id="referred_by_input" placeholder="ABC12" maxlength="5" autocapitalize="characters" spellcheck="false" data-cg-look>
+                                                </span>
+                                                <span class="cg-field__msg"></span>
+                                            </label>
+
+                                            <label class="cg-check">
+                                                <input type="checkbox" id="chk-terms">
+                                                <span class="cg-check__box">✓</span>
+                                                <span class="cg-check__txt">Acepto los <a href="legales.html" target="_blank" rel="noopener">Términos y Condiciones</a>, confirmo ser <strong>mayor de 18 años</strong> y autorizo el tratamiento de mis datos.</span>
+                                            </label>
+
+                                            <button type="button" class="cg-captcha" id="captcha-checkbox-ui" onclick="openCaptchaModal()">
+                                                <input type="checkbox" id="chk-captcha" hidden>
+                                                <span class="cg-captcha__box"><svg id="captcha-checkmark" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                                <span class="cg-captcha__txt">No soy un cuervo robot</span>
+                                                <span class="cg-captcha__icon">🐦‍⬛</span>
+                                            </button>
+                                        </section>
+                                    </div>
+
+                                    <div class="cg-step-actions">
+                                        <button type="button" class="cg-btn cg-btn--ghost" id="cg-back" onclick="cgBack()" hidden>← Atrás</button>
+                                        <button type="submit" id="btn-register" class="cg-btn cg-btn--gold">
+                                            <span class="cg-btn__label" id="cg-next-label">Siguiente <span class="cg-btn__arrow">➔</span></span>
+                                            <span class="cg-btn__spinner" aria-hidden="true">🌻</span>
+                                        </button>
+                                    </div>
+
+                                    <p class="cg-switch">¿Ya tienes granja? <button type="button" onclick="cgSwitchTab('login')">Ingresa aquí</button></p>
+                                </form>
+                            </div>
+
+                            <div id="auth-error" class="cg-alert hidden" role="alert">
+                                <span class="cg-alert__icon">🐦‍⬛</span>
+                                <span id="auth-error-msg">Error en la autenticación.</span>
+                            </div>
+                        </div>
+
+                        <!-- PANTALLA DE PROGRESO Y VALIDACIÓN DEL GRANJERO -->
+                        <div id="login-loading-view" class="cg-loading hidden">
+                            <div class="cg-loading__avatar">
+                                <span class="cg-loading__ring"></span>
+                                <img id="loading-avatar-img" src="assets/Perfil/defecto.png" alt="">
+                                <span id="loading-avatar-check" class="cg-loading__check">✓</span>
+                            </div>
+                            <h4 id="loading-farmer-title" class="cg-title">Accediendo...</h4>
+                            <p id="loading-step-text" class="cg-loading__step">Identificando granjero...</p>
+                            <div class="cg-loading__bar"><div id="login-progress-fill"></div><span class="cg-loading__sprout" id="cg-loading-sprout">🌱</span></div>
+                            <div class="cg-loading__meta"><span>Sincronizando granja</span><span id="login-progress-pct">0%</span></div>
+                        </div>
                     </div>
-                    <!-- Check verde animado al completar -->
-                    <div id="loading-avatar-check" class="hidden absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-2 border-white items-center justify-center text-white text-sm font-black shadow-lg z-20 animate-bounce">
-                        ✓
-                    </div>
-                </div>
 
-                <!-- Título y Mensajes de Verificación -->
-                <h4 id="loading-farmer-title" class="text-xl font-black text-cg_navy mb-1 tracking-tight">Accediendo...</h4>
-                <p id="loading-step-text" class="text-xs font-bold text-cg_blue mb-6 uppercase tracking-wider h-5 flex items-center justify-center animate-pulse">
-                    Identificando granjero...
-                </p>
-
-                <!-- Barra de Progreso -->
-                <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden border border-gray-200 relative shadow-inner mb-2">
-                    <div id="login-progress-fill" class="h-full bg-gradient-to-r from-cg_blue via-blue-500 to-green-500 rounded-full transition-all duration-300 w-0"></div>
-                </div>
-                <div class="flex justify-between w-full text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
-                    <span>Sincronizando Granja</span>
-                    <span id="login-progress-pct" class="text-cg_navy font-black">0%</span>
-                </div>
+                    <footer class="cg-auth__foot">
+                        <a href="legales.html" target="_blank" rel="noopener">Términos</a>
+                        <span>·</span>
+                        <span class="cg-season cg-season--mini" data-cg-season>🍂 Otoño</span>
+                        <span>·</span>
+                        <button type="button" onclick="openAdminLogin()">Admin</button>
+                    </footer>
+                </main>
             </div>
-
-
-
         </div>
-
-        <!-- BOTÓN DISCRETO ADMIN -->
-        <button onclick="openAdminLogin()" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-[10px] text-white/20 hover:text-white/80 transition-colors uppercase tracking-[0.3em] z-[250]">Admin</button>
 
         <!-- MODAL DE ACCESO ADMIN -->
         <div id="admin-login-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-            <div class="bg-gray-900 border border-gray-700 rounded-3xl p-8 w-full max-w-sm relative shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center animate-fade-in">
+            <div class="bg-gray-900 border border-gray-700 rounded-3xl p-8 w-full max-w-sm relative shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center cg-pop">
                 <button onclick="document.getElementById('admin-login-modal').classList.replace('flex', 'hidden')" class="absolute top-4 right-5 text-gray-500 hover:text-white font-bold text-xl">✕</button>
                 <div class="text-4xl mb-4">👁️</div>
                 <h3 class="text-white font-black text-xl mb-1 uppercase tracking-widest">Acceso Clasificado</h3>
                 <p class="text-gray-500 text-xs mb-6">Identifícate para entrar al mainframe.</p>
-                
+
                 <input type="text" id="admin-user" placeholder="Usuario" class="w-full bg-gray-800 border border-gray-600 text-white px-4 py-3 rounded-xl mb-3 outline-none focus:border-red-500 text-center font-black">
                 <input type="password" id="admin-pass" placeholder="Clave" class="w-full bg-gray-800 border border-gray-600 text-white px-4 py-3 rounded-xl mb-6 outline-none focus:border-red-500 text-center font-black">
-                
+
                 <button onclick="verifyAdmin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all">Ingresar al Sistema</button>
             </div>
         </div>
@@ -693,25 +1162,28 @@
 
     <!-- MODAL DE VERIFICACIÓN CAPTCHA -->
     <div id="captcha-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeCaptchaModal()"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8">
-            <h3 class="text-xl font-black text-cg_navy mb-2 tracking-tight">Control de Seguridad</h3>
-            <p class="text-xs text-gray-500 mb-6 font-medium">Por favor, resuelve la siguiente operación para comprobar que eres un humano.</p>
-            
-            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-5 shadow-inner">
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">¿Cuánto es el resultado de?</span>
-                <span id="captcha-question" class="text-3xl font-black text-cg_blue tracking-widest">0 + 0</span>
+        <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="closeCaptchaModal()"></div>
+        <div class="cg-modal cg-pop">
+            <button type="button" class="cg-modal__close" onclick="closeCaptchaModal()" aria-label="Cerrar">✕</button>
+            <div class="cg-modal__icon">🐦‍⬛</div>
+            <h3 class="cg-title">Control anti-cuervos</h3>
+            <p class="cg-sub">Los cuervos robot no saben sumar. Demuéstralo:</p>
+
+            <div class="cg-modal__question">
+                <span>¿Cuánto es?</span>
+                <strong id="captcha-question">0 + 0</strong>
             </div>
-            
-            <input type="number" id="captcha-answer" placeholder="Tu respuesta..." class="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-gray-200 focus:border-cg_blue outline-none font-black text-center text-cg_navy text-lg mb-3 transition-all" onkeypress="if(event.key === 'Enter') verifyCaptcha()">
-            
-            <p id="captcha-error" class="text-[10px] font-bold text-red-500 mb-4 hidden bg-red-50 py-1 rounded border border-red-100">Respuesta incorrecta, intenta de nuevo.</p>
-            
-            <button onclick="verifyCaptcha()" type="button" class="w-full bg-cg_blue hover:bg-blue-600 text-white font-black py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest text-sm active:scale-95">
-                Verificar Identidad
+
+            <input type="number" id="captcha-answer" inputmode="numeric" placeholder="Tu respuesta" class="cg-modal__input" onkeydown="if(event.key === 'Enter') verifyCaptcha()">
+
+            <p id="captcha-error" class="cg-modal__error hidden">¡Ese no es! Te puse otra.</p>
+
+            <button onclick="verifyCaptcha()" type="button" class="cg-btn cg-btn--blue">
+                <span class="cg-btn__label">Verificar 🌾</span>
             </button>
         </div>
     </div>
+
 
 
 
@@ -817,103 +1289,7 @@
         document.addEventListener('DOMContentLoaded', applySeasonalBackgrounds);
         // --------------------------------------------------------------------
 
-        let isLoginMode = true;
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('btn-login').classList.toggle('hidden', !isLoginMode);
-            document.getElementById('btn-register').classList.toggle('hidden', isLoginMode);
-            
-            document.getElementById('form-title').classList.toggle('hidden', isLoginMode);
-            document.getElementById('confirm-password-container').classList.toggle('hidden', isLoginMode);
-            document.getElementById('referral-input-container').classList.toggle('hidden', isLoginMode);
-            document.getElementById('register-extras-container').classList.toggle('hidden', isLoginMode);
-
-            document.getElementById('btn-toggle-mode').innerHTML = isLoginMode 
-                ? "¿No tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Regístrate gratis</span>" 
-                : "¿Ya tienes cuenta? <span class='text-cg_blue underline decoration-2 underline-offset-4'>Ingresa aquí</span>";
-            
-            document.getElementById('auth-error').classList.add('hidden');
-            validateRegistrationForm(); 
-        }
-
-        document.querySelectorAll('#chk-terms, #chk-captcha, #password, #confirm_password').forEach(el => {
-            el.addEventListener('input', validateRegistrationForm);
-            el.addEventListener('change', validateRegistrationForm);
-        });
-
-        function validateRegistrationForm() {
-            if (isLoginMode) return;
-            const pass = document.getElementById('password').value;
-            const passConfirm = document.getElementById('confirm_password').value;
-            const chkTerms = document.getElementById('chk-terms').checked;
-            const chkCaptcha = document.getElementById('chk-captcha').checked;
-            
-            const btnReg = document.getElementById('btn-register');
-            
-            if (pass.length > 3 && pass === passConfirm && chkTerms && chkCaptcha) {
-                btnReg.disabled = false;
-                btnReg.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                btnReg.disabled = true;
-                btnReg.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        async function handleAuth(action) {
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value;
-            const refBy = document.getElementById('referred_by_input') ? document.getElementById('referred_by_input').value.trim() : "";
-            
-            if (!user || !pass) {
-                showError("Por favor completa todos los campos.");
-                return;
-            }
-
-            if (action === 'register') {
-                const passConfirm = document.getElementById('confirm_password').value;
-                if (pass !== passConfirm) {
-                    showError("Las contraseñas no coinciden.");
-                    return;
-                }
-            }
-
-            const btnLogin = document.getElementById('btn-login');
-            if (btnLogin) btnLogin.disabled = true;
-
-            try {
-                const response = await fetch(`/api/${action}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pass, referred_by: refBy })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    sessionStorage.setItem('username', data.user.username);
-                    sessionStorage.setItem('session_token', data.user.session_token);
-                    if (data.user.short_id) sessionStorage.setItem('short_id', data.user.short_id);
-
-                    updateProfileUI(data.user);
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard-screen').classList.remove('hidden');
-                    document.getElementById('dashboard-screen').classList.add('flex');
-                    
-                    // --- MODIFICADO: REDIRIGE A TRANSPARENCIA PRIMERO ---
-                    document.getElementById('live-ticker-bar').classList.remove('hidden');
-                    loadView('transparencia'); 
-                    // -----------------------------------------------------
-                    startBackgroundMusic();
-                } else {
-                    showError(data.error || "Error en la autenticación.");
-                    if (btnLogin) btnLogin.disabled = false;
-                }
-            } catch (error) {
-                showError("Error de conexión con el servidor.");
-                if (btnLogin) btnLogin.disabled = false;
-            }
-        }
+        // Login/registro: ver el <script> "LOGIN / REGISTRO INTERACTIVO" al final del archivo.
 
         function checkCookies() {
             if(!localStorage.getItem('cookiesAccepted')) {
@@ -1221,11 +1597,6 @@
                     }
                 }
             } catch (e) { console.error("Error sincronizando saldo:", e); }
-        }
-
-        function showError(msg) {
-            document.getElementById('auth-error-msg').innerText = msg;
-            document.getElementById('auth-error').classList.remove('hidden');
         }
 
         function showSessionExpiredModal(msg) {
@@ -1642,62 +2013,6 @@
 
 
 
-        // ================= LÓGICA DEL CAPTCHA INTERACTIVO =================
-        let captchaCorrectAnswer = 0;
-
-        function openCaptchaModal() {
-            const chk = document.getElementById('chk-captcha');
-            if(chk.checked) return; // Si ya se verificó, no hacer nada
-            
-            generateCaptcha();
-            document.getElementById('captcha-answer').value = '';
-            document.getElementById('captcha-error').classList.add('hidden');
-            
-            const modal = document.getElementById('captcha-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // Enfocar automáticamente el input para mayor comodidad
-            setTimeout(() => document.getElementById('captcha-answer').focus(), 100);
-        }
-
-        function closeCaptchaModal() {
-            document.getElementById('captcha-modal').classList.add('hidden');
-            document.getElementById('captcha-modal').classList.remove('flex');
-        }
-
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            captchaCorrectAnswer = num1 + num2;
-            document.getElementById('captcha-question').innerText = `${num1} + ${num2}`;
-        }
-
-        function verifyCaptcha() {
-            const userAnswer = parseInt(document.getElementById('captcha-answer').value);
-            
-            if (userAnswer === captchaCorrectAnswer) {
-                closeCaptchaModal();
-                
-                // Marcar el checkbox real oculto
-                document.getElementById('chk-captcha').checked = true;
-                
-                // Actualizar la interfaz visual del checkbox a VERDE (Aprobado)
-                const uiBox = document.getElementById('captcha-checkbox-ui');
-                uiBox.classList.remove('bg-white', 'border-gray-300');
-                uiBox.classList.add('bg-green-50', 'border-green-500');
-                document.getElementById('captcha-checkmark').classList.remove('hidden');
-                
-                // Llamar a la validación general del formulario
-                validateRegistrationForm();
-            } else {
-                // Mostrar error y generar una nueva operación
-                document.getElementById('captcha-error').classList.remove('hidden');
-                document.getElementById('captcha-answer').value = '';
-                generateCaptcha();
-                document.getElementById('captcha-answer').focus();
-            }
-        }
 
 
 
@@ -2370,6 +2685,695 @@
 
 
 
+    </script>
+    <script>
+        // =====================================================================
+        // LOGIN / REGISTRO INTERACTIVO
+        // - Mascota: gafas que se suben, ojos que siguen el texto, manos que
+        //   tapan los ojos en la contraseña y espían al mostrarla.
+        // - Registro en 3 pasos con Nequi único (ver NOTA_LOGIN_REGISTRO.md).
+        // =====================================================================
+        (function () {
+            const $ = (id) => document.getElementById(id);
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // ---------------- TEMPORADA (misma regla que applySeasonalBackgrounds) ----------------
+            const SEASONS = {
+                _invi: { name: 'Invierno', icon: '❄️', particles: ['❄️', '•'], colors: ['#ffffff', '#DDF3FF'], fall: 0.6, sway: 0.6 },
+                _oto: { name: 'Otoño', icon: '🍂', particles: ['🍂', '🍁'], colors: ['#ED9925', '#D9541E'], fall: 0.9, sway: 1.2 },
+                _pri: { name: 'Primavera', icon: '🌸', particles: ['🌸', '🌼'], colors: ['#FFB7D5', '#FFFFFF'], fall: 0.7, sway: 1 },
+                _ver: { name: 'Verano', icon: '☀️', particles: ['✨'], colors: ['#FDE062', '#FFF6B0'], fall: -0.25, sway: 0.5 }
+            };
+            function seasonSuffix() {
+                const day = new Date().getDate();
+                if (day <= 9) return '_invi';
+                if (day <= 19) return '_oto';
+                if (day <= 26) return '_pri';
+                return '_ver';
+            }
+            const season = SEASONS[seasonSuffix()];
+            document.querySelectorAll('[data-cg-season]').forEach((el) => {
+                el.textContent = el.classList.contains('cg-season--mini')
+                    ? `${season.icon} ${season.name}`
+                    : `${season.icon} Temporada de ${season.name}`;
+            });
+
+            // ---------------- PARTÍCULAS DE TEMPORADA ----------------
+            (function particles() {
+                const canvas = $('cg-particles');
+                const screen = $('login-screen');
+                if (!canvas || reduceMotion) return;
+                const ctx = canvas.getContext('2d');
+                let w, h, dpr, items = [], running = true;
+
+                function resize() {
+                    dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    w = canvas.clientWidth; h = canvas.clientHeight;
+                    canvas.width = w * dpr; canvas.height = h * dpr;
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    const count = Math.round(Math.min(34, Math.max(12, w / 40)));
+                    items = Array.from({ length: count }, () => spawn(true));
+                }
+                function spawn(anywhere) {
+                    const size = 12 + Math.random() * 14;
+                    return {
+                        x: Math.random() * w,
+                        y: anywhere ? Math.random() * h : (season.fall > 0 ? -30 : h + 30),
+                        size,
+                        vy: (0.35 + Math.random() * 0.6) * season.fall * (size / 18),
+                        phase: Math.random() * Math.PI * 2,
+                        rot: Math.random() * Math.PI * 2,
+                        vr: (Math.random() - 0.5) * 0.03,
+                        glyph: season.particles[Math.floor(Math.random() * season.particles.length)],
+                        alpha: 0.55 + Math.random() * 0.4
+                    };
+                }
+                function tick(t) {
+                    if (screen.classList.contains('hidden')) { running = false; return; }
+                    ctx.clearRect(0, 0, w, h);
+                    for (const p of items) {
+                        p.y += p.vy;
+                        p.x += Math.sin(t / 1400 + p.phase) * 0.45 * season.sway;
+                        p.rot += p.vr;
+                        if (p.y > h + 40 || p.y < -40) Object.assign(p, spawn(false));
+                        ctx.save();
+                        ctx.globalAlpha = season.fall < 0 ? p.alpha * (0.5 + 0.5 * Math.sin(t / 500 + p.phase)) : p.alpha;
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rot);
+                        ctx.font = `${p.size}px serif`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(p.glyph, 0, 0);
+                        ctx.restore();
+                    }
+                    if (running) requestAnimationFrame(tick);
+                }
+                resize();
+                window.addEventListener('resize', resize);
+                requestAnimationFrame(tick);
+            })();
+
+            // ---------------- MASCOTA ----------------
+            const mascot = $('cg-mascot');
+            const head = $('cg-head');
+            const bubble = $('cg-bubble');
+            let mood = 'idle';
+            let moodLock = 0;
+            let bubbleTimer = null;
+            let defaultLine = '¡Bienvenido a la granja, granjero!';
+
+            // Estados: idle (saluda) · look (escuchando) · hide (se tapa los ojos) · peek (espía)
+            //          error (pose Alarma) · happy (pose Celebración)
+            function setMood(next, { force = false } = {}) {
+                if (!force && Date.now() < moodLock) return;
+                mood = next;
+                mascot.classList.remove('is-idle', 'is-look', 'is-hide', 'is-peek', 'is-error', 'is-happy');
+                mascot.classList.add(`is-${next}`);
+                const pose = next === 'error' || next === 'happy' ? next : 'idle';
+                if (mascot.dataset.pose !== pose) {
+                    mascot.dataset.pose = pose;
+                    if (!reduceMotion) head.animate([{ scale: '1' }, { scale: '1.07' }, { scale: '1' }], { duration: 320, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+                }
+                if (next !== 'look') head.style.setProperty('--cg-tilt', '0deg');
+            }
+            function lockMood(ms) { moodLock = Date.now() + ms; }
+
+            function say(text, { error = false, hold = 0 } = {}) {
+                if (!bubble || bubble.textContent === text) return;
+                bubble.textContent = text;
+                bubble.classList.toggle('is-error', error);
+                bubble.classList.remove('is-pop'); void bubble.offsetWidth; bubble.classList.add('is-pop');
+                clearTimeout(bubbleTimer);
+                if (hold) bubbleTimer = setTimeout(() => say(defaultLine), hold);
+            }
+
+            // Se inclina hacia donde va el texto mientras se escribe
+            function trackCaret(input) {
+                const caret = input.selectionStart ?? input.value.length;
+                const ratio = Math.min(1, caret / 22);
+                head.style.setProperty('--cg-tilt', `${(-3 + ratio * 6).toFixed(1)}deg`);
+            }
+
+            // La cabeza sigue al puntero cuando está tranquilo (escritorio)
+            if (window.matchMedia('(pointer: fine)').matches && !reduceMotion) {
+                window.addEventListener('pointermove', (e) => {
+                    if (mood !== 'idle' || $('login-screen').classList.contains('hidden')) return;
+                    const r = mascot.getBoundingClientRect();
+                    const dx = e.clientX - (r.left + r.width / 2);
+                    head.style.setProperty('--cg-tilt', `${Math.max(-4, Math.min(4, dx / 70)).toFixed(1)}deg`);
+                }, { passive: true });
+            }
+
+            const FIELD_LINES = {
+                'username': '¿Cómo te llamas, granjero?',
+                'reg-username': '¡Un nombre legendario! 🌟',
+                'reg-nequi': 'Un Nequi por granjero 🚜',
+                'referred_by_input': '¿Te invitó un amigo? 🤝',
+                'password': '¡No estoy mirando, lo prometo! 🙈',
+                'reg-password': '¡Me tapo los ojos! 🙈',
+                'confirm_password': 'Otra vez, sin espiar 🙈'
+            };
+
+            function isSecretVisible(input) { return input.type === 'text'; }
+
+            function onFieldFocus(e) {
+                const input = e.target;
+                if (input.matches('[data-cg-secret]')) {
+                    setMood(isSecretVisible(input) ? 'peek' : 'hide');
+                    say(isSecretVisible(input) ? 'Bueno... solo un poquito 👀' : FIELD_LINES[input.id]);
+                } else if (input.matches('[data-cg-look]')) {
+                    setMood('look');
+                    trackCaret(input);
+                    say(FIELD_LINES[input.id] || defaultLine);
+                }
+            }
+            const CG_INPUTS = '#login-screen [data-cg-look], #login-screen [data-cg-secret]';
+
+            // Pone al granjero según el campo que tenga el foco (o en reposo si no hay ninguno)
+            function syncMoodToFocus() {
+                if (Date.now() < moodLock) return; // no pisar un error/celebración en curso
+                const a = document.activeElement;
+                if (a && a.matches && a.matches(CG_INPUTS)) {
+                    if (a.matches('[data-cg-secret]')) setMood(a.type === 'text' ? 'peek' : 'hide');
+                    else setMood('look');
+                    return;
+                }
+                if (mood !== 'idle') {
+                    setMood('idle');
+                    head.style.setProperty('--cg-tilt', '0deg');
+                    say(defaultLine);
+                }
+            }
+            function onFieldBlur() { setTimeout(syncMoodToFocus, 90); }
+
+            // Móvil: iOS no quita el foco al tocar fuera de un campo, y Android lo mantiene al
+            // cerrar el teclado con "atrás". Sin esto el granjero se queda con las manos en la cara.
+            document.addEventListener('pointerdown', (e) => {
+                if (e.target.closest(`${CG_INPUTS}, .cg-eye`)) return;
+                const a = document.activeElement;
+                if (a && a.matches && a.matches(CG_INPUTS)) a.blur();
+                setTimeout(syncMoodToFocus, 120);
+            }, true);
+            if (window.visualViewport) {
+                let fullHeight = window.visualViewport.height;
+                window.visualViewport.addEventListener('resize', () => {
+                    const h = window.visualViewport.height;
+                    if (h > fullHeight) fullHeight = h;
+                    const a = document.activeElement;
+                    // el teclado se cerró pero el campo sigue enfocado
+                    if (h >= fullHeight * 0.9 && a && a.matches && a.matches(CG_INPUTS) && window.matchMedia('(pointer: coarse)').matches) {
+                        a.blur();
+                        setTimeout(syncMoodToFocus, 60);
+                    }
+                });
+                window.addEventListener('orientationchange', () => { fullHeight = 0; });
+            }
+
+            document.querySelectorAll('#login-screen [data-cg-look], #login-screen [data-cg-secret]').forEach((input) => {
+                input.addEventListener('focus', onFieldFocus);
+                input.addEventListener('blur', onFieldBlur);
+                if (input.matches('[data-cg-look]')) {
+                    ['input', 'keyup', 'click', 'select'].forEach((ev) => input.addEventListener(ev, () => mood === 'look' && trackCaret(input)));
+                } else {
+                    input.addEventListener('keyup', (e) => showCapsWarning(input, e));
+                }
+            });
+
+            function showCapsWarning(input, e) {
+                const field = input.closest('.cg-field');
+                let warn = field.querySelector('.cg-caps');
+                const on = e.getModifierState && e.getModifierState('CapsLock');
+                if (on && !warn) {
+                    warn = document.createElement('span');
+                    warn.className = 'cg-caps';
+                    warn.textContent = '⇪ Bloq Mayús activado';
+                    field.appendChild(warn);
+                } else if (!on && warn) warn.remove();
+            }
+
+            window.cgTogglePass = function (btn) {
+                const input = btn.parentElement.querySelector('input');
+                const show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.classList.toggle('is-on', show);
+                btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+                // La confirmación sigue al campo principal para que sea coherente
+                if (input.id === 'reg-password') $('confirm_password').type = input.type;
+                input.focus({ preventScroll: true });
+                setMood(show ? 'peek' : 'hide', { force: true });
+                say(show ? 'Bueno... solo un poquito 👀' : '¡Listo, ojos tapados! 🙈');
+                // Si el navegador no dejó enfocar el campo, que no se quede posando para siempre
+                if (document.activeElement !== input) { lockMood(1400); setTimeout(() => { moodLock = 0; syncMoodToFocus(); }, 1450); }
+            };
+
+            // ---------------- EFECTOS ----------------
+            document.addEventListener('pointerdown', (e) => {
+                const btn = e.target.closest('.cg-btn');
+                if (!btn || reduceMotion) return;
+                const r = btn.getBoundingClientRect();
+                const s = Math.max(r.width, r.height);
+                const rip = document.createElement('span');
+                rip.className = 'cg-ripple';
+                rip.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
+                btn.appendChild(rip);
+                setTimeout(() => rip.remove(), 650);
+            });
+
+            function shakeCard() {
+                const card = $('cg-card');
+                card.classList.remove('is-shake'); void card.offsetWidth; card.classList.add('is-shake');
+                if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+            }
+
+            function burst(originEl, glyphs = ['🪙', '🌱', '🍃', '✨', '💰', '🌻']) {
+                if (reduceMotion) return;
+                const r = originEl.getBoundingClientRect();
+                const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+                for (let i = 0; i < 30; i++) {
+                    const el = document.createElement('span');
+                    el.className = 'cg-confetti';
+                    el.textContent = glyphs[i % glyphs.length];
+                    document.body.appendChild(el);
+                    const angle = (Math.PI * 2 * i) / 30 + Math.random() * 0.4;
+                    const dist = 90 + Math.random() * 160;
+                    const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist - 120;
+                    el.animate([
+                        { transform: `translate(${ox}px, ${oy}px) scale(.3) rotate(0deg)`, opacity: 1 },
+                        { transform: `translate(${ox + dx}px, ${oy + dy}px) scale(1.1) rotate(${200 + Math.random() * 300}deg)`, opacity: 1, offset: 0.55 },
+                        { transform: `translate(${ox + dx * 1.15}px, ${oy + dy + 260}px) scale(.8) rotate(${500 + Math.random() * 300}deg)`, opacity: 0 }
+                    ], { duration: 1300 + Math.random() * 600, easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => el.remove();
+                }
+            }
+
+            // Animación de altura al cambiar de panel/paso
+            function swapView(container, fromEl, toEl, dir) {
+                if (fromEl === toEl) return;
+                const h0 = container.offsetHeight;
+                fromEl.hidden = true;
+                toEl.hidden = false;
+                if (reduceMotion) return;
+                const h1 = container.offsetHeight;
+                container.classList.add('is-animating');
+                container.style.height = h0 + 'px';
+                void container.offsetHeight;
+                container.style.height = h1 + 'px';
+                toEl.animate([
+                    { opacity: 0, transform: `translateX(${dir * 36}px)` },
+                    { opacity: 1, transform: 'none' }
+                ], { duration: 420, easing: 'cubic-bezier(.34,1.4,.64,1)' });
+                setTimeout(() => { container.style.height = ''; container.classList.remove('is-animating'); }, 420);
+            }
+
+            // ---------------- PESTAÑAS ----------------
+            let mode = 'login';
+            window.cgSwitchTab = function (next) {
+                if (next === mode) return;
+                const tabs = document.querySelector('.cg-tabs');
+                tabs.dataset.mode = next;
+                $('cg-tab-login').setAttribute('aria-selected', next === 'login');
+                $('cg-tab-register').setAttribute('aria-selected', next === 'register');
+                swapView($('cg-panels'), $(mode === 'login' ? 'cg-login-form' : 'cg-register-form'), $(next === 'login' ? 'cg-login-form' : 'cg-register-form'), next === 'register' ? 1 : -1);
+                mode = next;
+                hideError();
+                defaultLine = next === 'login' ? '¡Bienvenido a la granja, granjero!' : '¡Un granjero nuevo! 🌱';
+                setMood('idle', { force: true });
+                say(defaultLine);
+            };
+            // Compatibilidad con el nombre anterior
+            window.toggleAuthMode = () => window.cgSwitchTab(mode === 'login' ? 'register' : 'login');
+
+            // ---------------- VALIDACIÓN ----------------
+            function fieldOf(id) { return document.querySelector(`.cg-field[data-field="${id}"]`); }
+            const DEFAULT_MSGS = {};
+            document.querySelectorAll('.cg-field').forEach((f) => { DEFAULT_MSGS[f.dataset.field] = f.querySelector('.cg-field__msg')?.textContent || ''; });
+
+            function setFieldState(id, state, msg) {
+                const f = fieldOf(id);
+                if (!f) return;
+                f.classList.remove('is-valid', 'is-invalid', 'is-checking');
+                if (state) f.classList.add(`is-${state}`);
+                const m = f.querySelector('.cg-field__msg');
+                if (m) m.textContent = msg ?? DEFAULT_MSGS[id];
+            }
+
+            const USER_RE = /^[A-Za-z0-9_]{3,16}$/;
+            function nequiDigits() { return $('reg-nequi').value.replace(/\D/g, ''); }
+
+            function validateUsername(show) {
+                const v = $('reg-username').value.trim();
+                if (!v) { if (show) setFieldState('reg-username', 'invalid', 'Necesitamos tu nombre de granjero.'); return false; }
+                if (!USER_RE.test(v)) { if (show || v.length >= 3) setFieldState('reg-username', 'invalid', '3 a 16 caracteres: solo letras, números o _'); return false; }
+                return availability.username[v.toLowerCase()] !== false;
+            }
+            function validateNequi(show) {
+                const d = nequiDigits();
+                if (!d) { if (show) setFieldState('reg-nequi', 'invalid', 'Tu número Nequi es obligatorio.'); return false; }
+                if (d[0] !== '3') { setFieldState('reg-nequi', 'invalid', 'Los números Nequi empiezan por 3.'); return false; }
+                if (d.length < 10) { if (show) setFieldState('reg-nequi', 'invalid', `Faltan ${10 - d.length} dígito(s).`); return false; }
+                return availability.phone_nequi[d] !== false;
+            }
+            function passwordScore(p) {
+                if (!p) return 0;
+                let s = 0;
+                if (p.length >= 6) s++;
+                if (p.length >= 10) s++;
+                if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+                if (/\d/.test(p) && /[^A-Za-z0-9]/.test(p)) s++;
+                else if (/\d/.test(p) || /[^A-Za-z0-9]/.test(p)) s += 0.5;
+                return Math.max(1, Math.min(4, Math.floor(s)));
+            }
+            const STRENGTH = [['🌰', 'Semilla'], ['🌰', 'Semilla'], ['🌱', 'Brote'], ['🌿', 'Arbusto'], ['🌳', '¡Roble!']];
+            let lastLevel = 0;
+            function updateStrength() {
+                const p = $('reg-password').value;
+                const level = p ? passwordScore(p) : 0;
+                const box = $('cg-strength');
+                box.dataset.level = level;
+                $('cg-strength-label').textContent = p ? STRENGTH[level][1] : 'Semilla';
+                const plant = $('cg-strength-plant');
+                if (level !== lastLevel) {
+                    plant.textContent = STRENGTH[level][0];
+                    plant.classList.remove('is-grow'); void plant.offsetWidth; plant.classList.add('is-grow');
+                    lastLevel = level;
+                }
+            }
+            function validatePassword(show) {
+                const p = $('reg-password').value;
+                if (p.length < 6) { if (show || p.length) setFieldState('reg-password', show ? 'invalid' : null, show ? 'Mínimo 6 caracteres.' : `${6 - p.length} caracteres más...`); return false; }
+                setFieldState('reg-password', 'valid', '');
+                return true;
+            }
+            function validateConfirm(show) {
+                const p = $('reg-password').value, c = $('confirm_password').value;
+                if (!c) { if (show) setFieldState('confirm_password', 'invalid', 'Repite tu contraseña.'); else setFieldState('confirm_password', null, ''); return false; }
+                if (p !== c) { if (show || c.length >= p.length) setFieldState('confirm_password', 'invalid', 'Las contraseñas no coinciden.'); else setFieldState('confirm_password', null, ''); return false; }
+                setFieldState('confirm_password', 'valid', '¡Coinciden! 🌱');
+                return true;
+            }
+
+            // Formato del Nequi: 300 123 4567
+            $('reg-nequi').addEventListener('input', (e) => {
+                const input = e.target;
+                const d = input.value.replace(/\D/g, '').slice(0, 10);
+                const formatted = [d.slice(0, 3), d.slice(3, 6), d.slice(6, 10)].filter(Boolean).join(' ');
+                if (input.value !== formatted) input.value = formatted;
+                setFieldState('reg-nequi', null);
+                if (validateNequi(false) && d.length === 10) checkAvailability('phone_nequi', d);
+            });
+            $('reg-username').addEventListener('input', () => {
+                setFieldState('reg-username', null);
+                const v = $('reg-username').value.trim();
+                if (USER_RE.test(v)) checkAvailability('username', v);
+                else validateUsername(false);
+            });
+            $('reg-password').addEventListener('input', () => { updateStrength(); validatePassword(false); if ($('confirm_password').value) validateConfirm(false); });
+            $('confirm_password').addEventListener('input', () => validateConfirm(false));
+            $('referred_by_input').addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+            $('chk-terms').addEventListener('change', () => document.querySelector('.cg-check').classList.remove('is-invalid'));
+
+            // Disponibilidad en vivo (opcional: si el backend aún no tiene el endpoint, se ignora)
+            const availability = { username: {}, phone_nequi: {} };
+            const checkTimers = {};
+            function checkAvailability(field, value) {
+                const id = field === 'username' ? 'reg-username' : 'reg-nequi';
+                const key = field === 'username' ? value.toLowerCase() : value;
+                clearTimeout(checkTimers[field]);
+                if (key in availability[field]) return applyAvailability(field, key);
+                setFieldState(id, 'checking', 'Revisando en el granero...');
+                checkTimers[field] = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`/api/check-availability?field=${field}&value=${encodeURIComponent(value)}`);
+                        const ct = res.headers.get('content-type') || '';
+                        if (!res.ok || !ct.includes('application/json')) throw new Error('sin endpoint');
+                        const data = await res.json();
+                        if (typeof data.available !== 'boolean') throw new Error('respuesta inválida');
+                        availability[field][key] = data.available;
+                    } catch (e) {
+                        availability[field][key] = null; // desconocido: el registro lo valida igual
+                    }
+                    applyAvailability(field, key);
+                }, 450);
+            }
+            function applyAvailability(field, key) {
+                const id = field === 'username' ? 'reg-username' : 'reg-nequi';
+                const current = field === 'username' ? $('reg-username').value.trim().toLowerCase() : nequiDigits();
+                if (current !== key) return;
+                const v = availability[field][key];
+                if (v === false) {
+                    setFieldState(id, 'invalid', field === 'username' ? 'Ese nombre ya tiene dueño. Prueba otro.' : 'Este Nequi ya está registrado en otra cuenta.');
+                    if (field === 'phone_nequi') { setMood('error', { force: true }); lockMood(1400); say('¡Ese Nequi ya tiene granja! 🚫', { error: true, hold: 2600 }); }
+                } else if (v === true) {
+                    setFieldState(id, 'valid', field === 'username' ? '¡Nombre disponible! 🌟' : '¡Nequi disponible! 💸');
+                } else {
+                    setFieldState(id, 'valid', field === 'username' ? 'Formato correcto ✓' : 'Formato correcto ✓');
+                }
+            }
+
+            // ---------------- PASOS DEL REGISTRO ----------------
+            let step = 1;
+            const STEP_LINES = {
+                1: '¡Un granjero nuevo! 🌱',
+                2: 'Fuerte como un roble 🌳',
+                3: '¡Último paso! 📜'
+            };
+            function stepValid(n, show) {
+                if (n === 1) { const a = validateUsername(show); const b = validateNequi(show); return a && b; }
+                if (n === 2) { const a = validatePassword(show); const b = validateConfirm(show); return a && b; }
+                if (n === 3) {
+                    let ok = true;
+                    if (!$('chk-terms').checked) { ok = false; if (show) document.querySelector('.cg-check').classList.add('is-invalid'); }
+                    if (!$('chk-captcha').checked) { ok = false; if (show) $('captcha-checkbox-ui').classList.add('is-invalid'); }
+                    return ok;
+                }
+                return true;
+            }
+            function goStep(n) {
+                if (n === step) return;
+                const bar = $('cg-steps-bar');
+                const from = document.querySelector(`.cg-step[data-step="${step}"]`);
+                const to = document.querySelector(`.cg-step[data-step="${n}"]`);
+                swapView($('cg-steps'), from, to, n > step ? 1 : -1);
+                step = n;
+                bar.dataset.step = n;
+                bar.querySelectorAll('li').forEach((li, i) => {
+                    li.classList.toggle('is-active', i + 1 === n);
+                    li.classList.toggle('is-done', i + 1 < n);
+                });
+                $('cg-back').hidden = n === 1;
+                $('cg-next-label').innerHTML = n === 3 ? 'Crear mi granja <span class="cg-btn__arrow">🌱</span>' : 'Siguiente <span class="cg-btn__arrow">➔</span>';
+                defaultLine = STEP_LINES[n];
+                say(defaultLine);
+                const first = to.querySelector('input:not([type=checkbox])');
+                if (first && window.matchMedia('(pointer: fine)').matches) setTimeout(() => first.focus({ preventScroll: true }), 300);
+            }
+            window.cgBack = () => goStep(Math.max(1, step - 1));
+            window.cgNext = function () {
+                hideError();
+                if (!stepValid(step, true)) {
+                    shakeCard();
+                    setMood('error', { force: true }); lockMood(1200);
+                    say('¡Revisa lo rojo! 👆', { error: true, hold: 2500 });
+                    return;
+                }
+                if (step < 3) goStep(step + 1);
+                else handleAuth('register');
+            };
+            // Antes era el botón el que se habilitaba; ahora se valida al avanzar
+            window.validateRegistrationForm = () => stepValid(step, false);
+
+            $('cg-login-form').addEventListener('submit', (e) => { e.preventDefault(); handleAuth('login'); });
+            $('cg-register-form').addEventListener('submit', (e) => { e.preventDefault(); window.cgNext(); });
+
+            // ---------------- ERRORES ----------------
+            function hideError() { $('auth-error').classList.add('hidden'); }
+            window.showError = function (msg) {
+                $('auth-error-msg').innerText = msg;
+                const box = $('auth-error');
+                box.classList.add('hidden'); void box.offsetWidth; box.classList.remove('hidden');
+                shakeCard();
+                setMood('error', { force: true }); lockMood(1500);
+                say(msg.length > 34 ? '¡Uy! Algo salió mal 😬' : msg, { error: true, hold: 2800 });
+                setTimeout(() => { const a = document.activeElement; if (a && a.matches && a.matches('[data-cg-secret]')) setMood(a.type === 'text' ? 'peek' : 'hide'); }, 1550);
+            };
+
+            // ---------------- AUTENTICACIÓN ----------------
+            function setLoading(btn, on) {
+                btn.classList.toggle('is-loading', on);
+                btn.disabled = on;
+            }
+
+            window.handleAuth = async function (action) {
+                const isLogin = action === 'login';
+                const btn = $(isLogin ? 'btn-login' : 'btn-register');
+                let payload;
+
+                if (isLogin) {
+                    const user = $('username').value.trim();
+                    const pass = $('password').value;
+                    setFieldState('username', user ? null : 'invalid', user ? '' : 'Escribe tu usuario.');
+                    setFieldState('password', pass ? null : 'invalid', pass ? '' : 'Escribe tu contraseña.');
+                    if (!user || !pass) { showError('Por favor completa todos los campos.'); return; }
+                    payload = { username: user, password: pass };
+                } else {
+                    for (const n of [1, 2, 3]) {
+                        if (!stepValid(n, true)) { goStep(n); showError(n === 3 ? 'Acepta los términos y verifica que no eres un robot.' : 'Revisa los datos marcados en rojo.'); return; }
+                    }
+                    payload = {
+                        username: $('reg-username').value.trim(),
+                        password: $('reg-password').value,
+                        phone_nequi: nequiDigits(),
+                        referred_by: $('referred_by_input').value.trim()
+                    };
+                }
+
+                hideError();
+                setLoading(btn, true);
+                say(isLogin ? 'Abriendo la tranquera... 🚪' : 'Preparando la tierra... 🌾');
+
+                try {
+                    const response = await fetch(`/api/${action}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json().catch(() => ({}));
+
+                    if (response.ok && data.user) {
+                        sessionStorage.setItem('username', data.user.username);
+                        sessionStorage.setItem('session_token', data.user.session_token);
+                        if (data.user.short_id) sessionStorage.setItem('short_id', data.user.short_id);
+                        updateProfileUI(data.user);
+                        await playSuccess(btn, data.user, isLogin);
+                        enterDashboard();
+                    } else {
+                        setLoading(btn, false);
+                        routeServerError(data, isLogin);
+                    }
+                } catch (error) {
+                    setLoading(btn, false);
+                    showError('Error de conexión con el servidor.');
+                }
+            };
+
+            // Lleva el error del backend al campo correspondiente
+            function routeServerError(data, isLogin) {
+                const msg = data.error || 'Error en la autenticación.';
+                if (!isLogin) {
+                    const lower = msg.toLowerCase();
+                    const field = data.field || (lower.includes('nequi') || lower.includes('teléfono') || lower.includes('telefono') ? 'phone_nequi' : (lower.includes('nombre') || lower.includes('usuario') ? 'username' : null));
+                    if (field === 'phone_nequi') {
+                        availability.phone_nequi[nequiDigits()] = false;
+                        goStep(1); setFieldState('reg-nequi', 'invalid', msg);
+                    } else if (field === 'username') {
+                        availability.username[$('reg-username').value.trim().toLowerCase()] = false;
+                        goStep(1); setFieldState('reg-username', 'invalid', msg);
+                    } else if (field === 'referred_by') {
+                        setFieldState('referred_by_input', 'invalid', msg);
+                    }
+                } else {
+                    setFieldState('password', 'invalid', '');
+                }
+                showError(msg);
+            }
+
+            function wait(ms) { return new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms)); }
+
+            async function playSuccess(btn, user, isLogin) {
+                setLoading(btn, false);
+                setMood('happy', { force: true }); lockMood(5000);
+                defaultLine = isLogin ? `¡Bienvenido, ${user.username}! 🎉` : `¡Granja creada, ${user.username}! 🎉`;
+                say(defaultLine);
+                burst(btn);
+                await wait(650);
+
+                // Pantalla de sincronización
+                $('auth-form').classList.add('hidden');
+                $('auth-form').style.display = 'none';
+                const view = $('login-loading-view');
+                view.classList.remove('hidden');
+                $('loading-farmer-title').textContent = user.username;
+                const steps = isLogin
+                    ? ['Identificando granjero...', 'Regando cultivos...', 'Contando semillas...', '¡Listo para cosechar!']
+                    : ['Arando la tierra...', 'Plantando tu primera semilla...', 'Construyendo el granero...', '¡Granja lista!'];
+                const fill = $('login-progress-fill'), pct = $('login-progress-pct'), sprout = $('cg-loading-sprout'), txt = $('loading-step-text');
+                for (let i = 0; i <= 100; i += 4) {
+                    fill.style.width = i + '%';
+                    sprout.style.left = i + '%';
+                    pct.textContent = i + '%';
+                    txt.textContent = steps[Math.min(steps.length - 1, Math.floor(i / 26))];
+                    if (i === 52) sprout.textContent = '🌿';
+                    if (i === 88) sprout.textContent = '🌻';
+                    await wait(i < 80 ? 26 : 40);
+                }
+                $('loading-avatar-check').classList.add('is-on');
+                burst($('loading-avatar-check'), ['🌱', '✨', '🪙']);
+                await wait(550);
+            }
+
+            function enterDashboard() {
+                const screen = $('login-screen');
+                screen.classList.add('opacity-0');
+                setTimeout(() => {
+                    screen.classList.add('hidden');
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    document.getElementById('dashboard-screen').classList.add('flex');
+                    document.getElementById('live-ticker-bar').classList.remove('hidden');
+                    loadView('transparencia');
+                    startBackgroundMusic();
+                }, reduceMotion ? 0 : 450);
+            }
+
+            // ---------------- CAPTCHA ----------------
+            let captchaCorrectAnswer = 0;
+            window.generateCaptcha = function () {
+                const a = Math.floor(Math.random() * 10) + 1, b = Math.floor(Math.random() * 10) + 1;
+                captchaCorrectAnswer = a + b;
+                $('captcha-question').innerText = `${a} + ${b}`;
+            };
+            window.openCaptchaModal = function () {
+                if ($('chk-captcha').checked) return;
+                generateCaptcha();
+                $('captcha-answer').value = '';
+                $('captcha-error').classList.add('hidden');
+                const modal = $('captcha-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => $('captcha-answer').focus(), 100);
+            };
+            window.closeCaptchaModal = function () {
+                $('captcha-modal').classList.add('hidden');
+                $('captcha-modal').classList.remove('flex');
+            };
+            window.verifyCaptcha = function () {
+                if (parseInt($('captcha-answer').value, 10) === captchaCorrectAnswer) {
+                    closeCaptchaModal();
+                    $('chk-captcha').checked = true;
+                    const ui = $('captcha-checkbox-ui');
+                    ui.classList.remove('is-invalid');
+                    ui.classList.add('is-checked');
+                    ui.querySelector('.cg-captcha__txt').textContent = '¡Humano verificado!';
+                    setMood('happy', { force: true }); lockMood(1200);
+                    say('¡Fuera cuervos! Eres humano 🎉', { hold: 2200 });
+                    setTimeout(() => setMood('idle'), 1250);
+                } else {
+                    $('captcha-error').classList.remove('hidden');
+                    $('captcha-answer').value = '';
+                    generateCaptcha();
+                    $('captcha-answer').focus();
+                    const m = document.querySelector('#captcha-modal .cg-modal');
+                    m.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }], { duration: 320 });
+                }
+            };
+
+            // Si llegan con ?ref=CODIGO en la URL, abrimos el registro con el código puesto
+            const ref = new URLSearchParams(location.search).get('ref');
+            if (ref) {
+                $('referred_by_input').value = ref.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+                cgSwitchTab('register');
+            }
+
+            setMood('idle', { force: true });
+        })();
     </script>
 </body>
 </html>

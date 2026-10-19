@@ -134,11 +134,10 @@ def dispatch_nequi_payout():
     payload = request.get_json() or {}
     token = payload.get('session_token')
     amount_credits = float(payload.get('amount_credits', 0))
-    phone_nequi = payload.get('phone_nequi')
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, balance, session_token FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
+    cur.execute("SELECT id, balance, session_token, phone_nequi FROM users WHERE username = %s FOR UPDATE", (payload.get('username'),))
     user = cur.fetchone()
     
     if not user or float(user['balance']) < amount_credits or amount_credits < 10000:
@@ -147,8 +146,13 @@ def dispatch_nequi_payout():
     if user.get('session_token') and user['session_token'] != token:
         cur.close(); conn.close()
         return jsonify({"error": "Sesión inválida"}), 401
+    
+    phone_nequi = user['phone_nequi']
+    if not phone_nequi:
+        cur.close(); conn.close()
+        return jsonify({"error": "Error crítico: Usuario sin Nequi registrado"}), 400
         
-    cur.execute("UPDATE users SET phone_nequi = %s, balance = balance - %s WHERE id = %s", (phone_nequi, amount_credits, user['id']))
+    cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (amount_credits, user['id']))
     payout_ref = f"PO-{user['id']}-{int(time.time())}"
     
     headers = {
@@ -171,14 +175,12 @@ def dispatch_nequi_payout():
         if response.status_code == 201:
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'payout', %s, %s, 'pending')", (user['id'], amount_credits, payout_ref))
             conn.commit()
-            msg = "Retiro en proceso. Llegará a tu Nequi en 24h hábiles."
+            msg = f"Retiro en proceso. Llegará a tu Nequi ({phone_nequi}) en 24h hábiles."
             
-            # --- NUEVO: EMITIR TICKER GLOBAL ---
+            # TICKER GLOBAL
             username = payload.get('username')
-            # Censurar nombre (ej. Juan99 -> Jua***99)
             censored = username[:3] + "***" + username[-2:] if len(username) > 4 else username[:2] + "***"
             socketio.emit('global_payout_alert', {'user': censored, 'amount': amount_credits})
-            # -----------------------------------
             
         else:
             conn.rollback()
@@ -690,8 +692,10 @@ def login():
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
+    
     cur.execute("SELECT * FROM users WHERE username = %s", (data.get('username'),))
     user = cur.fetchone()
+    
     if user and check_password_hash(user['password_hash'], data.get('password')):
         token = str(uuid.uuid4())
         short_id = user.get('short_id')
@@ -724,12 +728,16 @@ def login():
         user['session_token'] = token
         user['short_id'] = short_id
         
-        cur.close(); conn.close()
+        # Aseguramos que el número de Nequi viaja al frontend en el inicio de sesión
+        user['phone_nequi'] = user.get('phone_nequi')
+        
+        cur.close()
+        conn.close()
         return jsonify({"message": "Login exitoso", "user": user})
     
-    cur.close(); conn.close()
+    cur.close()
+    conn.close()
     return jsonify({"error": "Usuario o contraseña incorrectos"}), 401
-
 
 @app.route('/api/sync/<username>', methods=['GET'])
 def sync_user(username):
@@ -737,8 +745,7 @@ def sync_user(username):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # --- AÑADIDO: ref_code en la consulta SQL ---
-    cur.execute("SELECT id, balance, game_state, session_token, telegram_chat_id, short_id, ref_code FROM users WHERE username = %s", (username,))
+    cur.execute("SELECT id, balance, game_state, session_token, telegram_chat_id, short_id, ref_code, phone_nequi FROM users WHERE username = %s", (username,))
     user_data = cur.fetchone()
     
     if user_data:
@@ -1515,6 +1522,39 @@ def admin_tournament_config():
 
 
 
+@app.route('/api/user/link_nequi', methods=['POST'])
+def link_nequi():
+    data = request.json
+    username = data.get('username')
+    token = data.get('session_token')
+    phone_nequi = data.get('phone_nequi', '').strip()
+    
+    if not phone_nequi:
+        return jsonify({"error": "Número inválido"}), 400
+        
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Verificamos que el número no lo tenga ya otra persona
+    cur.execute("SELECT id FROM users WHERE phone_nequi = %s", (phone_nequi,))
+    if cur.fetchone():
+        cur.close(); conn.close()
+        return jsonify({"error": "Este Nequi ya está en uso."}), 400
+        
+    # Actualizamos al usuario si el token coincide y su Nequi está vacío
+    cur.execute("UPDATE users SET phone_nequi = %s WHERE username = %s AND session_token = %s AND (phone_nequi IS NULL OR phone_nequi = '') RETURNING id", (phone_nequi, username, token))
+    
+    if cur.fetchone():
+        conn.commit()
+        cur.close(); conn.close()
+        return jsonify({"message": "Nequi enlazado exitosamente"})
+        
+    cur.close(); conn.close()
+    return jsonify({"error": "No autorizado o ya tienes un Nequi registrado"}), 401
+
+
+
+
 @app.route('/api/register', methods=['POST'])
 def register():
     import random
@@ -1523,19 +1563,30 @@ def register():
     username = data.get('username', '').strip()
     password = data.get('password')
     referred_by = data.get('referred_by')
+    phone_nequi = data.get('phone_nequi', '').strip()
+    
     if referred_by:
         referred_by = referred_by.strip().upper()
+        
+    if not phone_nequi:
+        return jsonify({"error": "El número de Nequi es obligatorio para registrarse."}), 400
     
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # --- CORRECCIÓN: Validación estricta de nombres duplicados (Ignora mayúsculas/minúsculas) ---
+    # Validación estricta de nombres duplicados
     cur.execute("SELECT id FROM users WHERE LOWER(username) = LOWER(%s)", (username,))
     if cur.fetchone(): 
         cur.close()
         conn.close()
         return jsonify({"error": "Este nombre ya existe. Por favor, elige otro distinto."}), 400
-    # --------------------------------------------------------------------------------------------
+        
+    # Validación de número de Nequi duplicado
+    cur.execute("SELECT id FROM users WHERE phone_nequi = %s", (phone_nequi,))
+    if cur.fetchone(): 
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Este número de Nequi ya está registrado en otra cuenta."}), 400
     
     hashed_pw = generate_password_hash(password)
     token = str(uuid.uuid4())
@@ -1553,8 +1604,8 @@ def register():
             break
     
     cur.execute(
-        "INSERT INTO users (username, password_hash, balance, session_token, short_id, ref_code, referred_by) VALUES (%s, %s, 0, %s, %s, %s, %s) RETURNING id, username, balance, session_token, short_id, ref_code, referred_by", 
-        (username, hashed_pw, token, short_id, ref_code, referred_by)
+        "INSERT INTO users (username, password_hash, balance, session_token, short_id, ref_code, referred_by, phone_nequi) VALUES (%s, %s, 0, %s, %s, %s, %s, %s) RETURNING id, username, balance, session_token, short_id, ref_code, referred_by, phone_nequi", 
+        (username, hashed_pw, token, short_id, ref_code, referred_by, phone_nequi)
     )
     new_user = cur.fetchone()
     conn.commit()
