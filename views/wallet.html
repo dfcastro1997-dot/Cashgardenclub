@@ -223,11 +223,11 @@
 </div>
 
 <script>
-    let currentDepositAmount = 0;
-    const FEE_PERCENTAGE = 0.05; // 5% Aporte de Mantenimiento
+    // Asignación directa a Window para evitar errores de Scope en Single Page Applications al inyectar script
+    window.currentDepositAmount = 0;
+    window.FEE_PERCENTAGE = 0.05; // 5% Aporte de Mantenimiento
 
-    // Añade esto dentro de la función initWallet()
-    function initWallet() {
+    window.initWallet = function() {
         if (!window.farmApp) return;
         const balance = window.farmApp.state.balance || 0;
         document.getElementById('wallet-balance-display').innerText = "$" + balance.toLocaleString() + " CRÉDITOS";
@@ -243,13 +243,13 @@
             document.getElementById('secure-nequi-msg').classList.remove('hidden');
             document.getElementById('btn-withdraw').classList.remove('hidden');
         }
-    }
+    };
 
     // Nueva función para guardar el Nequi de usuarios viejos
-    async function linkLegacyNequi() {
+    window.linkLegacyNequi = async function() {
         const phone = document.getElementById('nequi-phone').value;
         if (!phone || phone.length < 10) {
-            showWalletAlertModal('Datos Inválidos', 'Ingresa un número de Nequi válido.', 'error');
+            window.showWalletAlertModal('Datos Inválidos', 'Ingresa un número de Nequi válido.', 'error');
             return;
         }
 
@@ -267,18 +267,18 @@
             
             if (res.ok) {
                 window.farmApp.state.phone_nequi = phone;
-                showWalletAlertModal('Nequi Enlazado', 'Tu cuenta Nequi ha sido registrada con éxito. Ya puedes retirar.', 'success');
-                initWallet(); // Refresca la vista para ocultar el input y mostrar el botón de retiro
+                window.showWalletAlertModal('Nequi Enlazado', 'Tu cuenta Nequi ha sido registrada con éxito. Ya puedes retirar.', 'success');
+                window.initWallet(); // Refresca la vista para ocultar el input y mostrar el botón de retiro
             } else {
-                showWalletAlertModal('Error', data.error, 'error');
+                window.showWalletAlertModal('Error', data.error, 'error');
             }
         } catch(e) {
-            showWalletAlertModal('Error', 'Falla de conexión', 'error');
+            window.showWalletAlertModal('Error', 'Falla de conexión', 'error');
         }
-    }
+    };
 
     // Funciones del Modal Profesional
-    function showWalletAlertModal(title, msg, type = 'info') {
+    window.showWalletAlertModal = function(title, msg, type = 'info') {
         const modal = document.getElementById('wallet-alert-modal');
         const card = document.getElementById('wallet-alert-card');
         const iconCont = document.getElementById('wallet-alert-icon-container');
@@ -311,15 +311,15 @@
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-    }
+    };
 
-    function closeWalletAlertModal() {
+    window.closeWalletAlertModal = function() {
         document.getElementById('wallet-alert-modal').classList.add('hidden');
         document.getElementById('wallet-alert-modal').classList.remove('flex');
-    }
+    };
 
     // --- FUNCIONES DEL BOLETO DE VICTORIA (NUEVO DISEÑO) ---
-    function showVictoryTicket(amount, reference) {
+    window.showVictoryTicket = function(amount, reference) {
         const user = sessionStorage.getItem('username') || 'Granjero';
         const code = sessionStorage.getItem('ref_code') || 'N/A';
         const now = new Date();
@@ -349,15 +349,15 @@
         const modal = document.getElementById('victory-ticket-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-    }
+    };
 
-    function closeVictoryTicket() {
+    window.closeVictoryTicket = function() {
         const modal = document.getElementById('victory-ticket-modal');
         modal.classList.remove('flex');
         modal.classList.add('hidden');
-    }
+    };
 
-    function switchWalletTab(tab) {
+    window.switchWalletTab = function(tab) {
         const depBtn = document.getElementById('tab-btn-deposit');
         const witBtn = document.getElementById('tab-btn-withdraw');
         const depSec = document.getElementById('section-deposit');
@@ -374,9 +374,9 @@
             witSec.classList.remove('hidden');
             depSec.classList.add('hidden');
         }
-    }
+    };
 
-    function selectDepositAmount(amount) {
+    window.selectDepositAmount = function(amount) {
         document.getElementById('custom-deposit-input').value = '';
         
         const buttons = document.querySelectorAll('.deposit-btn');
@@ -389,11 +389,11 @@
             }
         });
 
-        currentDepositAmount = amount;
-        updateDepositSummary();
-    }
+        window.currentDepositAmount = amount;
+        window.updateDepositSummary();
+    };
 
-    function handleCustomDeposit() {
+    window.handleCustomDeposit = function() {
         const buttons = document.querySelectorAll('.deposit-btn');
         buttons.forEach(btn => {
             btn.classList.remove('border-cg_blue', 'text-cg_blue', 'bg-blue-50/50');
@@ -402,24 +402,24 @@
 
         const val = parseInt(document.getElementById('custom-deposit-input').value);
         if (isNaN(val) || val <= 0) {
-            currentDepositAmount = 0;
+            window.currentDepositAmount = 0;
         } else {
-            currentDepositAmount = val;
+            window.currentDepositAmount = val;
         }
-        updateDepositSummary();
-    }
+        window.updateDepositSummary();
+    };
 
-    function updateDepositSummary() {
+    window.updateDepositSummary = function() {
         const reqEl = document.getElementById('summary-requested');
         const feeEl = document.getElementById('summary-fee');
         const totEl = document.getElementById('summary-total');
         const btnPay = document.getElementById('btn-pay-wompi');
 
-        if (currentDepositAmount > 0) {
-            const fee = Math.floor(currentDepositAmount * FEE_PERCENTAGE);
-            const netAmount = currentDepositAmount - fee;
+        if (window.currentDepositAmount > 0) {
+            const fee = Math.floor(window.currentDepositAmount * window.FEE_PERCENTAGE);
+            const netAmount = window.currentDepositAmount - fee;
 
-            reqEl.innerText = "$" + currentDepositAmount.toLocaleString();
+            reqEl.innerText = "$" + window.currentDepositAmount.toLocaleString();
             feeEl.innerText = "-$" + fee.toLocaleString();
             totEl.innerText = "$" + netAmount.toLocaleString();
 
@@ -433,11 +433,11 @@
             btnPay.disabled = true;
             btnPay.classList.add('opacity-50', 'cursor-not-allowed');
         }
-    }
+    };
 
-    async function processWompiDeposit() {
-        if (currentDepositAmount < 5000) {
-            showWalletAlertModal('Monto Inválido', 'El monto mínimo de recarga es de $5.000 CRÉDITOS.', 'error');
+    window.processWompiDeposit = async function() {
+        if (window.currentDepositAmount < 5000) {
+            window.showWalletAlertModal('Monto Inválido', 'El monto mínimo de recarga es de $5.000 CRÉDITOS.', 'error');
             return;
         }
 
@@ -447,7 +447,7 @@
 
         const short_id = sessionStorage.getItem('short_id') || '0000';
         const reference = `REC-${short_id}-${Date.now()}`;
-        const amountInCents = currentDepositAmount * 100;
+        const amountInCents = window.currentDepositAmount * 100;
         
         // Llave Pública de Wompi
         const wompiPublicKey = 'pub_test_lwNtQO2xAWUmv47mSWD2QAiYbE2R7gDP';
@@ -462,7 +462,7 @@
             const data = await res.json();
             
             if (!res.ok) {
-                showWalletAlertModal('Error de Seguridad', 'No se pudo generar la firma de transacción. Reintenta.', 'error');
+                window.showWalletAlertModal('Error de Seguridad', 'No se pudo generar la firma de transacción. Reintenta.', 'error');
                 btnPay.innerText = 'Proceder al Pago ➔';
                 btnPay.disabled = false;
                 return;
@@ -475,22 +475,22 @@
             window.location.href = wompiUrl;
             
         } catch(e) {
-            showWalletAlertModal('Error de Red', 'Falla conectando con el servidor de pagos. Verifica tu internet.', 'error');
+            window.showWalletAlertModal('Error de Red', 'Falla conectando con el servidor de pagos. Verifica tu internet.', 'error');
             btnPay.innerText = 'Proceder al Pago ➔';
             btnPay.disabled = false;
         }
-    }
+    };
 
-    async function processCashout() {
+    window.processCashout = async function() {
         const amount = parseInt(document.getElementById('cashout-amount').value);
         const btnWithdraw = document.getElementById('btn-withdraw');
         
         if (isNaN(amount) || amount < 10000) { 
-            showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 CRÉDITOS.', 'error');
+            window.showWalletAlertModal('Monto Mínimo', 'El monto mínimo de retiro es $10.000 CRÉDITOS.', 'error');
             return; 
         }
         if (amount > (window.farmApp?.state?.balance || 0)) { 
-            showWalletAlertModal('Saldo Insuficiente', 'No tienes saldo suficiente para retirar esa cantidad.', 'error');
+            window.showWalletAlertModal('Saldo Insuficiente', 'No tienes saldo suficiente para retirar esa cantidad.', 'error');
             return; 
         }
 
@@ -513,23 +513,23 @@
                     window.farmApp.saveState();
                 }
                 
-                showVictoryTicket(amount, data.reference);
+                window.showVictoryTicket(amount, data.reference);
                 
                 document.getElementById('cashout-amount').value = '';
-                initWallet();
+                window.initWallet();
             } else {
-                showWalletAlertModal('Error al Retirar', data.error, 'error');
+                window.showWalletAlertModal('Error al Retirar', data.error, 'error');
             }
         } catch(e) { 
-            showWalletAlertModal('Error de Red', 'No se pudo conectar con el servidor bancario.', 'error');
+            window.showWalletAlertModal('Error de Red', 'No se pudo conectar con el servidor bancario.', 'error');
         } finally {
             btnWithdraw.innerText = 'Solicitar Retiro';
             btnWithdraw.disabled = false;
         }
-    }
+    };
 
     // Inicializar saldos apenas cargue
-    setTimeout(initWallet, 100); 
+    setTimeout(window.initWallet, 100); 
 
     // --- Saludos y consejos del guía en la Billetera ---
     setTimeout(() => {
@@ -553,3 +553,4 @@
         }
     }, 1200);
 </script>
+</div>
