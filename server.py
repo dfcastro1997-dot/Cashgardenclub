@@ -1260,6 +1260,10 @@ def submit_tournament_score():
     instance_id = data.get('instance_id')
     final_score = float(data.get('score', 0))
     
+    # Bloqueo de seguridad: Evita que el servidor colapse (Error 500) si instance_id es inválido
+    if not instance_id or str(instance_id).lower() in ['undefined', 'null']:
+        return jsonify({"error": "Instancia inválida, el combate no fue registrado correctamente."}), 400
+    
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -1282,10 +1286,6 @@ def submit_tournament_score():
         return jsonify({"error": "Fallo interno de servidor"}), 500
     finally:
         cur.close(); conn.close()
-    
-    return jsonify({"message": "Puntaje actualizado correctamente"})
-
-
 
 @app.route('/api/tournaments/global_leaderboard/<int:t_id>', methods=['GET'])
 def global_leaderboard(t_id):
@@ -1310,10 +1310,11 @@ def global_leaderboard(t_id):
                 "leaderboard": players,
                 "start_time": last_inst['start_time'],
                 "end_time": last_inst['end_time'],
-                "prize_pool": last_inst['prize_pool_credits']
+                "prize_pool": last_inst['prize_pool_credits'],
+                "players_count": last_inst.get('players_count', len(players)) # <- Corrige el bug visual de "Puntajes registrados: undefined"
             })
         cur.close(); conn.close()
-        return jsonify({"status": "no_instance", "prize_pool": 10000 if t_id == 1 else 0})
+        return jsonify({"status": "no_instance", "prize_pool": 10000 if t_id == 1 else 0, "players_count": 0})
         
     cur.execute('''
         SELECT username, current_score, alchemy_precision, alchemy_time 
@@ -1333,7 +1334,6 @@ def global_leaderboard(t_id):
         "max_players": inst['max_players'],
         "leaderboard": players
     })
-
 
 
 @app.route('/api/tournaments/status/<int:instance_id>', methods=['GET'])
