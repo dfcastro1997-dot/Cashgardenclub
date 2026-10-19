@@ -1,84 +1,146 @@
-<div class="fixed inset-0 z-[200] bg-slate-50 flex flex-col overflow-hidden font-sans">
+<div class="fixed inset-0 z-[200] flex flex-col overflow-hidden font-sans bg-cover bg-center" style="background-image: url('assets/Fondos/Ruleta.jpg');">
     
+    <!-- OVERLAY OSCURO PARA DARLE ESTILO PROFESIONAL Y RESALTAR LA UI -->
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-0 pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PRE-JUEGO: EXPLICACIÓN DE LA PLANTA  -->
+    <!-- ========================================== -->
+    <div id="rul-intro-modal" class="fixed inset-0 z-[250] flex items-center justify-center p-4 font-sans bg-black/60 backdrop-blur-md transition-opacity">
+        <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] w-full max-w-md p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(237,153,37,0.3)] border border-white/20 animate-fade-in relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
+            
+            <span class="bg-cg_navy text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block shadow-sm">Disco Táctico</span>
+            <h2 class="text-xl sm:text-2xl font-black text-cg_navy mb-1 tracking-tight">Análisis de Despliegue</h2>
+            <p class="text-xs text-gray-500 font-medium mb-6">Conoce cómo las estadísticas de tu planta afectarán las físicas y reglas de la partida.</p>
+            
+            <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-white rounded-2xl border-4 border-gray-100 shadow-md flex items-center justify-center mb-3 p-2 relative z-10">
+                <img id="intro-plant-img" src="assets/Fondos/logo.png" class="w-full h-full object-contain drop-shadow-lg animate-bounce">
+            </div>
+            <h3 id="intro-plant-name" class="text-lg font-black text-cg_navy mb-5 relative z-10">Planta Desconocida</h3>
+
+            <!-- Desglose de Stats Explicado -->
+            <div class="space-y-3 text-left mb-8 relative z-10">
+                <div class="bg-yellow-50/80 border border-yellow-200 rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[10px] font-black text-yellow-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">🪙</span> Fichas (Giros)</span>
+                        <span id="intro-spins" class="font-black text-yellow-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-yellow-100">--</span>
+                    </div>
+                    <p class="text-[10px] text-yellow-700 leading-relaxed font-medium">Define cuántas veces podrás girar la ruleta. A mayor vida (HP) de la planta, más intentos tendrás.</p>
+                </div>
+                
+                <div class="bg-orange-50/80 border border-orange-200 rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[10px] font-black text-orange-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">⭐</span> Multiplicador (Puntos)</span>
+                        <span id="intro-pts" class="font-black text-orange-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-orange-100">--</span>
+                    </div>
+                    <p class="text-[10px] text-orange-700 leading-relaxed font-medium">Amplifica tu rentabilidad. El poder de ataque (ATK) determina el premio máximo en la casilla del Jackpot.</p>
+                </div>
+                
+                <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[10px] font-black text-blue-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">⚙️</span> Control (Fricción)</span>
+                        <span id="intro-control" class="font-black text-blue-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-blue-100">--</span>
+                    </div>
+                    <p class="text-[10px] text-blue-700 leading-relaxed font-medium">El nivel de defensa (DEF) aumenta la fricción mecánica de la ruleta, permitiendo que el disco frene más rápido al presionar el botón.</p>
+                </div>
+            </div>
+
+            <button onclick="window.rouletteApp.startGame()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_5px_0_#c27818] active:translate-y-[5px] active:shadow-none uppercase tracking-widest text-sm relative z-10">
+                Iniciar Misión ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- INTERFAZ PRINCIPAL DEL JUEGO               -->
+    <!-- ========================================== -->
+
     <!-- TOP HUD LUMINOSO Y LIMPIO -->
-    <div class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm relative z-10 shrink-0">
+    <div class="bg-white/95 backdrop-blur-md border-b border-white/20 p-4 flex justify-between items-center shadow-lg relative z-10 shrink-0 mt-safe pt-safe">
         <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
+            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden shrink-0">
                 <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-10 h-10 object-contain drop-shadow-sm">
             </div>
             <div>
                 <h3 id="rul-plant-name" class="font-black text-cg_navy text-sm uppercase tracking-widest">Planta</h3>
-                <div class="flex gap-2 text-[10px] font-bold text-gray-500 mt-0.5 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                    <span id="rul-stat-hp">❤️ --</span>
-                    <span id="rul-stat-atk">⚔️ --</span>
-                    <span id="rul-stat-def">🛡️ --</span>
+                <div class="flex gap-1.5 text-[9px] font-black text-gray-500 mt-0.5">
+                    <span id="rul-stat-hp" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">❤️ --</span>
+                    <span id="rul-stat-atk" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">⚔️ --</span>
+                    <span id="rul-stat-def" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">🛡️ --</span>
                 </div>
             </div>
         </div>
-        <div class="text-right bg-orange-50 px-4 py-1.5 rounded-xl border border-orange-100 shadow-sm">
-            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest">Puntaje Base</span>
-            <span id="rul-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none">0</span>
+        <div class="text-right bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-2 rounded-xl border border-orange-200 shadow-inner">
+            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest mb-0.5">Puntos</span>
+            <span id="rul-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none drop-shadow-sm">0</span>
         </div>
     </div>
 
     <!-- BARRA SECUNDARIA DE ESTADO -->
-    <div class="flex justify-between items-center bg-blue-50/50 px-5 py-3 border-b border-blue-100 shadow-sm shrink-0">
-        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm">
+    <div class="flex justify-between items-center bg-cg_navy/80 backdrop-blur-md px-5 py-3 border-b border-gray-700 shadow-md shrink-0 relative z-10">
+        <div class="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-gray-600 shadow-inner">
             <span class="text-lg">⏱️</span>
-            <span id="rul-timer" class="text-lg font-black text-cg_navy font-mono w-14">60.0s</span>
+            <span id="rul-timer" class="text-lg font-black text-white font-mono w-14 tracking-wider">60.0s</span>
         </div>
-        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-green-100 shadow-sm">
+        <div class="flex items-center gap-2 bg-yellow-900/40 px-3 py-1.5 rounded-lg border border-yellow-700 shadow-inner">
             <span class="text-lg drop-shadow-sm">🔄</span>
-            <span id="rul-ammo" class="text-lg font-black text-green-600 font-mono">0</span>
-            <span class="text-[10px] text-gray-400 font-black uppercase mt-0.5">Tiros Restantes</span>
+            <span id="rul-ammo" class="text-lg font-black text-yellow-400 font-mono">0</span>
+            <span class="text-[9px] text-yellow-200/70 font-black uppercase mt-0.5">Tiros Restantes</span>
         </div>
     </div>
 
     <!-- ÁREA DE JUEGO (CANVAS LUMINOSO) -->
-    <div class="flex-1 relative bg-gradient-to-b from-sky-50 to-white flex items-center justify-center overflow-hidden">
+    <div class="flex-1 relative flex items-center justify-center overflow-hidden z-10">
         
-        <!-- Indicador de Puntero Estático -->
-        <div class="absolute top-[8%] sm:top-[12%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
-            <div class="w-8 h-10 bg-red-600 rounded-b-full shadow-[0_4px_10px_rgba(220,38,38,0.6)] border-2 border-white flex items-end justify-center pb-1">
-                <span class="text-white text-xs">▼</span>
+        <!-- Efecto Resplandor Detrás de la Ruleta -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-white/10 rounded-full blur-[80px] pointer-events-none z-0"></div>
+
+        <!-- Indicador de Puntero Moderno -->
+        <div class="absolute top-[10%] sm:top-[15%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]">
+            <div class="w-10 h-12 bg-gradient-to-b from-red-500 to-red-700 rounded-b-full shadow-lg border-2 border-white flex items-end justify-center pb-2">
+                <div class="w-3 h-3 bg-white rounded-full"></div>
             </div>
         </div>
 
-        <canvas id="roulette-canvas" class="block w-full max-w-sm aspect-square mx-auto bg-transparent"></canvas>
+        <canvas id="roulette-canvas" class="block w-full max-w-sm aspect-square mx-auto bg-transparent relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"></canvas>
         
         <!-- Botón de Acción Universal -->
-        <button id="rul-action-btn" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-cg_blue hover:bg-blue-500 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2">
+        <button id="rul-action-btn" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-cg_blue hover:bg-blue-500 text-white font-black text-lg sm:text-xl px-10 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2 border border-blue-400">
             <span>🎡</span> Girar Ruleta
         </button>
     </div>
 </div>
 
-<!-- MODAL DE RESULTADO LUMINOSO -->
-<div id="rul-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-cg_navy/80 backdrop-blur-sm font-sans">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border border-gray-100 shadow-2xl animate-fade-in relative overflow-hidden">
+<!-- ========================================== -->
+<!-- MODAL DE RESULTADO LUMINOSO                -->
+<!-- ========================================== -->
+<div id="rul-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md font-sans">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border-4 border-cg_gold shadow-[0_0_40px_rgba(237,153,37,0.3)] animate-fade-in relative overflow-hidden">
         
         <div class="w-20 h-20 bg-gradient-to-br from-yellow-300 to-cg_gold rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg border-4 border-white text-4xl animate-bounce">🏆</div>
         
         <h3 class="text-2xl font-black text-cg_navy mb-1 tracking-tight">¡Tiempo Agotado!</h3>
-        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido registrada en el servidor.</p>
+        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido calculada exitosamente.</p>
         
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left shadow-inner">
-            <div class="flex justify-between items-center text-xs mb-3">
+            <div class="flex justify-between items-center text-xs mb-3 border-b border-gray-100 pb-2">
                 <span class="text-gray-500 font-black uppercase tracking-widest">Puntaje Base:</span>
                 <span class="font-black text-cg_navy text-sm" id="res-base">0</span>
             </div>
-            <div class="flex justify-between items-center text-xs mb-3">
+            <div class="flex justify-between items-center text-xs mb-3 border-b border-gray-100 pb-2">
                 <span class="text-green-600 font-black uppercase tracking-widest">Bono Velocidad:</span>
-                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md" id="res-time">+0</span>
+                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md border border-green-200" id="res-time">+0</span>
             </div>
-            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center pt-2">
                 <span class="text-sm font-black text-cg_navy uppercase tracking-widest">Total Final:</span>
                 <span class="text-3xl font-black text-cg_gold drop-shadow-sm" id="res-total">0</span>
             </div>
         </div>
 
-        <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-            <span>💾</span> Registrar y Volver
+        <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none flex items-center justify-center gap-2">
+            <span>💾</span> Registrar Puntuación
         </button>
     </div>
 </div>
@@ -112,10 +174,15 @@ window.rouletteApp = {
     inputState: 'READY',
     rafId: null,
 
+    // Inicializa la UI y el modal de análisis
     init() {
         this.ctx = this.canvas.getContext('2d');
         this.resize();
         
+        let plantName = "Planta Base";
+        let plantImg = "assets/Fondos/logo.png";
+
+        // Obtener datos de la planta seleccionada
         if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
             let pData = window.farmApp.state.selectedCombatants[0];
             if (pData) {
@@ -130,33 +197,53 @@ window.rouletteApp = {
                     this.hp = realPlant.hp || 100;
                     this.atk = realPlant.atk || 50;
                     this.def = realPlant.def || 20;
-                    document.getElementById('rul-plant-icon').src = realPlant.icon || 'assets/Fondos/logo.png';
-                    document.getElementById('rul-plant-name').innerText = realPlant.name;
+                    plantImg = realPlant.icon || 'assets/Fondos/logo.png';
+                    plantName = realPlant.name;
                 }
             }
         }
 
+        // Llenar datos de la barra HUD
+        document.getElementById('rul-plant-icon').src = plantImg;
+        document.getElementById('rul-plant-name').innerText = plantName;
         document.getElementById('rul-stat-hp').innerText = `❤️ ${this.hp}`;
         document.getElementById('rul-stat-atk').innerText = `⚔️ ${this.atk}`;
         document.getElementById('rul-stat-def').innerText = `🛡️ ${this.def}`;
+
+        // Llenar datos del Modal Pre-Juego
+        document.getElementById('intro-plant-img').src = plantImg;
+        document.getElementById('intro-plant-name').innerText = plantName;
 
         // BALANCE STANDARD:
         // HP = Cantidad de giros (1 giro por cada 10 HP)
         this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
         this.spinsLeft = this.spinsTotal;
-        document.getElementById('rul-ammo').innerText = this.spinsLeft;
-
+        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Giros`;
+        
+        // ATK = Multiplicador de puntos
+        const mult = 1 + (this.atk / 100);
+        document.getElementById('intro-pts').innerText = `+${Math.floor(1000 * mult)} Pts Max`;
+        
         // DEF = Fricción (Mayor defensa frena más rápido, es más preciso)
         // Deceleración base 0.05 + 0.1 por cada 100 de DEF
         this.deceleration = 0.05 + (this.def / 100) * 0.1;
+        document.getElementById('intro-control').innerText = `${this.deceleration.toFixed(2)} Fricción`;
 
-        this.buildWheel();
-        this.startTimer();
+        document.getElementById('rul-ammo').innerText = this.spinsLeft;
+
+        this.buildWheel(mult);
+        this.draw(); // Dibuja la ruleta en el fondo detrás del modal
+    },
+
+    // Invocado por el botón "Iniciar Misión" del modal
+    startGame() {
+        document.getElementById('rul-intro-modal').classList.add('hidden');
         
         const actionBtn = document.getElementById('rul-action-btn');
         actionBtn.onclick = () => this.handleInput();
 
         this.isPlaying = true;
+        this.startTimer();
         this.loop();
     },
 
@@ -165,20 +252,17 @@ window.rouletteApp = {
         this.canvas.height = this.size;
     },
 
-    buildWheel() {
-        // ATK = Multiplicador de puntos
-        const mult = 1 + (this.atk / 100);
-
+    buildWheel(mult) {
         // 8 Secciones (45 grados cada una)
         this.slices = [
-            { id: 0, type: 'jackpot', bg: '#fef08a', border: '#eab308', text: '#854d0e', label: `⭐ ${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
-            { id: 1, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
-            { id: 2, type: 'bad',     bg: '#fee2e2', border: '#ef4444', text: '#991b1b', label: `💀 -500`, pts: -500 },
-            { id: 3, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
-            { id: 4, type: 'bad',     bg: '#fee2e2', border: '#ef4444', text: '#991b1b', label: `💀 -300`, pts: -300 },
-            { id: 5, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
-            { id: 6, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
-            { id: 7, type: 'bad',     bg: '#fee2e2', border: '#ef4444', text: '#991b1b', label: `💀 -400`, pts: -400 }
+            { id: 0, type: 'jackpot', bg: 'rgba(250, 204, 21, 0.95)', border: '#ca8a04', text: '#854d0e', label: `⭐ ${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
+            { id: 1, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
+            { id: 2, type: 'bad',     bg: 'rgba(248, 113, 113, 0.95)', border: '#dc2626', text: '#7f1d1d', label: `💀 -500`, pts: -500 },
+            { id: 3, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
+            { id: 4, type: 'bad',     bg: 'rgba(248, 113, 113, 0.95)', border: '#dc2626', text: '#7f1d1d', label: `💀 -300`, pts: -300 },
+            { id: 5, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
+            { id: 6, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
+            { id: 7, type: 'bad',     bg: 'rgba(248, 113, 113, 0.95)', border: '#dc2626', text: '#7f1d1d', label: `💀 -400`, pts: -400 }
         ];
     },
 
@@ -211,13 +295,15 @@ window.rouletteApp = {
             btn.classList.replace('bg-cg_blue', 'bg-red-500');
             btn.classList.replace('hover:bg-blue-500', 'hover:bg-red-600');
             btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_6px_0_#991b1b]');
+            btn.classList.replace('border-blue-400', 'border-red-400');
             
         } else if (this.inputState === 'SPINNING') {
             this.inputState = 'STOPPING';
             btn.innerHTML = "<span>⏳</span> Frenando...";
-            btn.classList.replace('bg-red-500', 'bg-slate-400');
-            btn.classList.replace('hover:bg-red-600', 'hover:bg-slate-500');
-            btn.classList.replace('shadow-[0_6px_0_#991b1b]', 'shadow-[0_6px_0_#94a3b8]');
+            btn.classList.replace('bg-red-500', 'bg-slate-500');
+            btn.classList.replace('hover:bg-red-600', 'hover:bg-slate-600');
+            btn.classList.replace('shadow-[0_6px_0_#991b1b]', 'shadow-[0_6px_0_#334155]');
+            btn.classList.replace('border-red-400', 'border-slate-400');
             btn.disabled = true;
         }
     },
@@ -246,7 +332,6 @@ window.rouletteApp = {
 
     resolveSpin() {
         // La aguja estática está arriba, a los 270 grados en el canvas estándar.
-        // Calculamos qué sección quedó bajo los 270 grados.
         let effectiveAngle = (270 - this.currentAngle) % 360;
         if (effectiveAngle < 0) effectiveAngle += 360;
         
@@ -258,7 +343,6 @@ window.rouletteApp = {
         this.score = Math.max(0, this.score + wonSlice.pts);
         document.getElementById('rul-score').innerText = this.score;
 
-        // Efecto visual al ganar o perder puntos (ligero shake o destello podría ir por CSS, pero aquí reiniciamos botones)
         if (this.score >= 10000 || this.spinsLeft <= 0) {
             this.endGame();
         } else {
@@ -266,9 +350,10 @@ window.rouletteApp = {
             const btn = document.getElementById('rul-action-btn');
             btn.disabled = false;
             btn.innerHTML = "<span>🎡</span> Girar Ruleta";
-            btn.classList.replace('bg-slate-400', 'bg-cg_blue');
-            btn.classList.replace('hover:bg-slate-500', 'hover:bg-blue-500');
-            btn.classList.replace('shadow-[0_6px_0_#94a3b8]', 'shadow-[0_6px_0_#1e3a8a]');
+            btn.classList.replace('bg-slate-500', 'bg-cg_blue');
+            btn.classList.replace('hover:bg-slate-600', 'hover:bg-blue-500');
+            btn.classList.replace('shadow-[0_6px_0_#334155]', 'shadow-[0_6px_0_#1e3a8a]');
+            btn.classList.replace('border-slate-400', 'border-blue-400');
         }
     },
 
@@ -283,7 +368,7 @@ window.rouletteApp = {
 
         const sliceAngle = (2 * Math.PI) / this.numSlices;
 
-        // Dibujar Secciones
+        // Dibujar Secciones con estilo moderno
         for (let i = 0; i < this.numSlices; i++) {
             let slice = this.slices[i];
             this.ctx.beginPath();
@@ -295,6 +380,15 @@ window.rouletteApp = {
             this.ctx.fill();
             
             this.ctx.lineWidth = 4;
+            this.ctx.strokeStyle = '#ffffff'; // Borde blanco cristalino
+            this.ctx.stroke();
+
+            // Sombreado interior de cada segmento
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, 0);
+            this.ctx.arc(0, 0, radius - 4, i * sliceAngle, (i + 1) * sliceAngle);
+            this.ctx.closePath();
+            this.ctx.lineWidth = 2;
             this.ctx.strokeStyle = slice.border;
             this.ctx.stroke();
 
@@ -303,31 +397,43 @@ window.rouletteApp = {
             this.ctx.rotate(i * sliceAngle + sliceAngle / 2);
             this.ctx.textAlign = 'right';
             this.ctx.fillStyle = slice.text;
-            this.ctx.font = 'bold 16px sans-serif';
             
-            // Si el texto es largo, lo separamos si tiene un espacio (ej: '💀 -500')
             let textParts = slice.label.split(' ');
             if (textParts.length > 1) {
-                this.ctx.font = '20px sans-serif';
-                this.ctx.fillText(textParts[0], radius - 70, 6);
-                this.ctx.font = 'bold 16px sans-serif';
-                this.ctx.fillText(textParts[1], radius - 15, 6);
+                this.ctx.font = '22px sans-serif';
+                this.ctx.fillText(textParts[0], radius - 75, 7);
+                this.ctx.font = '900 16px sans-serif';
+                this.ctx.fillText(textParts[1], radius - 20, 6);
             } else {
-                this.ctx.fillText(slice.label, radius - 15, 6);
+                this.ctx.font = '900 16px sans-serif';
+                this.ctx.fillText(slice.label, radius - 20, 6);
             }
             this.ctx.restore();
         }
 
         // Círculo Central Decorativo
         this.ctx.beginPath();
-        this.ctx.arc(0, 0, 30, 0, 2 * Math.PI);
-        this.ctx.fillStyle = '#f8fafc'; // slate-50
+        this.ctx.arc(0, 0, 35, 0, 2 * Math.PI);
+        this.ctx.fillStyle = '#ffffff'; 
         this.ctx.fill();
-        this.ctx.lineWidth = 4;
-        this.ctx.strokeStyle = '#e2e8f0'; // slate-200
+        this.ctx.lineWidth = 6;
+        this.ctx.strokeStyle = '#e2e8f0'; 
         this.ctx.stroke();
+        
+        // Punto central interno
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+        this.ctx.fillStyle = '#94a3b8'; 
+        this.ctx.fill();
 
         this.ctx.restore();
+        
+        // Borde exterior maestro de la ruleta
+        this.ctx.beginPath();
+        this.ctx.arc(center, center, radius + 2, 0, 2 * Math.PI);
+        this.ctx.lineWidth = 6;
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.stroke();
     },
 
     endGame() {
@@ -364,6 +470,34 @@ window.submitRouletteScore = async function() {
     const token = sessionStorage.getItem('session_token');
     const instanceId = sessionStorage.getItem('pve_tournament_instance');
 
+    // MODO MULTIJUGADOR (PVP)
+    const pvpMatchId = sessionStorage.getItem('pvp_match_id');
+    if (pvpMatchId && token && username) {
+        try {
+            await fetch('/api/pvp/combat_sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    match_id: pvpMatchId,
+                    update_data: { winner: username } 
+                })
+            });
+        } catch(e) { console.error(e); }
+        
+        sessionStorage.removeItem('pvp_match_id');
+        sessionStorage.removeItem('pvp_bet_amount');
+        
+        if (window.farmApp) {
+            window.farmApp.state.combatLock = false;
+            window.farmApp.saveState();
+        }
+        
+        loadView('farm', document.querySelectorAll('.nav-btn-desktop')[0]); 
+        return;
+    }
+
+    // MODO TORNEO
     if (instanceId && token && username) {
         try {
             await fetch('/api/tournaments/submit_score', {
@@ -379,6 +513,23 @@ window.submitRouletteScore = async function() {
         } catch(e) { console.error(e); }
     }
 
+    // MODO IA (BOT)
+    const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true';
+    if (isBotMode) {
+        const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0;
+        if (botBetAmount > 0) {
+            let winAmount = botBetAmount * 2;
+            if (window.farmApp) {
+                window.farmApp.state.seedsBalance += winAmount;
+            }
+            alert(`¡Derrotaste a la IA! Has ganado ${winAmount.toLocaleString()} 🌱`);
+        } else {
+            alert(`¡Derrotaste a la IA en partida amistosa!`);
+        }
+        sessionStorage.removeItem('pve_bot_mode');
+        sessionStorage.removeItem('bot_bet_amount');
+    }
+
     sessionStorage.removeItem('pve_tournament_id');
     sessionStorage.removeItem('pve_tournament_fee');
     sessionStorage.removeItem('pve_tournament_instance');
@@ -388,9 +539,11 @@ window.submitRouletteScore = async function() {
         window.farmApp.saveState();
     }
 
-    loadView('nutrients'); 
+    loadView('nutrients', document.querySelectorAll('.nav-btn-desktop')[2]); 
 };
 
-setTimeout(() => window.rouletteApp.init(), 200);
+// Iniciar app de inmediato configurando la UI
+window.rouletteApp.init();
+
 </script>
 </div>
