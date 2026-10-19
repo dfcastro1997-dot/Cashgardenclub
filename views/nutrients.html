@@ -10,193 +10,193 @@
         </div>
     </div>
 
-    <!-- TARJETAS DE LIGAS (Sit & Go Psicología) -->
+    <!-- TARJETAS DE LIGAS (Luminosas y Atractivas) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         
-        <!-- Freeroll -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border border-green-300 shadow-sm hover:shadow-lg transition-all">
+        <!-- Liga Novato -->
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-green-200 shadow-sm hover:shadow-xl transition-all">
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
                 <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Novato</h3>
                 <span class="bg-green-100 text-green-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Práctica</span>
             </div>
             <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                <div class="absolute inset-0 bg-green-100 rounded-full blur-3xl opacity-40"></div>
+                <div class="absolute inset-0 bg-green-100 rounded-full blur-3xl opacity-60"></div>
                 <img src="assets/Herramientas_y_Servicios/T1.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Liga Novato">
             </div>
             
-            <!-- Panel de Pozo y Cupos (Psicología Sit & Go) -->
-            <div class="bg-slate-900 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-700 relative z-10 mt-auto shadow-inner text-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+            <!-- Panel de Pozo y Cupos (Claro y Llamativo) -->
+            <div class="bg-green-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-green-200 relative z-10 mt-auto shadow-sm text-center">
+                <span class="text-[10px] font-black text-green-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-green-400 font-mono tracking-tight animated-number" data-target="40000" id="lb-pool-1">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-green-600 font-mono tracking-tight animated-number" data-target="40000" id="lb-pool-1">$0</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-green-200/60">
                     <div class="text-left">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥇 1er Puesto (70%)</span>
+                        <span class="block text-[8px] text-green-800 font-bold uppercase">🥇 1er (70%)</span>
                         <span class="font-black text-cg_gold text-sm animated-number" data-target="28000" id="lb-first-1">$0</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥈 2do Puesto (30%)</span>
-                        <span class="font-black text-white text-sm animated-number" data-target="12000" id="lb-second-1">$0</span>
+                        <span class="block text-[8px] text-green-800 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-green-700 text-sm animated-number" data-target="12000" id="lb-second-1">$0</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-slate-800/80 rounded-xl p-2 border border-slate-600 flex justify-between items-center">
-                    <span class="text-[10px] font-black text-slate-300 uppercase">Cupos Llenos:</span>
-                    <span class="text-xs font-black text-white"><span class="text-cg_cyan text-base" id="card-players-1">0</span> / 10</span>
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-green-200 flex justify-between items-center shadow-inner">
+                    <span class="text-[10px] font-black text-gray-500 uppercase">Cupos Llenos:</span>
+                    <span class="text-xs font-black text-gray-800"><span class="text-green-600 text-base font-mono transition-transform duration-300 inline-block" id="card-players-1">0</span> / 10</span>
                 </div>
             </div>
             
             <div class="flex gap-2 relative z-10 mt-3">
-                <button onclick="viewLeaderboard(1)" class="bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
+                <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(1, 5000, '5.000 🌱')" class="tournament-action-btn flex-1 bg-[#22c55e] hover:bg-green-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest">
+                <button onclick="openPreTournamentModal(1, 5000, '5.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
                     Entrar: $5k
                 </button>
             </div>
         </div>
 
         <!-- Liga Intermedia -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border border-blue-300 shadow-sm hover:shadow-lg transition-all">
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-blue-200 shadow-sm hover:shadow-xl transition-all">
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
                 <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Intermedia</h3>
                 <span class="bg-blue-100 text-blue-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Estándar</span>
             </div>
             <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                <div class="absolute inset-0 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
+                <div class="absolute inset-0 bg-blue-100 rounded-full blur-3xl opacity-60"></div>
                 <img src="assets/Herramientas_y_Servicios/T2.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Liga Intermedia">
             </div>
             
-            <div class="bg-slate-900 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-700 relative z-10 mt-auto shadow-inner text-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+            <div class="bg-blue-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-blue-200 relative z-10 mt-auto shadow-sm text-center">
+                <span class="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-blue-400 font-mono tracking-tight animated-number" data-target="80000" id="lb-pool-3">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-blue-600 font-mono tracking-tight animated-number" data-target="80000" id="lb-pool-3">$0</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-blue-200/60">
                     <div class="text-left">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥇 1er Puesto (70%)</span>
+                        <span class="block text-[8px] text-blue-800 font-bold uppercase">🥇 1er (70%)</span>
                         <span class="font-black text-cg_gold text-sm animated-number" data-target="56000" id="lb-first-3">$0</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥈 2do Puesto (30%)</span>
-                        <span class="font-black text-white text-sm animated-number" data-target="24000" id="lb-second-3">$0</span>
+                        <span class="block text-[8px] text-blue-800 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-blue-700 text-sm animated-number" data-target="24000" id="lb-second-3">$0</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-slate-800/80 rounded-xl p-2 border border-slate-600 flex justify-between items-center">
-                    <span class="text-[10px] font-black text-slate-300 uppercase">Cupos Llenos:</span>
-                    <span class="text-xs font-black text-white"><span class="text-cg_cyan text-base" id="card-players-3">0</span> / 10</span>
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-blue-200 flex justify-between items-center shadow-inner">
+                    <span class="text-[10px] font-black text-gray-500 uppercase">Cupos Llenos:</span>
+                    <span class="text-xs font-black text-gray-800"><span class="text-blue-600 text-base font-mono transition-transform duration-300 inline-block" id="card-players-3">0</span> / 10</span>
                 </div>
             </div>
 
             <div class="flex gap-2 relative z-10 mt-3">
-                <button onclick="viewLeaderboard(3)" class="bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
+                <button onclick="viewLeaderboard(3)" class="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(3, 10000, '15.000 🌱')" class="tournament-action-btn flex-1 bg-[#3b82f6] hover:bg-blue-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest">
+                <button onclick="openPreTournamentModal(3, 10000, '15.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
                     Entrar: $10k
                 </button>
             </div>
         </div>
 
-        <!-- Torneo Avanzado -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border border-orange-300 shadow-sm hover:shadow-lg transition-all">
+        <!-- Liga Avanzada -->
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-orange-200 shadow-sm hover:shadow-xl transition-all">
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
                 <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Avanzada</h3>
                 <span class="bg-orange-100 text-orange-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Pro</span>
             </div>
             <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                <div class="absolute inset-0 bg-orange-100 rounded-full blur-3xl opacity-40"></div>
+                <div class="absolute inset-0 bg-orange-100 rounded-full blur-3xl opacity-60"></div>
                 <img src="assets/Herramientas_y_Servicios/T3.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Liga Avanzada">
             </div>
             
-            <div class="bg-slate-900 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-700 relative z-10 mt-auto shadow-inner text-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+            <div class="bg-orange-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-orange-200 relative z-10 mt-auto shadow-sm text-center">
+                <span class="text-[10px] font-black text-orange-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-orange-400 font-mono tracking-tight animated-number" data-target="240000" id="lb-pool-4">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-orange-600 font-mono tracking-tight animated-number" data-target="240000" id="lb-pool-4">$0</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-orange-200/60">
                     <div class="text-left">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥇 1er Puesto (70%)</span>
+                        <span class="block text-[8px] text-orange-800 font-bold uppercase">🥇 1er (70%)</span>
                         <span class="font-black text-cg_gold text-sm animated-number" data-target="168000" id="lb-first-4">$0</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥈 2do Puesto (30%)</span>
-                        <span class="font-black text-white text-sm animated-number" data-target="72000" id="lb-second-4">$0</span>
+                        <span class="block text-[8px] text-orange-800 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-orange-700 text-sm animated-number" data-target="72000" id="lb-second-4">$0</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-slate-800/80 rounded-xl p-2 border border-slate-600 flex justify-between items-center">
-                    <span class="text-[10px] font-black text-slate-300 uppercase">Cupos Llenos:</span>
-                    <span class="text-xs font-black text-white"><span class="text-cg_cyan text-base" id="card-players-4">0</span> / 10</span>
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-orange-200 flex justify-between items-center shadow-inner">
+                    <span class="text-[10px] font-black text-gray-500 uppercase">Cupos Llenos:</span>
+                    <span class="text-xs font-black text-gray-800"><span class="text-orange-500 text-base font-mono transition-transform duration-300 inline-block" id="card-players-4">0</span> / 10</span>
                 </div>
             </div>
 
             <div class="flex gap-2 relative z-10 mt-3">
-                <button onclick="viewLeaderboard(4)" class="bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
+                <button onclick="viewLeaderboard(4)" class="bg-white hover:bg-orange-50 text-orange-500 border border-orange-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(4, 30000, '30.000 🌱')" class="tournament-action-btn flex-1 bg-[#f97316] hover:bg-orange-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest">
+                <button onclick="openPreTournamentModal(4, 30000, '30.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
                     Entrar: $30k
                 </button>
             </div>
         </div>
 
-        <!-- High Roller -->
-        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border border-gray-300 shadow-sm hover:shadow-lg transition-all">
+        <!-- Liga Élite -->
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-yellow-200 shadow-sm hover:shadow-xl transition-all">
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
                 <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Élite</h3>
-                <span class="bg-gray-800 text-white text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">High Roller</span>
+                <span class="bg-amber-100 text-amber-800 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">High Roller</span>
             </div>
             <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gray-200 rounded-full blur-3xl opacity-40"></div>
+                <div class="absolute inset-0 bg-yellow-100 rounded-full blur-3xl opacity-60"></div>
                 <img src="assets/Herramientas_y_Servicios/T4.png" class="h-full w-auto object-contain drop-shadow-xl relative z-10" alt="Liga Élite">
             </div>
             
-            <div class="bg-slate-900 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-700 relative z-10 mt-auto shadow-inner text-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse"></span> Pozo de Premios
+            <div class="bg-amber-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-amber-200 relative z-10 mt-auto shadow-sm text-center">
+                <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-yellow-400 font-mono tracking-tight animated-number" data-target="400000" id="lb-pool-5">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-amber-500 font-mono tracking-tight animated-number" data-target="400000" id="lb-pool-5">$0</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-amber-200/60">
                     <div class="text-left">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥇 1er Puesto (70%)</span>
+                        <span class="block text-[8px] text-amber-800 font-bold uppercase">🥇 1er (70%)</span>
                         <span class="font-black text-cg_gold text-sm animated-number" data-target="280000" id="lb-first-5">$0</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-slate-400 font-bold uppercase">🥈 2do Puesto (30%)</span>
-                        <span class="font-black text-white text-sm animated-number" data-target="120000" id="lb-second-5">$0</span>
+                        <span class="block text-[8px] text-amber-800 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-amber-700 text-sm animated-number" data-target="120000" id="lb-second-5">$0</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-slate-800/80 rounded-xl p-2 border border-slate-600 flex justify-between items-center">
-                    <span class="text-[10px] font-black text-slate-300 uppercase">Cupos Llenos:</span>
-                    <span class="text-xs font-black text-white"><span class="text-cg_cyan text-base" id="card-players-5">0</span> / 10</span>
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-amber-200 flex justify-between items-center shadow-inner">
+                    <span class="text-[10px] font-black text-gray-500 uppercase">Cupos Llenos:</span>
+                    <span class="text-xs font-black text-gray-800"><span class="text-amber-500 text-base font-mono transition-transform duration-300 inline-block" id="card-players-5">0</span> / 10</span>
                 </div>
             </div>
 
             <div class="flex gap-2 relative z-10 mt-3">
-                <button onclick="viewLeaderboard(5)" class="bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
+                <button onclick="viewLeaderboard(5)" class="bg-white hover:bg-amber-50 text-amber-500 border border-amber-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(5, 50000, '50.000 🌱')" class="tournament-action-btn flex-1 bg-[#111827] hover:bg-black text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-sm uppercase tracking-widest">
+                <button onclick="openPreTournamentModal(5, 50000, '50.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
                     Entrar: $50k
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- LEADERBOARD EN TIEMPO REAL -->
+    <!-- LEADERBOARD EN TIEMPO REAL (Luminoso) -->
     <div id="live-leaderboard-container" class="mt-10 bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden hidden animate-fade-in relative">
         <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cg_blue via-green-400 to-cg_gold"></div>
         <div class="bg-white border-b border-gray-100 p-5 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center relative gap-4 mt-2">
             <div class="flex items-center gap-4">
-                <span class="text-4xl md:text-5xl">🏆</span>
+                <span class="text-4xl md:text-5xl drop-shadow-sm">🏆</span>
                 <div>
                     <span id="lb-status-badge" class="bg-red-50 text-red-600 border border-red-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1.5 w-fit mb-2 shadow-sm"></span>
                     <h3 class="text-xl md:text-3xl font-black text-cg_navy tracking-tight">Ranking <span id="lb-tourney-name" class="text-cg_blue"></span></h3>
@@ -204,13 +204,13 @@
                 </div>
             </div>
             
-            <div class="text-left md:text-right w-full md:w-auto bg-gray-900 p-4 md:p-5 rounded-2xl border border-gray-700 shadow-inner">
-                <p class="text-[10px] md:text-xs text-gray-400 font-black uppercase tracking-widest mb-1">Pozo Acumulado de la Sala</p>
-                <p class="text-3xl md:text-4xl font-black text-green-400 mb-4 tracking-tight" id="lb-prize-pool">0 Créditos</p>
-                <div class="flex flex-wrap items-center md:justify-end gap-3 md:gap-4 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-400 bg-slate-800 px-3 md:px-4 py-2.5 rounded-xl border border-slate-600 shadow-sm">
+            <div class="text-left md:text-right w-full md:w-auto bg-gray-50 p-4 md:p-5 rounded-2xl border border-gray-200 shadow-inner">
+                <p class="text-[10px] md:text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Pozo Acumulado de la Sala</p>
+                <p class="text-3xl md:text-4xl font-black text-green-600 mb-4 tracking-tight" id="lb-prize-pool">$0</p>
+                <div class="flex flex-wrap items-center md:justify-end gap-3 md:gap-4 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-600 bg-white px-3 md:px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
                     <div class="flex items-center gap-1.5" title="Primer Puesto (70%)"><span class="text-base md:text-lg">🥇</span> <span id="lb-prize-1" class="text-cg_gold">$0</span></div>
-                    <div class="flex items-center gap-1.5" title="Segundo Puesto (30%)"><span class="text-base md:text-lg">🥈</span> <span id="lb-prize-2" class="text-white">$0</span></div>
-                    <div class="flex items-center gap-1.5" title="Tercer Puesto (Consolación)"><span class="text-base md:text-lg">🥉</span> <span id="lb-prize-3" class="text-orange-400">Consolación</span></div>
+                    <div class="flex items-center gap-1.5" title="Segundo Puesto (30%)"><span class="text-base md:text-lg">🥈</span> <span id="lb-prize-2" class="text-gray-600">$0</span></div>
+                    <div class="flex items-center gap-1.5" title="Tercer Puesto (Consolación)"><span class="text-base md:text-lg">🥉</span> <span id="lb-prize-3" class="text-orange-500">Consolación (Ítems)</span></div>
                 </div>
             </div>
         </div>
@@ -220,7 +220,7 @@
                     <tr>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center w-24">Rank</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest">Jugador</th>
-                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center">Bono de Combate</th>
+                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center">Bono Supervivencia</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Puntaje Final</th>
                     </tr>
                 </thead>
@@ -230,7 +230,7 @@
     </div>
 </div>
 
-<!-- VENTANA MODAL PRE-TORNEO (NUEVA CON GUARDIANES) -->
+<!-- VENTANA MODAL PRE-TORNEO -->
 <div id="pre-tournament-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePreTournamentModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
@@ -277,7 +277,6 @@
 
 <!-- VENTANA MODAL: LIGA RESTRINGIDA -->
 <div id="liga-restringida-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
-    <!-- ... (Este modal queda igual) ... -->
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('liga-restringida-modal').classList.replace('flex', 'hidden')"></div>
     <div class="bg-white rounded-[2rem] shadow-2xl w-[95%] max-w-lg relative z-10 flex flex-col overflow-hidden animate-fade-in text-center border-4 border-red-500 max-h-[85vh]">
         <div class="p-6 border-b border-red-100 shrink-0 bg-red-50 relative">
@@ -327,6 +326,10 @@
     window.serverTournamentConfig = {};
     window.dynamicPlantsCache = [];
 
+    // Variables para el sistema FOMO (Fake Increment)
+    window.fakePlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
+    window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
+
     // Función de animación progresiva de números ("Efecto Casino")
     function animateValue(obj, start, end, duration) {
         let startTimestamp = null;
@@ -344,7 +347,6 @@
         window.requestAnimationFrame(step);
     }
 
-    // Inicializar contadores visuales con animación
     function initCardAnimations() {
         document.querySelectorAll('.animated-number').forEach(el => {
             const targetStr = el.getAttribute('data-target');
@@ -354,7 +356,6 @@
             }
         });
     }
-    // Ejecutar al cargar la vista
     setTimeout(initCardAnimations, 100);
 
     async function fetchTournamentGuardians() {
@@ -575,7 +576,9 @@
             badge.innerHTML = `🏆 CERRADO`;
             badge.className = "bg-gray-100 text-gray-600 border border-gray-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1 w-fit mb-2 shadow-sm";
         } else {
-            countText.innerText = `Puntajes registrados: ${data.players_count} / 10`;
+            // Reflejar la cuenta FOMO (falsa o real)
+            let currentDisplayCount = window.fakePlayersCounts[tId] || data.players_count || 0;
+            countText.innerText = `Puntajes registrados: ${currentDisplayCount} / 10`;
             badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span> Buscando Jugadores`;
             badge.className = "bg-orange-50 text-orange-600 border border-orange-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1.5 w-fit mb-2 shadow-sm";
         } 
@@ -614,19 +617,20 @@
         }
     }
 
-    window.refreshLeaderboard = async function() {
-        let tId = window.currentLeaderboardTid || 1;
-        try {
-            const res = await fetch('/api/tournaments/global_leaderboard/' + tId);
-            if (res.ok) {
-                const data = await res.json();
-                window.renderLeaderboardUI(data, tId);
+    // --- LÓGICA FOMO (FAKE INCREMENT) Y ACTUALIZACIÓN ---
+    
+    function renderPlayerCounts() {
+        const tIds = [1, 3, 4, 5];
+        for (let id of tIds) {
+            const countEl = document.getElementById('card-players-' + id);
+            if (countEl && countEl.innerText != window.fakePlayersCounts[id]) {
+                countEl.innerText = window.fakePlayersCounts[id];
+                // Animación de pop en el contador de la tarjeta
+                countEl.classList.add('scale-150', 'text-red-500');
+                setTimeout(() => countEl.classList.remove('scale-150', 'text-red-500'), 300);
             }
-        } catch(e) {}
+        }
     }
-
-    if(window.lbInterval) clearInterval(window.lbInterval);
-    window.lbInterval = setInterval(window.refreshLeaderboard, 5000); // Consulta más rápida para Sit&Go
 
     async function updateAllTournamentCounts() {
         const tIds = [1, 3, 4, 5];
@@ -635,12 +639,22 @@
                 const res = await fetch('/api/tournaments/global_leaderboard/' + id);
                 if (res.ok) {
                     const data = await res.json();
-                    // Actualizar Cupos
-                    const countEl = document.getElementById('card-players-' + id);
-                    if (countEl) countEl.innerText = data.players_count || 0;
                     
+                    let realCount = data.players_count || 0;
+                    
+                    // Si el conteo real bajó (se reseteó el torneo y empezó uno nuevo)
+                    if (realCount < window.realPlayersCounts[id]) {
+                        window.fakePlayersCounts[id] = realCount;
+                    }
+                    window.realPlayersCounts[id] = realCount;
+                    
+                    // Asegurar que el falso nunca sea menor al real
+                    if (window.fakePlayersCounts[id] < realCount) {
+                        window.fakePlayersCounts[id] = realCount;
+                    }
+
                     // Actualizar Pozo en vivo en las tarjetas
-                    if(data.prize_pool) {
+                    if(data.prize_pool !== undefined) {
                         const poolEl = document.getElementById('lb-pool-' + id);
                         const firstEl = document.getElementById('lb-first-' + id);
                         const secEl = document.getElementById('lb-second-' + id);
@@ -655,9 +669,43 @@
                 }
             } catch(e) {}
         }
+        renderPlayerCounts();
     }
+
+    // Intervalo de FOMO Fake Increment (cada 12 segundos)
+    if(window.fomoInterval) clearInterval(window.fomoInterval);
+    window.fomoInterval = setInterval(() => {
+        const tIds = [1, 3, 4, 5];
+        const randomId = tIds[Math.floor(Math.random() * tIds.length)];
+        
+        // Solo incrementamos si estamos por debajo de 9 (siempre dejamos 1 cupo visual para el usuario)
+        if (window.fakePlayersCounts[randomId] < 9) {
+            let bump = Math.random() > 0.7 ? 2 : 1; // 30% de probabilidad de sumar 2 de golpe
+            if (window.fakePlayersCounts[randomId] + bump > 9) bump = 1;
+            
+            window.fakePlayersCounts[randomId] += bump;
+            renderPlayerCounts();
+        }
+    }, 12000);
+
+    window.refreshLeaderboard = async function() {
+        let tId = window.currentLeaderboardTid || 1;
+        try {
+            const res = await fetch('/api/tournaments/global_leaderboard/' + tId);
+            if (res.ok) {
+                const data = await res.json();
+                window.renderLeaderboardUI(data, tId);
+            }
+        } catch(e) {}
+    }
+
+    if(window.lbInterval) clearInterval(window.lbInterval);
+    window.lbInterval = setInterval(window.refreshLeaderboard, 5000); 
+
+    // Arranque inicial
     updateAllTournamentCounts();
-    setInterval(updateAllTournamentCounts, 10000); // 10 Segundos
+    if(window.tourneyFetchInterval) clearInterval(window.tourneyFetchInterval);
+    window.tourneyFetchInterval = setInterval(updateAllTournamentCounts, 10000);
 
 </script>
 </div>
