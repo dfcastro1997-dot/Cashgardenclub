@@ -4290,6 +4290,8 @@ window.combatApp = {
         // Variables para los modos
         const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true';
         const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0;
+        const isTournament = !!sessionStorage.getItem('pve_tournament_id');
+        const tourneyInstance = sessionStorage.getItem('pve_tournament_instance');
 
         if (victory) {
             const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
@@ -4300,6 +4302,42 @@ window.combatApp = {
                 grossReward = betAmount * 2;
             } else if (isBotMode && botBetAmount > 0) {
                 grossReward = botBetAmount * 2; // Apuesta x2 al ganar el reto del bot
+            } else if (isTournament) {
+                // MODO TORNEO: Calcular puntaje y enviar a la base de datos
+                let currentHpSum = 0;
+                finalTeam.forEach(p => { if (p.hp > 0) currentHpSum += p.hp; });
+                
+                // Matemática de Torneo: 10k Base + Bono de Vida - Penalización de Tiempo
+                let baseScore = 10000;
+                let hpBonus = currentHpSum * 10;
+                let timePenalty = this.turn * 50;
+                let finalScore = baseScore + hpBonus - timePenalty;
+                if (finalScore < 0) finalScore = 0;
+                
+                // 📡 Enviar resultado final al Servidor
+                if (tourneyInstance) {
+                    fetch('/api/tournaments/submit_score', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: sessionStorage.getItem('username'),
+                            session_token: sessionStorage.getItem('session_token'),
+                            instance_id: tourneyInstance,
+                            score: finalScore
+                        })
+                    });
+                }
+                
+                // Preparar modal visual (ocultar caja de factura de semillas)
+                const invoiceBox = document.getElementById('combat-victory-invoice');
+                if (invoiceBox) invoiceBox.classList.add('hidden');
+                
+                const sub = document.getElementById('combat-victory-sub');
+                if (sub) sub.innerHTML = `Clasificatoria completada. Tu puntaje final en el ranking es:<br><strong class="text-cg_gold text-2xl mt-2 block">${finalScore.toLocaleString()} Puntos</strong>`;
+                
+                // Forzar recompensa bruta a 0 para que no te regale semillas localmente en los torneos
+                grossReward = 0;
+
             } else {
                 // Cálculo de Campaña PvE (HP Restante)
                 let currentHpSum = 0;
@@ -4330,42 +4368,62 @@ window.combatApp = {
                 window.farmApp.state.arsenal.push({
                     id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef, // <--- FULL VIDA AL GANAR (pt.maxHp)
+                    hp: pt.maxHp, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
                     wins: pt.wins + 1, lastRecover: Date.now()
                 });
             });
 
-            const sub = document.getElementById('combat-victory-sub');
-            if (sub) sub.innerText = this.isPvP ? 'Has vencido a tu rival.' : `El oponente ha sido derrotado en ${this.turn} ronda(s).`;
+            if (!isTournament) {
+                const sub = document.getElementById('combat-victory-sub');
+                if (sub) sub.innerText = this.isPvP ? 'Has vencido a tu rival.' : `El oponente ha sido derrotado en ${this.turn} ronda(s).`;
 
-            const invoiceBox = document.getElementById('combat-victory-invoice');
-            if (grossReward > 0) {
-                if (invoiceBox) invoiceBox.classList.remove('hidden');
-                
-                const grossEl = document.getElementById('combat-victory-gross');
-                // Mostrar solo "Base + Bono" si es modo campaña normal
-                if (!this.isPvP && !(isBotMode && botBetAmount > 0)) {
-                    grossEl.innerHTML = `<span class="text-[9px] text-gray-400 font-normal mr-1 border border-gray-600 px-1 rounded shadow-inner">Base: ${this.pveBaseReward} + Bono HP: ${survivalBonus}</span> ${grossReward.toLocaleString()} 🌱`;
-                } else {
-                    grossEl.innerText = `${grossReward.toLocaleString()} 🌱`;
+                const invoiceBox = document.getElementById('combat-victory-invoice');
+                if (grossReward > 0) {
+                    if (invoiceBox) invoiceBox.classList.remove('hidden');
+                    
+                    const grossEl = document.getElementById('combat-victory-gross');
+                    if (!this.isPvP && !(isBotMode && botBetAmount > 0)) {
+                        grossEl.innerHTML = `<span class="text-[9px] text-gray-400 font-normal mr-1 border border-gray-600 px-1 rounded shadow-inner">Base: ${this.pveBaseReward} + Bono HP: ${survivalBonus}</span> ${grossReward.toLocaleString()} 🌱`;
+                    } else {
+                        grossEl.innerText = `${grossReward.toLocaleString()} 🌱`;
+                    }
+                    
+                    document.getElementById('combat-victory-tax').innerText = `-${taxAmount.toLocaleString()} 🌱`;
+                    document.getElementById('combat-victory-net').innerText = `+${netReward.toLocaleString()} 🌱`;
+                } else if (invoiceBox) {
+                    invoiceBox.classList.add('hidden');
                 }
-                
-                document.getElementById('combat-victory-tax').innerText = `-${taxAmount.toLocaleString()} 🌱`;
-                document.getElementById('combat-victory-net').innerText = `+${netReward.toLocaleString()} 🌱`;
-            } else if (invoiceBox) {
-                invoiceBox.classList.add('hidden');
             }
 
             document.getElementById('combat-victory-modal').classList.remove('hidden');
             document.getElementById('combat-victory-modal').classList.add('flex');
+            
         } else {
+            // DERROTA
             if (this.isPvP) window.farmApp.state.skipSeedsSave = true;
+
+            if (isTournament && tourneyInstance) {
+                // 📡 Enviar 0 puntos si pierde el torneo (Descalificado)
+                fetch('/api/tournaments/submit_score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: sessionStorage.getItem('username'),
+                        session_token: sessionStorage.getItem('session_token'),
+                        instance_id: tourneyInstance,
+                        score: 0
+                    })
+                });
+                
+                const defText = document.querySelector('#combat-defeat-modal p');
+                if (defText) defText.innerText = "Tus plantas cayeron. Has sido descalificado del torneo con 0 puntos.";
+            }
 
             finalTeam.forEach(pt => {
                 window.farmApp.state.arsenal.push({
                     id: 'ars_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                     plantId: pt.plantId, name: pt.name, icon: pt.icon,
-                    hp: 1, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef, // <--- 1 HP AL PERDER
+                    hp: 1, maxHp: pt.maxHp, atk: pt.atk, def: pt.originalDef,
                     wins: pt.wins, lastRecover: Date.now()
                 });
             });
@@ -4382,7 +4440,12 @@ window.combatApp = {
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
         sessionStorage.removeItem('bot_bet_amount');
-    },
+        
+        // Limpiamos las variables temporales del torneo
+        sessionStorage.removeItem('pve_tournament_id');
+        sessionStorage.removeItem('pve_tournament_fee');
+        sessionStorage.removeItem('pve_tournament_instance');
+    }
 
     confirmFlee() {
         if (this.combatEnded) return;

@@ -1251,6 +1251,34 @@ def join_tournament():
         cur.close(); conn.close()
 
 
+
+@app.route('/api/tournaments/submit_score', methods=['POST'])
+def submit_tournament_score():
+    data = request.json
+    username = data.get('username')
+    token = data.get('session_token')
+    instance_id = data.get('instance_id')
+    final_score = float(data.get('score', 0))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Validar seguridad de sesión
+    cur.execute("SELECT id, session_token FROM users WHERE username = %s", (username,))
+    user = cur.fetchone()
+    if not user or user['session_token'] != token:
+        cur.close(); conn.close()
+        return jsonify({"error": "No autorizado"}), 401
+        
+    # Guardar el puntaje final en el ranking
+    cur.execute("UPDATE tournament_players SET current_score = %s WHERE instance_id = %s AND user_id = %s", (final_score, instance_id, user['id']))
+    conn.commit()
+    cur.close(); conn.close()
+    
+    return jsonify({"message": "Puntaje actualizado correctamente"})
+
+
+
 @app.route('/api/tournaments/global_leaderboard/<int:t_id>', methods=['GET'])
 def global_leaderboard(t_id):
     conn = get_db_connection()
