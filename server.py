@@ -796,13 +796,10 @@ def save_state():
                 if 'profilePic' in db_state: incoming_state['profilePic'] = db_state['profilePic']
                 if 'unlockedAvatars' in db_state: incoming_state['unlockedAvatars'] = db_state['unlockedAvatars']
 
-            db_seeds = db_state.get('seedsBalance', 0) if db_state_raw else 35000
-            
-            # El servidor ignora el balance enviado por el cliente y mantiene el suyo
-            incoming_state['seedsBalance'] = db_seeds
-            
-            # Limpieza de flags del frontend
-            if 'skipSeedsSave' in incoming_state:
+            # CORRECCIÓN: Respetar el gasto de semillas de la tienda y granja.
+            # Solo sobrescribimos el balance con el de la BD si el cliente solicita omitirlo (skipSeedsSave) tras PvP o Donaciones.
+            if incoming_state.get('skipSeedsSave'):
+                incoming_state['seedsBalance'] = db_state.get('seedsBalance', 0)
                 del incoming_state['skipSeedsSave']
                 
             incoming_state_str = json.dumps(incoming_state)
