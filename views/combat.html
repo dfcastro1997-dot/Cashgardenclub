@@ -888,12 +888,12 @@
             
             <!-- ESQUINA INFERIOR IZQUIERDA: DIAL DE ENERGÍA (MANÁ CORE) -->
             <div class="order-1 flex flex-row sm:flex-col items-center gap-1 shrink-0 pointer-events-auto">
-                <div class="energy-dial w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center relative">
-                    <div class="energy-orb-core w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex flex-col items-center justify-center text-white">
-                        <span id="cb-energy-counter" class="text-sm sm:text-lg md:text-2xl font-black leading-none drop-shadow">5<span class="text-[9px] sm:text-xs md:text-sm text-cyan-200">/15</span></span>
+                <div class="energy-dial w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-28 lg:h-28 rounded-full flex items-center justify-center relative transition-all">
+                    <div class="energy-orb-core w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 rounded-full flex flex-col items-center justify-center text-white">
+                        <span id="cb-energy-counter" class="text-sm sm:text-lg md:text-2xl lg:text-4xl font-black leading-none drop-shadow">5<span class="text-[9px] sm:text-xs md:text-sm lg:text-base text-cyan-200">/15</span></span>
                     </div>
                 </div>
-                <span class="text-[8px] sm:text-[9px] md:text-[10px] font-black text-amber-300 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider" title="Recuperas +4 de energía al inicio de cada ronda">⚡ +4/ronda</span>
+                <span class="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-black text-amber-300 bg-black/60 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider" title="Recuperas +4 de energía al inicio de cada ronda">⚡ +4/ronda</span>
             </div>
 
             <!-- CENTRO: MAZO DE CARTAS DINÁMICO (PLANTAS O ATAQUES DE LA PLANTA) -->
@@ -920,19 +920,18 @@
                 </div>
 
                 <!-- CONTENEDOR DE CARTAS EN MANO (Deslizable horizontalmente) -->
-                <div id="cb-cards-hand" class="pointer-events-auto w-full flex items-end justify-start lg:justify-center gap-2 sm:gap-3 md:gap-4 py-2 px-4 max-w-full overflow-x-auto scroll-smooth" style="-webkit-overflow-scrolling: touch;">
+                <div id="cb-cards-hand" class="pointer-events-auto w-full flex items-end justify-start gap-2 sm:gap-3 md:gap-4 py-2 px-4 lg:px-8 max-w-full overflow-x-auto scroll-smooth" style="-webkit-overflow-scrolling: touch;">
                     <!-- Inyectado por JS: Ya sea las cartas de Plantas o las 5 cartas de Ataque de la planta seleccionada -->
                 </div>
 
             </div>
 
-            <!-- ESQUINA INFERIOR DERECHA: GRAN BOTÓN CIRCULAR "END TURN" -->
             <div class="order-2 sm:order-3 flex flex-row-reverse sm:flex-col items-center gap-1 shrink-0 pointer-events-auto">
-                <button id="cb-action-btn" aria-label="Terminar turno" disabled onclick="window.combatApp.endTurn()" class="btn-end-turn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-white uppercase text-center active:scale-95 disabled:opacity-40 disabled:grayscale cursor-pointer">
-                    <span class="text-base sm:text-xl md:text-2xl leading-none">⚔️</span>
-                    <span class="text-[7px] sm:text-[9px] md:text-[11px] font-black leading-tight tracking-wider mt-0.5">End<br>Turn</span>
+                <button id="cb-action-btn" aria-label="Terminar turno" disabled onclick="window.combatApp.endTurn()" class="btn-end-turn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-28 lg:h-28 rounded-full flex flex-col items-center justify-center text-white uppercase text-center active:scale-95 disabled:opacity-40 disabled:grayscale cursor-pointer transition-all">
+                    <span class="text-base sm:text-xl md:text-2xl lg:text-4xl leading-none">⚔️</span>
+                    <span class="text-[7px] sm:text-[9px] md:text-[11px] lg:text-sm font-black leading-tight tracking-wider mt-0.5">End<br>Turn</span>
                 </button>
-                <button onclick="window.combatApp.openReserveModal()" id="cb-relevo-btn" class="text-[8px] sm:text-[9px] md:text-[10px] font-black text-cyan-300 hover:text-white bg-black/60 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider transition-colors">
+                <button onclick="window.combatApp.openReserveModal()" id="cb-relevo-btn" class="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-black text-cyan-300 hover:text-white bg-black/60 px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider transition-colors">
                     🔄 Banquillo
                 </button>
             </div>
@@ -2138,12 +2137,14 @@ window.combatApp = {
 
         // --- CORRECCIÓN: Alineación dinámica para móviles ---
         // Centra las plantas, pero alinea tácticas y ataques a la izquierda para habilitar el deslizamiento táctil
+        // --- CORRECCIÓN: Alineación dinámica para móviles y PC ---
+        // Centra las plantas (si son pocas), pero alinea estrictamente a la izquierda las tácticas y ataques para evitar el corte del Scrollbar
         if (mode === 'plants') {
             container.classList.remove('justify-start', 'sm:justify-center');
             container.classList.add('justify-center');
         } else {
-            container.classList.remove('justify-center');
-            container.classList.add('justify-start', 'sm:justify-center');
+            container.classList.remove('justify-center', 'sm:justify-center');
+            container.classList.add('justify-start');
         }
         // ----------------------------------------------------
 
