@@ -1263,17 +1263,25 @@ def submit_tournament_score():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Validar seguridad de sesión
-    cur.execute("SELECT id, session_token FROM users WHERE username = %s", (username,))
-    user = cur.fetchone()
-    if not user or user['session_token'] != token:
-        cur.close(); conn.close()
-        return jsonify({"error": "No autorizado"}), 401
+    try:
+        # Validar seguridad de sesión
+        cur.execute("SELECT id, session_token FROM users WHERE username = %s", (username,))
+        user = cur.fetchone()
+        if not user or user['session_token'] != token:
+            cur.close(); conn.close()
+            return jsonify({"error": "No autorizado"}), 401
+            
+        # Guardar el puntaje final en el ranking convirtiendo el ID explícitamente a entero
+        cur.execute("UPDATE tournament_players SET current_score = %s WHERE instance_id = %s AND user_id = %s", (final_score, int(instance_id), user['id']))
+        conn.commit()
+        return jsonify({"message": "Puntaje actualizado correctamente"})
         
-    # Guardar el puntaje final en el ranking
-    cur.execute("UPDATE tournament_players SET current_score = %s WHERE instance_id = %s AND user_id = %s", (final_score, instance_id, user['id']))
-    conn.commit()
-    cur.close(); conn.close()
+    except Exception as e:
+        conn.rollback()
+        print("Error en submit_score:", e)
+        return jsonify({"error": "Fallo interno de servidor"}), 500
+    finally:
+        cur.close(); conn.close()
     
     return jsonify({"message": "Puntaje actualizado correctamente"})
 

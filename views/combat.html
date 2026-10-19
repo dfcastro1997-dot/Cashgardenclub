@@ -4293,6 +4293,10 @@ window.combatApp = {
         const isTournament = !!sessionStorage.getItem('pve_tournament_id');
         const tourneyInstance = sessionStorage.getItem('pve_tournament_instance');
 
+        // Resguardamos el token y username desde el inicio de la función
+        const sessionToken = sessionStorage.getItem('session_token');
+        const username = sessionStorage.getItem('username');
+
         if (victory) {
             const betAmount = parseInt(sessionStorage.getItem('pvp_bet_amount')) || 0;
             let grossReward = 0;
@@ -4314,18 +4318,18 @@ window.combatApp = {
                 let finalScore = baseScore + hpBonus - timePenalty;
                 if (finalScore < 0) finalScore = 0;
                 
-                // 📡 Enviar resultado final al Servidor
-                if (tourneyInstance) {
+                // 📡 Enviar resultado final al Servidor (Puntaje Ganador)
+                if (tourneyInstance && sessionToken && username) {
                     fetch('/api/tournaments/submit_score', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            username: sessionStorage.getItem('username'),
-                            session_token: sessionStorage.getItem('session_token'),
+                            username: username,
+                            session_token: sessionToken,
                             instance_id: tourneyInstance,
                             score: finalScore
                         })
-                    });
+                    }).catch(e => console.error("Fallo al actualizar el Ranking", e));
                 }
                 
                 // Preparar modal visual (ocultar caja de factura de semillas)
@@ -4404,16 +4408,18 @@ window.combatApp = {
 
             if (isTournament && tourneyInstance) {
                 // 📡 Enviar 0 puntos si pierde el torneo (Descalificado)
-                fetch('/api/tournaments/submit_score', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: sessionStorage.getItem('username'),
-                        session_token: sessionStorage.getItem('session_token'),
-                        instance_id: tourneyInstance,
-                        score: 0
-                    })
-                });
+                if (sessionToken && username) {
+                    fetch('/api/tournaments/submit_score', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: username,
+                            session_token: sessionToken,
+                            instance_id: tourneyInstance,
+                            score: 0
+                        })
+                    }).catch(e => console.error("Fallo al actualizar el Ranking (0 PTS)", e));
+                }
                 
                 const defText = document.querySelector('#combat-defeat-modal p');
                 if (defText) defText.innerText = "Tus plantas cayeron. Has sido descalificado del torneo con 0 puntos.";
@@ -4445,7 +4451,7 @@ window.combatApp = {
         sessionStorage.removeItem('pve_tournament_id');
         sessionStorage.removeItem('pve_tournament_fee');
         sessionStorage.removeItem('pve_tournament_instance');
-    }, // <--- ¡AQUÍ ESTÁ LA COMA QUE SOLUCIONA EL ERROR!
+    },
 
     confirmFlee() {
         if (this.combatEnded) return;
