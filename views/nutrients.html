@@ -434,7 +434,10 @@
         
         document.getElementById('pachinko-plant-list').innerHTML = html;
         
-        window.closePreTournamentModal();
+        // CORRECCIÓN: Ocultamos el modal anterior manualmente SIN borrar la variable 'pendingTournament'
+        document.getElementById('pre-tournament-modal').classList.add('hidden');
+        document.getElementById('pre-tournament-modal').classList.remove('flex');
+        
         document.getElementById('pachinko-plant-selection-modal').classList.remove('hidden');
         document.getElementById('pachinko-plant-selection-modal').classList.add('flex');
     };
