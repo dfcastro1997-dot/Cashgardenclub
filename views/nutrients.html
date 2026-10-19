@@ -49,9 +49,14 @@
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-green-200 flex justify-between items-center shadow-inner">
-                    <span class="text-[10px] font-black text-gray-500 uppercase">Jugadores Activos:</span>
-                    <span class="text-xs font-black text-gray-800"><span class="text-green-600 text-base font-mono transition-transform duration-300 inline-block" id="card-players-1">0</span></span>
+                <!-- CONTADORES DE TIEMPO Y JUGADORES -->
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-green-200 flex flex-col items-center justify-center shadow-inner gap-1">
+                    <span class="text-[10px] font-black text-gray-500 uppercase">Cierra y Premia en:</span>
+                    <span class="text-xl md:text-2xl font-black text-cg_navy font-mono transition-all duration-300" id="freeroll-timer">--h --m --s</span>
+                </div>
+                <div class="w-full mt-2 bg-green-100/50 rounded-xl p-2 border border-green-200 flex justify-between items-center shadow-sm">
+                    <span class="text-[10px] font-black text-green-800 uppercase">Jugadores Compitiendo:</span>
+                    <span class="text-xs font-black text-green-900"><span class="text-green-600 text-base font-mono transition-transform duration-300 inline-block" id="card-players-1">0</span></span>
                 </div>
             </div>
             
@@ -65,155 +70,153 @@
             </div>
         </div>
 
-        <!-- Liga Intermedia (BLOQUEADA) -->
-        <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-gray-200 shadow-sm opacity-90 select-none">
+        <!-- Liga Intermedia (BLOQUEADA - CON POZO VISIBLE) -->
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-blue-200 shadow-sm opacity-95 select-none">
             
             <!-- OVERLAY PRÓXIMAMENTE -->
-            <div class="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
-                <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase">
+            <div class="absolute inset-0 z-50 bg-white/40 backdrop-blur-[3px] flex flex-col items-center justify-center pointer-events-none">
+                <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase mb-12">
                     ¡Próximamente!
                 </div>
             </div>
 
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
-                <h3 class="text-lg md:text-xl font-black text-gray-500">Liga Intermedia</h3>
-                <span class="bg-gray-200 text-gray-500 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Estándar</span>
+                <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Intermedia</h3>
+                <span class="bg-blue-100 text-blue-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Estándar</span>
             </div>
-            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-60">
+            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-80">
                 <img src="assets/Herramientas_y_Servicios/T2.png" class="h-full w-auto object-contain" alt="Liga Intermedia">
             </div>
             
-            <div class="bg-gray-100 rounded-2xl p-4 flex flex-col items-center justify-center border border-gray-200 relative z-10 mt-auto text-center">
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    Pozo de Premios
+            <div class="bg-blue-50/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-blue-100 relative z-10 mt-auto text-center shadow-inner">
+                <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    Pozo de Premios Sit & Go
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-gray-400 font-mono tracking-tight">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-blue-500 font-mono tracking-tight">$80,000</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-200">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-blue-200/50">
                     <div class="text-left">
-                        <span class="block text-[8px] text-gray-400 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-gray-400 text-sm">$0</span>
+                        <span class="block text-[8px] text-blue-700 font-bold uppercase">🥇 1er (70%)</span>
+                        <span class="font-black text-cg_gold text-sm">$56,000</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-gray-400 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-gray-400 text-sm">$0</span>
+                        <span class="block text-[8px] text-blue-700 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-blue-600 text-sm">$24,000</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-gray-50 rounded-xl p-2 border border-gray-200 flex justify-between items-center">
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-blue-200 flex justify-between items-center">
                     <span class="text-[10px] font-black text-gray-400 uppercase">Cupos Llenos:</span>
                     <span class="text-xs font-black text-gray-400"><span class="text-gray-400 text-base font-mono">0</span> / 10</span>
                 </div>
             </div>
 
             <div class="flex gap-2 relative z-10 mt-3">
-                <button disabled class="bg-gray-200 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
+                <button disabled class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
                     📊
                 </button>
-                <button disabled class="flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed">
-                    No Disponible
+                <button disabled class="flex-1 bg-gray-200 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">
+                    Entrar: $10k
                 </button>
             </div>
         </div>
 
-        <!-- Liga Avanzada (BLOQUEADA) -->
-        <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-gray-200 shadow-sm opacity-90 select-none">
+        <!-- Liga Avanzada (BLOQUEADA - CON POZO VISIBLE) -->
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-orange-200 shadow-sm opacity-95 select-none">
             
-            <!-- OVERLAY PRÓXIMAMENTE -->
-            <div class="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
-                <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase">
+            <div class="absolute inset-0 z-50 bg-white/40 backdrop-blur-[3px] flex flex-col items-center justify-center pointer-events-none">
+                <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase mb-12">
                     ¡Próximamente!
                 </div>
             </div>
 
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
-                <h3 class="text-lg md:text-xl font-black text-gray-500">Liga Avanzada</h3>
-                <span class="bg-gray-200 text-gray-500 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Pro</span>
+                <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Avanzada</h3>
+                <span class="bg-orange-100 text-orange-700 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">Pro</span>
             </div>
-            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-60">
+            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-80">
                 <img src="assets/Herramientas_y_Servicios/T3.png" class="h-full w-auto object-contain" alt="Liga Avanzada">
             </div>
             
-            <div class="bg-gray-100 rounded-2xl p-4 flex flex-col items-center justify-center border border-gray-200 relative z-10 mt-auto text-center">
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    Pozo de Premios
+            <div class="bg-orange-50/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-orange-100 relative z-10 mt-auto text-center shadow-inner">
+                <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    Pozo de Premios Sit & Go
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-gray-400 font-mono tracking-tight">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-orange-500 font-mono tracking-tight">$240,000</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-200">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-orange-200/50">
                     <div class="text-left">
-                        <span class="block text-[8px] text-gray-400 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-gray-400 text-sm">$0</span>
+                        <span class="block text-[8px] text-orange-700 font-bold uppercase">🥇 1er (70%)</span>
+                        <span class="font-black text-cg_gold text-sm">$168,000</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-gray-400 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-gray-400 text-sm">$0</span>
+                        <span class="block text-[8px] text-orange-700 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-orange-600 text-sm">$72,000</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-gray-50 rounded-xl p-2 border border-gray-200 flex justify-between items-center">
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-orange-200 flex justify-between items-center">
                     <span class="text-[10px] font-black text-gray-400 uppercase">Cupos Llenos:</span>
                     <span class="text-xs font-black text-gray-400"><span class="text-gray-400 text-base font-mono">0</span> / 10</span>
                 </div>
             </div>
 
             <div class="flex gap-2 relative z-10 mt-3">
-                <button disabled class="bg-gray-200 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
+                <button disabled class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
                     📊
                 </button>
-                <button disabled class="flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed">
-                    No Disponible
+                <button disabled class="flex-1 bg-gray-200 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">
+                    Entrar: $30k
                 </button>
             </div>
         </div>
 
-        <!-- Liga Élite (BLOQUEADA) -->
-        <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-gray-200 shadow-sm opacity-90 select-none">
+        <!-- Liga Élite (BLOQUEADA - CON POZO VISIBLE) -->
+        <div class="bg-white rounded-3xl p-5 md:p-6 flex flex-col group relative overflow-hidden border-2 border-yellow-200 shadow-sm opacity-95 select-none">
             
-            <!-- OVERLAY PRÓXIMAMENTE -->
-            <div class="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
-                <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase">
+            <div class="absolute inset-0 z-50 bg-white/40 backdrop-blur-[3px] flex flex-col items-center justify-center pointer-events-none">
+                <div class="bg-red-600 text-white font-black px-6 py-2 rounded-xl transform -rotate-12 shadow-2xl text-xl md:text-2xl border-2 border-white drop-shadow-lg tracking-widest uppercase mb-12">
                     ¡Próximamente!
                 </div>
             </div>
 
             <div class="flex justify-between items-start mb-2 relative z-10 gap-2">
-                <h3 class="text-lg md:text-xl font-black text-gray-500">Liga Élite</h3>
-                <span class="bg-gray-200 text-gray-500 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">High Roller</span>
+                <h3 class="text-lg md:text-xl font-black text-cg_navy">Liga Élite</h3>
+                <span class="bg-amber-100 text-amber-800 text-[9px] md:text-[10px] font-black px-2 py-1.5 rounded-md uppercase tracking-wider whitespace-nowrap">High Roller</span>
             </div>
-            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-60">
+            <div class="w-full h-28 md:h-32 flex items-center justify-center mb-2 mt-2 relative z-10 grayscale opacity-80">
                 <img src="assets/Herramientas_y_Servicios/T4.png" class="h-full w-auto object-contain" alt="Liga Élite">
             </div>
             
-            <div class="bg-gray-100 rounded-2xl p-4 flex flex-col items-center justify-center border border-gray-200 relative z-10 mt-auto text-center">
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    Pozo de Premios
+            <div class="bg-yellow-50/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-yellow-200 relative z-10 mt-auto text-center shadow-inner">
+                <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    Pozo de Premios Sit & Go
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-gray-400 font-mono tracking-tight">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-amber-500 font-mono tracking-tight">$400,000</span>
                 
-                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-200">
+                <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-yellow-200/50">
                     <div class="text-left">
-                        <span class="block text-[8px] text-gray-400 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-gray-400 text-sm">$0</span>
+                        <span class="block text-[8px] text-amber-800 font-bold uppercase">🥇 1er (70%)</span>
+                        <span class="font-black text-cg_gold text-sm">$280,000</span>
                     </div>
                     <div class="text-right">
-                        <span class="block text-[8px] text-gray-400 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-gray-400 text-sm">$0</span>
+                        <span class="block text-[8px] text-amber-800 font-bold uppercase">🥈 2do (30%)</span>
+                        <span class="font-black text-amber-600 text-sm">$120,000</span>
                     </div>
                 </div>
 
-                <div class="w-full mt-3 bg-gray-50 rounded-xl p-2 border border-gray-200 flex justify-between items-center">
+                <div class="w-full mt-3 bg-white rounded-xl p-2 border border-yellow-200 flex justify-between items-center">
                     <span class="text-[10px] font-black text-gray-400 uppercase">Cupos Llenos:</span>
                     <span class="text-xs font-black text-gray-400"><span class="text-gray-400 text-base font-mono">0</span> / 10</span>
                 </div>
             </div>
 
             <div class="flex gap-2 relative z-10 mt-3">
-                <button disabled class="bg-gray-200 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
+                <button disabled class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-3.5 rounded-xl text-lg cursor-not-allowed">
                     📊
                 </button>
-                <button disabled class="flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed">
-                    No Disponible
+                <button disabled class="flex-1 bg-gray-200 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed border border-gray-300">
+                    Entrar: $50k
                 </button>
             </div>
         </div>
@@ -233,7 +236,7 @@
             </div>
             
             <div class="text-left md:text-right w-full md:w-auto bg-gray-50 p-4 md:p-5 rounded-2xl border border-gray-200 shadow-inner">
-                <p class="text-[10px] md:text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Pozo Acumulado de la Sala</p>
+                <p class="text-[10px] md:text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Pozo Acumulado</p>
                 <p class="text-3xl md:text-4xl font-black text-green-600 mb-4 tracking-tight" id="lb-prize-pool">$0</p>
                 <div class="flex flex-wrap items-center md:justify-end gap-3 md:gap-4 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-600 bg-white px-3 md:px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
                     <div class="flex items-center gap-1.5" title="Primer Puesto"><span class="text-base md:text-lg">🥇</span> <span id="lb-prize-1" class="text-cg_gold">$0</span></div>
@@ -361,16 +364,55 @@
     window.serverTournamentConfig = {};
     window.dynamicPlantsCache = [];
 
-    // Lógica para que los cupos Falsos (FOMO) de la liga 1 comiencen altos
+    // Lógica para que los cupos Falsos (FOMO) de la liga 1 comiencen bajos (2 a 4)
     if(!window.fakePlayersCounts) {
         window.fakePlayersCounts = {
-            1: Math.floor(Math.random() * 40) + 15, // Empieza entre 15 y 55 jugadores
+            1: Math.floor(Math.random() * 3) + 2, 
             3: 0, 
             4: 0, 
             5: 0
         };
         window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
     }
+
+    // --- LÓGICA DEL TEMPORIZADOR BIDIARIO ---
+    const FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; // 48 Horas
+    const FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime(); // Punto de origen fijo
+    
+    function updateFreerollTimer() {
+        const now = Date.now();
+        const elapsed = now - FREEROLL_ORIGIN;
+        const currentCycle = Math.floor(elapsed / FREEROLL_CYCLE_MS);
+        const deadline = FREEROLL_ORIGIN + (currentCycle + 1) * FREEROLL_CYCLE_MS;
+        
+        let diff = deadline - now;
+        
+        const timerEl = document.getElementById('freeroll-timer');
+        if(!timerEl) return;
+
+        if (diff <= 1000) { // El tiempo llegó a 0
+            timerEl.innerText = "00h 00m 00s";
+            timerEl.classList.add('text-red-500', 'animate-pulse');
+            
+            // Simular reinicio y limpieza
+            setTimeout(() => {
+                window.fakePlayersCounts[1] = Math.floor(Math.random() * 2) + 1; // Reinicia a 1 o 2
+                renderPlayerCounts();
+                timerEl.classList.remove('text-red-500', 'animate-pulse');
+            }, 5000); 
+            return;
+        }
+
+        let h = Math.floor(diff / 3600000);
+        let m = Math.floor((diff % 3600000) / 60000);
+        let s = Math.floor((diff % 60000) / 1000);
+        
+        timerEl.innerText = `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+    }
+
+    if(window.freerollInterval) clearInterval(window.freerollInterval);
+    window.freerollInterval = setInterval(updateFreerollTimer, 1000);
+    updateFreerollTimer(); // Ejecutar inicial
 
     // Función de animación progresiva de números
     function animateValue(obj, start, end, duration) {
@@ -603,15 +645,15 @@
         
         let prizePool = parseFloat(data.prize_pool) || 0;
         let basePool = window.BASE_POOLS[tId];
-        if (prizePool < basePool) prizePool = basePool; // Siempre mostrar al menos el pozo inicial
+        if (prizePool < basePool) prizePool = basePool; 
         
         // POZO DEL LEADERBOARD
         document.getElementById('lb-prize-pool').innerText = "$" + prizePool.toLocaleString() + " COP";
         
         if (tId === 1) {
-            // DISTRIBUCIÓN LIGA NOVATO: 60% / 40% (Fijo de 15k y 10k basado en 25k)
-            document.getElementById('lb-prize-1').innerText = "$" + (prizePool * 0.60).toLocaleString();
-            document.getElementById('lb-prize-2').innerText = "$" + (prizePool * 0.40).toLocaleString();
+            // DISTRIBUCIÓN LIGA NOVATO: Fijo 15k y 10k 
+            document.getElementById('lb-prize-1').innerText = "$15,000";
+            document.getElementById('lb-prize-2').innerText = "$10,000";
         } else {
             // DISTRIBUCIÓN LIGAS MAYORES: 70% / 30%
             document.getElementById('lb-prize-1').innerText = "$" + (prizePool * 0.70).toLocaleString();
@@ -634,7 +676,7 @@
             } else {
                 countText.innerText = `Puntajes registrados: ${currentDisplayCount} / 10`;
             }
-            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span> Buscando Jugadores`;
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span> Registrando Jugadores`;
             badge.className = "bg-orange-50 text-orange-600 border border-orange-200 text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest flex items-center gap-1.5 w-fit mb-2 shadow-sm";
         } 
 
@@ -693,7 +735,7 @@
                 let realCount = data.players_count || 0;
                 
                 if (realCount < window.realPlayersCounts[1]) {
-                    window.fakePlayersCounts[1] = getFakeStartCount(); 
+                    window.fakePlayersCounts[1] = Math.floor(Math.random() * 3) + 2; 
                 }
                 window.realPlayersCounts[1] = realCount;
                 
@@ -703,16 +745,11 @@
 
                 if(data.prize_pool !== undefined) {
                     const poolEl = document.getElementById('lb-pool-1');
-                    const firstEl = document.getElementById('lb-first-1');
-                    const secEl = document.getElementById('lb-second-1');
-                    
                     let pool = parseFloat(data.prize_pool);
                     let basePool = window.BASE_POOLS[1];
                     if (pool < basePool) pool = basePool; 
                     
                     if(poolEl) poolEl.innerText = '$' + pool.toLocaleString();
-                    if(firstEl) firstEl.innerText = '$' + (pool * 0.60).toLocaleString();
-                    if(secEl) secEl.innerText = '$' + (pool * 0.40).toLocaleString();
                 }
             }
         } catch(e) {}
@@ -720,13 +757,13 @@
         renderPlayerCounts();
     }
 
-    // Intervalo de FOMO Fake Increment (cada 12 segundos) SÓLO PARA T1
+    // Intervalo de FOMO Fake Increment (cada 18 segundos para ser sutil) SÓLO PARA T1
     if(window.fomoInterval) clearInterval(window.fomoInterval);
     window.fomoInterval = setInterval(() => {
-        let bump = Math.random() > 0.5 ? 2 : 1; 
+        let bump = Math.random() > 0.6 ? 2 : 1; 
         window.fakePlayersCounts[1] += bump;
         renderPlayerCounts();
-    }, 12000);
+    }, 18000);
 
     window.refreshLeaderboard = async function() {
         let tId = window.currentLeaderboardTid || 1;
