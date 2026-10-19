@@ -29,7 +29,7 @@
             <p class="text-green-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8">Sincronizados</p>
             
             <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="trg-loading-bar" class="h-full bg-green-500 w-0 transition-all duration-[2500ms] ease-out"></div>
+                <div id="trg-loading-bar" class="h-full bg-green-500 w-0 transition-all duration-[2000ms] ease-out"></div>
             </div>
             <p class="text-slate-500 text-[9px] uppercase tracking-widest mt-3 font-bold animate-pulse">Sincronizando Físicas...</p>
         </div>
@@ -218,7 +218,7 @@
 window.slotApp = {
     canvas: null,
     ctx: null,
-    w: 384, h: 288, 
+    w: 384, h: 288, // Proporción 4:3 aprox para el slot
     
     // Stats de la planta
     hp: 100, atk: 50, def: 20,
@@ -244,7 +244,7 @@ window.slotApp = {
     ],
     targetSymbol: '❓',
     activeReelIndex: 0,
-    inputState: 'PRE_ROUND', 
+    inputState: 'PRE_ROUND', // PRE_ROUND -> SPINNING -> EVALUATING
     
     rafId: null,
     
@@ -314,7 +314,7 @@ window.slotApp = {
                 if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
             }, 700);
-        }, 3000); 
+        }, 3000); // 3 segundos para disfrutar el logo
     },
 
     showIntroScreen(plantName, plantImg) {
@@ -467,6 +467,7 @@ window.slotApp = {
             let reel = this.reels[this.activeReelIndex];
             reel.state = 'STOPPED';
             
+            // Redondear el offset para que el símbolo caiga centrado
             reel.offset = Math.round(reel.offset);
             
             let centerIndex = (reel.offset % this.symbols.length + this.symbols.length) % this.symbols.length;
@@ -500,6 +501,7 @@ window.slotApp = {
         if (matchesCount > 0) {
             this.playBonusSound();
             
+            // Puntos progresivos: 1 acierto (100 pts), 2 (300 pts), 3 (800 pts)
             let baseRoundPts = matchesCount === 1 ? 100 : (matchesCount === 2 ? 300 : 800);
             let atkMultiplier = 1 + (this.atk / 100);
             let ptsEarned = Math.floor(baseRoundPts * atkMultiplier * this.currentCombo);
@@ -559,6 +561,7 @@ window.slotApp = {
         const symHeight = 80;
         const centerY = this.h / 2; 
         
+        // Fondo base y separadores
         this.ctx.fillStyle = '#f8fafc'; 
         this.ctx.fillRect(0, 0, this.w, this.h);
         

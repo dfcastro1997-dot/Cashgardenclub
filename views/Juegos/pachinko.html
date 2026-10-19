@@ -17,14 +17,19 @@
         <!-- PANTALLA 1: SPLASH SCREEN (CARGA)          -->
         <!-- ========================================== -->
         <div id="pak-splash-screen" class="absolute inset-0 z-40 bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-700">
-            <div class="w-24 h-24 bg-slate-800 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(41,150,218,0.2)] border border-slate-700 animate-pulse mb-6">
-                <span class="text-5xl">🎯</span>
+            
+            <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+                <!-- Logo Principal (Desaparece) -->
+                <img id="splash-logo-1" src="assets/Fondos/logo.png" class="absolute w-full h-auto object-contain transition-all duration-700 ease-in-out z-20">
+                <!-- Logo del Juego (Aparece) -->
+                <img id="splash-logo-2" src="assets/Fondos/Juego_001.png" class="absolute w-[250px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
             </div>
+            
             <h2 class="text-white font-black text-2xl tracking-widest uppercase mb-1">Pachinko</h2>
             <p class="text-cg_cyan text-[10px] font-bold tracking-[0.3em] uppercase mb-12">Arcade System</p>
             
             <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="pak-loading-bar" class="h-full bg-cg_cyan w-0 transition-all duration-[1500ms] ease-out"></div>
+                <div id="pak-loading-bar" class="h-full bg-cg_cyan w-0 transition-all duration-[2500ms] ease-out"></div>
             </div>
             <p class="text-slate-500 text-[9px] uppercase tracking-widest mt-3 font-bold animate-pulse">Sincronizando Físicas...</p>
         </div>
@@ -59,7 +64,7 @@
                         <div id="intro-bar-hp" class="h-full bg-green-500 rounded-full w-[0%] transition-all duration-1000"></div>
                     </div>
                     <p id="intro-desc-hp" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Esta planta te otorga <strong class="text-green-400">-- Semillas</strong> para disparar.
+                        Esta planta te otorga <strong class="text-green-400" id="intro-seeds">-- Semillas</strong> para disparar.
                     </p>
                 </div>
 
@@ -75,7 +80,7 @@
                         <div id="intro-bar-atk" class="h-full bg-orange-500 rounded-full w-[0%] transition-all duration-1000"></div>
                     </div>
                     <p id="intro-desc-atk" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Multiplicador de daño de <strong class="text-orange-400">x--</strong>. Cada acierto verde valdrá <strong class="text-orange-400">+-- Puntos</strong>.
+                        Multiplicador de daño de <strong class="text-orange-400" id="intro-mult">x--</strong>. Cada acierto verde valdrá <strong class="text-orange-400" id="intro-pts">+-- Puntos</strong>.
                     </p>
                 </div>
 
@@ -147,7 +152,7 @@
                 <!-- Efecto de Luz de Fondo -->
                 <div class="absolute top-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-900/0 to-transparent pointer-events-none z-0"></div>
 
-                <!-- CANVAS (IMPORTANTE: Resolución interna definida explícitamente y escalado CSS por object-fit) -->
+                <!-- CANVAS (Resolución interna definida explícitamente) -->
                 <canvas id="pachinko-canvas" width="400" height="600" class="block w-full h-full max-h-full object-contain mx-auto bg-transparent relative z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"></canvas>
             </div>
 
@@ -224,6 +229,18 @@ window.pachinkoApp = {
     powerDir: 1,
     rafId: null,
 
+    // Audio Managers
+    sounds: {
+        bonus: [
+            new Audio('assets/Sonidos/Maquinas/Bonus_01.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_02.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_03.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_04.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_05.mp3')
+        ],
+        error: new Audio('assets/Sonidos/Maquinas/Error.mp3')
+    },
+
     // Inicializa la UI, lee la planta y muestra el Splash + Intro
     init() {
         // Enlazar Canvas de forma segura
@@ -259,10 +276,22 @@ window.pachinkoApp = {
             }
         }
 
-        // 1. Mostrar Splash Screen simulando carga
+        // 1. Mostrar Splash Screen simulando carga y animación de logo
         setTimeout(() => {
             const bar = document.getElementById('pak-loading-bar');
             if(bar) bar.style.width = '100%';
+            
+            // Animación de transición de Logos
+            setTimeout(() => {
+                const logo1 = document.getElementById('splash-logo-1');
+                const logo2 = document.getElementById('splash-logo-2');
+                if (logo1) logo1.classList.add('opacity-0', 'scale-110');
+                if (logo2) {
+                    logo2.classList.remove('opacity-0', 'scale-50');
+                    logo2.classList.add('opacity-100', 'scale-100', 'drop-shadow-[0_0_40px_rgba(100,215,255,0.6)]');
+                }
+            }, 1000); // Aparece a la mitad del progress bar
+
         }, 100);
 
         setTimeout(() => {
@@ -273,13 +302,13 @@ window.pachinkoApp = {
                 if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
             }, 700);
-        }, 2000);
+        }, 3000); // Tiempo para apreciar el logo
     },
 
     // Muestra la pantalla de análisis con las barras de progreso
     showIntroScreen(plantName, plantImg) {
         const screen = document.getElementById('pak-intro-screen');
-        if (!screen) return; // Validación de seguridad si el usuario se sale antes de tiempo
+        if (!screen) return; 
         
         screen.classList.remove('hidden');
 
@@ -300,11 +329,12 @@ window.pachinkoApp = {
         // Actualizar UI del Análisis
         document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
         document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
-        document.getElementById('intro-desc-hp').innerHTML = `Esta planta te otorga <strong class="text-green-400">${this.seedsTotal} Semillas</strong> para disparar.`;
+        document.getElementById('intro-seeds').innerText = `${this.seedsTotal} Semillas`;
 
         document.getElementById('intro-val-atk').innerText = `${this.atk} ATK`;
         document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
-        document.getElementById('intro-desc-atk').innerHTML = `Multiplicador de daño de <strong class="text-orange-400">x${mult.toFixed(1)}</strong>. Cada acierto verde valdrá <strong class="text-orange-400">+${ptsPerHit} Puntos</strong>.`;
+        document.getElementById('intro-mult').innerText = `x${mult.toFixed(1)}`;
+        document.getElementById('intro-pts').innerText = `+${ptsPerHit} Puntos`;
 
         document.getElementById('intro-val-def').innerText = `${this.def} DEF`;
         document.getElementById('intro-bar-def').style.width = `${defPct}%`;
@@ -312,7 +342,7 @@ window.pachinkoApp = {
         let diffText = "Difícil";
         if(this.def > 50) diffText = "Normal";
         if(this.def > 100) diffText = "Fácil";
-        document.getElementById('intro-desc-def').innerHTML = `Nivel de dificultad <strong class="text-blue-400">${diffText}</strong>. Ensancha las canastas ganadoras en la base.`;
+        document.getElementById('intro-diff').innerText = diffText;
 
         // Datos para el HUD in-game
         document.getElementById('pak-plant-icon').src = plantImg;
@@ -388,6 +418,18 @@ window.pachinkoApp = {
                 this.endGame();
             }
         }, 100);
+    },
+
+    playBonusSound() {
+        const snd = this.sounds.bonus[Math.floor(Math.random() * this.sounds.bonus.length)];
+        snd.currentTime = 0;
+        snd.play().catch(e => console.warn('Audio play prevented', e));
+    },
+
+    playErrorSound() {
+        const snd = this.sounds.error;
+        snd.currentTime = 0;
+        snd.play().catch(e => console.warn('Audio play prevented', e));
     },
 
     handleInput() {
@@ -474,14 +516,26 @@ window.pachinkoApp = {
 
             // Hit bottom baskets (Height 600, Baskets at 555)
             if (s.y > this.h - 40) {
+                let hitBasket = false;
                 for (let b of this.baskets) {
                     if (s.x > b.x && s.x < b.x + b.w) {
                         this.score = Math.max(0, this.score + b.pts);
                         document.getElementById('pak-score').innerText = this.score;
+                        hitBasket = true;
+                        
+                        // Efectos de sonido
+                        if (b.pts > 0) {
+                            this.playBonusSound();
+                        } else {
+                            this.playErrorSound();
+                        }
                         break;
                     }
                 }
                 
+                // Si cayó fuera de todas las canastas por algún bug de colisión, se cuenta como fallo sonoro
+                if (!hitBasket) this.playErrorSound();
+
                 this.activeSeed = null;
                 
                 if (this.score >= 10000 || this.seedsLeft <= 0) {
