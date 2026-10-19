@@ -259,7 +259,7 @@
 <!-- ========================================== -->
 <div id="minigame-selection-modal" class="fixed inset-0 z-[220] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeMinigameSelectionModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-4xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
             <button onclick="closeMinigameSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
@@ -268,24 +268,33 @@
         </div>
 
         <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                 
                 <!-- Opcion Pachinko -->
-                <div onclick="openPlantSelectionModal('pachinko')" class="bg-white border-2 border-gray-200 hover:border-cg_blue rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
-                    <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner">
+                <div onclick="openPlantSelectionModal('pachinko')" class="bg-white border-2 border-gray-200 hover:border-blue-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner border border-blue-100">
                         🎯
                     </div>
-                    <h4 class="font-black text-lg text-cg_navy mb-2">Pachinko Botánico</h4>
-                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Suelta semillas calculando el ángulo y la fuerza correctos para encestarlas.</p>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Pachinko Botánico</h4>
+                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Suelta semillas calculando el ángulo y la fuerza correctos para encestarlas.</p>
                 </div>
                 
                 <!-- Opcion Ruleta -->
-                <div onclick="openPlantSelectionModal('ruleta')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
-                    <div class="w-20 h-20 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner">
+                <div onclick="openPlantSelectionModal('ruleta')" class="bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner border border-yellow-100">
                         🎡
                     </div>
-                    <h4 class="font-black text-lg text-cg_navy mb-2">Ruleta Táctica</h4>
-                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Frena la aguja en el momento exacto calculando la inercia del disco.</p>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Ruleta Táctica</h4>
+                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Frena la aguja en el momento exacto calculando la inercia del disco veloz.</p>
+                </div>
+
+                <!-- Opcion Tragamonedas -->
+                <div onclick="openPlantSelectionModal('tragamonedas')" class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner border border-green-100">
+                        🎰
+                    </div>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Tragamonedas Memoria</h4>
+                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Detén manualmente los 3 rodillos sincronizando tu vista y reflejos.</p>
                 </div>
 
             </div>

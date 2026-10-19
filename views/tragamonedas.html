@@ -1,0 +1,471 @@
+<div class="fixed inset-0 z-[200] bg-slate-50 flex flex-col overflow-hidden font-sans">
+    
+    <!-- TOP HUD LUMINOSO Y LIMPIO -->
+    <div class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm relative z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
+                <img id="trg-plant-icon" src="assets/Fondos/logo.png" class="w-10 h-10 object-contain drop-shadow-sm">
+            </div>
+            <div>
+                <h3 id="trg-plant-name" class="font-black text-cg_navy text-sm uppercase tracking-widest">Planta</h3>
+                <div class="flex gap-2 text-[10px] font-bold text-gray-500 mt-0.5 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                    <span id="trg-stat-hp">❤️ --</span>
+                    <span id="trg-stat-atk">⚔️ --</span>
+                    <span id="trg-stat-def">🛡️ --</span>
+                </div>
+            </div>
+        </div>
+        <div class="text-right bg-orange-50 px-4 py-1.5 rounded-xl border border-orange-100 shadow-sm">
+            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest">Puntaje Base</span>
+            <span id="trg-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none">0</span>
+        </div>
+    </div>
+
+    <!-- BARRA SECUNDARIA DE ESTADO -->
+    <div class="flex justify-between items-center bg-blue-50/50 px-5 py-3 border-b border-blue-100 shadow-sm shrink-0">
+        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm">
+            <span class="text-lg">⏱️</span>
+            <span id="trg-timer" class="text-lg font-black text-cg_navy font-mono w-14">60.0s</span>
+        </div>
+        
+        <div class="flex gap-3">
+            <!-- Contador de Combos -->
+            <div class="flex items-center gap-2 bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-200 shadow-sm">
+                <span class="text-lg drop-shadow-sm">🔥</span>
+                <span id="trg-combo" class="text-lg font-black text-orange-500 font-mono">x1</span>
+            </div>
+            
+            <!-- Vidas (HP) -->
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-red-100 shadow-sm">
+                <span class="text-lg drop-shadow-sm">❤️</span>
+                <span id="trg-ammo" class="text-lg font-black text-red-600 font-mono">0</span>
+                <span class="text-[10px] text-gray-400 font-black uppercase mt-0.5 hidden sm:inline">Vidas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE JUEGO (CANVAS LUMINOSO) -->
+    <div class="flex-1 relative bg-gradient-to-b from-sky-50 to-white flex flex-col items-center justify-center overflow-hidden">
+        
+        <!-- UI de Objetivo -->
+        <div class="mb-4 bg-white border border-gray-200 px-6 py-3 rounded-2xl shadow-md flex flex-col items-center">
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Alinea 3 de este símbolo:</span>
+            <div id="target-symbol-display" class="text-4xl drop-shadow-sm animate-pulse">❓</div>
+        </div>
+
+        <!-- Canvas Tragaperras -->
+        <div class="relative w-full max-w-sm aspect-[4/3] bg-white border-[6px] border-cg_navy rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Línea central de Highlight -->
+            <div class="absolute top-1/2 left-0 w-full h-[80px] -translate-y-1/2 bg-yellow-400/20 border-y-4 border-yellow-400 z-20 pointer-events-none"></div>
+            
+            <canvas id="slot-canvas" class="absolute inset-0 block w-full h-full bg-slate-50"></canvas>
+        </div>
+        
+        <!-- Botón de Acción Universal -->
+        <button id="trg-action-btn" class="mt-8 bg-cg_blue hover:bg-blue-500 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2">
+            <span>🛑</span> Frenar Rodillo 1
+        </button>
+    </div>
+</div>
+
+<!-- MODAL DE RESULTADO LUMINOSO -->
+<div id="trg-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-cg_navy/80 backdrop-blur-sm font-sans">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border border-gray-100 shadow-2xl animate-fade-in relative overflow-hidden">
+        
+        <div class="w-20 h-20 bg-gradient-to-br from-yellow-300 to-cg_gold rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg border-4 border-white text-4xl animate-bounce">🏆</div>
+        
+        <h3 class="text-2xl font-black text-cg_navy mb-1 tracking-tight" id="result-title">¡Fin del Juego!</h3>
+        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido registrada en el servidor.</p>
+        
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left shadow-inner">
+            <div class="flex justify-between items-center text-xs mb-3">
+                <span class="text-gray-500 font-black uppercase tracking-widest">Puntaje Base:</span>
+                <span class="font-black text-cg_navy text-sm" id="res-base">0</span>
+            </div>
+            <div class="flex justify-between items-center text-xs mb-3">
+                <span class="text-orange-500 font-black uppercase tracking-widest">Mejor Combo:</span>
+                <span class="font-black text-orange-600 text-sm bg-orange-100 px-2 py-0.5 rounded-md" id="res-combo">x1</span>
+            </div>
+            <div class="flex justify-between items-center text-xs mb-3">
+                <span class="text-green-600 font-black uppercase tracking-widest">Bono Velocidad:</span>
+                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md" id="res-time">+0</span>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                <span class="text-sm font-black text-cg_navy uppercase tracking-widest">Total Final:</span>
+                <span class="text-3xl font-black text-cg_gold drop-shadow-sm" id="res-total">0</span>
+            </div>
+        </div>
+
+        <button onclick="window.submitSlotScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+            <span>💾</span> Registrar y Volver
+        </button>
+    </div>
+</div>
+
+<script>
+window.slotApp = {
+    canvas: document.getElementById('slot-canvas'),
+    ctx: null,
+    w: 384, h: 288, // Proporción 4:3 aprox
+    
+    // Stats de la planta
+    hp: 100, atk: 50, def: 20,
+    
+    // Variables de juego
+    score: 0,
+    livesTotal: 3,
+    livesLeft: 3,
+    timeLeft: 60.0,
+    timerInterval: null,
+    isPlaying: false,
+    
+    // Mecánica Combos
+    currentCombo: 1,
+    maxComboReached: 1,
+    
+    // Elementos del Slot
+    symbols: ['🌻', '🍄', '🌵', '🌸', '🌿'],
+    reels: [
+        { offset: 0, speed: 0.15, state: 'STOPPED', finalSymbol: null },
+        { offset: 0, speed: 0.18, state: 'STOPPED', finalSymbol: null },
+        { offset: 0, speed: 0.22, state: 'STOPPED', finalSymbol: null }
+    ],
+    targetSymbol: '❓',
+    activeReelIndex: 0, // 0, 1 o 2 (cuál botón detiene a cuál)
+    inputState: 'PRE_ROUND', // PRE_ROUND -> SPINNING -> EVALUATING
+    
+    rafId: null,
+
+    init() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        
+        // Cargar stats de la planta
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
+            let pData = window.farmApp.state.selectedCombatants[0];
+            if (pData) {
+                let realPlant;
+                if (pData.type === 'plot') realPlant = window.farmApp.state.plots.find(p => p.id == pData.idTag)?.plant;
+                else realPlant = window.farmApp.state.arsenal.find(p => p.id == pData.idTag);
+                
+                if (realPlant) {
+                    this.hp = realPlant.hp || 100;
+                    this.atk = realPlant.atk || 50;
+                    this.def = realPlant.def || 20;
+                    document.getElementById('trg-plant-icon').src = realPlant.icon || 'assets/Fondos/logo.png';
+                    document.getElementById('trg-plant-name').innerText = realPlant.name;
+                }
+            }
+        }
+
+        document.getElementById('trg-stat-hp').innerText = `❤️ ${this.hp}`;
+        document.getElementById('trg-stat-atk').innerText = `⚔️ ${this.atk}`;
+        document.getElementById('trg-stat-def').innerText = `🛡️ ${this.def}`;
+
+        // BALANCE STATS:
+        // HP = Vidas/Fallas permitidas. Base 3 vidas, +1 por cada 20 HP encima de 50.
+        this.livesTotal = Math.max(3, Math.floor(this.hp / 20));
+        this.livesLeft = this.livesTotal;
+        document.getElementById('trg-ammo').innerText = this.livesLeft;
+
+        // DEF = Ralentiza la velocidad. Max def (100) baja un 40% la velocidad.
+        let speedMultiplier = Math.max(0.6, 1.0 - (this.def / 250));
+        this.baseSpeeds = [0.12 * speedMultiplier, 0.16 * speedMultiplier, 0.20 * speedMultiplier];
+
+        this.startTimer();
+        
+        const actionBtn = document.getElementById('trg-action-btn');
+        actionBtn.onclick = () => this.handleInput();
+
+        this.isPlaying = true;
+        this.loop();
+        
+        // Iniciar la primera ronda automáticamente
+        this.startRound();
+    },
+
+    resize() {
+        this.canvas.width = this.w;
+        this.canvas.height = this.h;
+    },
+
+    startRound() {
+        if (!this.isPlaying) return;
+        
+        // Asignar símbolo objetivo al azar
+        this.targetSymbol = this.symbols[Math.floor(Math.random() * this.symbols.length)];
+        document.getElementById('target-symbol-display').innerText = this.targetSymbol;
+        
+        // Poner a girar los rodillos con velocidades desfasadas para evitar sincronía perfecta
+        this.reels[0].offset = Math.random() * 5;
+        this.reels[1].offset = Math.random() * 5;
+        this.reels[2].offset = Math.random() * 5;
+
+        this.reels[0].speed = this.baseSpeeds[0];
+        this.reels[1].speed = this.baseSpeeds[1];
+        this.reels[2].speed = this.baseSpeeds[2];
+
+        this.reels.forEach(r => { r.state = 'SPINNING'; r.finalSymbol = null; });
+        
+        this.activeReelIndex = 0;
+        this.inputState = 'SPINNING';
+        this.updateButtonUI();
+    },
+
+    updateButtonUI() {
+        const btn = document.getElementById('trg-action-btn');
+        if (this.inputState === 'SPINNING') {
+            btn.innerHTML = `<span>🛑</span> FRENAR RODILLO ${this.activeReelIndex + 1}`;
+            btn.classList.replace('bg-slate-400', 'bg-cg_blue');
+            btn.classList.replace('bg-red-500', 'bg-cg_blue');
+            btn.classList.replace('hover:bg-slate-500', 'hover:bg-blue-500');
+            btn.classList.replace('hover:bg-red-600', 'hover:bg-blue-500');
+            btn.classList.add('shadow-[0_6px_0_#1e3a8a]');
+            btn.classList.remove('shadow-[0_6px_0_#94a3b8]', 'shadow-[0_6px_0_#991b1b]');
+            btn.disabled = false;
+        } else if (this.inputState === 'PRE_ROUND') {
+            btn.innerHTML = `<span>🔄</span> SIGUIENTE RONDA`;
+            btn.classList.replace('bg-cg_blue', 'bg-red-500');
+            btn.classList.replace('hover:bg-blue-500', 'hover:bg-red-600');
+            btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_6px_0_#991b1b]');
+            btn.disabled = false;
+        } else {
+            btn.innerHTML = `<span>⏳</span> Evaluando...`;
+            btn.classList.replace('bg-cg_blue', 'bg-slate-400');
+            btn.classList.replace('bg-red-500', 'bg-slate-400');
+            btn.classList.replace('hover:bg-blue-500', 'hover:bg-slate-500');
+            btn.classList.replace('hover:bg-red-600', 'hover:bg-slate-500');
+            btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_6px_0_#94a3b8]');
+            btn.classList.replace('shadow-[0_6px_0_#991b1b]', 'shadow-[0_6px_0_#94a3b8]');
+            btn.disabled = true;
+        }
+    },
+
+    startTimer() {
+        this.timerInterval = setInterval(() => {
+            if (!this.isPlaying) return;
+            this.timeLeft -= 0.1;
+            document.getElementById('trg-timer').innerText = this.timeLeft.toFixed(1) + 's';
+            
+            if (this.timeLeft <= 0 || this.score >= 10000 || this.livesLeft <= 0) {
+                this.endGame();
+            }
+        }, 100);
+    },
+
+    handleInput() {
+        if (!this.isPlaying) return;
+
+        if (this.inputState === 'PRE_ROUND') {
+            this.startRound();
+        } 
+        else if (this.inputState === 'SPINNING') {
+            // Frenar el rodillo actual
+            let reel = this.reels[this.activeReelIndex];
+            reel.state = 'STOPPED';
+            
+            // "Snappear" al símbolo más cercano (redondeo)
+            reel.offset = Math.round(reel.offset);
+            
+            // Determinar qué símbolo quedó en el centro
+            // La lógica matemática del dibujado pone el index = (offset) en el centro.
+            let centerIndex = (reel.offset % this.symbols.length + this.symbols.length) % this.symbols.length;
+            reel.finalSymbol = this.symbols[centerIndex];
+            
+            this.activeReelIndex++;
+            
+            if (this.activeReelIndex > 2) {
+                this.inputState = 'EVALUATING';
+                this.updateButtonUI();
+                setTimeout(() => this.evaluateRound(), 500); // Pequeña pausa dramática
+            } else {
+                this.updateButtonUI();
+            }
+        }
+    },
+
+    evaluateRound() {
+        if (!this.isPlaying) return;
+        
+        let r1 = this.reels[0].finalSymbol;
+        let r2 = this.reels[1].finalSymbol;
+        let r3 = this.reels[2].finalSymbol;
+        
+        let isWin = (r1 === this.targetSymbol && r2 === this.targetSymbol && r3 === this.targetSymbol);
+        
+        if (isWin) {
+            // ATK aumenta los puntos otorgados por la victoria y potencia el Combo.
+            let baseRoundPts = 500;
+            let atkMultiplier = 1 + (this.atk / 100); // 50 ATK = 1.5x
+            
+            let ptsEarned = Math.floor(baseRoundPts * atkMultiplier * this.currentCombo);
+            this.score += ptsEarned;
+            
+            // Aumentar combo
+            this.currentCombo += 0.5;
+            if (this.currentCombo > this.maxComboReached) this.maxComboReached = this.currentCombo;
+            
+            document.getElementById('trg-score').innerText = this.score.toLocaleString();
+            document.getElementById('trg-combo').innerText = 'x' + this.currentCombo.toFixed(1);
+            
+            // Feedback Visual de Win
+            document.getElementById('trg-action-btn').classList.replace('bg-slate-400', 'bg-green-500');
+            
+        } else {
+            // Fallo. Pierde Vida y Rompe Combo.
+            this.livesLeft--;
+            this.currentCombo = 1;
+            
+            document.getElementById('trg-ammo').innerText = this.livesLeft;
+            document.getElementById('trg-combo').innerText = 'x1.0';
+            
+            // Feedback Visual de Lose
+            document.getElementById('trg-action-btn').classList.replace('bg-slate-400', 'bg-red-500');
+        }
+
+        if (this.score >= 10000 || this.livesLeft <= 0 || this.timeLeft <= 0) {
+            setTimeout(() => this.endGame(), 800);
+        } else {
+            this.inputState = 'PRE_ROUND';
+            this.updateButtonUI();
+        }
+    },
+
+    loop() {
+        if (!this.isPlaying) return;
+        this.update();
+        this.draw();
+        this.rafId = requestAnimationFrame(() => this.loop());
+    },
+
+    update() {
+        this.reels.forEach(r => {
+            if(r.state === 'SPINNING') {
+                // Al sumar, la animación va "hacia abajo", por tanto el offset crece
+                r.offset = (r.offset + r.speed) % this.symbols.length;
+            }
+        });
+    },
+
+    draw() {
+        this.ctx.clearRect(0, 0, this.w, this.h);
+        
+        const colWidth = this.w / 3;
+        const symHeight = 80;
+        const centerY = this.h / 2; // 144
+        
+        this.ctx.font = '50px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+
+        // Dibujar Separadores de Columnas
+        this.ctx.strokeStyle = '#e2e8f0'; // gray-200
+        this.ctx.lineWidth = 4;
+        this.ctx.beginPath();
+        this.ctx.moveTo(colWidth, 0); this.ctx.lineTo(colWidth, this.h);
+        this.ctx.moveTo(colWidth * 2, 0); this.ctx.lineTo(colWidth * 2, this.h);
+        this.ctx.stroke();
+
+        for(let i = 0; i < 3; i++) {
+            let r = this.reels[i];
+            let xPos = (i * colWidth) + (colWidth / 2);
+            
+            // Dibujar 5 filas (para cubrir desde arriba hasta abajo por el wrap)
+            for(let row = -2; row <= 2; row++) {
+                let symIndex = Math.floor(r.offset) + row;
+                
+                // Normalizar indice al array circular
+                let actualIndex = (symIndex % this.symbols.length + this.symbols.length) % this.symbols.length;
+                let sym = this.symbols[actualIndex];
+                
+                // La posicion Y base es el centro.
+                // Restamos el (offset % 1) para dar el movimiento fraccionario suave hacia ABAJO.
+                let yPos = centerY + (row - (r.offset % 1)) * symHeight;
+                
+                // Efecto Blur (desenfoque) ligero si está girando
+                if (r.state === 'SPINNING') {
+                    this.ctx.globalAlpha = 0.7;
+                    this.ctx.fillText(sym, xPos, yPos - 10);
+                    this.ctx.fillText(sym, xPos, yPos + 10);
+                    this.ctx.globalAlpha = 1.0;
+                } else {
+                    this.ctx.fillText(sym, xPos, yPos);
+                }
+            }
+            
+            // Sombra oscura sobre rodillos no activos para centrar atención
+            if (this.inputState === 'SPINNING' && i !== this.activeReelIndex && r.state !== 'STOPPED') {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                this.ctx.fillRect(i * colWidth, 0, colWidth, this.h);
+            }
+        }
+    },
+
+    endGame() {
+        this.isPlaying = false;
+        clearInterval(this.timerInterval);
+        cancelAnimationFrame(this.rafId);
+
+        let finalScore = this.score;
+        let timeBonus = 0;
+        
+        // Si ganó (llegó a 10k o se acabó el tiempo sin morir)
+        if (this.livesLeft > 0 && this.timeLeft > 0) {
+            timeBonus = Math.floor(this.timeLeft) * 10;
+        }
+
+        finalScore += timeBonus;
+        if (finalScore > 10000) finalScore = 10000;
+
+        document.getElementById('result-title').innerText = this.livesLeft <= 0 ? "¡Sin Vidas!" : "¡Tiempo Agotado!";
+        document.getElementById('res-base').innerText = this.score.toLocaleString();
+        document.getElementById('res-combo').innerText = 'x' + this.maxComboReached.toFixed(1);
+        document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
+        document.getElementById('res-total').innerText = finalScore.toLocaleString();
+
+        window.finalSlotScore = finalScore;
+
+        document.getElementById('trg-result-modal').classList.remove('hidden');
+        document.getElementById('trg-result-modal').classList.add('flex');
+    }
+};
+
+window.submitSlotScore = async function() {
+    const btn = document.getElementById('btn-submit-score');
+    btn.innerHTML = "<span>⏳</span> Registrando...";
+    btn.disabled = true;
+
+    const username = sessionStorage.getItem('username');
+    const token = sessionStorage.getItem('session_token');
+    const instanceId = sessionStorage.getItem('pve_tournament_instance');
+
+    if (instanceId && token && username) {
+        try {
+            await fetch('/api/tournaments/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    session_token: token,
+                    instance_id: instanceId,
+                    score: window.finalSlotScore
+                })
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    sessionStorage.removeItem('pve_tournament_id');
+    sessionStorage.removeItem('pve_tournament_fee');
+    sessionStorage.removeItem('pve_tournament_instance');
+    
+    if (window.farmApp) {
+        window.farmApp.state.combatLock = false;
+        window.farmApp.saveState();
+    }
+
+    loadView('nutrients'); 
+};
+
+setTimeout(() => window.slotApp.init(), 200);
+</script>
+</div>
