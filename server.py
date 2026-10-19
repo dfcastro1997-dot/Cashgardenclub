@@ -12,13 +12,9 @@ from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_socketio import SocketIO, join_room, emit
 
-
-
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASS = os.getenv("ADMIN_PASS", "12345")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "fallback_secret")
-
-
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -28,16 +24,18 @@ DB_URI = os.getenv("DATABASE_URL")
 if DB_URI and DB_URI.startswith("postgres://"):
     DB_URI = DB_URI.replace("postgres://", "postgresql://", 1)
     
-
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8905492002:AAHGxqlBtlTXRcso66at_cMjShQECGQpbwA")
 WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "test_events_YCoAJd13MYktS6RQGpt1kpZfEIgeZwQV")
 WOMPI_PRV_KEY = os.getenv("WOMPI_PRV_KEY", "prv_test_dFZ8LK0A0cYV8brLyHjtQ5KSHBjB86e9")
-
-# --- AÑADE ESTO (Es tu Secreto de Integridad de Wompi) ---
 WOMPI_INTEGRITY_SECRET = os.getenv("WOMPI_INTEGRITY_SECRET", "test_integrity_wsgH1421JNMDMEVUxvrMD9T9ExaJAmuW")
 
-
-
+def get_db_connection():
+    for _ in range(6):
+        try:
+            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
+        except psycopg2.OperationalError:
+            time.sleep(0.5)
+    return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
 
 @app.route('/api/admin/login', methods=['POST'])
 def admin_login():
@@ -45,9 +43,7 @@ def admin_login():
     username = data.get('username')
     password = data.get('password')
     
-    # Validar contra las variables de entorno de Railway
     if username == ADMIN_USER and password == ADMIN_PASS:
-        # Generar un token con expiración de 24 horas usando timezone.utc y timedelta directos
         token = jwt.encode({
             'admin': True,
             'exp': datetime.now(timezone.utc) + timedelta(hours=24)
@@ -56,8 +52,6 @@ def admin_login():
         return jsonify({"message": "Login exitoso", "admin_token": token}), 200
         
     return jsonify({"error": "Credenciales inválidas"}), 401
-
-
 
 @app.route('/api/wompi/signature', methods=['POST'])
 def generate_wompi_signature():
@@ -69,19 +63,10 @@ def generate_wompi_signature():
     if not reference or not amount_in_cents:
         return jsonify({"error": "Faltan parámetros"}), 400
         
-    # La firma de Wompi requiere juntar: referencia + monto + moneda + secreto
     raw_string = f"{reference}{amount_in_cents}{currency}{WOMPI_INTEGRITY_SECRET}"
     signature = hashlib.sha256(raw_string.encode('utf-8')).hexdigest()
     
     return jsonify({"signature": signature}), 200
-
-def get_db_connection():
-    for _ in range(6):
-        try:
-            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
-        except psycopg2.OperationalError:
-            time.sleep(0.5)
-    return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
 
 @app.route('/api/webhooks/wompi', methods=['POST'])
 def wompi_webhook():
@@ -106,7 +91,6 @@ def wompi_webhook():
 
     if status == 'APPROVED' and reference.startswith('REC-'):
         short_id = reference.split('-')[1] 
-        # IMPORTANTE: Descontamos el 5% de mantenimiento en el servidor antes de sumarlo
         gross_amount = amount_in_cents / 100
         net_amount = gross_amount * 0.95
 
@@ -177,7 +161,6 @@ def dispatch_nequi_payout():
             conn.commit()
             msg = f"Retiro en proceso. Llegará a tu Nequi ({phone_nequi}) en 24h hábiles."
             
-            # TICKER GLOBAL
             username = payload.get('username')
             censored = username[:3] + "***" + username[-2:] if len(username) > 4 else username[:2] + "***"
             socketio.emit('global_payout_alert', {'user': censored, 'amount': amount_credits})
@@ -193,16 +176,13 @@ def dispatch_nequi_payout():
     cur.close(); conn.close()
     return jsonify({"message": msg, "reference": payout_ref, "new_balance": float(user['balance']) - amount_credits}), 200
 
-# Función helper para Telegram (Soporta Imágenes)
 def send_telegram_msg(chat_id, text, image_url=None):
     if not TELEGRAM_BOT_TOKEN or not chat_id: return
     try:
         if image_url:
-            # Si hay imagen, usa el endpoint sendPhoto
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
             payload = {"chat_id": chat_id, "photo": image_url, "caption": text}
         else:
-            # Si no hay imagen, envía solo texto
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
             payload = {"chat_id": chat_id, "text": text}
             
@@ -229,8 +209,6 @@ def init_db():
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(50);")
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS short_id VARCHAR(4) UNIQUE;")
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS ref_code VARCHAR(5) UNIQUE;")
-    
-    # --- NUEVA COLUMNA PARA GUARDAR QUIÉN LO INVITÓ ---
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by VARCHAR(5);")
 
     cur.execute('''
@@ -335,27 +313,6 @@ def init_db():
         );
     ''')
 
-
-
-
-
-
-
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS dynamic_plants (
-            id VARCHAR(50) PRIMARY KEY,
-            category VARCHAR(50),
-            name VARCHAR(100),
-            image_url VARCHAR(255),
-            hp INTEGER,
-            atk INTEGER,
-            def INTEGER,
-            price INTEGER,
-            reward INTEGER,
-            grow_time_minutes INTEGER
-        );
-    ''')
-    # AÑADE ESTA LÍNEA PARA CREAR LA COLUMNA FALTANTE:
     cur.execute("ALTER TABLE dynamic_plants ADD COLUMN IF NOT EXISTS water_evap INTEGER DEFAULT 40;")
 
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_precision NUMERIC(6,3) DEFAULT 0.000;")
@@ -398,23 +355,7 @@ def init_db():
     cur.close()
     conn.close()
 
-
-def get_db_connection():
-    # Sistema de reintento para evitar que el servidor se caiga por el límite estricto de Aiven
-    for _ in range(6):
-        try:
-            return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
-        except psycopg2.OperationalError:
-            time.sleep(0.5)
-    # Último intento
-    return psycopg2.connect(DB_URI, cursor_factory=RealDictCursor)
-
-
 init_db()
-
-# ==========================================================
-# MOTOR AUTORITATIVO DEL SERVIDOR (SERVER-SIDE VALIDATION)
-# ==========================================================
 
 def get_season_multiplier(now_ms):
     dt = datetime.fromtimestamp(now_ms / 1000.0, tz=timezone.utc)
@@ -453,18 +394,15 @@ def process_server_tick(game_state_str, chat_id=None):
             contagion_triggered = False
 
             for plot in state.get('plots', []):
-                # Inicialización de banderas para evitar spam de notificaciones en Telegram
                 if 'notifyFlags' not in plot: 
                     plot['notifyFlags'] = {'crow': False, 'ready': False, 'water': False, 'spoiled': False}
                 flags = plot['notifyFlags']
 
-                # Liberar embargo temporal de parcela si el tiempo expiró
                 if plot.get('embargoEndTime', 0) > 0 and now >= plot.get('embargoEndTime', 0):
                     plot['embargoEndTime'] = 0
                     if plot.get('status') == 'embargoed':
                         plot['status'] = 'empty'
 
-                # Omitir daño a la planta del torneo si aún está "en espera" (waiting)
                 if plot.get('status') in ['tournament_waiting']:
                     continue
 
@@ -478,7 +416,7 @@ def process_server_tick(game_state_str, chat_id=None):
 
                 elif plot.get('status') in ['empty', 'pot']:
                     if plot.get('water', 0) > 0:
-                        accelerated_evap = 40.0 * 4.0 * season_multiplier # 4 veces más rápido sin planta
+                        accelerated_evap = 40.0 * 4.0 * season_multiplier 
                         plot['water'] = max(0, plot['water'] - (accelerated_evap * delta_hours))
 
                 elif plot.get('status') == 'planted':
@@ -499,7 +437,6 @@ def process_server_tick(game_state_str, chat_id=None):
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
                             
-                        # PERIODO DE GRACIA: 60 segundos desde que se planta o se espanta
                         just_planted = (now - plot.get('plantedAt', now)) < 60000
                         just_shooed = (now - plot.get('lastShooAt', 0)) < 60000
                         in_grace_period = just_planted or just_shooed
@@ -521,14 +458,12 @@ def process_server_tick(game_state_str, chat_id=None):
                         elif plot.get('capsuleEndTime', 0) > now:
                             plot['harvestAt'] = plot.get('harvestAt', now) + (delta_ms * 0.30)
 
-                    # FASE DE COSECHA O ABANDONO
                     if now >= plot.get('harvestAt', now):
                         plot['isReady'] = True
                         
                         if is_auto_harvesting and not plot.get('isSpoiled'):
                             base_reward = plot.get('plant', {}).get('reward', 1500)
                             
-                            # APLICAR PENALIZACIÓN DE ESTRÉS
                             stress = plot.get('stressMarks', 0)
                             penalty_multiplier = max(0.1, 1.0 - (stress * 0.15))
                             final_reward = int(base_reward * penalty_multiplier)
@@ -547,7 +482,7 @@ def process_server_tick(game_state_str, chat_id=None):
                             plot['plant'] = None
                             plot['hasCrow'] = False
                             plot['scarecrowEndTime'] = 0
-                            plot['capsuleEndTime'] = 0 # <-- NUEVO: Limpia la bóveda en el servidor
+                            plot['capsuleEndTime'] = 0 
                             plot['plantedAt'] = 0
                             plot['harvestAt'] = 0
                             plot['isReady'] = False
@@ -555,7 +490,6 @@ def process_server_tick(game_state_str, chat_id=None):
                             plot['stressMarks'] = 0
                             plot['lastShooAt'] = 0
                         else:
-                            # PENALIZACIÓN POR ABANDONO (Si la planta madura se pudre)
                             if not is_auto_watering:
                                 growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
                                 grace_period = growth_time / 2.0  
@@ -572,51 +506,45 @@ def process_server_tick(game_state_str, chat_id=None):
                                             plot['contagionTriggered'] = True
                                             contagion_triggered = True
                                             
-                                    elif time_overdue > 1800000: # 30 mins: 3 cuervos (-5%/min extra)
+                                    elif time_overdue > 1800000: 
                                         plot['crowsCount'] = 3
                                         mins_w_three = (time_overdue - 1800000) / 60000.0
                                         penalty = 0.30 + 0.45 + (mins_w_three * 0.05)
                                         plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
                                         
-                                    elif time_overdue > 900000: # 15 mins: 2 cuervos (-3%/min extra)
+                                    elif time_overdue > 900000: 
                                         plot['crowsCount'] = 2
                                         mins_w_two = (time_overdue - 900000) / 60000.0
                                         penalty = 0.30 + (mins_w_two * 0.03)
                                         plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
                                         
-                                    else: # 0 a 15 mins: 1 cuervo (-1%/min)
+                                    else: 
                                         plot['crowsCount'] = 1
                                         mins_w_one = time_overdue / 60000.0
                                         penalty = mins_w_one * 0.01
                                         plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
                     
-                    # --- LÓGICA DE NOTIFICACIONES CARISMÁTICAS TELEGRAM ---
                     if chat_id and plot.get('status') == 'planted':
                         plant_name = plot.get('plant', {}).get('name', 'tu plantita')
                         plant_img = plot.get('plant', {}).get('icon', None)
                         p_id = plot['id'] + 1
                         
-                        # MENSAJES SUAVES Y TIERNOS PARA CUERVO (Ataque)
                         crow_msgs = [
                             f"🦅 ¡Cua, cua! (Bueno, los cuervos no hacen así, pero entiendes la idea). ¡Un pajarraco me está picoteando en el Terreno {p_id}! 😭 ¡Ven a asustarlo antes de que me quede sin hojitas, por favor! 🥺",
                             f"🦅 ¡Auxilio, granjero/a! 🚨 Un cuervo gruñón aterrizó en la parcela {p_id} y me está mirando con cara de ensalada. ¡Sálvame, soy tu {plant_name} favorita! 🛡️🌱",
                             f"🦅 ¡Uy, qué miedo! 🫣 Hay un intruso con plumas en el Terreno {p_id} molestándome. Necesito a mi héroe (sí, ¡tú!) para que lo espante. 🥺"
                         ]
                         
-                        # MENSAJES SUAVES PARA COSECHA LISTA (Felicidad)
                         ready_msgs = [
                             f"✨ ¡Tachán! 🎉 He crecido grande, fuerte y sanita en el Terreno {p_id}. Ya estoy lista para que me coseches y ganes tus semillitas. ¡Ven a verme, me veo genial! 🥰🌻",
                             f"✨ ¡Misión botánica cumplida! 🫡 Soy tu {plant_name} del Terreno {p_id} y ya llegué a mi mejor etapa. ¡Apúrate a recogerme para celebrar juntos! 🥳🌱",
                             f"✨ ¡Brillo más que el sol! 😍 Estoy lista en la parcela {p_id} y llena de recompensas para ti. ¡Ven rapidito a cosecharme, que huelo delicioso! 🧺💖"
                         ]
                         
-                        # MENSAJES SUAVES PARA SEQUÍA (Empatía)
-                        # MENSAJES EXACTOS PARA 20% DE AGUA (TELÉFONO BLOQUEADO - TELEGRAM)
                         water_msgs = [
                             f"💧 ¡Alerta Crítica! Tu {plant_name} en el Terreno {p_id} está sedienta. Ha alcanzado su límite seguro del 20% de agua. ¡Riégala ahora antes de que atraiga cuervos!"
                         ]
                         
-                        # NUEVO: MENSAJES PARA PLANTA PODRIDA (Para evitar el NameError)
                         spoiled_msgs = [
                             f"🥀 ¡Oh no! Tu {plant_name} en la parcela {p_id} se ha marchitado y podrido. Necesitas limpiarla pronto. 😭",
                             f"🦠 Qué tragedia... tu {plant_name} en el Terreno {p_id} se pudrió. ¡Limpia el terreno antes de que contagie al resto!"
@@ -628,7 +556,6 @@ def process_server_tick(game_state_str, chat_id=None):
                         elif plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
                             send_telegram_msg(chat_id, random.choice(ready_msgs), plant_img)
                             flags['ready'] = True
-                        # SE MODIFICÓ LA CONDICIÓN PARA QUE SE DISPARE EXACTAMENTE AL LÍMITE MIN_SAFE (20%)
                         elif plot.get('water', 100) <= min_safe and not plot.get('isReady') and not plot.get('hasCrow') and not flags.get('water'):
                             send_telegram_msg(chat_id, random.choice(water_msgs), plant_img)
                             flags['water'] = True
@@ -641,16 +568,13 @@ def process_server_tick(game_state_str, chat_id=None):
                         if plot.get('water', 100) > min_safe: flags['water'] = False
                         if not plot.get('isSpoiled'): flags['spoiled'] = False
 
-            # --- PROCESAR CONTAGIO DEL ÉXODO ---
-            # Si una planta colapsó (pasaron 45 min extra), contagia a la siguiente parcela viva.
             if contagion_triggered:
                 for p in state.get('plots', []):
                     if p.get('status') == 'planted' and not p.get('hasCrow') and not p.get('isSpoiled'):
                         p['hasCrow'] = True
                         p['crowArrivedAt'] = now
-                        break # Solo propaga a 1 planta sana a la vez
+                        break 
 
-            # --- LÓGICA DE CASTIGO DE DON VITO (CONTRATO EXPIRADO) ---
             vito_contract = state.get('vitoContract')
             if vito_contract and vito_contract.get('active'):
                 if now >= vito_contract.get('expiresAt', 0):
@@ -683,8 +607,6 @@ def serve_views(path): return send_from_directory('views', path)
 @app.route('/admin.html')
 def serve_admin(): return send_from_directory('.', 'admin.html')
 
-
-
 @app.route('/api/login', methods=['POST'])
 def login():
     import random
@@ -701,7 +623,6 @@ def login():
         short_id = user.get('short_id')
         ref_code = user.get('ref_code')
         
-        # Generar ref_code si es una cuenta antigua que no lo tiene
         if not ref_code:
             while True:
                 ref_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
@@ -711,7 +632,6 @@ def login():
             cur.execute("UPDATE users SET ref_code = %s WHERE id = %s", (ref_code, user['id']))
             user['ref_code'] = ref_code
 
-        # Reparación para cuentas antiguas sin ID
         if not short_id:
             while True:
                 short_id = str(random.randint(1000, 9999))
@@ -727,8 +647,6 @@ def login():
         user['balance'] = float(user['balance'] or 0)
         user['session_token'] = token
         user['short_id'] = short_id
-        
-        # Aseguramos que el número de Nequi viaja al frontend en el inicio de sesión
         user['phone_nequi'] = user.get('phone_nequi')
         
         cur.close()
