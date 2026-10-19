@@ -4581,6 +4581,12 @@ if (typeof window.farmApp === 'undefined') {
                 };
                 plot.isReady = false;
                 plot.plantedAt = Date.now();
+                
+                // --- CORRECCIÓN: LIMPIEZA DE ESTRÉS HEREDADO ---
+                plot.stressMarks = 0; 
+                plot.lastShooAt = 0;  
+                plot.isSpoiled = false;
+                // -----------------------------------------------
 
                 // 2. Calcular tiempo de duración dinámicamente
                 let msDuration = 3600000; // Por defecto: 1 hora
