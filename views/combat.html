@@ -1809,7 +1809,76 @@ window.combatApp = {
         let pveBaseReward = 0;
         let pveMaxBonus = 0;
 
-        if (this.isBotMode) {
+        this.isTournament = !!sessionStorage.getItem('pve_tournament_id');
+
+        if (this.isTournament) {
+            // MODO TORNEO: JEFES Y REGISTRO
+            const t_id = parseInt(sessionStorage.getItem('pve_tournament_id'));
+            const fee = parseFloat(sessionStorage.getItem('pve_tournament_fee') || 0);
+
+            // Llamada a la API para pagar la entrada y registrarse en el podio
+            fetch('/api/tournaments/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: sessionStorage.getItem('username'),
+                    session_token: sessionStorage.getItem('session_token'),
+                    tournament_id: t_id,
+                    fee: fee
+                })
+            }).then(res => res.json()).then(data => {
+                if (data.instance_id) {
+                    sessionStorage.setItem('pve_tournament_instance', data.instance_id);
+                    if (window.farmApp) {
+                        window.farmApp.state = data.new_game_state;
+                        window.farmApp.state.balance = data.new_balance_cop;
+                        window.farmApp.updateUI();
+                    }
+                }
+            });
+
+            const enemyNameEl = document.getElementById('cb-enemy-name');
+            if (enemyNameEl) enemyNameEl.innerText = 'Guardianes del Torneo';
+            
+            const enemyIcon = document.querySelector('.wood-banner.flex-row-reverse > div.bg-rose-950');
+            if(enemyIcon) {
+                enemyIcon.innerText = '🛡️';
+                enemyIcon.className = "hidden min-[420px]:flex w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-yellow-100 border-2 border-yellow-400 items-center justify-center text-lg sm:text-2xl shadow-md shrink-0";
+            }
+
+            this.enemyTeam = [];
+            let enemiesIds = [];
+            
+            // Cargar los guardianes que el sistema mostró previamente
+            if (window.serverTournamentConfig) {
+                if (window.serverTournamentConfig[`t${t_id}-e1`] && window.serverTournamentConfig[`t${t_id}-e1`] !== 'none') enemiesIds[0] = window.serverTournamentConfig[`t${t_id}-e1`];
+                if (window.serverTournamentConfig[`t${t_id}-e2`] && window.serverTournamentConfig[`t${t_id}-e2`] !== 'none') enemiesIds[1] = window.serverTournamentConfig[`t${t_id}-e2`];
+                if (window.serverTournamentConfig[`t${t_id}-e3`] && window.serverTournamentConfig[`t${t_id}-e3`] !== 'none') enemiesIds[2] = window.serverTournamentConfig[`t${t_id}-e3`];
+            }
+            if (enemiesIds.length === 0) {
+                if (t_id === 1) enemiesIds = ['dyn_cuervo', 'dyn_cuervo', 'dyn_cuervo'];
+                else if (t_id === 3) enemiesIds = ['dyn_lobo', 'dyn_lobo', 'dyn_lobo'];
+                else if (t_id === 4) enemiesIds = ['dyn_golem', 'dyn_golem', 'dyn_golem'];
+                else enemiesIds = ['dyn_dragon', 'dyn_dragon', 'dyn_dragon'];
+            }
+
+            const dPlants = window.farmApp && window.farmApp.state.dynamicPlants 
+                ? Object.values(window.farmApp.state.dynamicPlants) 
+                : [];
+
+            for(let i=0; i<3; i++) {
+                let e_id = enemiesIds[i] || enemiesIds[0];
+                let rP = dPlants.find(p => p.id === e_id);
+                if (!rP && dPlants.length > 0) rP = dPlants[Math.floor(Math.random() * dPlants.length)];
+                
+                let bHp = rP ? rP.hp : 100;
+                let bAtk = rP ? rP.atk : 40;
+                let bDef = rP ? rP.def : 20;
+
+                this.enemyTeam.push(buildPlantObj(e_id, (rP ? rP.name : 'Guardián') + ' (Jefe)', rP ? (rP.image_url || rP.icon) : 'assets/Fondos/logo.png', false, `e_${i}`, bHp, 0, bAtk, bDef));
+            }
+
+        } else if (this.isBotMode) {
             // MODO BOT (IA Entrenador con Plantas Reales)
             const botId = Math.floor(100 + Math.random() * 900) + String.fromCharCode(65 + Math.random() * 26) + String.fromCharCode(65 + Math.random() * 26);
             const botName = `Bot ${botId}`;
@@ -1832,7 +1901,6 @@ window.combatApp = {
             else if (squadValue < 500 && dPlants.length > 5) pool = dPlants.filter(p => p.hp <= 120 && p.atk <= 50);
             
             if (pool.length < 3) {
-                // Failsafe en caso de que no existan dinámicas
                 pool = [
                     { id: 'dyn_bot_1', name: 'Espectro Bot 1', image_url: 'assets/Fondos/logo.png', hp: 100, atk: 40, def: 20 },
                     { id: 'dyn_bot_2', name: 'Espectro Bot 2', image_url: 'assets/Fondos/logo.png', hp: 100, atk: 40, def: 20 },
@@ -1844,10 +1912,6 @@ window.combatApp = {
             
             for(let i=0; i<3; i++) {
                 const rP = pool[Math.floor(Math.random() * pool.length)];
-
-                // Usamos las estadísticas BASE reales de la planta sin multiplicadores inflados.
-                // La dificultad real proviene de que el sistema ('pool') ya seleccionó 
-                // plantas más fuertes de la base de datos según el nivel del jugador.
                 const bHp = rP.hp || 100;
                 const bAtk = rP.atk || 40;
                 const bDef = rP.def || 20;
@@ -1891,7 +1955,6 @@ window.combatApp = {
         }
 
         // --- OPCIÓN 4: REDUCCIÓN DRÁSTICA Y BOTÍN CONDICIONADO AL HP ---
-        // Se definen los techos de ganancia máxima (2.5k, 5k y 8k semillas)
         if (squadValue < 500) {
             pveBaseReward = 500;
             pveMaxBonus = 2000;
