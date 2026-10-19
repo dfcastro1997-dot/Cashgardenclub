@@ -544,8 +544,8 @@
         document.getElementById('plant-selection-modal').classList.add('hidden');
         document.getElementById('plant-selection-modal').classList.remove('flex');
         
-        // Redirige a 'pachinko' o 'ruleta'
-        loadView(window.selectedMinigame);
+        // Redirige a los minijuegos en la subcarpeta views/Juegos/
+        loadView('Juegos/' + window.selectedMinigame);
     };
 
     // ===============================================

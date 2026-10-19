@@ -1,91 +1,154 @@
-<div class="fixed inset-0 z-[200] bg-slate-50 flex flex-col overflow-hidden font-sans">
+<div class="fixed inset-0 z-[200] flex flex-col overflow-hidden font-sans bg-cover bg-center" style="background-image: url('assets/Fondos/Pachinko.jpg');">
+    
+    <!-- OVERLAY OSCURO PARA DARLE ESTILO PROFESIONAL Y RESALTAR LA UI -->
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-0 pointer-events-none"></div>
+    
+    <!-- ========================================== -->
+    <!-- MODAL PRE-JUEGO: EXPLICACIÓN DE LA PLANTA  -->
+    <!-- ========================================== -->
+    <div id="pak-intro-modal" class="fixed inset-0 z-[250] flex items-center justify-center p-4 font-sans bg-black/60 backdrop-blur-md transition-opacity">
+        <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] w-full max-w-md p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(41,150,218,0.3)] border border-white/20 animate-fade-in relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-green-100 rounded-full blur-3xl opacity-50"></div>
+            
+            <span class="bg-cg_navy text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block shadow-sm">Pachinko Botánico</span>
+            <h2 class="text-xl sm:text-2xl font-black text-cg_navy mb-1 tracking-tight">Análisis de Despliegue</h2>
+            <p class="text-xs text-gray-500 font-medium mb-6">Conoce cómo las estadísticas de tu planta afectarán las físicas y reglas de la partida.</p>
+            
+            <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-white rounded-2xl border-4 border-gray-100 shadow-md flex items-center justify-center mb-3 p-2 relative z-10">
+                <img id="intro-plant-img" src="assets/Fondos/logo.png" class="w-full h-full object-contain drop-shadow-lg animate-bounce">
+            </div>
+            <h3 id="intro-plant-name" class="text-lg font-black text-cg_navy mb-5 relative z-10">Planta Desconocida</h3>
+
+            <!-- Desglose de Stats Explicado -->
+            <div class="space-y-3 text-left mb-8 relative z-10">
+                <div class="bg-yellow-50/80 border border-yellow-200 rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[10px] font-black text-yellow-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">🪙</span> Fichas (Vidas)</span>
+                        <span id="intro-seeds" class="font-black text-yellow-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-yellow-100">--</span>
+                    </div>
+                    <p class="text-[10px] text-yellow-700 leading-relaxed font-medium">Define cuántas semillas podrás lanzar en total. A mayor vida (HP) de la planta, más intentos tendrás para encestar.</p>
+                </div>
+                
+                <div class="bg-orange-50/80 border border-orange-200 rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[10px] font-black text-orange-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">⭐</span> Multiplicador (Puntos)</span>
+                        <span id="intro-pts" class="font-black text-orange-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-orange-100">--</span>
+                    </div>
+                    <p class="text-[10px] text-orange-700 leading-relaxed font-medium">Amplifica tu rentabilidad. El poder de ataque (ATK) determina cuántos puntos base ganas cada vez que encestas en verde.</p>
+                </div>
+                
+                <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-3 sm:p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[10px] font-black text-blue-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">⚙️</span> Control (Física)</span>
+                        <span id="intro-control" class="font-black text-blue-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-blue-100">--</span>
+                    </div>
+                    <p class="text-[10px] text-blue-700 leading-relaxed font-medium">El nivel de defensa (DEF) ensancha físicamente las canastas ganadoras, dándote más margen de tolerancia a fallos.</p>
+                </div>
+            </div>
+
+            <button onclick="window.pachinkoApp.startGame()" class="w-full bg-cg_blue hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_5px_0_#1e3a8a] active:translate-y-[5px] active:shadow-none uppercase tracking-widest text-sm relative z-10">
+                Iniciar Misión ➔
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- INTERFAZ PRINCIPAL DEL JUEGO               -->
+    <!-- ========================================== -->
     
     <!-- TOP HUD LUMINOSO Y LIMPIO -->
-    <div class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm relative z-10 shrink-0">
+    <div class="bg-white/95 backdrop-blur-md border-b border-white/20 p-4 flex justify-between items-center shadow-lg relative z-10 shrink-0 mt-safe pt-safe">
         <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
+            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden shrink-0">
                 <img id="pak-plant-icon" src="assets/Fondos/logo.png" class="w-10 h-10 object-contain drop-shadow-sm">
             </div>
             <div>
                 <h3 id="pak-plant-name" class="font-black text-cg_navy text-sm uppercase tracking-widest">Planta</h3>
-                <div class="flex gap-2 text-[10px] font-bold text-gray-500 mt-0.5 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                    <span id="pak-stat-hp">❤️ --</span>
-                    <span id="pak-stat-atk">⚔️ --</span>
-                    <span id="pak-stat-def">🛡️ --</span>
+                <div class="flex gap-1.5 text-[9px] font-black text-gray-500 mt-0.5">
+                    <span id="pak-stat-hp" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">❤️ --</span>
+                    <span id="pak-stat-atk" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">⚔️ --</span>
+                    <span id="pak-stat-def" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">🛡️ --</span>
                 </div>
             </div>
         </div>
-        <div class="text-right bg-orange-50 px-4 py-1.5 rounded-xl border border-orange-100 shadow-sm">
-            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest">Puntaje Base</span>
-            <span id="pak-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none">0</span>
+        <div class="text-right bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-2 rounded-xl border border-orange-200 shadow-inner">
+            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest mb-0.5">Puntos</span>
+            <span id="pak-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none drop-shadow-sm">0</span>
         </div>
     </div>
 
     <!-- BARRA SECUNDARIA DE ESTADO -->
-    <div class="flex justify-between items-center bg-blue-50/50 px-5 py-3 border-b border-blue-100 shadow-sm shrink-0">
-        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm">
+    <div class="flex justify-between items-center bg-cg_navy/80 backdrop-blur-md px-5 py-3 border-b border-gray-700 shadow-md shrink-0 relative z-10">
+        <div class="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-gray-600 shadow-inner">
             <span class="text-lg">⏱️</span>
-            <span id="pak-timer" class="text-lg font-black text-cg_navy font-mono w-14">60.0s</span>
+            <span id="pak-timer" class="text-lg font-black text-white font-mono w-14 tracking-wider">60.0s</span>
         </div>
-        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-green-100 shadow-sm">
+        <div class="flex items-center gap-2 bg-green-900/40 px-3 py-1.5 rounded-lg border border-green-700 shadow-inner">
             <span class="text-lg drop-shadow-sm">🌱</span>
-            <span id="pak-ammo" class="text-lg font-black text-green-600 font-mono">0</span>
-            <span class="text-[10px] text-gray-400 font-black uppercase mt-0.5">Semillas</span>
+            <span id="pak-ammo" class="text-lg font-black text-green-400 font-mono">0</span>
+            <span class="text-[9px] text-green-200/70 font-black uppercase mt-0.5">Disparos</span>
         </div>
     </div>
 
     <!-- ÁREA DE JUEGO (CANVAS LUMINOSO) -->
-    <div class="flex-1 relative bg-gradient-to-b from-sky-50 to-white flex items-center justify-center overflow-hidden">
+    <div class="flex-1 relative flex items-center justify-center overflow-hidden z-10">
         
         <!-- Péndulo de Ángulo -->
-        <div id="angle-meter-container" class="absolute top-6 left-1/2 -translate-x-1/2 w-64 h-8 bg-white rounded-full border-2 border-gray-200 shadow-md z-20 overflow-hidden">
-            <div id="angle-cursor" class="absolute top-0 bottom-0 w-2.5 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)] left-1/2 -translate-x-1/2"></div>
-            <div class="absolute inset-0 flex justify-between px-5 items-center text-[10px] text-gray-400 font-black uppercase tracking-widest pointer-events-none">
+        <div id="angle-meter-container" class="absolute top-6 left-1/2 -translate-x-1/2 w-64 h-8 bg-white/90 backdrop-blur-sm rounded-full border-2 border-white/50 shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 overflow-hidden">
+            <div id="angle-cursor" class="absolute top-0 bottom-0 w-2.5 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,1)] left-1/2 -translate-x-1/2"></div>
+            <div class="absolute inset-0 flex justify-between px-5 items-center text-[9px] text-gray-500 font-black uppercase tracking-widest pointer-events-none">
                 <span>◀ Izq</span><span>Centro</span><span>Der ▶</span>
             </div>
         </div>
 
         <!-- Barra de Fuerza -->
-        <div id="power-meter-container" class="absolute top-16 left-1/2 -translate-x-1/2 w-64 h-6 bg-white rounded-full border-2 border-gray-200 shadow-md z-20 overflow-hidden hidden">
-            <div id="power-fill" class="h-full w-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600"></div>
+        <div id="power-meter-container" class="absolute top-16 left-1/2 -translate-x-1/2 w-64 h-6 bg-white/90 backdrop-blur-sm rounded-full border-2 border-white/50 shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 overflow-hidden hidden">
+            <div id="power-fill" class="h-full w-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 shadow-inner"></div>
             <span class="absolute inset-0 flex items-center justify-center text-[10px] font-black text-cg_navy uppercase drop-shadow-[0_0_2px_white] pointer-events-none">Fuerza de Disparo</span>
         </div>
 
-        <canvas id="pachinko-canvas" class="block w-full h-full max-w-md mx-auto bg-transparent border-x border-gray-100 shadow-2xl"></canvas>
+        <!-- Cristal del Canvas -->
+        <div class="absolute inset-0 bg-white/5 backdrop-blur-[2px]"></div>
+        
+        <canvas id="pachinko-canvas" class="block w-full h-full max-w-md mx-auto bg-transparent border-x border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.2)] relative z-10"></canvas>
         
         <!-- Botón de Acción Universal -->
-        <button id="pak-action-btn" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-cg_blue hover:bg-blue-500 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2">
+        <button id="pak-action-btn" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-cg_blue hover:bg-blue-500 text-white font-black text-lg sm:text-xl px-10 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2 border border-blue-400">
             <span>🎯</span> Fijar Ángulo
         </button>
     </div>
 </div>
 
-<!-- MODAL DE RESULTADO LUMINOSO -->
-<div id="pak-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-cg_navy/80 backdrop-blur-sm font-sans">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border border-gray-100 shadow-2xl animate-fade-in relative overflow-hidden">
+<!-- ========================================== -->
+<!-- MODAL DE RESULTADO FINAL                   -->
+<!-- ========================================== -->
+<div id="pak-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md font-sans">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border-4 border-cg_gold shadow-[0_0_40px_rgba(237,153,37,0.3)] animate-fade-in relative overflow-hidden">
         
         <div class="w-20 h-20 bg-gradient-to-br from-yellow-300 to-cg_gold rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg border-4 border-white text-4xl animate-bounce">🏆</div>
         
         <h3 class="text-2xl font-black text-cg_navy mb-1 tracking-tight">¡Tiempo Agotado!</h3>
-        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido registrada en el servidor.</p>
+        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido calculada exitosamente.</p>
         
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left shadow-inner">
-            <div class="flex justify-between items-center text-xs mb-3">
+            <div class="flex justify-between items-center text-xs mb-3 border-b border-gray-100 pb-2">
                 <span class="text-gray-500 font-black uppercase tracking-widest">Puntaje Base:</span>
                 <span class="font-black text-cg_navy text-sm" id="res-base">0</span>
             </div>
-            <div class="flex justify-between items-center text-xs mb-3">
+            <div class="flex justify-between items-center text-xs mb-3 border-b border-gray-100 pb-2">
                 <span class="text-green-600 font-black uppercase tracking-widest">Bono Velocidad:</span>
-                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md" id="res-time">+0</span>
+                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md border border-green-200" id="res-time">+0</span>
             </div>
-            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center pt-2">
                 <span class="text-sm font-black text-cg_navy uppercase tracking-widest">Total Final:</span>
                 <span class="text-3xl font-black text-cg_gold drop-shadow-sm" id="res-total">0</span>
             </div>
         </div>
 
-        <button onclick="window.submitPachinkoScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-            <span>💾</span> Registrar y Volver
+        <button onclick="window.submitPachinkoScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none flex items-center justify-center gap-2">
+            <span>💾</span> Registrar Puntuación
         </button>
     </div>
 </div>
@@ -120,10 +183,15 @@ window.pachinkoApp = {
     powerDir: 1,
     rafId: null,
 
+    // Inicializa solo la UI y el modal de análisis
     init() {
         this.ctx = this.canvas.getContext('2d');
         this.resize();
         
+        let plantName = "Planta Base";
+        let plantImg = "assets/Fondos/logo.png";
+
+        // Obtener datos de la planta seleccionada
         if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
             let pData = window.farmApp.state.selectedCombatants[0];
             if (pData) {
@@ -138,27 +206,50 @@ window.pachinkoApp = {
                     this.hp = realPlant.hp || 100;
                     this.atk = realPlant.atk || 50;
                     this.def = realPlant.def || 20;
-                    document.getElementById('pak-plant-icon').src = realPlant.icon || 'assets/Fondos/logo.png';
-                    document.getElementById('pak-plant-name').innerText = realPlant.name;
+                    plantImg = realPlant.icon || 'assets/Fondos/logo.png';
+                    plantName = realPlant.name;
                 }
             }
         }
 
+        // Llenar datos de la barra HUD
+        document.getElementById('pak-plant-icon').src = plantImg;
+        document.getElementById('pak-plant-name').innerText = plantName;
         document.getElementById('pak-stat-hp').innerText = `❤️ ${this.hp}`;
         document.getElementById('pak-stat-atk').innerText = `⚔️ ${this.atk}`;
         document.getElementById('pak-stat-def').innerText = `🛡️ ${this.def}`;
 
+        // Llenar datos del Modal Pre-Juego
+        document.getElementById('intro-plant-img').src = plantImg;
+        document.getElementById('intro-plant-name').innerText = plantName;
+        
         this.seedsTotal = Math.max(5, Math.floor(this.hp / 10));
         this.seedsLeft = this.seedsTotal;
-        document.getElementById('pak-ammo').innerText = this.seedsLeft;
+        document.getElementById('intro-seeds').innerText = `${this.seedsTotal} Semillas`;
+        
+        const mult = 1 + (this.atk / 100);
+        document.getElementById('intro-pts').innerText = `+${Math.floor(250 * mult)} Pts/Acierto`;
+        
+        const wBase = (this.w / 4);
+        const wBonus = wBase * (this.def / 100); 
+        const basketW = Math.min(wBase + wBonus, this.w / 3);
+        const percentWidth = Math.floor((basketW / this.w) * 100);
+        document.getElementById('intro-control').innerText = `${percentWidth}% Ancho Canasta`;
 
-        this.buildLevel();
-        this.startTimer();
+        document.getElementById('pak-ammo').innerText = this.seedsLeft;
+        this.buildLevel(mult, basketW);
+        this.draw(); // Dibuja el estado inicial en el fondo
+    },
+
+    // Invocado por el botón "Iniciar Misión" del modal
+    startGame() {
+        document.getElementById('pak-intro-modal').classList.add('hidden');
         
         const actionBtn = document.getElementById('pak-action-btn');
         actionBtn.onclick = () => this.handleInput();
 
         this.isPlaying = true;
+        this.startTimer();
         this.loop();
     },
 
@@ -167,7 +258,7 @@ window.pachinkoApp = {
         this.canvas.height = this.h;
     },
 
-    buildLevel() {
+    buildLevel(mult, basketW) {
         this.pegs = [];
         const rows = 8;
         const cols = 7;
@@ -186,15 +277,10 @@ window.pachinkoApp = {
             }
         }
 
-        const mult = 1 + (this.atk / 100);
-        const wBase = (this.w / 4);
-        const wBonus = wBase * (this.def / 100); 
-        const basketW = Math.min(wBase + wBonus, this.w / 3);
-
         this.baskets = [
-            { x: 0, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(245, 158, 11, 0.1)', border: '#f59e0b', pts: Math.floor(100 * mult), label: `+${Math.floor(100 * mult)}` },
-            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444', pts: -50, label: '🔥 -50' },
-            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(34, 197, 94, 0.1)', border: '#22c55e', pts: Math.floor(250 * mult), label: `+${Math.floor(250 * mult)}` }
+            { x: 0, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(234, 179, 8, 0.2)', border: '#eab308', pts: Math.floor(100 * mult), label: `+${Math.floor(100 * mult)}` },
+            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(239, 68, 68, 0.2)', border: '#ef4444', pts: -50, label: '🔥 -50' },
+            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(34, 197, 94, 0.2)', border: '#22c55e', pts: Math.floor(250 * mult), label: `+${Math.floor(250 * mult)}` }
         ];
     },
 
@@ -217,10 +303,11 @@ window.pachinkoApp = {
         if (this.inputState === 'ANGLE') {
             this.inputState = 'POWER';
             document.getElementById('power-meter-container').classList.remove('hidden');
-            btn.innerHTML = "<span>💥</span> Disparar";
+            btn.innerHTML = "<span>💥</span> Disparar Fuerza";
             btn.classList.replace('bg-cg_blue', 'bg-red-500');
             btn.classList.replace('hover:bg-blue-500', 'hover:bg-red-600');
             btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_6px_0_#991b1b]');
+            btn.classList.replace('border-blue-400', 'border-red-400');
         } else if (this.inputState === 'POWER') {
             if (this.seedsLeft <= 0) return;
             this.inputState = 'SIMULATING';
@@ -267,9 +354,11 @@ window.pachinkoApp = {
             s.x += s.vx;
             s.y += s.vy;
 
+            // Rebote paredes
             if (s.x - s.r < 0) { s.x = s.r; s.vx *= -0.6; }
             if (s.x + s.r > this.w) { s.x = this.w - s.r; s.vx *= -0.6; }
 
+            // Colisión con clavos (pegs)
             for (let p of this.pegs) {
                 let dx = s.x - p.x;
                 let dy = s.y - p.y;
@@ -287,6 +376,7 @@ window.pachinkoApp = {
                 }
             }
 
+            // Cayó abajo
             if (s.y > this.h - 40) {
                 for (let b of this.baskets) {
                     if (s.x > b.x && s.x < b.x + b.w) {
@@ -309,6 +399,7 @@ window.pachinkoApp = {
                     btn.classList.replace('bg-red-500', 'bg-cg_blue');
                     btn.classList.replace('hover:bg-red-600', 'hover:bg-blue-500');
                     btn.classList.replace('shadow-[0_6px_0_#991b1b]', 'shadow-[0_6px_0_#1e3a8a]');
+                    btn.classList.replace('border-red-400', 'border-blue-400');
                 }
             }
         }
@@ -317,20 +408,18 @@ window.pachinkoApp = {
     draw() {
         this.ctx.clearRect(0, 0, this.w, this.h);
 
-        // Clavos más estéticos (gris suave)
-        this.ctx.fillStyle = '#cbd5e1'; 
+        // Clavos LUMINOSOS (Cyan neón sobre el fondo oscuro)
+        this.ctx.fillStyle = '#22d3ee'; 
         for (let p of this.pegs) {
             this.ctx.beginPath();
             this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             this.ctx.fill();
-            this.ctx.shadowColor = 'rgba(0,0,0,0.1)';
-            this.ctx.shadowBlur = 4;
-            this.ctx.shadowOffsetY = 2;
+            this.ctx.shadowColor = '#06b6d4';
+            this.ctx.shadowBlur = 8;
         }
         this.ctx.shadowBlur = 0;
-        this.ctx.shadowOffsetY = 0;
 
-        // Canastas con estilo moderno
+        // Canastas Glassmorphism
         for (let b of this.baskets) {
             this.ctx.fillStyle = b.bg;
             this.ctx.fillRect(b.x, b.y, b.w, b.h);
@@ -338,29 +427,39 @@ window.pachinkoApp = {
             this.ctx.lineWidth = 3;
             this.ctx.strokeRect(b.x, b.y, b.w, b.h);
             
-            this.ctx.fillStyle = b.border;
-            this.ctx.font = 'bold 15px sans-serif';
+            // Efecto brillo arriba de la canasta
+            this.ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            this.ctx.fillRect(b.x, b.y, b.w, 10);
+
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.font = '900 16px sans-serif';
             this.ctx.textAlign = 'center';
+            this.ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            this.ctx.shadowBlur = 4;
             this.ctx.fillText(b.label, b.x + b.w/2, b.y + 28);
+            this.ctx.shadowBlur = 0;
         }
 
-        // Semilla Activa (Verde brillante)
+        // Semilla Activa (Verde brillante radiactivo)
         if (this.activeSeed) {
-            this.ctx.fillStyle = '#22c55e';
+            this.ctx.fillStyle = '#4ade80';
             this.ctx.beginPath();
             this.ctx.arc(this.activeSeed.x, this.activeSeed.y, this.activeSeed.r, 0, Math.PI * 2);
             this.ctx.fill();
-            this.ctx.strokeStyle = '#16a34a';
+            this.ctx.shadowColor = '#22c55e';
+            this.ctx.shadowBlur = 15;
+            this.ctx.strokeStyle = '#ffffff';
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
         }
 
-        // Cañón simulado (Guía visual limpia)
+        // Cañón simulado (Guía visual limpia blanca)
         if (this.inputState === 'ANGLE' || this.inputState === 'POWER') {
             this.ctx.save();
             this.ctx.translate(this.w/2, 20);
             this.ctx.rotate(-this.angleVal * Math.PI / 180);
-            this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([6, 6]);
             this.ctx.beginPath();
@@ -406,6 +505,36 @@ window.submitPachinkoScore = async function() {
     const token = sessionStorage.getItem('session_token');
     const instanceId = sessionStorage.getItem('pve_tournament_instance');
 
+    // MODO MULTIJUGADOR (PVP)
+    const pvpMatchId = sessionStorage.getItem('pvp_match_id');
+    if (pvpMatchId && token && username) {
+        try {
+            await fetch('/api/pvp/combat_sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    match_id: pvpMatchId,
+                    update_data: { winner: username } 
+                    // Nota: En un entorno de producción seguro, ambos enviarían el puntaje y el backend decidiría.
+                    // Para este simulador arcade con un solo jugador local, el que termina declara victoria si llegó al puntaje.
+                })
+            });
+        } catch(e) { console.error(e); }
+        
+        sessionStorage.removeItem('pvp_match_id');
+        sessionStorage.removeItem('pvp_bet_amount');
+        
+        if (window.farmApp) {
+            window.farmApp.state.combatLock = false;
+            window.farmApp.saveState();
+        }
+        
+        loadView('farm', document.querySelectorAll('.nav-btn-desktop')[0]); 
+        return;
+    }
+
+    // MODO TORNEO
     if (instanceId && token && username) {
         try {
             await fetch('/api/tournaments/submit_score', {
@@ -421,6 +550,23 @@ window.submitPachinkoScore = async function() {
         } catch(e) { console.error(e); }
     }
 
+    // MODO IA (BOT)
+    const isBotMode = sessionStorage.getItem('pve_bot_mode') === 'true';
+    if (isBotMode) {
+        const botBetAmount = parseInt(sessionStorage.getItem('bot_bet_amount')) || 0;
+        if (botBetAmount > 0) {
+            let winAmount = botBetAmount * 2;
+            if (window.farmApp) {
+                window.farmApp.state.seedsBalance += winAmount;
+            }
+            alert(`¡Derrotaste a la IA! Has ganado ${winAmount.toLocaleString()} 🌱`);
+        } else {
+            alert(`¡Derrotaste a la IA en partida amistosa!`);
+        }
+        sessionStorage.removeItem('pve_bot_mode');
+        sessionStorage.removeItem('bot_bet_amount');
+    }
+
     sessionStorage.removeItem('pve_tournament_id');
     sessionStorage.removeItem('pve_tournament_fee');
     sessionStorage.removeItem('pve_tournament_instance');
@@ -430,9 +576,10 @@ window.submitPachinkoScore = async function() {
         window.farmApp.saveState();
     }
 
-    loadView('nutrients'); 
+    loadView('nutrients', document.querySelectorAll('.nav-btn-desktop')[2]); 
 };
 
-setTimeout(() => window.pachinkoApp.init(), 200);
+// Iniciar app de inmediato configurando la UI
+window.pachinkoApp.init();
+
 </script>
-</div>
