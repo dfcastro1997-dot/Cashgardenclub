@@ -2,11 +2,11 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Casino de Destreza (Skill-Based)</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="text-xs font-extrabold text-blue-600 uppercase tracking-widest">Salón Arcade (100% Destreza)</span>
             </div>
             <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Arena de Minijuegos</h2>
-            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Gana dinero real demostrando tu precisión y reflejos. 100% habilidad, 0% azar. El torneo inicia automáticamente al llenarse la sala.</p>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Gana créditos demostrando tu precisión y reflejos. 100% habilidad física y visual, 0% azar.</p>
         </div>
     </div>
 
@@ -230,19 +230,19 @@
                 </div>
             </div>
             
-            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas de tu Planta (Stats)</h4>
+            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas de tu Planta (Stats Arcade)</h4>
             <div class="space-y-3">
-                <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center gap-3">
-                    <span class="text-2xl">❤️</span>
-                    <p class="text-[10px] sm:text-xs text-red-900 leading-snug"><strong class="font-black">Vida (HP):</strong> Determina tus "Oportunidades". A mayor HP, más tiros/semillas tienes en 60s.</p>
+                <div class="bg-yellow-50 border border-yellow-100 p-3 rounded-xl flex items-center gap-3">
+                    <span class="text-2xl">🪙</span>
+                    <p class="text-[10px] sm:text-xs text-yellow-900 leading-snug"><strong class="font-black">Fichas (HP):</strong> Determina tus "Intentos". A mayor cantidad, más semillas puedes lanzar o más fallos soportas en 60s.</p>
                 </div>
                 <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3">
-                    <span class="text-2xl">⚔️</span>
-                    <p class="text-[10px] sm:text-xs text-orange-900 leading-snug"><strong class="font-black">Ataque (ATK):</strong> Define el "Multiplicador". A mayor ATK, más puntos base otorga cada acierto.</p>
+                    <span class="text-2xl">⭐</span>
+                    <p class="text-[10px] sm:text-xs text-orange-900 leading-snug"><strong class="font-black">Multiplicador (ATK):</strong> Define la "Rentabilidad". A mayor nivel, más puntos base otorga cada acierto en los minijuegos.</p>
                 </div>
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center gap-3">
-                    <span class="text-2xl">🛡️</span>
-                    <p class="text-[10px] sm:text-xs text-blue-900 leading-snug"><strong class="font-black">Defensa (DEF):</strong> Otorga "Margen de Tolerancia". En Pachinko agranda canastas, en Ruleta aumenta la fricción (frena más rápido).</p>
+                <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl flex items-center gap-3">
+                    <span class="text-2xl">⚙️</span>
+                    <p class="text-[10px] sm:text-xs text-gray-700 leading-snug"><strong class="font-black">Control (DEF):</strong> Otorga "Margen de Tolerancia Física". Agranda las canastas ganadoras, aumenta la fricción de frenado o ralentiza los obstáculos.</p>
                 </div>
             </div>
         </div>
@@ -279,21 +279,21 @@
                     <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Suelta semillas calculando el ángulo y la fuerza correctos para encestarlas.</p>
                 </div>
                 
-                <!-- Opcion Ruleta -->
+                <!-- Opcion Disco Táctico (Antes Ruleta) -->
                 <div onclick="openPlantSelectionModal('ruleta')" class="bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner border border-yellow-100">
                         🎡
                     </div>
-                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Ruleta Táctica</h4>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Disco Táctico</h4>
                     <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Frena la aguja en el momento exacto calculando la inercia del disco veloz.</p>
                 </div>
 
-                <!-- Opcion Tragamonedas -->
+                <!-- Opcion Cilindros (Antes Tragamonedas) -->
                 <div onclick="openPlantSelectionModal('tragamonedas')" class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner border border-green-100">
                         🎰
                     </div>
-                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Tragamonedas Memoria</h4>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Cilindros Sincronizados</h4>
                     <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Detén manualmente los 3 rodillos sincronizando tu vista y reflejos.</p>
                 </div>
 
@@ -487,9 +487,9 @@
                         <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.plant.name}</h4>
                         <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
-                            <span title="Vida">❤️ ${p.plant.hp || 100}</span>
-                            <span title="Ataque">⚔️ ${p.plant.atk || 50}</span>
-                            <span title="Defensa">🛡️ ${p.plant.def || 20}</span>
+                            <span title="Fichas (HP)">🪙 ${p.plant.hp || 100}</span>
+                            <span title="Multiplicador (ATK)">⭐ ${p.plant.atk || 50}</span>
+                            <span title="Control (DEF)">⚙️ ${p.plant.def || 20}</span>
                         </div>
                     </div>
                 `;
@@ -502,9 +502,9 @@
                         <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.name}</h4>
                         <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
-                            <span title="Vida">❤️ ${p.hp || 100}</span>
-                            <span title="Ataque">⚔️ ${p.atk || 50}</span>
-                            <span title="Defensa">🛡️ ${p.def || 20}</span>
+                            <span title="Fichas (HP)">🪙 ${p.hp || 100}</span>
+                            <span title="Multiplicador (ATK)">⭐ ${p.atk || 50}</span>
+                            <span title="Control (DEF)">⚙️ ${p.def || 20}</span>
                         </div>
                     </div>
                 `;
