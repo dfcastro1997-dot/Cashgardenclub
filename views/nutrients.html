@@ -62,7 +62,6 @@
                 <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
-                <!-- Redirige al modal pre-torneo que ahora explica el minijuego -->
                 <button onclick="openPreTournamentModal(1, 0, '0 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
                     ¡Jugar Pachinko!
                 </button>
@@ -205,7 +204,7 @@
             <button onclick="closePreTournamentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
             <span class="text-cg_gold text-[10px] md:text-xs font-black uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full border border-orange-200">Juego de Habilidad (Sin RNG)</span>
             <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mt-4" id="pt-title">Pachinko de Polinización</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">Suelta las semillas controlando el péndulo y la fuerza. La física es 100% predecible y depende de tu destreza, sin rebotes aleatorios.</p>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">Suelta las semillas controlando el ángulo y la fuerza. La física es 100% predecible y depende de tu destreza.</p>
         </div>
 
         <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
@@ -226,7 +225,7 @@
                 </div>
                 <div class="bg-red-50 border border-red-200 p-3 rounded-xl shadow-sm text-center">
                     <span class="block text-[9px] text-red-700 font-bold uppercase">Penalización</span>
-                    <span class="font-black text-red-600 text-sm">-50 Pts x Fallo</span>
+                    <span class="font-black text-red-600 text-sm">-50 Pts x Fuego</span>
                 </div>
             </div>
             
@@ -271,7 +270,6 @@
 
     window.pendingTournament = null;
 
-    // Lógica para que los cupos Falsos (FOMO) de la liga 1 comiencen bajos (2 a 4)
     if(!window.fakePlayersCounts) {
         window.fakePlayersCounts = {
             1: Math.floor(Math.random() * 3) + 2, 
@@ -280,8 +278,7 @@
         window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
     }
 
-    // --- LÓGICA DEL TEMPORIZADOR BIDIARIO ---
-    const FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; // 48 Horas
+    const FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; 
     const FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime();
     
     function updateFreerollTimer() {
@@ -356,10 +353,6 @@
             alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para entrar a este torneo.`);
             return;
         }
-        if (fee_cop > 0 && window.farmApp.state.balance < fee_cop) {
-            alert(`Necesitas $${fee_cop.toLocaleString()} COP para la entrada.`);
-            return;
-        }
 
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
         let arsenal = window.farmApp.state.arsenal || [];
@@ -371,9 +364,6 @@
 
         window.pendingTournament = { id: t_id, fee: fee_cop };
         
-        const btn = document.getElementById('btn-confirm-tournament');
-        btn.innerText = fee_cop === 0 ? `Elegir Planta y Jugar` : `Pagar $${fee_cop.toLocaleString()} y Jugar`;
-
         document.getElementById('pre-tournament-modal').classList.remove('hidden');
         document.getElementById('pre-tournament-modal').classList.add('flex');
     };
@@ -390,7 +380,7 @@
             if (window.farmApp) {
                 let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
                 let arsenal = window.farmApp.state.arsenal || [];
-                // Redirigir al Minijuego (pachinko.html) en lugar de la arena de combate vieja
+                // IMPORTANTE: Redirigimos a pachinko.html
                 window.farmApp.openTeamSelection(readyPlots, arsenal, null, 'pachinko');
             }
         };
