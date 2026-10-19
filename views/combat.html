@@ -140,7 +140,7 @@
         transform: scale(0.96);
         box-shadow: 0 3px 8px rgba(185, 28, 28, 0.8);
     }
-    
+
 /* Ocultar scrollbars generales, EXCEPTO la mano de cartas en desktop */
     #cb-plant-tabs, #combat-root, body {
         scrollbar-width: none !important;
@@ -4432,7 +4432,6 @@ window.combatApp = {
     }
 };
 
-// Atajos de teclado (se registran una sola vez aunque la vista se recargue)
 if (!window.__cbKeysBound) {
     window.__cbKeysBound = true;
     document.addEventListener('keydown', (e) => {
@@ -4478,6 +4477,20 @@ if (!window.__cbKeysBound) {
     const relayout = () => { if (window.combatApp && document.getElementById('combat-root')) window.combatApp.updateBackgroundAndLayout(); };
     window.addEventListener('resize', () => { clearTimeout(resizeDebounce); resizeDebounce = setTimeout(relayout, 60); });
     window.addEventListener('orientationchange', () => setTimeout(relayout, 120));
+
+    // NUEVO: Protección anti-fugas. Evita la pérdida de plantas al usar el menú de navegación superior
+    if (!window.__cbNavHook) {
+        window.__cbNavHook = true;
+        const originalLoadView = window.loadView;
+        window.loadView = async function(viewName, btn) {
+            if (window.combatApp && window.combatApp.active && !window.combatApp.combatEnded) {
+                const confirmLeave = confirm("⚠️ Batalla en curso. Si cambias de pestaña huirás automáticamente, perdiendo tu apuesta y dejando a tus plantas exhaustas. ¿Deseas salir?");
+                if (!confirmLeave) return;
+                window.combatApp.endCombat(false); // Fuerza la derrota para salvar y devolver las plantas
+            }
+            return originalLoadView.apply(this, arguments);
+        };
+    }
 }
 
 setTimeout(() => window.combatApp.init(), 150);
