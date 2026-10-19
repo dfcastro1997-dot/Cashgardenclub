@@ -1,0 +1,97 @@
+<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">Sistema Meteorológico Dinámico</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Calendario de Estaciones</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">El clima afecta directamente la evaporación del agua de todas tus plantas y torneos. Planifica tu estrategia guiándote por el pronóstico mensual.</p>
+        </div>
+    </div>
+
+    <!-- Leyenda de Estaciones -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <span class="text-4xl drop-shadow-md">❄️</span>
+            <div><p class="text-base font-black text-blue-800 leading-tight">Invierno</p><p class="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Agua -50% (Evap Lenta)</p></div>
+        </div>
+        <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <span class="text-4xl drop-shadow-md">🍂</span>
+            <div><p class="text-base font-black text-orange-800 leading-tight">Otoño</p><p class="text-[10px] text-orange-600 font-bold uppercase tracking-widest">Agua +50% (Evap Rápida)</p></div>
+        </div>
+        <div class="bg-pink-50 border border-pink-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <span class="text-4xl drop-shadow-md">🌸</span>
+            <div><p class="text-base font-black text-pink-800 leading-tight">Primavera</p><p class="text-[10px] text-pink-600 font-bold uppercase tracking-widest">Consumo 100% (Normal)</p></div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <span class="text-4xl drop-shadow-md">☀️</span>
+            <div><p class="text-base font-black text-red-800 leading-tight">Verano</p><p class="text-[10px] text-red-600 font-bold uppercase tracking-widest">Agua +100% (Sequía Crítica)</p></div>
+        </div>
+    </div>
+
+    <!-- Calendario Mensual -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl md:text-2xl font-black text-cg_navy uppercase tracking-widest" id="calendar-month-title">Mes Actual</h3>
+            <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full border border-gray-200 shadow-sm hidden sm:block">Ciclo Global Sincronizado</span>
+        </div>
+        
+        <div class="grid grid-cols-7 gap-2 md:gap-4 mb-3 text-center text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-3">
+            <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+        </div>
+        <div id="calendar-grid" class="grid grid-cols-7 gap-2 md:gap-4">
+            <!-- Rellenado por JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function renderCalendar() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        document.getElementById('calendar-month-title').innerText = `${monthNames[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = d.getDate();
+
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = '';
+
+        // Bloques vacíos para ajustar al día que arranca la semana
+        for(let i = 0; i < firstDay; i++) {
+            grid.innerHTML += `<div class="aspect-square rounded-2xl bg-gray-50/50 border border-gray-100/50"></div>`;
+        }
+
+        // Rellenar días reales con lógica de temporada
+        for(let i = 1; i <= daysInMonth; i++) {
+            let seasonClass = "";
+            let icon = "";
+            let label = "";
+            if (i >= 1 && i <= 9) { seasonClass = "bg-blue-50 border-blue-200 text-blue-800"; icon = "❄️"; label = "Invierno"; }
+            else if (i >= 10 && i <= 19) { seasonClass = "bg-orange-50 border-orange-200 text-orange-800"; icon = "🍂"; label = "Otoño"; }
+            else if (i >= 20 && i <= 26) { seasonClass = "bg-pink-50 border-pink-200 text-pink-800"; icon = "🌸"; label = "Primavera"; }
+            else { seasonClass = "bg-red-50 border-red-200 text-red-800"; icon = "☀️"; label = "Verano"; }
+            
+            let todayStyle = (i === today) 
+                ? "ring-4 ring-cg_navy shadow-lg transform scale-105 z-10" 
+                : "shadow-sm hover:shadow-md hover:scale-105";
+                
+            let badge = (i === today) 
+                ? '<span class="absolute bottom-1.5 md:bottom-2 bg-cg_navy text-white text-[8px] md:text-[9px] px-2 py-0.5 rounded-md uppercase tracking-widest font-black shadow-sm">Hoy</span>' 
+                : `<span class="absolute bottom-1.5 md:bottom-2 text-[8px] md:text-[9px] font-bold opacity-60 uppercase tracking-wider hidden sm:block">${label}</span>`;
+
+            grid.innerHTML += `
+                <div class="aspect-square rounded-2xl border ${seasonClass} ${todayStyle} flex flex-col items-center justify-center relative p-1 md:p-2 transition-all cursor-default">
+                    <span class="text-xs md:text-sm font-black absolute top-1.5 md:top-2 left-2 md:left-3 opacity-40">${i}</span>
+                    <span class="text-2xl md:text-4xl mt-1 md:mt-0 drop-shadow-sm">${icon}</span>
+                    ${badge}
+                </div>
+            `;
+        }
+    }
+    renderCalendar();
+</script>

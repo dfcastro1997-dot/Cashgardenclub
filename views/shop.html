@@ -1,0 +1,859 @@
+<div class="max-w-[1400px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-24 relative px-4 md:px-6 lg:px-8 pt-4">
+    
+    <!-- HEADER PROFESIONAL -->
+    <div class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
+        <div class="flex items-center gap-4 md:gap-5 w-full md:w-auto">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shrink-0 shadow-inner">
+                <span class="text-2xl md:text-3xl">🛒</span>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-cg_blue animate-pulse shadow-[0_0_8px_rgba(41,150,218,0.8)]"></span>
+                    <span class="text-[9px] md:text-[10px] font-bold text-cg_blue uppercase tracking-widest">Suministros Agrícolas</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight leading-none">Mercado Global</h2>
+                <p class="text-xs text-slate-500 font-medium mt-1.5 hidden md:block">Equípate con herramientas, adquiere nuevas especies o automatiza tu granja con servicios premium.</p>
+            </div>
+        </div>
+
+        <!-- BOTÓN CREAR PLANTA A MEDIDA (MODIFICADO) -->
+        <button onclick="loadView('creacion')" class="w-full md:w-auto bg-white border-2 border-indigo-100 hover:border-indigo-300 text-indigo-700 hover:text-indigo-800 font-black px-5 py-3.5 rounded-2xl text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2.5 active:scale-95 shrink-0 group">
+            <span class="text-lg group-hover:scale-110 transition-transform">🧪</span>
+            <span>Crear Planta a Medida</span>
+        </button>
+    </div>
+
+    <!-- PANEL DE FILTROS AVANZADOS -->
+    <div class="bg-white p-4 md:p-5 rounded-3xl border border-gray-100 shadow-sm relative z-20">
+        <div class="flex items-center gap-2 mb-4 border-b border-gray-50 pb-3">
+            <span class="text-lg">🔍</span>
+            <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Filtros de Búsqueda</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <!-- Buscar por Nombre -->
+            <div class="relative">
+                <input type="text" id="filter-search" oninput="window.shopApp.renderShopItems()" placeholder="Buscar producto por nombre..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white transition-colors shadow-inner placeholder-slate-400">
+            </div>
+            
+            <!-- Tipo de Producto (CON EL NUEVO ONCHANGE) -->
+            <select id="filter-type" onchange="window.shopApp.togglePlantFilters(); window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+                <option value="all">📦 Todos los Tipos</option>
+                <option value="tools">🛠️ Herramientas y Defensa</option>
+                <option value="iap">⭐ Servicios VIP (Automáticos)</option>
+                <option value="exchange">💰 Casa de Cambio (Packs)</option>
+                <option value="flowers">🌿 Semillas Botánicas</option>
+            </select>
+
+            <!-- Categoría Botánica -->
+            <select id="filter-category" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+                <option value="all">🌍 Cualquier Elemento (Solo Plantas)</option>
+                <option value="Planta Estándar">Planta Estándar</option>
+                <option value="Plantas Ígneas">Plantas Ígneas (Fuego)</option>
+                <option value="Plantas Glaciares">Plantas Glaciares (Hielo)</option>
+                <option value="Plantas Eléctricas">Plantas Eléctricas (Rayo)</option>
+                <option value="Plantas Acuáticas">Plantas Acuáticas (Agua)</option>
+                <option value="Plantas Rocosas">Plantas Rocosas (Tierra)</option>
+                <option value="Plantas Aéreas">Plantas Aéreas (Viento)</option>
+                <option value="Plantas Espaciales">Plantas Espaciales (Cosmos)</option>
+                <option value="Plantas Alienígenas">Plantas Alienígenas (Xeno)</option>
+                <option value="Plantas Mecha-botánica">Plantas Mecha-botánica (Acero)</option>
+                <option value="Plantas Radiactivas">Plantas Radiactivas (Nuclear)</option>
+                <option value="Plantas Mutantes">Plantas Mutantes (Veneno)</option>
+                <option value="Plantas Jurásicas">Plantas Jurásicas (Fósil)</option>
+                <option value="Plantas Demoníacas">Plantas Demoníacas (Oscuridad)</option>
+            </select>
+
+            <!-- Tipo de Moneda -->
+            <select id="filter-price" onchange="window.shopApp.renderShopItems()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-cg_blue focus:bg-white cursor-pointer shadow-inner transition-colors">
+                <option value="all">🪙 Cualquier Moneda</option>
+                <option value="free_cop">🌱 Comprar con Semillas</option>
+                <option value="premium">💵 Comprar con CRÉDITOS</option>
+            </select>
+        </div>
+
+        <!-- SUB-FILTROS DE PLANTAS (NUEVO - Oculto por defecto) -->
+        <div id="plant-advanced-filters" class="hidden mt-4 pt-4 border-t border-gray-100 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-fade-in">
+            <!-- Duración / Tiempo -->
+            <select id="filter-plant-duration" onchange="window.shopApp.renderShopItems()" class="w-full bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-green-500 cursor-pointer shadow-inner transition-colors">
+                <option value="all">⏱️ Cualquier Duración</option>
+                <option value="fast">Rápida (< 1h)</option>
+                <option value="medium">Media (1h - 6h)</option>
+                <option value="slow">Lenta (> 6h)</option>
+            </select>
+            
+            <!-- Cosecha (Recompensa) -->
+            <select id="filter-plant-reward" onchange="window.shopApp.renderShopItems()" class="w-full bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-green-500 cursor-pointer shadow-inner transition-colors">
+                <option value="all">💰 Cualquier Cosecha</option>
+                <option value="low">Baja (< 10,000 🌱)</option>
+                <option value="medium">Media (10k - 30k 🌱)</option>
+                <option value="high">Alta (> 30,000 🌱)</option>
+            </select>
+
+            <!-- Rango de Precio -->
+            <input type="number" id="filter-price-min" oninput="window.shopApp.renderShopItems()" placeholder="Precio Min (🌱)..." class="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-yellow-500 transition-colors shadow-inner placeholder-yellow-600/50">
+            <input type="number" id="filter-price-max" oninput="window.shopApp.renderShopItems()" placeholder="Precio Max (🌱)..." class="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 pl-4 pr-4 py-3 rounded-xl text-xs md:text-sm font-bold outline-none focus:border-yellow-500 transition-colors shadow-inner placeholder-yellow-600/50">
+        </div>
+    </div>
+
+    <!-- MAIN GRID ÚNICO PARA TODO EL CATÁLOGO -->
+    <div id="shop-main-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-6">
+        <!-- Inyectado por JS de forma unificada -->
+    </div>
+
+
+    <!-- VENTANA MODAL PROFESIONAL PARA ALERTAS/ÉXITOS (AUTO-CIERRE) -->
+    <div id="shop-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8" id="shop-alert-card">
+            
+            <div id="shop-alert-icon-container" class="mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-20 h-20 bg-gray-50 border-gray-100 relative">
+                <div class="absolute inset-0 rounded-full border border-gray-200 animate-ping opacity-50" id="shop-alert-ping"></div>
+                <img id="shop-alert-img" src="" class="w-12 h-12 object-contain relative z-10 drop-shadow-md hidden">
+                <span class="text-3xl md:text-4xl relative z-10 drop-shadow-sm" id="shop-alert-icon">⚠️</span>
+            </div>
+            
+            <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-slate-800" id="shop-alert-title">Aviso</h3>
+            <p class="text-xs md:text-sm text-slate-500 mb-6 font-medium leading-relaxed" id="shop-alert-msg">Mensaje</p>
+            
+            <div id="shop-alert-details" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center justify-between w-full mb-2 hidden">
+                <span class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest" id="shop-alert-label">Inversión:</span>
+                <span class="text-sm md:text-base font-black text-slate-800" id="shop-alert-price"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="shop-confirm-modal" class="fixed inset-0 z-[1050] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="window.shopApp.closeConfirmModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8">
+            <div class="mx-auto mb-4 shadow-inner flex items-center justify-center rounded-2xl border-4 w-24 h-24 bg-gray-50 border-gray-100 relative">
+                <img id="shop-confirm-img" src="" class="w-16 h-16 object-contain relative z-10 drop-shadow-md">
+            </div>
+            <h3 class="text-xl md:text-2xl font-black mb-1 tracking-tight text-slate-800">Confirmar Compra</h3>
+            <p class="text-sm text-slate-500 mb-4 font-medium leading-relaxed" id="shop-confirm-name">Nombre del Item</p>
+            
+            <div class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center justify-between w-full mb-6">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total a Pagar:</span>
+                <span class="text-base font-black" id="shop-confirm-price">0 🌱</span>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="window.shopApp.closeConfirmModal()" class="flex-1 bg-white border border-gray-200 text-slate-600 font-black py-3.5 rounded-xl hover:bg-gray-50 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
+                <button id="shop-confirm-btn" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest active:scale-95">Comprar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+window.shopApp = {
+    state: {
+        seedsBalance: 35000,
+        balance: 0,
+        inventory: {},
+        shopQuantities: {}
+    },
+    
+    catalog: {
+        tools: [
+            { id: 'tool_pot_small', name: 'Maceta Pequeña', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: '5 Siembras', usage: '1', desc: 'Soporta cualquier tipo de flor o semilla de tamaño pequeño.', price: 5000 },
+            { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'Permanente', usage: '10', desc: 'Rellena el agua de tus plantas de forma manual.', price: 500 },
+            { id: 'tool_scarecrow', name: 'Espantacuervos', image: 'assets/Herramientas_y_Servicios/espantapajaros.png', duration: '24 Horas', usage: '1 Parcela', desc: 'Protección preventiva contra plagas. Cura al instante.', price: 6000 },
+            { id: 'tool_capsule', name: 'Bóveda Hidropónica', image: 'assets/Herramientas_y_Servicios/Capsula.gif', duration: '10 Horas', usage: '1 Parcela', desc: 'Sella la planta con humedad perfecta y protección anti-cuervos. Ralentiza el crecimiento un 30% por falta de sol.', price: 1000 }
+        ],
+        flowers: [],
+        iap: [
+            { id: 'iap_combo_24h', name: 'Pase Granjero 24H', image: 'assets/Herramientas_y_Servicios/Pase24.png', duration: '24 Horas', usage: 'Auto Total', desc: 'Riego y recolección perfectos automatizados globalmente.', price_cop: 7500 },
+            { id: 'iap_combo_72h', name: 'Pase Granjero 3 Días', image: 'assets/Herramientas_y_Servicios/Pase3D.png', duration: '3 Días', usage: 'Auto Total', desc: 'Riego y recolección perfectos. ¡Más Popular!', price_cop: 18000 },
+            { id: 'iap_combo_7d', name: 'Pase Granjero 7 Días', image: 'assets/Herramientas_y_Servicios/Pase7D.png', duration: '7 Días', usage: 'Auto Total', desc: 'Riego y recolección perfectos. ¡Ahorra 40%!', price_cop: 30000 },
+            { id: 'iap_nursery_72h', name: 'Enfermería VIP 3 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '3 Días', usage: 'Curación', desc: 'Tus plantas en el Arsenal se curan el TRIPLE de rápido.', price_cop: 8000 },
+            { id: 'iap_nursery_7d', name: 'Enfermería VIP 7 Días', image: 'assets/Herramientas_y_Servicios/E1.png', duration: '7 Días', usage: 'Curación', desc: 'Curación x3. Ideal para luchadores constantes en la Arena.', price_cop: 15000 },
+            { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/PaseVip.png', duration: '7 Días', usage: 'Todo Incl.', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
+        ],
+        exchange: [
+            { id: 'exc_10k', name: 'Lote Básico', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 4,250 🌱 semillas.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote Profesional', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 11,000 🌱 semillas.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote Élite Magnate', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 22,500 🌱 semillas.', price_cop: 50000, seeds: 22500 }
+        ]
+    },
+
+    async init() {
+        if (window.farmApp && window.farmApp.state) {
+            this.state.seedsBalance = window.farmApp.state.seedsBalance;
+            this.state.balance = window.farmApp.state.balance || 0;
+            this.state.inventory = window.farmApp.state.inventory;
+        }
+        
+        try {
+            const res = await fetch('/api/plants');
+            if (res.ok) {
+                const dynamicPlants = await res.json();
+                dynamicPlants.forEach(dp => {
+                    if (!this.catalog.flowers.some(f => f.id === dp.id)) {
+                        
+                        // IDENTIFICAR SI ES PLANTA DE REFERIDOS PARA DARLE EL ESTILO ESPECIAL
+                        let isReferral = false;
+                        let reqRefs = 0;
+                        let durationTxt = dp.grow_time_minutes + ' Minutos';
+                        let descTxt = 'Especie única de rendimiento variable cultivada en laboratorios.';
+
+                        if (dp.name === 'Drosera Pegajosa') { isReferral = true; reqRefs = 2; durationTxt = 'Recompensa'; descTxt = 'Planta carnívora especial obtenida por invitar a 2 amigos.'; }
+                        else if (dp.name === 'Nepenthes Ácida') { isReferral = true; reqRefs = 5; durationTxt = 'Recompensa'; descTxt = 'Planta carnívora corrosiva obtenida por invitar a 5 amigos.'; }
+                        else if (dp.name === 'Venus Trituradora') { isReferral = true; reqRefs = 8; durationTxt = 'Recompensa'; descTxt = 'Planta carnívora letal obtenida por invitar a 8 amigos.'; }
+                        else if (dp.name === 'Hidra del Abismo') { isReferral = true; reqRefs = 10; durationTxt = 'Recompensa'; descTxt = 'Planta legendaria devoradora obtenida por invitar a 10 amigos.'; }
+
+                        this.catalog.flowers.push({
+                            id: dp.id, name: dp.name, image: dp.image_url,
+                            duration: durationTxt, durationMins: dp.grow_time_minutes,
+                            usage: '1', desc: descTxt,
+                            category: dp.category || 'Planta Estándar', potType: dp.pot_type || 'small',
+                            price: dp.price, hp: dp.hp, atk: dp.atk, def: dp.def, reward: dp.reward,
+                            isReferral: isReferral, reqRefs: reqRefs
+                        });
+                    }
+                });
+            }
+        } catch(e) { console.error("Error cargando plantas dinámicas", e); }
+        
+        this.updateBalancesUI();
+        this.renderShopItems();
+
+        // --- NUEVO: Saludos y promociones en el Mercado ---
+        setTimeout(() => {
+            if(window.guideApp) {
+                const lastShopGreeting = sessionStorage.getItem('last_shop_greeting') || 0;
+                const now = Date.now();
+                
+                // Si han pasado más de 3 minutos (180,000 ms)
+                if (now - lastShopGreeting > 180000) { 
+                    const shopQuotes = [
+                        "¡Bienvenido al Mercado! Aquí encontrarás desde regaderas hasta semillas exóticas. ¡Invierte con sabiduría!",
+                        "Recuerda: antes de comprar las plantas más caras, asegúrate de tener suficientes macetas y una buena reserva de agua.",
+                        "¿Te vas a desconectar? El Pase Granjero VIP es una ganga. Tus plantas se regarán y cosecharán solas mientras duermes.",
+                        "Si la Arena de combate te está dejando las plantas a 1 HP, la Enfermería VIP es lo que necesitas. ¡Se curarán el triple de rápido!",
+                        "¡No dejes que se te acabe el agua! Compra el lote de 10 usos para no estar corriendo en una emergencia.",
+                        "Si andas corto de semillas para los torneos, el Banco de Cambio te permite comprar lotes gigantes usando tus Créditos."
+                    ];
+                    const quote = shopQuotes[Math.floor(Math.random() * shopQuotes.length)];
+                    // Alternamos entre explicando y celebración aleatoriamente
+                    const randomEmotion = Math.random() > 0.5 ? "explicando" : "celebracion";
+                    
+                    window.guideApp.show(quote, randomEmotion);
+                    sessionStorage.setItem('last_shop_greeting', now.toString());
+                }
+            }
+        }, 1200);
+    },
+
+    updateBalancesUI() {
+        const globalSeedEl = document.getElementById('global-seeds-display');
+        const globalCopEl = document.getElementById('global-balance');
+
+        if (globalSeedEl) globalSeedEl.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
+        if (globalCopEl) globalCopEl.innerText = "$" + this.state.balance.toLocaleString();
+    },
+
+
+
+
+
+    togglePlantFilters() {
+        const typeSelect = document.getElementById('filter-type');
+        const advancedFilters = document.getElementById('plant-advanced-filters');
+        if (typeSelect && advancedFilters) {
+            if (typeSelect.value === 'flowers') {
+                advancedFilters.classList.remove('hidden');
+                advancedFilters.classList.add('grid');
+            } else {
+                advancedFilters.classList.add('hidden');
+                advancedFilters.classList.remove('grid');
+                
+                // Reiniciar filtros avanzados al ocultarlos
+                document.getElementById('filter-plant-duration').value = 'all';
+                document.getElementById('filter-plant-reward').value = 'all';
+                document.getElementById('filter-price-min').value = '';
+                document.getElementById('filter-price-max').value = '';
+            }
+        }
+    },
+
+
+
+
+
+
+
+    renderShopItems() {
+        const container = document.getElementById('shop-main-grid');
+        if (!container) return; // <--- AÑADE ESTA LÍNEA PARA EVITAR EL ERROR
+
+        container.innerHTML = '';
+
+        // 1. Unificar todos los catálogos con una marca interna en el ORDEN solicitado
+        let allItems = [
+            ...this.catalog.tools.map(i => ({...i, _type: 'tools'})),
+            ...this.catalog.iap.map(i => ({...i, _type: 'iap'})),
+            ...this.catalog.exchange.map(i => ({...i, _type: 'exchange'})),
+            ...this.catalog.flowers.map(i => ({...i, _type: 'flowers'}))
+        ];
+
+        // 2. Obtener valores de los filtros estándar
+        const searchF = document.getElementById('filter-search') ? document.getElementById('filter-search').value.toLowerCase().trim() : '';
+        const typeF = document.getElementById('filter-type') ? document.getElementById('filter-type').value : 'all';
+        const catF = document.getElementById('filter-category') ? document.getElementById('filter-category').value : 'all';
+        const priceF = document.getElementById('filter-price') ? document.getElementById('filter-price').value : 'all';
+
+        // 3. Obtener valores de los NUEVOS filtros botánicos
+        const durationF = document.getElementById('filter-plant-duration') ? document.getElementById('filter-plant-duration').value : 'all';
+        const rewardF = document.getElementById('filter-plant-reward') ? document.getElementById('filter-plant-reward').value : 'all';
+        const minPriceF = document.getElementById('filter-price-min') ? parseInt(document.getElementById('filter-price-min').value) : NaN;
+        const maxPriceF = document.getElementById('filter-price-max') ? parseInt(document.getElementById('filter-price-max').value) : NaN;
+
+        // 4. Filtrar
+        allItems = allItems.filter(item => {
+            if (searchF && !item.name.toLowerCase().includes(searchF)) return false;
+            if (typeF !== 'all' && item._type !== typeF) return false;
+            if (priceF === 'free_cop' && item.price_cop) return false; 
+            if (priceF === 'premium' && !item.price_cop) return false; 
+            
+            // Sub-filtros aplicables SOLO a Plantas
+            if (item._type === 'flowers') {
+                if (catF !== 'all' && item.category !== catF) return false;
+                
+                // Filtro de Duración
+                if (durationF !== 'all') {
+                    const mins = item.durationMins || 0;
+                    if (durationF === 'fast' && mins >= 60) return false;
+                    if (durationF === 'medium' && (mins < 60 || mins > 360)) return false;
+                    if (durationF === 'slow' && mins <= 360) return false;
+                }
+                
+                // Filtro de Cosecha
+                if (rewardF !== 'all') {
+                    const rew = item.reward || 0;
+                    if (rewardF === 'low' && rew >= 10000) return false;
+                    if (rewardF === 'medium' && (rew < 10000 || rew > 30000)) return false;
+                    if (rewardF === 'high' && rew <= 30000) return false;
+                }
+                
+                // Filtro de Rango de Precio
+                if (!isNaN(minPriceF) && item.price < minPriceF) return false;
+                if (!isNaN(maxPriceF) && item.price > maxPriceF) return false;
+            }
+            
+            return true;
+        });
+
+        // 5. Renderizar Vacío
+        if (allItems.length === 0) {
+            container.innerHTML = '<div class="col-span-full text-center py-16 bg-white border border-gray-100 rounded-3xl shadow-sm"><span class="text-4xl mb-3 block opacity-30">🔍</span><p class="text-gray-400 font-black text-base uppercase tracking-widest">No hay resultados</p><p class="text-sm font-medium text-gray-500 mt-2">Intenta cambiar los filtros de búsqueda.</p></div>';
+            return;
+        }
+
+        // 6. Generar Tarjetas (El resto de tu función queda igual desde el forEach)
+        allItems.forEach(item => {
+            if (!(item.id in this.state.shopQuantities)) { this.state.shopQuantities[item.id] = 1; }
+            const qty = this.state.shopQuantities[item.id];
+            let currentStock = (this.state.inventory[item.id] && this.state.inventory[item.id].qty) ? this.state.inventory[item.id].qty : 0;
+            
+            // Estilos y Etiquetas según tipo
+            let tagText = '', tagColor = '', tagBg = '', tagBorder = '';
+            let isPremium = !!item.price_cop;
+
+            if (item._type === 'flowers') {
+                tagText = item.category || 'Semilla Estándar';
+                tagColor = 'text-green-700'; tagBg = 'bg-green-50'; tagBorder = 'border-green-200';
+            } else if (item._type === 'tools') {
+                tagText = 'Herramienta';
+                tagColor = 'text-blue-700'; tagBg = 'bg-blue-50'; tagBorder = 'border-blue-200';
+            } else if (item._type === 'exchange') {
+                tagText = 'Lote Semillas';
+                tagColor = 'text-amber-700'; tagBg = 'bg-amber-50'; tagBorder = 'border-amber-200';
+            } else {
+                tagText = 'Servicio VIP';
+                tagColor = 'text-purple-700'; tagBg = 'bg-purple-50'; tagBorder = 'border-purple-200';
+            }
+
+
+            let premiumBadge = isPremium ? `<div class="absolute -right-6 top-4 bg-purple-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30">VIP</div>` : '';
+
+            // Área de Acción y Botones
+            let actionArea = '';
+            let stockBadge = '';
+
+            // Mostrar stock solo si no es un pase temporal ni exchange
+            if (item._type === 'tools' || item._type === 'flowers') {
+                stockBadge = `
+                    <div class="flex flex-col items-center border border-gray-200 px-2 py-1 rounded-lg bg-white/90 backdrop-blur shadow-sm min-w-[3.5rem]">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Stock</span>
+                        <span class="text-xs font-black text-slate-800 leading-none">${currentStock}</span>
+                    </div>`;
+            }
+
+            if (item._type === 'iap') {
+                // AQUÍ CAMBIAMOS A promptBuyIAP
+                actionArea = `<button onclick="window.shopApp.promptBuyIAP('${item.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
+            } else if (item._type === 'exchange') {
+                // AQUÍ CAMBIAMOS A promptBuyExchange
+                actionArea = `<button onclick="window.shopApp.promptBuyExchange('${item.id}', ${item.price_cop}, ${item.seeds})" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">Comprar: $${item.price_cop.toLocaleString()}</button>`;
+            } else if (item.isReferral) {
+                // ESTILO EXCLUSIVO DE REFERIDOS
+                actionArea = `
+                    <button onclick="loadView('referrals')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-[10px] md:text-xs h-11 px-2 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                        Requiere ${item.reqRefs} Referidos 🤝
+                    </button>
+                `;
+                premiumBadge = `<div class="absolute -right-6 top-4 bg-orange-500 text-white text-[8px] font-black uppercase tracking-widest py-1 px-8 transform rotate-45 shadow-md z-30 cursor-pointer" onclick="loadView('referrals')">REFERIDOS</div>`;
+            } else {
+                // AQUÍ CAMBIAMOS A promptBuyItem
+                actionArea = `
+                    <div class="flex items-center gap-2 mt-auto">
+                        <div class="flex items-center bg-slate-50 rounded-xl border border-slate-200 h-11 w-[90px] shrink-0 overflow-hidden shadow-inner">
+                            <button onclick="window.shopApp.changeShopQty('${item.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 font-black hover:bg-slate-200 transition-colors">-</button>
+                            <div class="flex-1 text-center text-sm font-black text-slate-800">${qty}</div>
+                            <button onclick="window.shopApp.changeShopQty('${item.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 font-black hover:bg-slate-200 transition-colors">+</button>
+                        </div>
+                        <button onclick="window.shopApp.promptBuyItem('${item.id}', ${item.price})" class="flex-1 bg-cg_blue hover:bg-blue-600 text-white font-black text-xs md:text-sm h-11 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                            ${(item.price * qty).toLocaleString()} 🌱
+                        </button>
+                    </div>`;
+            }
+
+            // Datos Botánicos (solo para flores)
+            let statsHtml = '';
+            let reqPotHtml = '';
+            
+            if (item._type === 'flowers' && item.hp) {
+                let reqSize = item.potType === 'small' ? 'Pequeña' : 'Grande';
+                reqPotHtml = `<span class="bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shrink-0">🏺 Maceta ${reqSize}</span>`;
+
+                statsHtml = `
+                <div class="grid grid-cols-3 gap-1.5 w-full text-center mb-4 mt-2">
+                    <div class="bg-rose-50 rounded-lg p-1.5 border border-rose-100 shadow-sm">
+                        <span class="block text-[8px] font-bold text-rose-500 uppercase leading-none mb-0.5">Vida</span>
+                        <span class="font-black text-rose-700 text-xs leading-none">${item.hp}</span>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg p-1.5 border border-amber-100 shadow-sm">
+                        <span class="block text-[8px] font-bold text-amber-500 uppercase leading-none mb-0.5">Ataque</span>
+                        <span class="font-black text-amber-700 text-xs leading-none">${item.atk}</span>
+                    </div>
+                    <div class="bg-sky-50 rounded-lg p-1.5 border border-sky-100 shadow-sm">
+                        <span class="block text-[8px] font-bold text-sky-500 uppercase leading-none mb-0.5">Defensa</span>
+                        <span class="font-black text-sky-700 text-xs leading-none">${item.def}%</span>
+                    </div>
+                </div>`;
+            }
+
+            // Construir Tarjeta
+            const card = document.createElement('div');
+            card.className = `bg-white rounded-3xl border border-gray-100 flex flex-col hover:shadow-lg transition-all duration-300 relative overflow-hidden group ${isPremium ? 'ring-1 ring-purple-100' : ''}`;
+
+            card.innerHTML = `
+                ${premiumBadge}
+                <!-- Cabecera de Imagen -->
+                <div class="bg-gradient-to-b from-slate-50 to-white h-44 flex items-center justify-center p-5 relative border-b border-gray-50 shrink-0">
+                    <span class="absolute top-3 left-3 ${tagBg} ${tagColor} ${tagBorder} text-[9px] font-black px-2.5 py-1.5 rounded-lg shadow-sm border uppercase tracking-widest z-20">${tagText}</span>
+                    <div class="absolute top-3 right-3 z-20">${stockBadge}</div>
+                    
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <div class="absolute inset-0 bg-${isPremium ? 'purple' : 'blue'}-100 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
+                        <img src="${item.image}" onerror="this.src='assets/Fondos/logo.png'" class="h-28 md:h-32 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                    </div>
+                </div>
+
+                <!-- Cuerpo de Info -->
+                <div class="p-5 flex flex-col flex-1">
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <h4 class="font-black text-slate-800 text-lg leading-tight line-clamp-2">${item.name}</h4>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-1.5 mb-3">
+                        <span class="bg-slate-50 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shrink-0">
+                            ${item._type === 'exchange' ? '💎 ' : '⏳ '} ${item._type === 'exchange' ? 'Packs' : item.duration}
+                        </span>
+                        <span class="bg-slate-50 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shrink-0">
+                            Usos: ${item.usage}
+                        </span>
+                        ${reqPotHtml}
+                    </div>
+                    
+                    ${item._type === 'flowers' && item.reward ? `
+                    <div class="bg-emerald-50/50 rounded-xl p-2.5 border border-emerald-100 mb-1 flex items-center justify-between shadow-sm">
+                        <span class="text-[9px] font-black text-emerald-800 uppercase tracking-widest">Cosecha Estimada</span>
+                        <span class="font-black text-emerald-600 text-sm drop-shadow-sm">+${item.reward.toLocaleString()} 🌱</span>
+                    </div>` : ''}
+                    
+                    ${statsHtml}
+                    
+                    <p class="text-[11px] md:text-xs text-slate-500 mb-5 leading-relaxed line-clamp-3 flex-1 font-medium">${item.desc}</p>
+                    
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        ${actionArea}
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    },
+
+    changeShopQty(itemId, delta) {
+        let current = this.state.shopQuantities[itemId];
+        let next = current + delta;
+        if (next >= 1 && next <= 99) {
+            this.state.shopQuantities[itemId] = next;
+            this.renderShopItems();
+        }
+    },
+
+    async buyItem(itemId, unitPrice) {
+        if (this.isProcessingBuy) return;
+        this.isProcessingBuy = true;
+        setTimeout(() => { this.isProcessingBuy = false; }, 600); 
+        
+        const qty = this.state.shopQuantities[itemId];
+        const total = unitPrice * qty;
+        
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory;
+
+        if (farmState.seedsBalance >= total) {
+            
+            if (itemId === 'tool_scarecrow') {
+                if (window.farmApp && window.farmApp.state) {
+                    const now = Date.now();
+                    const durationMs = 24 * 3600000; 
+                    
+                    window.farmApp.state.plots.forEach(plot => {
+                         if (plot.status !== 'locked' && plot.status !== 'arena_locked') {
+                            plot.scarecrowEndTime = Math.max(plot.scarecrowEndTime || 0, now) + (durationMs * qty);
+                            plot.hasCrow = false;
+                            plot.crowLeavingAt = 0;
+                            
+                            if (plot.plant && plot.status === 'planted') {
+                                if (plot.plant.id === 'flower_wheat' && plot.water > 100) plot.water = 100;
+                                else if (plot.plant.id === 'flower_bamboo' && plot.water > 90) plot.water = 90;
+                                else if (plot.plant.id === 'flower_small' && plot.water > 90) plot.water = 90;
+                                else if (plot.plant.id === 'flower_big' && plot.water > 70) plot.water = 70;
+                                else if (plot.plant.id === 'flower_cactus' && plot.water > 80) plot.water = 80;
+                                else if (plot.plant.id === 'flower_crystal' && plot.water > 80) plot.water = 80;
+                                else if (plot.plant.id === 'flower_moon' && plot.water > 90) plot.water = 90;
+                            }
+                         }
+                    });
+                    
+                    window.farmApp.state.seedsBalance -= total;
+                    this.state.seedsBalance = window.farmApp.state.seedsBalance; 
+                    window.farmApp.saveState(); 
+                    
+                    let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                    this.showModalAlert(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:', 'success');
+                    this.updateBalancesUI();
+                    return;
+                }
+            }
+
+            if (!targetInventory[itemId]) {
+                let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+                targetInventory[itemId] = { 
+                    name: catItem.name, 
+                    type: this.catalog.flowers.some(f => f.id === itemId) ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
+                    reqSize: catItem.potType || 'small',                    
+                    qty: 0, 
+                    image: catItem.image 
+                };
+            }
+
+            let addedQty = qty;
+            if (itemId === 'tool_water') addedQty = 10 * qty;
+            targetInventory[itemId].qty += addedQty;
+
+            farmState.seedsBalance -= total;
+            this.state.seedsBalance = farmState.seedsBalance;
+            
+            if (window.farmApp && window.farmApp.state) {
+                window.farmApp.state.inventory = targetInventory;
+                if(typeof window.farmApp.updateInventoryUI === 'function') window.farmApp.updateInventoryUI();
+                window.farmApp.saveState();
+            }
+
+            this.updateBalancesUI();
+            this.renderShopItems();
+            
+            let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
+            this.showModalAlert(catItem.image, catItem.name, addedQty, `-${total.toLocaleString()} 🌱`, 'Inversión:', 'success');
+            
+        } else {
+            this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', "No tienes Semillas (🌱) suficientes para realizar esta compra.");
+        }
+    },
+
+    async buyExchange(packageId, priceCop, seedsAmount) {
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return this.showModalAlert(null, 'Aviso', null, null, null, 'info', "Debes iniciar sesión para realizar cambios.");
+        
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                    window.farmApp.state.seedsBalance = data.new_seeds;
+                    window.farmApp.saveState();
+                }
+                
+                this.state.seedsBalance = data.new_seeds;
+                this.state.balance = data.new_balance_cop;
+                this.updateBalancesUI();
+                if(window.syncUserData) window.syncUserData(); 
+
+                let catItem = this.catalog.exchange.find(i => i.id === packageId);
+                this.showModalAlert(catItem.image, "Lote de Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
+            } else {
+                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de CRÉDITOS Insuficiente. Completa torneos o encuestas.");
+            }
+        } catch(e) {
+            this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
+        }
+    },
+
+    async buyIAP(packageId) {
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        if (!username || !token) return this.showModalAlert(null, 'Aviso', null, null, null, 'info', "Debes iniciar sesión para realizar compras.");
+        
+        try {
+            const res = await fetch('/api/store/buy_seeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, session_token: token, package_id: packageId })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.balance = data.new_balance_cop;
+                }
+                
+                this.state.balance = data.new_balance_cop;
+                this.updateBalancesUI();
+                if(window.syncUserData) window.syncUserData(); 
+
+                if (packageId.startsWith('iap_')) {
+                    const hours = packageId.includes('24h') ? 24 : (packageId.includes('72h') ? 72 : 168);
+                    const now = Date.now();
+                    
+                    if (window.farmApp) {
+                        if (packageId.includes('combo') || packageId.includes('elite')) {
+                            window.farmApp.state.autoWaterEndTime = Math.max(now, window.farmApp.state.autoWaterEndTime || 0) + (hours * 3600000);
+                            
+                            window.farmApp.state.plots.forEach(plot => {
+                                if (plot.status !== 'locked' && plot.status !== 'arena_locked' && plot.status !== 'tournament' && plot.id !== 8) {
+                                    plot.hasCrow = false;
+                                    plot.crowLeavingAt = 0;
+                                    if (plot.plant && plot.status === 'planted') {
+                                        if (plot.plant.id === 'flower_wheat') plot.water = 100;
+                                        else if (plot.plant.id === 'flower_bamboo') plot.water = 90;
+                                        else if (plot.plant.id === 'flower_small') plot.water = 90;
+                                        else if (plot.plant.id === 'flower_big') plot.water = 70;
+                                        else if (plot.plant.id === 'flower_cactus') plot.water = 80;
+                                        else if (plot.plant.id === 'flower_crystal') plot.water = 80;
+                                        else if (plot.plant.id === 'flower_moon') plot.water = 90;
+                                    } else {
+                                        plot.water = 100;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        if (packageId.includes('combo') || packageId.includes('elite')) {
+                            window.farmApp.state.autoHarvestEndTime = Math.max(now, window.farmApp.state.autoHarvestEndTime || 0) + (hours * 3600000);
+                        }
+
+                        if (packageId.includes('nursery') || packageId.includes('elite')) {
+                            window.farmApp.state.vipHealEndTime = Math.max(now, window.farmApp.state.vipHealEndTime || 0) + (hours * 3600000);
+                        }
+                        
+                        if (typeof window.farmApp.updateAutomationUI === 'function') {
+                            window.farmApp.updateAutomationUI();
+                        }
+                        if(typeof window.farmApp.renderPlots === 'function') window.farmApp.renderPlots(); 
+                        window.farmApp.saveState(); 
+                    }
+                    
+                    let catItem = this.catalog.iap.find(i => i.id === packageId);
+                    this.showModalAlert(catItem.image, catItem.name, 1, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
+                }
+            } else {
+                this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de CRÉDITOS Insuficiente. Completa torneos o encuestas.");
+            }
+        } catch(e) {
+            this.showModalAlert(null, 'Error de Red', null, null, null, 'error', "Fallo al conectar con el servidor.");
+        }
+    },
+
+
+
+    promptBuyItem(itemId, unitPrice) {
+        const qty = this.state.shopQuantities[itemId];
+        const total = unitPrice * qty;
+        
+        // Revisar el inventario actual y la granja
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory || {};
+        
+        const isPlant = this.catalog.flowers.some(f => f.id === itemId);
+        
+        // Contar macetas en inventario y macetas vacías puestas en la granja
+        const potsInInv = targetInventory['tool_pot_small'] ? targetInventory['tool_pot_small'].qty : 0;
+        const potsOnField = (farmState.plots || []).filter(p => p.status === 'pot').length;
+        const totalPots = potsInInv + potsOnField;
+        
+        const water = targetInventory['tool_water'] ? targetInventory['tool_water'].qty : 0;
+        
+        // Ejecución de compra directa. 
+        // Si falta agua o NO hay ninguna maceta (ni en inv ni en granja), compra el combo automáticamente.
+        if (isPlant && (totalPots === 0 || water === 0)) {
+            const comboTotal = total + 5500; // Costo adicional de la maceta y el agua
+            this.buyCombo(itemId, unitPrice, qty, comboTotal);
+        } else {
+            this.buyItem(itemId, unitPrice);
+        }
+    },
+
+    async buyCombo(itemId, unitPrice, qty, comboTotal) {
+        if (this.isProcessingBuy) return;
+        this.isProcessingBuy = true;
+        setTimeout(() => { this.isProcessingBuy = false; }, 600); 
+        
+        const farmState = (window.farmApp && window.farmApp.state) ? window.farmApp.state : this.state;
+        const targetInventory = farmState.inventory;
+
+        if (farmState.seedsBalance >= comboTotal) {
+            
+            // 1. Agregar la Planta
+            if (!targetInventory[itemId]) {
+                let catItem = this.catalog.flowers.find(i => i.id === itemId);
+                targetInventory[itemId] = { 
+                    name: catItem.name, 
+                    type: 'seed', 
+                    reqSize: catItem.potType || 'small',                    
+                    qty: 0, 
+                    image: catItem.image 
+                };
+            }
+            targetInventory[itemId].qty += qty;
+            
+            // 2. Agregar la Maceta Pequeña
+            if (!targetInventory['tool_pot_small']) {
+                targetInventory['tool_pot_small'] = { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' };
+            }
+            targetInventory['tool_pot_small'].qty += 1;
+            
+            // 3. Agregar el Agua (10 Usos)
+            if (!targetInventory['tool_water']) {
+                targetInventory['tool_water'] = { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' };
+            }
+            targetInventory['tool_water'].qty += 10;
+
+            // Descontar Balance
+            farmState.seedsBalance -= comboTotal;
+            this.state.seedsBalance = farmState.seedsBalance;
+            
+            if (window.farmApp && window.farmApp.state) {
+                window.farmApp.state.inventory = targetInventory;
+                if(typeof window.farmApp.updateInventoryUI === 'function') window.farmApp.updateInventoryUI();
+                window.farmApp.saveState();
+            }
+
+            this.updateBalancesUI();
+            this.renderShopItems();
+            
+            let catItem = this.catalog.flowers.find(i => i.id === itemId);
+            this.showModalAlert(catItem.image, "Combo de Siembra", 1, `-${comboTotal.toLocaleString()} 🌱`, 'Inversión:', 'success', `Incluye: ${qty}x ${catItem.name}, Maceta Peq. y Regadera.`);
+            
+        } else {
+            // MENSAJE DE ERROR EXPLICATIVO
+            this.showModalAlert(
+                null, 
+                'Fondos Insuficientes', 
+                null, 
+                null, 
+                null, 
+                'error', 
+                `No tienes semillas suficientes.\nEl Combo de Siembra Obligatorio (Planta + Maceta + Agua) cuesta ${comboTotal.toLocaleString()} 🌱.`
+            );
+        }
+    },
+
+    closeConfirmModal() {
+        // Función mantenida vacía para evitar errores de referencias perdidas
+    },
+
+    showModalAlert(img, title, qty, priceText, priceLabel, type = 'info', descMsg = '') {
+        const modal = document.getElementById('shop-alert-modal');
+        const card = document.getElementById('shop-alert-card');
+        const iconCont = document.getElementById('shop-alert-icon-container');
+        const icon = document.getElementById('shop-alert-icon');
+        const imgEl = document.getElementById('shop-alert-img');
+        const ping = document.getElementById('shop-alert-ping');
+        const titleEl = document.getElementById('shop-alert-title');
+        const descEl = document.getElementById('shop-alert-msg');
+        const detailsBox = document.getElementById('shop-alert-details');
+
+        titleEl.innerText = title;
+
+        if (type === 'success' && img) {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-emerald-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-20 h-20 bg-emerald-50 border-emerald-100 relative";
+            icon.classList.add('hidden');
+            imgEl.src = img;
+            imgEl.classList.remove('hidden');
+            ping.className = "absolute inset-0 rounded-full border border-emerald-300 animate-ping opacity-50";
+            
+            titleEl.className = "text-xl md:text-2xl font-black mb-2 tracking-tight text-emerald-600";
+            descEl.innerHTML = `Has adquirido <strong class="text-slate-800">${qty.toLocaleString()}x ${title}</strong>.<br><br><span class="text-[10px] text-gray-500 font-bold">${descMsg}</span>`;
+            
+            detailsBox.classList.remove('hidden');
+            document.getElementById('shop-alert-label').innerText = priceLabel;
+            document.getElementById('shop-alert-price').innerText = priceText;
+            document.getElementById('shop-alert-price').className = priceText.includes('$') ? "text-sm md:text-base font-black text-rose-500" : "text-sm md:text-base font-black text-emerald-600";
+
+        } else if (type === 'error') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-rose-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "mx-auto mb-4 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-rose-50 border-rose-100 relative";
+            icon.classList.remove('hidden');
+            icon.innerText = "❌";
+            imgEl.classList.add('hidden');
+            ping.className = "hidden";
+            
+            titleEl.className = "text-xl md:text-2xl font-black mb-2 tracking-tight text-rose-600";
+            descEl.innerText = descMsg;
+            detailsBox.classList.add('hidden');
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Configurar Auto-Cierre
+        if (this.alertTimeout) clearTimeout(this.alertTimeout);
+        this.alertTimeout = setTimeout(() => {
+            this.closeAlertModal();
+        }, 2200); // El modal desaparecerá suavemente en 2.2 segundos
+    },
+
+    closeAlertModal() {
+        document.getElementById('shop-alert-modal').classList.add('hidden');
+        document.getElementById('shop-alert-modal').classList.remove('flex');
+    }
+};
+
+window.shopApp.init();
+</script>
+</div>

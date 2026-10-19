@@ -1,0 +1,616 @@
+<div class="max-w-[1200px] mx-auto space-y-8 animate-fade-in pb-24 relative px-4 md:px-0">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cg_gold animate-pulse"></span>
+                <span class="text-[10px] font-extrabold text-cg_gold uppercase tracking-widest bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-md">Academia CashGarden</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Manual Oficial del Sistema</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Aprende a dominar la simulación agrícola, las mecánicas de combate táctico, los torneos competitivos y el Pase de Batalla para maximizar tus ganancias reales.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 px-4 py-2 rounded-xl text-right">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Versión de Guía</p>
+            <p class="text-sm font-black text-cg_gold animate-pulse">v9.0 - Combate Avanzado y Árbol</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 1: INTRODUCCIÓN Y ECONOMÍA -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shadow-sm shrink-0">
+                <span class="text-2xl">⚖️</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">1. Bases y Economía</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Los dos pilares del juego</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Semillas -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col relative overflow-hidden group hover:border-green-300 transition-colors">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-100 rounded-full blur-2xl opacity-50"></div>
+                <div class="flex items-center gap-3 mb-3 relative z-10">
+                    <span class="text-3xl drop-shadow-md">🌱</span>
+                    <h4 class="text-lg font-black text-green-700">Semillas (Moneda Virtual)</h4>
+                </div>
+                <ul class="text-sm text-gray-600 space-y-2 relative z-10 list-disc list-inside">
+                    <li>Se obtienen <strong>cosechando plantas</strong> en tu invernadero o ganando batallas.</li>
+                    <li>Se usan para comprar herramientas, macetas, tickets de duelo y nuevas semillas.</li>
+                    <li>Sirven para pagar la entrada a los <strong>Torneos Freeroll</strong>.</li>
+                    <li>Son la moneda de apuesta en el <strong>Modo Duelo (PvP)</strong>.</li>
+                    <li>No son retirables por dinero real.</li>
+                </ul>
+            </div>
+            
+            <!-- Dinero Real -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex flex-col relative overflow-hidden group hover:border-cg_gold transition-colors">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-100 rounded-full blur-2xl opacity-50"></div>
+                <div class="flex items-center gap-3 mb-3 relative z-10">
+                    <span class="text-3xl drop-shadow-md">💵</span>
+                    <h4 class="text-lg font-black text-cg_gold">Créditos ($)</h4>
+                </div>
+                <ul class="text-sm text-gray-600 space-y-2 relative z-10 list-disc list-inside">
+                    <li>Se ganan <strong>exclusivamente ganando Torneos</strong> en la Arena.</li>
+                    <li>Se pueden usar para comprar Asistentes VIP y el Pase de Batalla.</li>
+                    <li>Se pueden intercambiar por lotes gigantes de semillas en el Mercado.</li>
+                    <li><strong>Retirables directamente a tu cuenta Nequi</strong>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: RITUAL DE SIEMBRA Y CICLO -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center border border-green-100 shadow-sm shrink-0">
+                <span class="text-2xl">🔄</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">2. El Ciclo y Ritual de Siembra</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Plantar ya no es solo hacer clic</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+            Para iniciar tu producción, debes desbloquear un terreno y colocarle una maceta. Al intentar plantar una semilla, iniciarás un <strong>minijuego de tres fases</strong> (El Ritual de Siembra). De tu precisión dependerá si la planta nace sana o con estrés inicial.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 relative">
+            <div class="hidden sm:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10 transform -translate-y-1/2"></div>
+            
+            <!-- Fase 1 -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-cg_gold text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">1</div>
+                <h4 class="font-black text-cg_navy text-sm mb-1 mt-2">Precisión</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">La semilla se mueve en péndulo. Toca la pantalla justo cuando pase por el centro del macetero rojo.</p>
+            </div>
+            
+            <!-- Fase 2 -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-cg_gold text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">2</div>
+                <h4 class="font-black text-cg_navy text-sm mb-1 mt-2">Cobertura de Tierra</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Mantén presionado el botón para subir el nivel de tierra y mantenlo dentro de la zona verde el tiempo requerido.</p>
+            </div>
+
+            <!-- Fase 3 -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm relative hover:-translate-y-1 transition-transform">
+                <div class="w-6 h-6 bg-cg_blue text-white rounded-full flex items-center justify-center text-xs font-black absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">3</div>
+                <h4 class="font-black text-cg_navy text-sm mb-1 mt-2">Riego Inicial</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">Se te pedirá una meta aleatoria de agua. Fija el puntero oscilante lo más cerca posible del porcentaje exigido.</p>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm text-center">
+            <h4 class="text-xs font-black text-red-800 uppercase tracking-widest mb-1">¡Cuidado con el Estrés!</h4>
+            <p class="text-[11px] md:text-xs text-red-700 font-medium">Si tu promedio de acierto en las tres fases es menor a 70%, o fallas gravemente en el agua, la planta nacerá enferma (15% menos de recompensa).</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: RIEGO QUIRÚRGICO (CALIBRADOR) -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 shadow-sm shrink-0">
+                <img src="assets/Herramientas_y_Servicios/regadera.png" class="w-8 h-8 object-contain">
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">3. Riego Quirúrgico Continuo</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Mantén vivas a tus plantas</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col md:flex-row gap-8 items-center">
+            <div class="flex-1 space-y-4 text-sm text-gray-600 leading-relaxed">
+                <p>Las plantas consumirán agua de su tierra según su stat de "Evaporación" y la estación del año. Al seleccionar una parcela y usar la <strong>Regadera</strong>, activarás el minijuego de calibración continuo.</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong class="text-blue-600">Franja Azul (Zona Segura):</strong> Indica la cantidad de agua que le falta a tu planta para estar hidratada sin ahogarse (Ej: entre 20% y 80%).</li>
+                    <li><strong class="text-red-500">Exceso (Pudrición):</strong> Si el puntero cae fuera de la zona azul y supera el límite máximo de agua de esa especie, tu planta se ahogará, se pudrirá y detendrá su crecimiento instantáneamente.</li>
+                    <li><strong>Estrategia:</strong> Observa la velocidad del puntero. Toca "Fijar Riego" anticipando el movimiento para inyectar el porcentaje exacto.</li>
+                </ul>
+            </div>
+            
+            <div class="w-full md:w-5/12 bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-inner text-center">
+                <h4 class="text-xs font-black text-cg_navy uppercase tracking-widest mb-4">Simulación Visual</h4>
+                <div class="relative w-full h-10 bg-red-100 rounded-full mb-6 shadow-inner border border-red-200 overflow-hidden">
+                    <div class="absolute top-0 h-full bg-blue-300 border-x-2 border-blue-500" style="left: 20%; width: 50%;"></div>
+                    <div class="absolute top-0 left-[20%] h-full flex items-center font-black text-[10px] text-black/40 -translate-x-1/2">20%</div>
+                    <div class="absolute top-0 left-[70%] h-full flex items-center font-black text-[10px] text-black/40 -translate-x-1/2">70%</div>
+                    <div class="absolute top-0 h-full w-2 bg-cg_navy transform -translate-x-1/2 shadow-lg" style="left: 45%;">
+                        <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-cg_navy"></div>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-cg_navy"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-[10px] font-bold text-gray-500 mt-2 px-2">
+                    <span class="text-red-500">Peligro (0-20%)</span>
+                    <span class="text-blue-600">¡Fija Aquí!</span>
+                    <span class="text-red-500">Inundación (>70%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 4: CATÁLOGO DE CULTIVOS -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8 overflow-hidden">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center border border-green-100 shadow-sm shrink-0">
+                <span class="text-2xl">🌿</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">4. Catálogo de Cultivos Dinámico</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Conoce a tu escuadrón</p>
+            </div>
+        </div>
+        
+        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+            En el Mercado encontrarás una extensa variedad de especies con distintas características. No todas sirven para lo mismo. Algunas son excelentes para granjas rápidas, otras son letales en el combate.
+        </p>
+        <div class="bg-green-50/50 border border-green-200 rounded-2xl p-5 shadow-sm">
+            <h4 class="font-black text-green-800 text-sm mb-2">Variables a tener en cuenta:</h4>
+            <ul class="text-xs md:text-sm text-green-700 space-y-2 list-disc list-inside">
+                <li><strong>Evaporación y Rango Seguro:</strong> Cada especie tolera distintos niveles de agua (Ej: Las plantas ígneas aguantan sequía pero odian el exceso de agua).</li>
+                <li><strong>Tiempo de Crecimiento:</strong> Desde minutos hasta horas. Organiza tu tiempo para evitar perder tu cosecha por los cuervos.</li>
+                <li><strong>Estadísticas de Combate:</strong> Revisa el HP (Vida), ATK (Ataque) y DEF (Defensa). Las plantas baratas se rompen fácil en la Arena.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 5: PLAGAS Y PROTECCIONES -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center border border-red-100 shadow-sm shrink-0">
+                <span class="text-2xl">🦅</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">5. Amenazas y Plagas</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Contagios y herramientas defensivas</p>
+            </div>
+        </div>
+
+        <h4 class="font-black text-cg_navy text-sm mb-4 uppercase tracking-widest border-b border-gray-100 pb-2">Amenaza Principal: El Cuervo Carroñero</h4>
+        
+        <!-- Tarjeta Detallada del Cuervo -->
+        <div class="bg-red-50/50 border border-red-100 rounded-2xl p-5 flex flex-col shadow-sm mb-6 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-red-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+            
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-5 relative z-10">
+                <img src="assets/Enemigos/Cuervos/cuervo_base.png" class="w-16 h-16 object-contain drop-shadow-md animate-bounce shrink-0">
+                <div class="text-center sm:text-left">
+                    <h4 class="font-black text-red-800 text-base md:text-lg leading-tight mb-1">Comportamiento y Daño</h4>
+                    <p class="text-xs md:text-sm text-red-700 leading-relaxed">Aparece por <strong>Sequía</strong> (0% agua), <strong>Pudrición</strong> (exceso de agua) o <strong>Abandono</strong> (no cosechar tu planta a tiempo). Su impacto depende de cuándo y por qué llegue.</p>
+                </div>
+            </div>
+
+            <ul class="text-xs md:text-sm text-red-800 space-y-3 list-none relative z-10 bg-white/60 p-4 rounded-xl border border-red-100">
+                <li class="flex items-start gap-2">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">⏱️</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-0.5">Periodo de Gracia (60 Segundos):</strong>
+                        Cuando el cuervo apenas aterriza, el icono parpadeará y te mostrará un mensaje de alerta. Tienes un margen muy corto para tocarlo y espantarlo.
+                    </div>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">📉</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-1">Pérdida de Rendimiento (Estrés):</strong>
+                        Si la planta pasa el límite de agua o sufre ataque prolongado, recibe "Marcas de Estrés". Cada marca reduce permanentemente el valor final de tu cosecha en un <strong>-15%</strong>.
+                    </div>
+                </li>
+                <li class="flex items-start gap-2 border-t border-red-200/50 pt-3 mt-3">
+                    <span class="text-red-500 font-bold shrink-0 mt-0.5">🌐</span>
+                    <div>
+                        <strong class="font-black text-red-900 block mb-0.5">Contagio Global (El Éxodo):</strong>
+                        Si dejas la planta infectada o abandonada por un tiempo crítico (ej. +45 mins sobre la madurez), la planta colapsará (daño irreversible 50%) y la bandada de cuervos <strong>invadirá otra de tus parcelas sanas</strong> de forma en cadena.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <h4 class="font-black text-cg_navy text-sm mb-4 uppercase tracking-widest border-b border-gray-100 pb-2">Protecciones Activas</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Espantapájaros -->
+            <div class="bg-green-50/50 border border-green-100 rounded-2xl p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 shadow-sm mb-2 hover:border-green-300 transition-colors">
+                <img src="assets/Herramientas_y_Servicios/espantapajaros.png" class="w-14 h-14 object-contain drop-shadow-md shrink-0">
+                <div class="text-center sm:text-left">
+                    <h4 class="font-black text-green-800 text-sm md:text-base mb-1">Espantapájaros (24 Horas)</h4>
+                    <p class="text-xs text-green-700 leading-relaxed">Brinda protección total a la parcela específica. Evita que aparezcan cuervos por sequía. Además, si lo aplicas sobre una planta ya podrida, la curará de inmediato.</p>
+                </div>
+            </div>
+            <!-- Bóveda Hidro -->
+            <div class="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 shadow-sm mb-2 hover:border-indigo-300 transition-colors">
+                <img src="assets/Herramientas_y_Servicios/Capsula.gif" class="w-14 h-14 object-contain drop-shadow-md shrink-0">
+                <div class="text-center sm:text-left">
+                    <h4 class="font-black text-indigo-800 text-sm md:text-base mb-1">Bóveda Hidropónica (10h - Solo Noche)</h4>
+                    <p class="text-xs text-indigo-700 leading-relaxed">Sella la planta al 50% de humedad constante (congelando evaporación y evitando pudrición) y bloquea plagas. Como penalidad por falta de sol real, <strong>ralentiza el crecimiento en un 30%</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 6: PASE DE BATALLA Y AUTOMATIZACIÓN VIP -->
+    <div class="bg-gradient-to-br from-purple-50 to-white rounded-3xl shadow-lg border-2 border-purple-300 p-6 md:p-8 mt-8 relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-80 h-80 bg-purple-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center border border-purple-200 shadow-sm shrink-0">
+                <span class="text-2xl">🤖</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">6. Pase de Batalla y Automatización VIP</h3>
+                <p class="text-xs font-bold text-purple-600 uppercase tracking-widest">Delega el trabajo y asegura ganancias</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            Para aquellos granjeros que no pueden estar pendientes de la simulación constantemente, el Mercado ofrece soluciones premium. Estos pases otorgan ventajas excepcionales durante periodos fijos y se adquieren exclusivamente con Saldo Real (Créditos).
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <!-- Enfermería VIP -->
+            <div class="bg-white border border-red-200 rounded-2xl p-5 flex flex-col items-center text-center shadow-sm relative overflow-hidden group hover:border-red-400 transition-colors">
+                <img src="assets/Herramientas_y_Servicios/E1.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform relative z-10 mt-2">
+                <h4 class="font-black text-red-900 text-sm mb-2 relative z-10">Enfermería VIP</h4>
+                <p class="text-xs text-red-800 leading-relaxed mb-2 relative z-10">Suscripción global. Tus plantas descansando en el Arsenal se recuperan el <strong>TRIPLE de rápido</strong>. Indispensable si combates de forma continua en la Arena PvP.</p>
+            </div>
+            
+            <!-- Membresía Élite -->
+            <div class="bg-white border-2 border-purple-400 rounded-2xl p-5 flex flex-col items-center text-center shadow-lg relative overflow-hidden group hover:border-purple-500 transition-colors">
+                <div class="absolute inset-0 bg-purple-100/30"></div>
+                <img src="assets/Herramientas_y_Servicios/PaseVip.png" class="w-16 h-16 object-contain drop-shadow-md mb-3 group-hover:scale-110 transition-transform relative z-10">
+                <h4 class="font-black text-purple-900 text-sm mb-2 relative z-10">Pase Granjero / Membresía Élite</h4>
+                <p class="text-xs text-purple-800 leading-relaxed mb-2 relative z-10">Es el combo definitivo. Incluye la Enfermería VIP y además activa un <strong>Auto-Riego Global</strong> constante y una <strong>Cosechadora Automática</strong>. Cierra el juego y deja que produzca solo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 7: SISTEMA METEOROLÓGICO -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-200 shadow-sm shrink-0">
+                <span class="text-2xl">📅</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">7. Sistema Meteorológico</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">El clima afecta el consumo de agua</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            El entorno de tu Invernadero no es estático. CashGarden cuenta con un sistema de estaciones globales sincronizadas con la fecha real del mes que alteran drásticamente la evaporación del agua. Revisa el Calendario dentro del widget de tu Granja.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+            <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">❄️</span>
+                <div>
+                    <h4 class="font-black text-blue-900 text-sm">Invierno (Días 1 al 9)</h4>
+                    <p class="text-xs text-blue-800 mt-1"><strong>Evaporación: x0.5 (-50%)</strong>. Las plantas consumen agua muy lento.</p>
+                </div>
+            </div>
+            <div class="bg-orange-50/50 border border-orange-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">🍂</span>
+                <div>
+                    <h4 class="font-black text-orange-900 text-sm">Otoño (Días 10 al 19)</h4>
+                    <p class="text-xs text-orange-800 mt-1"><strong>Evaporación: x1.5 (+50%)</strong>. Los vientos secos aceleran el consumo.</p>
+                </div>
+            </div>
+            <div class="bg-pink-50/50 border border-pink-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">🌸</span>
+                <div>
+                    <h4 class="font-black text-pink-900 text-sm">Primavera (Días 20 al 26)</h4>
+                    <p class="text-xs text-pink-800 mt-1"><strong>Evaporación: x1.0 (Normal)</strong>. Clima base estándar.</p>
+                </div>
+            </div>
+            <div class="bg-red-50/50 border border-red-100 rounded-2xl p-4 flex gap-4 items-center">
+                <span class="text-4xl drop-shadow-md shrink-0">☀️</span>
+                <div>
+                    <h4 class="font-black text-red-900 text-sm">Verano (Día 27 a Fin de Mes)</h4>
+                    <p class="text-xs text-red-800 mt-1"><strong>Evaporación: x2.0 (+100%)</strong>. ¡Peligro de Sequía Crítica!.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 8: EL ÁRBOL DE LA VIDA (NUEVA) -->
+    <div class="bg-gradient-to-br from-green-50 to-white rounded-3xl shadow-soft border border-green-200 p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center border border-green-200 shadow-sm shrink-0">
+                <span class="text-2xl">🌲</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-green-900">8. El Árbol de la Vida (Evento Comunitario)</h3>
+                <p class="text-xs font-bold text-green-600 uppercase tracking-widest">Cooperación Global Diaria</p>
+            </div>
+        </div>
+        
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            Todos los días, la comunidad de CashGarden recibe una <strong>Meta Global de donación de Semillas</strong> calculada según la cantidad de jugadores conectados. Al donar tus semillas sobrantes participas activamente en un esfuerzo conjunto. Si la barra alcanza el 100% antes de la medianoche, el Árbol florece y reparte recompensas masivas.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <div class="bg-white border border-green-200 rounded-2xl p-5 shadow-sm hover:-translate-y-1 transition-transform">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">🎁</span>
+                    <h4 class="font-black text-green-800 text-base">Fases de Botín</h4>
+                </div>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    A medida que el Árbol sube su porcentaje (25%, 50%, 75%, 100%), se liberan <strong>ítems gratuitos</strong> (semillas, macetas, regaderas, etc.). ¡Si participas donando aunque sea el mínimo requerido, recibirás todos estos premios acumulados al final del día! Además, si coincides en ser el Donante #1, #10, #25, etc., ¡te llevarás una tajada extra sorpresiva!
+                </p>
+            </div>
+            <div class="bg-white border border-yellow-200 rounded-2xl p-5 shadow-sm hover:-translate-y-1 transition-transform">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">👑</span>
+                    <h4 class="font-black text-yellow-800 text-base">Ranking y Privilegios VIP</h4>
+                </div>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Los 10 usuarios que donen la mayor cantidad de semillas entrarán en la Tabla de Guardianes. <strong>El Top 3 recibe enormes porcentajes extra</strong> de semillas como retorno de inversión, y además obtiene beneficios VIP directos (herramientas de alto nivel o cofres).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 9: ARENA DE TORNEOS (COMPLETA Y DETALLADA) -->
+    <div class="bg-white rounded-3xl shadow-lg border-2 border-cg_gold p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-yellow-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-yellow-50 rounded-2xl flex items-center justify-center border border-yellow-200 shadow-sm shrink-0">
+                <span class="text-2xl">🏆</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">9. Torneos Asíncronos Sit & Go (Gana CRÉDITOS)</h3>
+                <p class="text-xs font-bold text-cg_gold uppercase tracking-widest">Combate PvE de alto rendimiento</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-8 relative z-10">
+            Los Torneos que encuentras en la barra superior son eventos competitivos (Sit & Go) donde luchas contra Guardianes de la Arena por dinero real retirables a tu cuenta. 
+        </p>
+
+        <div class="grid grid-cols-1 gap-6 relative z-10">
+            
+            <!-- FASE 1 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-cg_blue transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">1</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Preparación: Forma tu Escuadrón</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Debes armar un equipo de hasta 3 plantas seleccionándolas desde tu Granja o tu Arsenal. Ten en cuenta que algunas ligas están restringidas a ciertas especies base para mantener el equilibrio competitivo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 2 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-orange-400 transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">2</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase de Espera: Horarios Escalonados</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Los torneos se agrupan en bloques de 4 horas con desfases entre ligas. Al inscribirte, tu escuadrón quedará a la espera del cierre de llaves hasta que el contador llegue a cero.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 3 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-red-400 transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">3</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Fase en Vivo: Derrota a los Guardianes</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Te enfrentarás a 3 Guardianes (Jefes) generados por el sistema en un combate 3v3. Tu puntaje final se define por:<br>
+                            <strong class="text-blue-600">+10 Puntos</strong> por cada punto de Vida (HP) que conserven tus plantas al final de la batalla (Bono de Supervivencia).<br>
+                            <strong class="text-red-500">-50 Puntos</strong> de penalización por cada turno que tardes en derrotar a los enemigos (Penalización de Tiempo). ¡Sé letal y rápido!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 4 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-cg_gold transition-colors">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                    <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center font-black text-2xl shrink-0 shadow-inner">4</div>
+                    <div>
+                        <h4 class="font-black text-cg_navy text-lg mb-2">Finalización: Reparto del Pozo</h4>
+                        <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                            Al llegar el contador a cero, la sala cierra y se evalúan los puntajes. El Top 3 se reparte el pozo acumulado en CRÉDITOS reales retirables, y el resto recibe un premio consuelo en semillas de altísimo valor.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SECCIÓN 10: EL MODO COMBATE (ARENA DE DUELOS) -->
+    <div class="bg-white rounded-3xl shadow-lg border-2 border-red-500 p-6 md:p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-red-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-3 mb-6 relative z-10">
+            <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center border border-red-200 shadow-sm shrink-0">
+                <span class="text-2xl">⚔️</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">10. Modo Combate: La Arena de Duelos 3v3</h3>
+                <p class="text-xs font-bold text-red-600 uppercase tracking-widest">Estrategia RPG por Turnos</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6 relative z-10">
+            Más allá del cultivo pacífico, tu Invernadero puede ser una base militar botánica. Usando el botón <strong>"Duelo"</strong> en la pantalla de la Granja, entrarás a la <strong>Arena de Combate Táctico (3v3)</strong>, un sistema RPG por turnos donde controlas a tu escuadrón. Existen tres formas de combatir:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mb-8">
+            <!-- PVE -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm relative hover:border-gray-400 transition-colors group flex flex-col items-center text-center hover:-translate-y-1">
+                <img src="assets/Herramientas_y_Servicios/PvC.png" class="w-16 h-16 object-contain drop-shadow-md mb-3">
+                <h4 class="text-lg font-black text-gray-800 group-hover:text-black transition-colors mb-2">Campaña (PvE)</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Juegas contra la Inteligencia Artificial (una bandada de cuervos). La dificultad de los cuervos se adapta al poder de tu equipo. Si vences, la recompensa en semillas base más un bono de supervivencia por el HP restante de tus plantas.
+                </p>
+            </div>
+            
+            <!-- PVR (Bots) -->
+            <div class="bg-orange-50 border border-orange-200 rounded-2xl p-5 shadow-sm relative hover:border-orange-400 transition-colors group flex flex-col items-center text-center hover:-translate-y-1">
+                <img src="assets/Herramientas_y_Servicios/PvR.png" class="w-16 h-16 object-contain drop-shadow-md mb-3">
+                <h4 class="text-lg font-black text-orange-900 group-hover:text-orange-700 transition-colors mb-2">Duelo IA (Bots)</h4>
+                <p class="text-xs text-orange-800 leading-relaxed">
+                    Simula un combate PvP enfrentándote a un Entrenador Bot. Estos avatares virtuales usan <strong>plantas reales del mercado</strong> (con stats reales) proporcionales a tu escuadrón. ¡Ideal para probar las debilidades y fortalezas de los elementos!
+                </p>
+            </div>
+
+            <!-- PVP -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm relative hover:border-blue-400 transition-colors group flex flex-col items-center text-center hover:-translate-y-1">
+                <img src="assets/Herramientas_y_Servicios/PvP.png" class="w-16 h-16 object-contain drop-shadow-md mb-3">
+                <h4 class="text-lg font-black text-blue-900 group-hover:text-blue-700 transition-colors mb-2">Duelo Directo (PvP)</h4>
+                <p class="text-xs text-blue-800 leading-relaxed">
+                    Luchas en tiempo real (Sincronizado vía Sockets) contra un rival real buscándolo por <strong>Emparejamiento Global</strong> o ingresando su ID Privado. Acuerden una apuesta en semillas. Es un modo a muerte súbita y el ganador se lleva todo.
+                </p>
+            </div>
+        </div>
+
+        <h4 class="font-black text-cg_navy text-sm mb-4 uppercase tracking-widest border-b border-gray-200 pb-2 relative z-10">Reglas Universales de la Arena (Motor de Combate)</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <!-- Formar Escuadrón y Arsenal -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-red-300 transition-colors">
+                <span class="text-2xl mt-1">🛡️</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">1. Reclutar el Escuadrón y el Arsenal</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Lleva hasta 3 plantas al combate. Las eliges desde las parcelas de tu granja (si están listas) o desde tu <strong>Almacén Estratégico (Arsenal)</strong>. Las plantas heridas se recuperan solas en el Arsenal (1 HP por minuto). Si mueren en combate (K.O.), volverán con 1 HP.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Energía y Acciones -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-red-300 transition-colors">
+                <span class="text-2xl mt-1">⚡</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">2. Gestión de Energía</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Inicias con 5 Puntos de Energía en el primer turno para evitar ataques "Ultimate" inmediatos. Al iniciar cada nueva ronda, <strong>recuperas 4 puntos de energía</strong>. El máximo almacenable es de 15. Debes administrarla si quieres curar, usar escudos o destrozar al rival.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Mazo de Cartas -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-red-300 transition-colors">
+                <span class="text-2xl mt-1">🃏</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">3. Mazo de Habilidades Dinámico</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        El juego genera un mazo único para ti basado en las características elementales de tu planta (Fuego, Hielo, Dragón, Fósil, Tiempo, etc.). Cada planta tiene 5 ataques de daño creciente. Los de nivel IV y V ("Ultimates") desencadenan cinemáticas con daño en área o brutal.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tácticas y Relevo -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-red-300 transition-colors">
+                <span class="text-2xl mt-1">🎒</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">4. Tácticas y Banquillo (Relevo)</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        En la pestaña "Tácticas", todas las plantas tienen acceso a curaciones, escudos (Baluarte), Drenajes o Abono de Furia (Doble de daño). Además, por <strong>2⚡</strong>, puedes usar el botón de "Banquillo" para retirar una planta casi muerta de la arena e ingresar un reemplazo fresco desde tu reserva.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Iniciativa (Piedra Papel Tijera) -->
+            <div class="flex items-start gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
+                <span class="text-2xl mt-1">✌️</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">5. Iniciativa en PvP (Piedra, Papel o Tijera)</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        En el modo PvP directo contra humanos, antes de iniciar el combate, ambos jugadores juegan una partida secreta y sincronizada de <strong>Piedra, Papel o Tijera</strong>. El ganador tendrá el primer turno en el combate, lo que le otorga una ventaja táctica inmensa. Si hay empate, deberán escoger rápido de nuevo.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- SECCIÓN 11: TELEGRAM -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 mt-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-200 shadow-sm shrink-0">
+                <span class="text-2xl">✈️</span>
+            </div>
+            <div>
+                <h3 class="text-xl md:text-2xl font-black text-cg_navy">11. Alertas Inteligentes por Telegram</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Conecta tus plantas con tu celular</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+            El servidor de CashGarden te permite recibir notificaciones carismáticas directamente en tu celular. Tus plantas te avisarán si tienen sed, si han sido atacadas por un cuervo o si están listas para ser cosechadas. Sigue estos pasos para activarlo:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Paso 1 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 relative">
+                <div class="w-8 h-8 bg-cg_blue text-white rounded-full flex items-center justify-center font-black absolute -top-4 -left-2 shadow-md">1</div>
+                <h4 class="font-black text-cg_navy text-sm mb-2 mt-2">Busca el Bot de ID</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">Abre la aplicación de Telegram y busca en la lupa al bot oficial llamado <strong class="text-blue-500">@userinfobot</strong>.</p>
+            </div>
+            <!-- Paso 2 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 relative">
+                <div class="w-8 h-8 bg-cg_blue text-white rounded-full flex items-center justify-center font-black absolute -top-4 -left-2 shadow-md">2</div>
+                <h4 class="font-black text-cg_navy text-sm mb-2 mt-2">Inicia el Chat</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">Presiona el botón <strong>INICIAR</strong> en la parte inferior del chat (o escribe y envía el comando <code class="bg-gray-200 px-1 rounded text-red-500 font-mono">/start</code>).</p>
+            </div>
+            <!-- Paso 3 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 relative">
+                <div class="w-8 h-8 bg-cg_blue text-white rounded-full flex items-center justify-center font-black absolute -top-4 -left-2 shadow-md">3</div>
+                <h4 class="font-black text-cg_navy text-sm mb-2 mt-2">Copia tu Número ID</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">El bot te responderá con un mensaje. Copia únicamente los números de la línea que dice <strong>Id:</strong> (Ejemplo: <span class="bg-gray-200 px-1 rounded font-mono">123456789</span>).</p>
+            </div>
+            <!-- Paso 4 -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 relative md:col-span-3 flex flex-col sm:flex-row items-center gap-4">
+                <span class="text-3xl shrink-0">🔗</span>
+                <div>
+                    <h4 class="font-black text-blue-900 text-sm mb-1">Paso Final: Vincular en CashGarden</h4>
+                    <p class="text-xs text-blue-800 leading-relaxed">Vuelve al juego, haz clic en el menú desplegable de tu perfil (arriba a la derecha junto a tu usuario), selecciona <strong>✈️ Alertas Telegram</strong>, pega tu número copiado y haz clic en Vincular. ¡A partir de ese momento, el bot oficial de CashGarden te escribirá los reportes!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 12: RETIROS -->
+    <div class="bg-white rounded-3xl shadow-soft border border-gray-100 p-6 md:p-8 text-center flex flex-col items-center mt-8">
+        <span class="text-4xl mb-3">🏦</span>
+        <h3 class="text-xl font-black text-cg_navy mb-2">12. Dispersión Automática (Retiros)</h3>
+        <p class="text-sm text-gray-600 max-w-xl mx-auto leading-relaxed">
+            CashGarden no es un banco. Los fondos que ganes en los torneos deben ser retirados regularmente. Configura tu número en el menú <strong class="text-cg_navy">Billetera Wompi</strong>. 
+            Los pagos se envían mediante la pasarela segura directamente a <strong>Nequi</strong> una vez superes los $10,000 CRÉDITOS.
+        </p>
+    </div>
+
+</div>

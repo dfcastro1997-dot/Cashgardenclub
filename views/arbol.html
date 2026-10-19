@@ -1,0 +1,775 @@
+<div class="max-w-[1400px] mx-auto space-y-8 animate-fade-in pb-24 relative px-4 md:px-6 lg:px-8 pt-4">
+    
+    <!-- HEADER PROFESIONAL -->
+    <div class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="flex items-center gap-4 md:gap-5 w-full md:w-auto">
+            <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100 shrink-0 shadow-inner">
+                <span class="text-2xl md:text-3xl">🌲</span>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                    <span class="text-[9px] md:text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Evento Comunitario Diario</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight leading-none">El Árbol de la Vida</h2>
+                <p class="text-xs text-slate-500 font-medium mt-1.5 hidden md:block">Dona tus semillas. Si la comunidad alcanza la meta, se liberan recompensas masivas.</p>
+            </div>
+        </div>
+        
+        <div class="bg-slate-50 border border-slate-200 px-5 py-3 rounded-2xl flex items-center gap-4 w-full md:w-auto shadow-inner">
+            <span class="text-2xl animate-bounce">⏳</span>
+            <div class="flex flex-col text-left">
+                <span id="tree-timer-label" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Cierre de Ciclo</span>
+                <span id="tree-timer" class="text-xl md:text-2xl font-black text-slate-800 tracking-wider font-mono leading-none mt-0.5">--:--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID: 3 COLUMNAS EN DESKTOP -->
+    <div class="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
+        
+        <!-- COLUMNA IZQUIERDA: HITOS Y PREMIOS ESPECIALES -->
+        <div class="order-2 lg:order-1 lg:col-span-3 flex flex-col gap-6">
+            
+            <!-- Fases de Botín -->
+            <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm flex flex-col relative overflow-hidden flex-1 hover:shadow-md transition-shadow">
+                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest border-b border-gray-100 pb-3 mb-5 flex items-center gap-2">
+                    <span class="text-lg">🎁</span> Fases de Botín
+                </h4>
+                
+                <div class="flex-1 relative flex flex-col justify-between py-2 min-h-[280px]">
+                    <!-- Línea conectora base -->
+                    <div class="absolute left-[30px] md:left-[32px] top-4 bottom-6 w-1.5 bg-slate-100 rounded-full z-0 transform -translate-x-1/2"></div>
+                    <!-- Línea de llenado dinámico -->
+                    <div id="tree-vertical-progress" class="absolute left-[30px] md:left-[32px] top-4 w-1.5 bg-emerald-500 rounded-full z-0 transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.5)] transform -translate-x-1/2" style="height: 0%; max-height: calc(100% - 40px);"></div>
+                    
+                    <div id="milestones-container" class="relative z-10 flex flex-col justify-between h-full gap-4">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Premio Donador Especial -->
+            <div class="bg-white rounded-3xl border border-sky-100 p-6 shadow-sm flex flex-col relative overflow-hidden shrink-0 hover:border-sky-300 transition-colors">
+                <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-sky-50 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
+                <h4 class="text-[10px] md:text-xs font-black text-sky-600 uppercase tracking-widest border-b border-sky-50 pb-3 mb-3 flex items-center gap-2 relative z-10">
+                    <span class="text-lg">🎯</span> N° Donador Especial
+                </h4>
+                <p class="text-[10px] text-slate-500 mb-3 font-medium relative z-10 leading-relaxed">Dona en los puestos <strong class="text-sky-600 font-black">#1, 10, 25, 50, 75 o 99</strong> para obtener:</p>
+                <div class="bg-sky-50 border border-sky-100 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-inner text-center relative z-10">
+                    <span class="text-2xl mb-1">🎁</span>
+                    <span class="text-xs font-black text-sky-800" id="donor-prize-text">2% del Botín Total</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ZONA CENTRAL: EL ÁRBOL Y DONACIÓN -->
+        <div class="order-1 lg:order-2 lg:col-span-5 bg-gradient-to-b from-emerald-50/50 to-white rounded-3xl border border-emerald-100/50 p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-lg">
+            <div class="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-300 via-transparent to-transparent pointer-events-none"></div>
+            
+            <div class="relative flex flex-col items-center justify-center w-full min-h-[260px] md:min-h-[320px]">
+                
+                <!-- Próximo Número de Donador -->
+                <div class="absolute top-0 bg-white/80 border border-emerald-100 px-4 py-1.5 rounded-full shadow-sm z-20 flex items-center gap-2 backdrop-blur-md">
+                    <span class="text-[9px] sm:text-[10px] font-bold text-emerald-800 uppercase tracking-widest">Próximo Donador:</span>
+                    <span id="next-donor-badge" class="bg-emerald-500 text-white px-2 py-0.5 rounded-md text-[10px] font-black shadow-inner">#1</span>
+                </div>
+
+                <img id="tree-visual" src="assets/Plantas/arbol_primavera.gif" class="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)] transition-all duration-1000 opacity-60 scale-95 z-10" alt="Arbol">
+                
+                <!-- BANDA ÁRBOL FINALIZADO -->
+                <div id="tree-completed-banner" class="absolute z-20 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-5 rounded-3xl shadow-2xl hidden flex-col items-center gap-2 animate-fade-in pointer-events-none w-full sm:w-[95%] text-center transform -translate-y-2">
+                    <span class="text-sm md:text-base font-black text-emerald-400 uppercase tracking-widest">¡Meta Alcanzada!</span>
+                    <div id="tree-winners-showcase" class="w-full mt-1 mb-1 flex flex-col gap-1.5 pointer-events-auto"></div>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-2">Siguiente ciclo en:</span>
+                    <span id="tree-banner-timer" class="text-xl md:text-2xl font-black text-white font-mono">--:--:--</span>
+                </div>
+            </div>
+            
+            <!-- Barra de Progreso -->
+            <div class="w-full mt-6 relative z-10">
+                <div class="flex justify-between items-end mb-2 px-1">
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Progreso Global</span>
+                        <span id="tree-donated" class="text-xl md:text-2xl font-black text-emerald-600 leading-none mt-0.5">0 🌱</span>
+                    </div>
+                    <div class="flex flex-col text-right">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Meta Diaria</span>
+                        <span id="tree-goal" class="text-sm md:text-base font-black text-slate-700 leading-none mt-0.5">0 🌱</span>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-100 h-6 md:h-7 rounded-full relative shadow-inner overflow-hidden border border-slate-200">
+                    <div id="tree-progress" class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-1000 w-0 relative">
+                        <div class="absolute inset-0 bg-white/20 w-full h-full" style="background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent); background-size: 1rem 1rem;"></div>
+                    </div>
+                    <span id="tree-pct-text" class="absolute inset-0 flex items-center justify-center text-[10px] md:text-xs font-black text-slate-800 mix-blend-overlay z-10 tracking-widest">0%</span>
+                </div>
+            </div>
+
+            <!-- Controles de Donación -->
+            <div id="donation-controls" class="w-full max-w-sm mt-8 flex flex-col gap-2 relative z-10">
+                <div class="flex justify-between items-center px-1 mb-1">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest" id="my-donation-text">Tu Aporte: 0 🌱</p>
+                    <p class="text-[9px] font-bold text-amber-500 uppercase">Mín: <span id="min-req-text">0</span></p>
+                </div>
+                <div class="flex bg-white rounded-2xl shadow-sm border border-emerald-200 overflow-hidden h-14 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-all">
+                    <input type="number" id="donate-input" placeholder="Cantidad..." min="1" step="100" class="flex-1 bg-transparent px-4 font-black text-slate-800 text-lg outline-none text-center placeholder-slate-300">
+                    <button onclick="window.treeApp.donate()" id="btn-donate" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 md:px-8 transition-colors uppercase tracking-widest text-xs shadow-inner active:scale-95">
+                        Donar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mensaje de Completado (Debajo de la barra) -->
+            <div id="completed-msg" class="w-full mt-8 flex-col items-center gap-2 relative z-10 hidden animate-fade-in">
+                <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-3xl text-center shadow-sm w-full">
+                    <h4 class="font-black text-emerald-800 uppercase tracking-widest text-sm mb-1">¡El Árbol ha florecido!</h4>
+                    <p class="text-xs text-emerald-600 font-medium">La meta diaria fue superada. Los cofres y bonos han sido entregados a los participantes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: RANKING -->
+        <div class="order-3 lg:order-3 lg:col-span-4 bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col relative overflow-hidden h-[600px] lg:h-auto">
+            <div class="absolute -right-8 -top-8 text-8xl opacity-[0.02] pointer-events-none">🏆</div>
+            
+            <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                <h4 class="text-xs md:text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                    <span class="text-lg">👑</span> Top 10 Guardianes
+                </h4>
+            </div>
+            
+            <!-- Explicación de premios extra -->
+            <div class="bg-amber-50/50 border border-amber-100 p-4 rounded-2xl mb-5 shadow-inner shrink-0">
+                <p class="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-1.5"><span>💎</span> Beneficios Exclusivos VIP:</p>
+                <ul class="text-[10px] text-amber-900 font-bold space-y-1.5 leading-snug">
+                    <!-- Se inyecta por JS desde BD -->
+                </ul>
+            </div>
+
+            <!-- Lista de Ranking -->
+            <div class="flex flex-col">
+                <div class="flex justify-between px-4 pb-2 border-b border-gray-100 mb-2">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Jugador</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Aporte</span>
+                </div>
+                <div id="tree-top-list" class="flex-1 overflow-y-auto space-y-2 hide-scrollbar relative z-10 pb-2">
+                    <p class="text-xs text-slate-400 font-medium text-center mt-10">Cargando guardianes...</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- VENTANA MODAL PROFESIONAL PARA ALERTAS -->
+<div id="tree-alert-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="closeTreeAlert()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in text-center p-6 md:p-8" id="tree-alert-card">
+        <div id="tree-alert-icon-container" class="mx-auto mb-5 shadow-inner flex items-center justify-center rounded-full border-4 w-16 h-16 md:w-20 md:h-20 bg-gray-50 border-gray-100">
+            <span class="text-3xl md:text-4xl relative z-10 drop-shadow-sm" id="tree-alert-icon">⚠️</span>
+        </div>
+        <h3 class="text-xl md:text-2xl font-black mb-2 tracking-tight text-slate-800" id="tree-alert-title">Aviso</h3>
+        <p class="text-xs md:text-sm text-slate-500 mb-6 font-medium leading-relaxed" id="tree-alert-msg">Mensaje</p>
+        <button onclick="closeTreeAlert()" id="tree-alert-btn" class="w-full text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm bg-slate-800 hover:bg-slate-900 active:scale-95">
+            Aceptar
+        </button>
+    </div>
+</div>
+
+
+
+
+<!-- MODAL PERFIL DE JUGADOR -->
+<div id="player-profile-modal" class="fixed inset-0 z-[1100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" onclick="closePlayerProfile()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in p-6 md:p-8">
+        <button onclick="closePlayerProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 font-bold w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition-colors">✕</button>
+        
+        <div id="profile-loading" class="flex flex-col items-center justify-center py-10">
+            <div class="w-10 h-10 border-4 border-emerald-200 border-t-emerald-500 rounded-full animate-spin mb-3"></div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Cargando inteligencia...</p>
+        </div>
+
+        <div id="profile-content" class="hidden flex-col items-center text-center">
+            <div class="w-24 h-24 rounded-full border-4 border-emerald-100 shadow-md overflow-hidden mb-3 bg-white">
+                <img id="profile-pic" src="" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-2xl font-black text-slate-800 tracking-tight" id="profile-username">---</h3>
+            <span class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-widest mt-2 mb-6">Granjero Activo</span>
+
+            <div class="w-full grid grid-cols-2 gap-3 mb-2">
+                <div class="bg-slate-50 border border-slate-100 p-3 rounded-2xl text-center shadow-sm">
+                    <span class="text-2xl block mb-1 drop-shadow-sm">⚔️</span>
+                    <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Duelos Ganados</span>
+                    <span class="text-xl font-black text-emerald-600" id="profile-wins">0</span>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 p-3 rounded-2xl text-center shadow-sm">
+                    <span class="text-2xl block mb-1 drop-shadow-sm">🥀</span>
+                    <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Duelos Perdidos</span>
+                    <span class="text-xl font-black text-red-500" id="profile-losses">0</span>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 p-3 rounded-2xl text-center shadow-sm">
+                    <span class="text-2xl block mb-1 drop-shadow-sm">🏆</span>
+                    <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Torneos Élite</span>
+                    <span class="text-xl font-black text-cg_gold" id="profile-tourneys">0</span>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 p-3 rounded-2xl text-center shadow-sm">
+                    <span class="text-2xl block mb-1 drop-shadow-sm">🛡️</span>
+                    <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">En Arsenal</span>
+                    <span class="text-xl font-black text-blue-600" id="profile-arsenal">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+window.treeApp = {
+    timerInterval: null,
+    syncInterval: null,
+    lastStatus: 'active',
+    currentGoal: 0,
+    currentDonated: 0,
+    dynamicPlants: [],
+    
+    // Mapeo Base Herramientas
+    imgMap: {
+        'tool_pot_small': 'assets/Herramientas_y_Servicios/maceta_pequena.png',
+        'tool_water': 'assets/Herramientas_y_Servicios/regadera.png',
+    },
+    
+    async init() {
+        try {
+            const dpRes = await fetch('/api/plants');
+            if(dpRes.ok) {
+                this.dynamicPlants = await dpRes.json();
+                this.dynamicPlants.forEach(p => {
+                    this.imgMap[p.id] = p.image_url;
+                });
+            }
+        } catch(e) {}
+        
+        await this.fetchTreeData();
+        this.startTimer();
+        this.syncInterval = setInterval(() => this.fetchTreeData(), 5000);
+    },
+
+    async fetchTreeData() {
+        const username = sessionStorage.getItem('username');
+        if(!username) return;
+
+        try {
+            const res = await fetch(`/api/tree?username=${username}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            
+            this.currentGoal = data.goal;
+            this.currentDonated = data.donated;
+            this.updateUI(data);
+            
+            if (data.status === 'completed' && this.lastStatus === 'active') {
+                if (window.farmApp && window.farmApp.state) {
+                    window.farmApp.state.isSaving = false; 
+                }
+                if (window.syncUserData) window.syncUserData();
+            }
+            this.lastStatus = data.status;
+
+        } catch(e) {}
+    },
+
+    updateUI(data) {
+        const pct = Math.min(100, (data.donated / data.goal) * 100);
+        const minReqBase = Math.max(1000, data.goal * 0.01);
+        
+        // --- ÁRBOL SEGÚN TEMPORADA ---
+        const d = new Date();
+        const day = d.getDate();
+        let treeImage = 'assets/Plantas/arbol_primavera.gif'; 
+        
+        if (day >= 1 && day <= 9) treeImage = 'assets/Plantas/arbol_invierno.gif';      
+        else if (day >= 10 && day <= 19) treeImage = 'assets/Plantas/arbol_otono.gif';    
+        else if (day >= 20 && day <= 26) treeImage = 'assets/Plantas/arbol_primavera.gif';
+        else treeImage = 'assets/Plantas/arbol_verano.gif';                               
+        
+        const treeVisualDom = document.getElementById('tree-visual');
+        if (treeVisualDom && treeVisualDom.src.indexOf(treeImage) === -1) {
+            treeVisualDom.src = treeImage;
+        }
+        // ------------------------------------
+
+        document.getElementById('tree-donated').innerText = `${data.donated.toLocaleString()} 🌱`;
+        document.getElementById('tree-goal').innerText = `${data.goal.toLocaleString()} 🌱`;
+        document.getElementById('tree-progress').style.width = `${pct}%`;
+        
+        document.getElementById('tree-vertical-progress').style.height = `calc((100% - 40px) * ${pct / 100})`;
+        document.getElementById('tree-pct-text').innerText = `${Math.floor(pct)}%`;
+
+        document.getElementById('next-donor-badge').innerText = '#' + (data.donors_count + 1);
+        document.getElementById('donor-prize-text').innerText = `${Math.floor(data.goal * 0.02).toLocaleString()} 🌱 (2%)`;
+
+        const myDonText = document.getElementById('my-donation-text');
+        if (myDonText) {
+            if (data.user_donation >= minReqBase) {
+                myDonText.innerHTML = `Tu Aporte: <span class="text-emerald-600 font-black">${data.user_donation.toLocaleString()} 🌱</span> (✅ Elegible)`;
+            } else {
+                myDonText.innerHTML = `Tu Aporte: <span class="text-slate-600 font-black">${data.user_donation.toLocaleString()} 🌱</span> (Faltan <span class="text-red-500 font-black">${(minReqBase - data.user_donation).toLocaleString()}</span>)`;
+            }
+        }
+
+        const remainingToGoal = Math.max(0, data.goal - data.donated);
+        let minAllowed = 1000;
+        if (remainingToGoal > 0 && remainingToGoal < 1000) {
+            minAllowed = remainingToGoal;
+        }
+        
+        const inputEl = document.getElementById('donate-input');
+        if (inputEl) {
+            inputEl.min = minAllowed;
+            inputEl.placeholder = `Mínimo ${minAllowed.toLocaleString()} 🌱`;
+            if (inputEl.value && parseInt(inputEl.value) > remainingToGoal && remainingToGoal > 0) {
+                inputEl.value = remainingToGoal; 
+            }
+        }
+
+        if (pct >= 100) {
+            treeVisualDom.classList.add('scale-110', 'opacity-100', 'drop-shadow-[0_15px_35px_rgba(16,185,129,0.5)]');
+            treeVisualDom.classList.remove('opacity-60', 'scale-95');
+            document.getElementById('tree-progress').classList.add('animate-pulse');
+        } else {
+            treeVisualDom.classList.add('opacity-60', 'scale-95');
+            treeVisualDom.classList.remove('scale-110', 'opacity-100', 'drop-shadow-[0_15px_35px_rgba(16,185,129,0.5)]');
+            document.getElementById('tree-progress').classList.remove('animate-pulse');
+        }
+
+        let vipPrizes = data.vip_prizes || [];
+        const vipList = document.querySelector('ul.text-amber-900');
+        if(vipList && vipPrizes.length >= 3) {
+            
+            // Corrección: Mapeo manual directo a los íconos y nombres si la API no los trae formateados
+            const getPrizeStringClean = (rank) => {
+                const prize = vipPrizes.find(p => p.rank === rank);
+                if (!prize || !prize.items || prize.items.length === 0) return 'Sin premio asignado';
+                
+                return prize.items.map(item => {
+                    let name = item.name || '';
+                    if (!name) {
+                        // Respaldo por si falla el mapeo del backend
+                        if (item.id === 'tool_pot_small') name = 'Maceta Pequeña';
+                        else if (item.id === 'tool_water') name = 'Regadera';
+                        else if (item.id === 'tool_scarecrow') name = 'Espantapájaros';
+                        else {
+                            // Buscar en plantas dinámicas
+                            const dyn = this.dynamicPlants.find(dp => dp.id === item.id);
+                            name = dyn ? dyn.name : 'Premio Sorpresa';
+                        }
+                        name = `${item.qty}x ${name}`;
+                    }
+                    return name;
+                }).join(' + ');
+            };
+            
+            vipList.innerHTML = `
+                <li class="flex items-center justify-between bg-white p-2 rounded-xl border border-amber-100/50 shadow-sm">
+                    <span class="flex items-center gap-1.5 flex-1 min-w-0">
+                        <span class="text-lg drop-shadow-sm shrink-0">🥇</span> 
+                        <span class="text-[9px] sm:text-[10px] truncate leading-tight">${getPrizeStringClean(1)}</span>
+                    </span>
+                    <span class="font-black text-emerald-600 shrink-0 ml-2 bg-emerald-50 px-1.5 py-0.5 rounded text-[9px]">+10% Botín</span>
+                </li>
+                <li class="flex items-center justify-between bg-white p-2 rounded-xl border border-amber-100/50 shadow-sm">
+                    <span class="flex items-center gap-1.5 flex-1 min-w-0">
+                        <span class="text-lg drop-shadow-sm shrink-0">🥈</span> 
+                        <span class="text-[9px] sm:text-[10px] truncate leading-tight">${getPrizeStringClean(2)}</span>
+                    </span>
+                    <span class="font-black text-emerald-600 shrink-0 ml-2 bg-emerald-50 px-1.5 py-0.5 rounded text-[9px]">+5% Botín</span>
+                </li>
+                <li class="flex items-center justify-between bg-white p-2 rounded-xl border border-amber-100/50 shadow-sm">
+                    <span class="flex items-center gap-1.5 flex-1 min-w-0">
+                        <span class="text-lg drop-shadow-sm shrink-0">🥉</span> 
+                        <span class="text-[9px] sm:text-[10px] truncate leading-tight">${getPrizeStringClean(3)}</span>
+                    </span>
+                    <span class="font-black text-emerald-600 shrink-0 ml-2 bg-emerald-50 px-1.5 py-0.5 rounded text-[9px]">+2% Botín</span>
+                </li>
+            `;
+        }
+
+        if (data.status === 'completed') {
+            document.getElementById('donation-controls').classList.add('hidden');
+            document.getElementById('completed-msg').classList.remove('hidden');
+            document.getElementById('completed-msg').classList.add('flex');
+            document.getElementById('tree-timer-label').innerText = "Siguiente Ciclo";
+            
+            document.getElementById('tree-completed-banner').classList.remove('hidden');
+            document.getElementById('tree-completed-banner').classList.add('flex');
+            
+            const winnersContainer = document.getElementById('tree-winners-showcase');
+            if (winnersContainer) {
+                let wHtml = '';
+                data.top.slice(0, 3).forEach((u, i) => {
+                    let badge = i === 0 ? '🥇' : (i === 1 ? '🥈' : '🥉');
+                    let p = vipPrizes.find(vp => vp.rank === i + 1);
+                    let prizeText = (p && p.items && p.items.length > 0) ? p.items.map(it => it.icon).join('') : '🎁';
+                    
+                    wHtml += `
+                    <div class="bg-white/10 border border-white/20 rounded-xl px-3 py-1.5 flex justify-between items-center text-white text-[10px] sm:text-xs">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="text-sm drop-shadow-sm">${badge}</span>
+                            <span class="font-bold truncate">${u.username}</span>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="bg-white/20 px-1.5 py-0.5 rounded text-xs drop-shadow-sm">${prizeText}</span>
+                            <span class="font-black text-emerald-300">+$${i===0?'10':(i===1?'5':'2')}%</span>
+                        </div>
+                    </div>`;
+                });
+                winnersContainer.innerHTML = wHtml;
+            }
+
+        } else {
+            document.getElementById('donation-controls').classList.remove('hidden');
+            document.getElementById('completed-msg').classList.add('hidden');
+            document.getElementById('completed-msg').classList.remove('flex');
+            document.getElementById('tree-timer-label').innerText = "Cierre de Ciclo";
+            
+            document.getElementById('tree-completed-banner').classList.add('hidden');
+            document.getElementById('tree-completed-banner').classList.remove('flex');
+        }
+
+        const msContainer = document.getElementById('milestones-container');
+        let html = '';
+        data.rewards.forEach(r => {
+            // Corrección: Mapeo de imagen y nombre manual si falló la inyección de Flask
+            let imgSrc = this.imgMap[r.id] || 'assets/Fondos/logo.png';
+            let rName = r.name || '';
+            if (!rName) {
+                if (r.id === 'tool_pot_small') rName = `${r.qty}x Maceta Pequeña`;
+                else if (r.id === 'tool_water') rName = `${r.qty}x Regadera`;
+                else if (r.id === 'tool_scarecrow') rName = `${r.qty}x Espantapájaros`;
+                else {
+                    const dyn = this.dynamicPlants.find(dp => dp.id === r.id);
+                    rName = dyn ? `${r.qty}x ${dyn.name}` : `${r.qty}x Premio Especial`;
+                }
+            }
+
+            html += `
+                <div class="flex items-center gap-3 relative z-10 bg-white p-2.5 rounded-2xl shadow-sm border border-gray-100 transition-all duration-500 milestone-item w-full">
+                    <div class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 flex items-center justify-center shrink-0 z-20 transition-colors duration-500 milestone-circle bg-slate-50 border-slate-200 relative shadow-inner">
+                        <span class="text-[10px] md:text-[11px] font-black text-slate-400 milestone-text">${r.pct}%</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="text-[10px] md:text-xs font-black text-slate-700 leading-tight truncate">${rName}</span>
+                    </div>
+                    <img src="${imgSrc}" class="w-7 h-7 md:w-8 md:h-8 object-contain shrink-0 drop-shadow-sm transition-transform group-hover:scale-110">
+                </div>
+            `;
+        });
+        msContainer.innerHTML = html;
+        
+        const children = msContainer.children;
+        data.rewards.forEach((r, i) => {
+            const el = children[i];
+            if (pct >= r.pct) {
+                el.classList.add('border-emerald-300', 'bg-emerald-50/30', 'scale-[1.02]');
+                const circle = el.querySelector('.milestone-circle');
+                circle.classList.replace('bg-slate-50', 'bg-emerald-100');
+                circle.classList.replace('border-slate-200', 'border-emerald-500');
+                const span = el.querySelector('.milestone-text');
+                span.classList.replace('text-slate-400', 'text-emerald-700');
+            } else {
+                el.classList.remove('border-emerald-300', 'bg-emerald-50/30', 'scale-[1.02]');
+                const circle = el.querySelector('.milestone-circle');
+                circle.classList.replace('bg-emerald-100', 'bg-slate-50');
+                circle.classList.replace('border-emerald-500', 'border-slate-200');
+                const span = el.querySelector('.milestone-text');
+                span.classList.replace('text-emerald-700', 'text-slate-400');
+            }
+        });
+
+        const topList = document.getElementById('tree-top-list');
+        if(data.top.length === 0) {
+            topList.innerHTML = '<p class="text-xs text-slate-400 font-medium text-center mt-10">Sé el primero en donar a la causa.</p>';
+        } else {
+            let topHtml = '';
+            data.top.forEach((u, i) => {
+                let badge = i === 0 ? '👑' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : ''));
+                let style = i < 3 ? 'bg-gradient-to-r from-amber-50 to-white border-amber-200 shadow-md' : 'bg-white border-gray-100 hover:bg-slate-50 shadow-sm';
+                let textCol = i === 0 ? 'text-amber-500' : (i === 1 ? 'text-slate-400' : (i === 2 ? 'text-orange-400' : 'text-slate-400'));
+                
+                // Extraer el avatar del usuario si es el local, o usar un fallback predeterminado.
+                let avatarSrc = 'assets/Perfil/defecto.png';
+                let isMe = u.username === sessionStorage.getItem('username');
+                if (isMe && window.farmApp && window.farmApp.state.profilePic) {
+                    avatarSrc = window.farmApp.state.profilePic;
+                }
+
+                topHtml += `
+                    <div onclick="window.treeApp.showPlayerProfile('${u.username}')" class="flex justify-between items-center px-4 py-3 rounded-2xl border ${style} transition-transform hover:scale-[1.01] cursor-pointer hover:border-emerald-300 group">
+                        <div class="flex items-center gap-3 overflow-hidden w-full pr-2">
+                            <span class="font-black ${textCol} w-5 text-center shrink-0 text-xs md:text-sm">${i+1}.</span>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 ${isMe ? 'border-cg_blue' : 'border-gray-200'} overflow-hidden shrink-0 bg-white shadow-inner group-hover:border-emerald-400 transition-colors">
+                                <img src="${avatarSrc}" class="w-full h-full object-cover" onerror="this.src='assets/Perfil/defecto.png'">
+                            </div>
+                            <div class="flex flex-col min-w-0 flex-1">
+                                <span class="font-black text-slate-800 truncate text-xs sm:text-sm flex items-center gap-1 group-hover:text-emerald-700 transition-colors">${u.username} <span class="text-base">${badge}</span></span>
+                                ${isMe ? '<span class="text-[8px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded uppercase tracking-wider w-fit font-black mt-0.5">Tú</span>' : ''}
+                            </div>
+                        </div>
+                        <span class="font-black text-emerald-600 bg-emerald-50/80 px-3 py-1.5 rounded-xl border border-emerald-100 text-[10px] sm:text-xs shrink-0 shadow-inner group-hover:bg-emerald-100">${u.amount.toLocaleString()} 🌱</span>
+                    </div>`;
+            });
+            topList.innerHTML = topHtml;
+        }
+
+
+
+        // --- NUEVO: MENSAJES DINÁMICOS DEL GUÍA EN EL ÁRBOL ---
+        setTimeout(() => {
+            if(window.guideApp) {
+                const lastTreeGreeting = sessionStorage.getItem('last_tree_greeting') || 0;
+                const now = Date.now();
+                
+                // Hablará cada 3 minutos al entrar aquí
+                if (now - lastTreeGreeting > 180000) { 
+                    let msg = "";
+                    let emotion = "explicando";
+
+                    if (data.status === 'completed') {
+                        msg = "¡Lo logramos! La comunidad llenó el Árbol de la Vida. Revisa el podio y las recompensas que nos entregaron, ¡están buenísimas!";
+                        emotion = "celebracion";
+                    } else if (pct >= 85) {
+                        msg = `¡Ya casi, Granjero! Estamos al ${Math.floor(pct)}%. Dona unas cuantas semillas más para asegurar el premio final antes de que cierre el ciclo.`;
+                        emotion = "celebracion";
+                    } else if (pct === 0) {
+                        msg = "Este es el Árbol de la Vida. Si todos donamos un poco de nuestras ganancias hoy, a la medianoche se desbloquearán herramientas y semillas gratis para todos.";
+                        emotion = "explicando";
+                    } else {
+                        msg = "La comunidad está trabajando duro en el Árbol. Recuerda que si logras entrar al Top 3 de guardianes, te llevarás un porcentaje enorme de todo el botín.";
+                        emotion = "explicando";
+                    }
+                    
+                    window.guideApp.show(msg, emotion);
+                    sessionStorage.setItem('last_tree_greeting', now.toString());
+                }
+            }
+        }, 1200);
+
+
+
+
+
+    },
+
+
+
+
+
+    async showPlayerProfile(username) {
+        document.getElementById('player-profile-modal').classList.remove('hidden');
+        document.getElementById('player-profile-modal').classList.add('flex');
+        document.getElementById('profile-loading').classList.remove('hidden');
+        document.getElementById('profile-loading').classList.add('flex');
+        document.getElementById('profile-content').classList.remove('flex');
+        document.getElementById('profile-content').classList.add('hidden');
+
+        try {
+            const res = await fetch('/api/profile/' + encodeURIComponent(username));
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('profile-pic').src = data.profilePic;
+                document.getElementById('profile-pic').onerror = function() { this.src='assets/Perfil/defecto.png'; };
+                document.getElementById('profile-username').innerText = data.username;
+                document.getElementById('profile-wins').innerText = data.battles_won;
+                document.getElementById('profile-losses').innerText = data.battles_lost;
+                document.getElementById('profile-tourneys').innerText = data.tournaments_won;
+                document.getElementById('profile-arsenal').innerText = data.arsenal_count;
+                
+                document.getElementById('profile-loading').classList.add('hidden');
+                document.getElementById('profile-loading').classList.remove('flex');
+                document.getElementById('profile-content').classList.remove('hidden');
+                document.getElementById('profile-content').classList.add('flex');
+            } else {
+                this.showTreeAlert('Error', 'No se pudo localizar la inteligencia del granjero.', 'error');
+                window.closePlayerProfile();
+            }
+        } catch (e) {
+            this.showTreeAlert('Fallo de Red', 'No pudimos conectar con los registros.', 'error');
+            window.closePlayerProfile();
+        }
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // --- MODALES PERSONALIZADOS ---
+    showTreeAlert(title, msg, type = 'info') {
+        const modal = document.getElementById('tree-alert-modal');
+        const card = document.getElementById('tree-alert-card');
+        const iconCont = document.getElementById('tree-alert-icon-container');
+        const icon = document.getElementById('tree-alert-icon');
+        const titleEl = document.getElementById('tree-alert-title');
+        const btn = document.getElementById('tree-alert-btn');
+
+        titleEl.innerText = title;
+        document.getElementById('tree-alert-msg').innerText = msg;
+
+        if (type === 'error') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-red-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full border-4 border-red-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "❌";
+            titleEl.className = "text-xl md:text-2xl font-black text-red-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-red-500 hover:bg-red-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm active:scale-95";
+        } else if (type === 'success') {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-emerald-500 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-emerald-50 rounded-full border-4 border-emerald-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "✅";
+            titleEl.className = "text-xl md:text-2xl font-black text-emerald-600 mb-2 tracking-tight";
+            btn.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm active:scale-95";
+        } else {
+            card.className = "bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-gray-200 overflow-hidden animate-fade-in text-center p-6 md:p-8";
+            iconCont.className = "w-16 h-16 md:w-20 md:h-20 bg-slate-50 rounded-full border-4 border-slate-100 flex items-center justify-center mx-auto mb-4 shadow-inner";
+            icon.innerText = "⚠️";
+            titleEl.className = "text-xl md:text-2xl font-black text-slate-800 mb-2 tracking-tight";
+            btn.className = "w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-3.5 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest text-xs md:text-sm active:scale-95";
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    },
+
+    closeTreeAlert() {
+        document.getElementById('tree-alert-modal').classList.add('hidden');
+        document.getElementById('tree-alert-modal').classList.remove('flex');
+    },
+    // ------------------------------
+
+    async donate() {
+        const btn = document.getElementById('btn-donate');
+        let amount = parseInt(document.getElementById('donate-input').value);
+        
+        if (isNaN(amount) || amount <= 0) return this.showTreeAlert('Monto Inválido', 'El monto ingresado no es válido.', 'error');
+
+        const remaining = Math.max(0, this.currentGoal - this.currentDonated);
+        let minAllowed = 1000;
+        if (remaining > 0 && remaining < 1000) minAllowed = remaining;
+
+        if (amount < minAllowed) return this.showTreeAlert('Donación Mínima', `La donación mínima en este momento es de ${minAllowed.toLocaleString()} 🌱.`, 'error');
+        if (window.farmApp && window.farmApp.state.seedsBalance < amount) return this.showTreeAlert('Fondos Insuficientes', 'No tienes suficientes semillas en tu balance para esta donación.', 'error');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="animate-spin text-lg">⏳</span>';
+
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        
+        try {
+            const res = await fetch('/api/tree/donate', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: username, session_token: token, amount: amount })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                if(window.farmApp) {
+                    window.farmApp.state.isSynced = true;
+                    window.farmApp.state.seedsBalance = data.new_seeds;
+                    window.farmApp.saveState();
+                }
+                const balEl = document.getElementById('global-seeds-display');
+                if (balEl) balEl.innerText = data.new_seeds.toLocaleString() + " 🌱";
+                document.getElementById('donate-input').value = '';
+                
+                if (data.gift) {
+                    if (window.farmApp && window.farmApp.state) window.farmApp.state.pending_gift = data.gift;
+                    const gModal = document.getElementById('gift-modal');
+                    if (gModal) {
+                        document.getElementById('gift-msg-text').innerText = `"${data.gift.message}"`;
+                        document.getElementById('gift-items-list').innerHTML = data.gift.items.map(item => `
+                            <li class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-slate-800">
+                                <span class="text-lg w-6 text-center drop-shadow-sm">${item.icon || '✨'}</span>
+                                <span>${item.text}</span>
+                            </li>
+                        `).join('');
+                        gModal.classList.remove('hidden'); gModal.classList.add('flex');
+                    }
+                } else {
+                    this.showTreeAlert('Aporte Registrado', `Has donado ${amount.toLocaleString()} 🌱 al Árbol de la Vida. ¡Gracias por tu aporte a la comunidad!`, 'success');
+                }
+                await this.fetchTreeData(); 
+            } else this.showTreeAlert('Error en Donación', data.error, 'error');
+        } catch(e) { this.showTreeAlert('Error de Red', 'No se pudo procesar la donación. Verifica tu conexión.', 'error'); }
+        finally { btn.disabled = false; btn.innerHTML = 'Donar'; }
+    },
+
+    startTimer() {
+        if(this.timerInterval) clearInterval(this.timerInterval);
+        const el = document.getElementById('tree-timer');
+        this.timerInterval = setInterval(() => {
+            const now = new Date();
+            const endOfDay = new Date(now);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+            let diff = endOfDay - now;
+            if (diff < 0) diff = 0;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            const timeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            if(el) el.innerText = timeStr;
+            const bannerTimer = document.getElementById('tree-banner-timer');
+            if (bannerTimer) bannerTimer.innerText = timeStr;
+        }, 1000);
+    }
+};
+
+
+
+
+
+
+window.closePlayerProfile = function() {
+    document.getElementById('player-profile-modal').classList.add('hidden');
+    document.getElementById('player-profile-modal').classList.remove('flex');
+};
+
+
+
+
+window.closeTreeAlert = function() {
+    window.treeApp.closeTreeAlert();
+};
+
+if (!window.oldLoadViewTree) {
+    window.oldLoadViewTree = window.loadView;
+    window.loadView = async function(v, b) {
+        if (window.treeApp && window.treeApp.syncInterval) clearInterval(window.treeApp.syncInterval);
+        if (window.treeApp && window.treeApp.timerInterval) clearInterval(window.treeApp.timerInterval);
+        if (window.oldLoadViewTree) await window.oldLoadViewTree(v, b);
+    };
+}
+window.treeApp.init();
+</script>
+</div>
