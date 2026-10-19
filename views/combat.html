@@ -2017,13 +2017,13 @@ window.combatApp = {
         const disabled = !o.enabled;
         const hotkey = o.hotkey ? `<span class="hidden lg:flex absolute -bottom-2 -right-1.5 w-5 h-5 rounded-md bg-black/85 border border-white/40 text-[10px] font-black text-white items-center justify-center z-40 pointer-events-none">${o.hotkey}</span>` : '';
         return `
-            <div class="flex flex-col items-center shrink-0 relative select-none ${o.widthClass}${o.animClass || ''}">
+            <div class="flex flex-col items-center shrink-0 relative select-none ${o.widthClass} ${o.animClass || ''}">
                 ${o.above || ''}
                 <div role="button" tabindex="${disabled ? -1 : 0}" aria-disabled="${disabled}" aria-label="${this.escapeHtml(o.ariaLabel)}"
                      onclick="${o.onclick}"
                      onmouseenter="window.combatApp.previewCard(${o.idx})" onmouseleave="window.combatApp.previewCard(null)"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}"
-                     class="attack-card-img-wrapper relative w-full ${o.tierClass || ''} ${o.selected ? 'card-selected-active ring-4 ring-amber-400' : ''} ${disabled ? 'cb-card-disabled' : 'cursor-pointer'}">
+                     class="plant-tarjeta-wrapper relative w-full ${o.tierClass || ''} ${o.selected ? 'card-selected-active ring-4 ring-amber-400' : ''} ${disabled ? 'cb-card-disabled' : 'cursor-pointer'}">
                     <div class="cb-card" style="--cb-card-color: ${o.color || '#a87948'}">
                         <div class="cb-card-fallback">${o.fallbackInner}</div>
                         ${o.img ? `<img src="${o.img}" alt="" draggable="false" class="cb-card-img rounded-xl sm:rounded-2xl" onload="this.previousElementSibling.style.visibility='hidden'" onerror="this.remove()">` : ''}
