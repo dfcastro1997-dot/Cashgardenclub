@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center font-sans" style="background-image: url('assets/Fondos/Tragamonedas.jpg');">
+<div class="fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center font-sans" style="background-image: url('assets/Fondos/Maquina.jpg');">
     
     <!-- OVERLAY OSCURO DE FONDO -->
     <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-0 pointer-events-none"></div>
@@ -17,16 +17,21 @@
         <!-- PANTALLA 1: SPLASH SCREEN (CARGA)          -->
         <!-- ========================================== -->
         <div id="trg-splash-screen" class="absolute inset-0 z-40 bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-700">
-            <div class="w-24 h-24 bg-slate-800 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.2)] border border-slate-700 animate-pulse mb-6">
-                <span class="text-5xl">🎰</span>
+            
+            <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+                <!-- Logo Principal (Desaparece) -->
+                <img id="splash-logo-1" src="assets/Fondos/logo.png" class="absolute w-full h-auto object-contain transition-all duration-700 ease-in-out z-20">
+                <!-- Logo del Juego (Aparece) -->
+                <img id="splash-logo-2" src="assets/Fondos/Juego_003.png" class="absolute w-[250px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
             </div>
+            
             <h2 class="text-white font-black text-2xl tracking-widest uppercase mb-1">Cilindros</h2>
-            <p class="text-green-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-12">Sincronizados</p>
+            <p class="text-green-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8">Sincronizados</p>
             
             <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="trg-loading-bar" class="h-full bg-green-500 w-0 transition-all duration-[1500ms] ease-out"></div>
+                <div id="trg-loading-bar" class="h-full bg-green-500 w-0 transition-all duration-[2000ms] ease-out"></div>
             </div>
-            <p class="text-slate-500 text-[9px] uppercase tracking-widest mt-3 font-bold animate-pulse">Ajustando Velocidades...</p>
+            <p class="text-slate-500 text-[9px] uppercase tracking-widest mt-3 font-bold animate-pulse">Sincronizando Físicas...</p>
         </div>
 
         <!-- ========================================== -->
@@ -59,7 +64,7 @@
                         <div id="intro-bar-hp" class="h-full bg-red-500 rounded-full w-[0%] transition-all duration-1000"></div>
                     </div>
                     <p id="intro-desc-hp" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Otorga <strong class="text-red-400" id="intro-lives">-- Vidas</strong>. Fallar el símbolo objetivo te restará vidas. Al llegar a 0 se termina la partida.
+                        Otorga <strong class="text-red-400" id="intro-lives">-- Vidas</strong>. Fallar el símbolo en toda la línea te restará vidas. Al llegar a 0 termina la partida.
                     </p>
                 </div>
 
@@ -145,7 +150,7 @@
 
                 <!-- Panel de Símbolo Objetivo -->
                 <div class="mb-6 bg-slate-800/80 backdrop-blur-md border border-slate-600 px-6 py-3 rounded-2xl shadow-lg flex flex-col items-center relative z-10">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Alinea 3 de este símbolo:</span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Acertar al menos 1 por línea suma puntos:</span>
                     <div id="target-symbol-display" class="text-4xl drop-shadow-md animate-pulse">❓</div>
                 </div>
 
@@ -231,17 +236,29 @@ window.slotApp = {
     maxComboReached: 1,
     
     // Elementos del Slot
-    symbols: ['🌻', '🍄', '🌵', '🌸', '🌿', '💎', '🔥'], // Ampliado para más variedad visual
+    symbols: ['🌻', '🍄', '🌵', '🌸', '🌿', '💎', '🔥'],
     reels: [
         { offset: 0, speed: 0.15, state: 'STOPPED', finalSymbol: null },
         { offset: 0, speed: 0.18, state: 'STOPPED', finalSymbol: null },
         { offset: 0, speed: 0.22, state: 'STOPPED', finalSymbol: null }
     ],
     targetSymbol: '❓',
-    activeReelIndex: 0, // 0, 1 o 2
+    activeReelIndex: 0,
     inputState: 'PRE_ROUND', // PRE_ROUND -> SPINNING -> EVALUATING
     
     rafId: null,
+    
+    // Audio Managers
+    sounds: {
+        bonus: [
+            new Audio('assets/Sonidos/Maquinas/Bonus_01.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_02.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_03.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_04.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_05.mp3')
+        ],
+        error: new Audio('assets/Sonidos/Maquinas/Error.mp3')
+    },
 
     init() {
         this.canvas = document.getElementById('slot-canvas');
@@ -275,6 +292,18 @@ window.slotApp = {
         setTimeout(() => {
             const bar = document.getElementById('trg-loading-bar');
             if(bar) bar.style.width = '100%';
+            
+            // Animación de transición de Logos (Desaparece Logo, aparece Juego_003)
+            setTimeout(() => {
+                const logo1 = document.getElementById('splash-logo-1');
+                const logo2 = document.getElementById('splash-logo-2');
+                if (logo1) logo1.classList.add('opacity-0', 'scale-110');
+                if (logo2) {
+                    logo2.classList.remove('opacity-0', 'scale-50');
+                    logo2.classList.add('opacity-100', 'scale-100', 'drop-shadow-[0_0_40px_rgba(34,197,94,0.6)]');
+                }
+            }, 800);
+
         }, 100);
 
         setTimeout(() => {
@@ -285,7 +314,7 @@ window.slotApp = {
                 if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
             }, 700);
-        }, 2000);
+        }, 3000); // 3 segundos para disfrutar el logo
     },
 
     showIntroScreen(plantName, plantImg) {
@@ -329,7 +358,6 @@ window.slotApp = {
         this.livesLeft = this.livesTotal;
         document.getElementById('trg-ammo').innerText = this.livesLeft;
         
-        // Dibujar estado estático en canvas para que esté listo al iniciar
         this.draw(); 
     },
 
@@ -361,7 +389,6 @@ window.slotApp = {
     startRound() {
         if (!this.isPlaying) return;
         
-        // Asignar símbolo objetivo (al final siempre depende de la precisión del jugador frenarlo)
         this.targetSymbol = this.symbols[Math.floor(Math.random() * this.symbols.length)];
         document.getElementById('target-symbol-display').innerText = this.targetSymbol;
         
@@ -418,6 +445,18 @@ window.slotApp = {
         }, 100);
     },
 
+    playBonusSound() {
+        const snd = this.sounds.bonus[Math.floor(Math.random() * this.sounds.bonus.length)];
+        snd.currentTime = 0;
+        snd.play().catch(e => console.warn('Audio play prevented', e));
+    },
+
+    playErrorSound() {
+        const snd = this.sounds.error;
+        snd.currentTime = 0;
+        snd.play().catch(e => console.warn('Audio play prevented', e));
+    },
+
     handleInput() {
         if (!this.isPlaying) return;
 
@@ -428,7 +467,7 @@ window.slotApp = {
             let reel = this.reels[this.activeReelIndex];
             reel.state = 'STOPPED';
             
-            // "Snappear" al símbolo más cercano (precisión obligatoria)
+            // Redondear el offset para que el símbolo caiga centrado
             reel.offset = Math.round(reel.offset);
             
             let centerIndex = (reel.offset % this.symbols.length + this.symbols.length) % this.symbols.length;
@@ -453,31 +492,44 @@ window.slotApp = {
         let r2 = this.reels[1].finalSymbol;
         let r3 = this.reels[2].finalSymbol;
         
-        let isWin = (r1 === this.targetSymbol && r2 === this.targetSymbol && r3 === this.targetSymbol);
+        let matchesCount = 0;
+        if (r1 === this.targetSymbol) matchesCount++;
+        if (r2 === this.targetSymbol) matchesCount++;
+        if (r3 === this.targetSymbol) matchesCount++;
         
-        if (isWin) {
-            let baseRoundPts = 500;
+        // Gana puntos si al menos 1 por línea coincide
+        if (matchesCount > 0) {
+            this.playBonusSound();
+            
+            // Puntos progresivos: 1 acierto (100 pts), 2 (300 pts), 3 (800 pts)
+            let baseRoundPts = matchesCount === 1 ? 100 : (matchesCount === 2 ? 300 : 800);
             let atkMultiplier = 1 + (this.atk / 100);
             let ptsEarned = Math.floor(baseRoundPts * atkMultiplier * this.currentCombo);
             
             this.score += ptsEarned;
             
-            this.currentCombo += 0.5;
+            this.currentCombo += 0.5 * matchesCount;
             if (this.currentCombo > this.maxComboReached) this.maxComboReached = this.currentCombo;
             
             document.getElementById('trg-score').innerText = this.score.toLocaleString();
             document.getElementById('trg-combo').innerText = 'x' + this.currentCombo.toFixed(1);
             
+            document.getElementById('trg-action-btn').classList.replace('bg-slate-500', 'bg-green-500');
+            
         } else {
+            this.playErrorSound();
+            
             this.livesLeft--;
             this.currentCombo = 1;
             
             document.getElementById('trg-ammo').innerText = this.livesLeft;
             document.getElementById('trg-combo').innerText = 'x1.0';
+            
+            document.getElementById('trg-action-btn').classList.replace('bg-slate-500', 'bg-red-500');
         }
 
         if (this.score >= 10000 || this.livesLeft <= 0 || this.timeLeft <= 0) {
-            setTimeout(() => this.endGame(), 800);
+            setTimeout(() => this.endGame(), 1000);
         } else {
             this.inputState = 'PRE_ROUND';
             this.updateButtonUI();
@@ -509,12 +561,11 @@ window.slotApp = {
         const symHeight = 80;
         const centerY = this.h / 2; 
         
-        // Sombras y efectos de los cilindros (Ilusión de profundidad)
-        this.ctx.fillStyle = '#f8fafc'; // slate-50 base
+        // Fondo base y separadores
+        this.ctx.fillStyle = '#f8fafc'; 
         this.ctx.fillRect(0, 0, this.w, this.h);
         
-        // Bordes de separación entre columnas
-        this.ctx.strokeStyle = '#e2e8f0'; // slate-200
+        this.ctx.strokeStyle = '#e2e8f0';
         this.ctx.lineWidth = 6;
         this.ctx.beginPath();
         this.ctx.moveTo(colWidth, 0); this.ctx.lineTo(colWidth, this.h);
@@ -546,9 +597,9 @@ window.slotApp = {
                 }
             }
             
-            // Oscurecer rodillos no activos 
+            // Oscurecer rodillos inactivos o no evaluados
             if (this.inputState === 'SPINNING' && i !== this.activeReelIndex && r.state !== 'STOPPED') {
-                this.ctx.fillStyle = 'rgba(15, 23, 42, 0.15)'; // slate-900 oscuro
+                this.ctx.fillStyle = 'rgba(15, 23, 42, 0.15)'; 
                 this.ctx.fillRect(i * colWidth, 0, colWidth, this.h);
             }
         }
@@ -666,3 +717,4 @@ window.submitSlotScore = async function() {
 // Iniciar aplicación
 setTimeout(() => window.slotApp.init(), 100);
 </script>
+</div>
