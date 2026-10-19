@@ -1581,9 +1581,9 @@
                         document.getElementById('dashboard-screen').classList.remove('hidden');
                         document.getElementById('dashboard-screen').classList.add('flex');
                         
-                        // --- MODIFICADO: REDIRIGE A TRANSPARENCIA PRIMERO ---
+                        // --- MODIFICADO: REDIRIGE A LA GRANJA DIRECTAMENTE ---
                         document.getElementById('live-ticker-bar').classList.remove('hidden');
-                        loadView('transparencia');
+                        loadView('farm', document.querySelector('.nav-btn-desktop'));
                         // -----------------------------------------------------
                         startBackgroundMusic();
                     } else if (response.status >= 500) {
@@ -3281,7 +3281,7 @@
                     document.getElementById('dashboard-screen').classList.remove('hidden');
                     document.getElementById('dashboard-screen').classList.add('flex');
                     document.getElementById('live-ticker-bar').classList.remove('hidden');
-                    loadView('transparencia');
+                    loadView('farm', document.querySelector('.nav-btn-desktop'));
                     startBackgroundMusic();
                 }, reduceMotion ? 0 : 450);
             }
