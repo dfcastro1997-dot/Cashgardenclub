@@ -1132,17 +1132,26 @@ def process_tournament_lifecycle(inst, conn, cur):
             ''', (inst['id'],))
             players = cur.fetchall()
             
-            # Distribución Dinero Real (Top 3)
-            prizes_cop = [prize_pool * 0.50, prize_pool * 0.30, prize_pool * 0.20]
+            # Distribución Dinero Real (Top 3) - 70% al primero, 30% al segundo, 0 al tercero
+            prizes_cop = [prize_pool * 0.70, prize_pool * 0.30, 0]
             
             # Compensación Semillas (Posiciones indexadas: 0 a 9)
             seeds_compensation = {
-                1: [0, 0, 0, 3000, 3000, 2000, 2000, 2000, 1000, 1000],
-                3: [0, 0, 0, 12000, 12000, 8000, 8000, 8000, 4000, 4000],
-                4: [0, 0, 0, 25000, 25000, 15000, 15000, 15000, 8000, 8000],
-                5: [0, 0, 0, 40000, 40000, 25000, 25000, 25000, 12000, 12000]
+                1: [0, 0, 0, 2000, 2000, 2000, 2000, 2000, 2000, 2000],
+                3: [10000, 5000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000],
+                4: [25000, 12000, 8000, 8000, 8000, 8000, 8000, 8000, 8000, 8000],
+                5: [50000, 25000, 15000, 15000, 15000, 15000, 15000, 15000, 15000, 15000]
             }
             comp_array = seeds_compensation.get(t_id, [0] * 10)
+
+            # Compensación Ítems (Macetas Pequeñas, Regaderas) -> Formato: (Macetas, Aguas)
+            items_compensation = {
+                1: [(2,5), (1,3), (1,2), (1,2), (1,2), (1,2), (1,2), (1,2), (1,2), (1,2)],
+                3: [(4,10), (2,5), (1,3), (1,3), (1,3), (1,3), (1,3), (1,3), (1,3), (1,3)],
+                4: [(8,20), (4,10), (2,5), (2,5), (2,5), (2,5), (2,5), (2,5), (2,5), (2,5)],
+                5: [(15,40), (7,20), (3,10), (3,10), (3,10), (3,10), (3,10), (3,10), (3,10), (3,10)]
+            }
+            items_array = items_compensation.get(t_id, [(0,0)] * 10)
             
             for i, p in enumerate(players):
                 uid = p['user_id']
@@ -1153,21 +1162,39 @@ def process_tournament_lifecycle(inst, conn, cur):
                     cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (amt, uid))
                     cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'tournament_prize', %s, %s, 'completed')", (uid, amt, f"PRIZE-{inst['id']}-{uid}"))
                     
-                    # --- NUEVO: EMITIR TICKER GLOBAL DE TORNEO ---
-                    if amt >= 10000: # Solo anunciar premios grandes para no hacer spam
+                    if amt >= 10000:
                         censored_winner = p['username'][:3] + "***" + p['username'][-2:] if len(p['username']) > 4 else p['username'][:2] + "***"
                         socketio.emit('global_tournament_win', {'user': censored_winner, 'amount': amt})
-                    # ---------------------------------------------  
-                # Pago Semillas
+                
+                # Pago Semillas, Macetas y Aguas
                 seed_amt = comp_array[i] if i < len(comp_array) else comp_array[-1]
-                if seed_amt > 0:
+                pots_amt, water_amt = items_array[i] if i < len(items_array) else items_array[-1]
+                
+                if seed_amt > 0 or pots_amt > 0 or water_amt > 0:
                     cur.execute("SELECT game_state FROM users WHERE id = %s FOR UPDATE", (uid,))
                     u_state = cur.fetchone()
                     if u_state and u_state['game_state']:
                         import json
                         try:
                             st = json.loads(u_state['game_state'])
-                            st['seedsBalance'] = st.get('seedsBalance', 0) + seed_amt
+                            # Sumar semillas
+                            if seed_amt > 0:
+                                st['seedsBalance'] = st.get('seedsBalance', 0) + seed_amt
+                            
+                            # Sumar Ítems
+                            if pots_amt > 0 or water_amt > 0:
+                                if 'inventory' not in st: st['inventory'] = {}
+                                
+                                if pots_amt > 0:
+                                    if 'tool_pot_small' not in st['inventory']:
+                                        st['inventory']['tool_pot_small'] = {'qty': 0, 'type': 'pot', 'reqSize': 'small', 'name': 'Maceta Pequeña', 'image': 'assets/Herramientas_y_Servicios/maceta_pequena.png'}
+                                    st['inventory']['tool_pot_small']['qty'] = int(st['inventory']['tool_pot_small'].get('qty', 0)) + pots_amt
+                                    
+                                if water_amt > 0:
+                                    if 'tool_water' not in st['inventory']:
+                                        st['inventory']['tool_water'] = {'qty': 0, 'type': 'water', 'name': 'Regadera', 'image': 'assets/Herramientas_y_Servicios/regadera.png'}
+                                    st['inventory']['tool_water']['qty'] = int(st['inventory']['tool_water'].get('qty', 0)) + water_amt
+
                             cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), uid))
                         except Exception:
                             pass
@@ -1226,12 +1253,12 @@ def join_tournament():
         cur.execute("DELETE FROM tournament_players WHERE user_id = %s AND instance_id IN (SELECT id FROM tournament_instances WHERE status = 'waiting')", (user['id'],))
 
         # 2. Cobro de Semillas y Dinero Real (Solución al Error 500 y falta de cobro)
+        # 2. Cobro de Semillas y Dinero Real (Solución al Error 500 y falta de cobro)
         state['seedsBalance'] -= seed_cost
         if fee > 0:
-            prize_addition = fee * 0.85 
-            cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (fee, user['id'])) # Faltaba descontar el dinero
+            prize_addition = fee * 0.80 # ANTES ERA 0.85. AHORA EL POZO RECIBE EL 80% DE LA ENTRADA
+            cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (fee, user['id'])) 
             cur.execute("UPDATE tournament_instances SET prize_pool_credits = prize_pool_credits + %s WHERE id = %s", (prize_addition, instance_id))
-            # Solución del error 500: Multiplicar time.time() * 1000 para evitar choques en inserciones rápidas
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"TOURNEY-{user['id']}-{int(time.time()*1000)}"))
 
         # 3. FIX DE RANKING: Se inserta con 0.00. De esta manera, si pierde y se queda en 0, no será empujado por "inactivos" con 10,000.
