@@ -878,7 +878,7 @@
                 </div>
 
                 <!-- CONTENEDOR DE CARTAS EN MANO (Deslizable horizontalmente) -->
-                <div id="cb-cards-hand" class="pointer-events-auto w-full flex items-end justify-center gap-2 sm:gap-3 md:gap-4 py-2 px-4 max-w-full overflow-x-auto scroll-smooth" style="-webkit-overflow-scrolling: touch;">
+                <div id="cb-cards-hand" class="pointer-events-auto w-full flex items-end justify-start sm:justify-center gap-2 sm:gap-3 md:gap-4 py-2 px-4 max-w-full overflow-x-auto scroll-smooth snap-x" style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
                     <!-- Inyectado por JS: Ya sea las cartas de Plantas o las 5 cartas de Ataque de la planta seleccionada -->
                 </div>
 
@@ -1975,7 +1975,7 @@ window.combatApp = {
         const disabled = !o.enabled;
         const hotkey = o.hotkey ? `<span class="hidden lg:flex absolute -bottom-2 -right-1.5 w-5 h-5 rounded-md bg-black/85 border border-white/40 text-[10px] font-black text-white items-center justify-center z-40 pointer-events-none">${o.hotkey}</span>` : '';
         return `
-            <div class="flex flex-col items-center shrink-0 relative select-none ${o.widthClass} ${o.animClass || ''}">
+            <div class="flex flex-col items-center shrink-0 snap-center relative select-none ${o.widthClass} ${o.animClass || ''}">
                 ${o.above || ''}
                 <div role="button" tabindex="${disabled ? -1 : 0}" aria-disabled="${disabled}" aria-label="${this.escapeHtml(o.ariaLabel)}"
                      onclick="${o.onclick}"
