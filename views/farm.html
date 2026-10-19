@@ -338,7 +338,7 @@
         <div id="pvp-bet-section" class="text-left mb-6 hidden">
             <label class="block text-[10px] font-black text-cg_gold uppercase tracking-widest mb-2">Apuesta del Duelo</label>
             <div class="flex gap-2 mb-3">
-                <button type="button" id="btn-bet-mode" onclick="window.togglePvPBetMode(true)" class="flex-1 bg-cg_gold text-white font-black py-2 rounded-xl text-xs shadow-inner transition-colors">Semillas</button>
+                <button type="button" id="btn-bet-mode" onclick="window.togglePvPBetMode(true)" class="flex-1 bg-cg_gold text-white font-black py-2 rounded-xl text-xs shadow-inner transition-colors">Fichas</button>
                 <button type="button" id="btn-friendly-mode" onclick="window.togglePvPBetMode(false)" class="flex-1 bg-gray-100 text-gray-500 font-bold py-2 rounded-xl text-xs hover:bg-gray-200 transition-colors">Amistoso</button>
             </div>
             <div id="pvp-bet-container">
@@ -1117,7 +1117,7 @@ if (typeof window.farmApp === 'undefined') {
             const isBot = item.is_bot || (item.challenger_name && item.challenger_name.startsWith('Bot '));
             const avatarImg = item.avatar || 'assets/Perfil/defecto.png';
             const betSeeds = item.bet || item.bet_seeds || 0;
-            const rewardPool = betSeeds > 0 ? (betSeeds * 2).toLocaleString() + ' 🌱' : 'Amistoso';
+            const rewardPool = betSeeds > 0 ? (betSeeds * 2).toLocaleString() + ' 🪙' : 'Amistoso';
 
             // Verificación de saldo
             const canAfford = userSeeds >= betSeeds;
@@ -1148,7 +1148,7 @@ if (typeof window.farmApp === 'undefined') {
                     </td>
                     <td class="p-3 text-center">
                         <div class="flex items-center justify-center gap-1.5">
-                            <button ${canAfford ? `onclick="window.acceptInvitationAt(${idx})"` : ''} class="${btnAcceptClass} font-black px-3 py-1.5 rounded-xl shadow-sm text-[10px] sm:text-xs uppercase tracking-wider" ${!canAfford ? 'disabled title="Semillas insuficientes"' : ''}>
+                            <button ${canAfford ? `onclick="window.acceptInvitationAt(${idx})"` : ''} class="${btnAcceptClass} font-black px-3 py-1.5 rounded-xl shadow-sm text-[10px] sm:text-xs uppercase tracking-wider" ${!canAfford ? 'disabled title="Fichas insuficientes"' : ''}>
                                 Aceptar
                             </button>
                             ${isBot ? `
@@ -1175,7 +1175,7 @@ if (typeof window.farmApp === 'undefined') {
         const currentBalance = (window.farmApp && window.farmApp.state) ? window.farmApp.state.seedsBalance : 0;
         const betToPay = item.bet || item.bet_seeds || 0;
         if (currentBalance < betToPay) {
-            alert("No tienes suficientes semillas en este momento para aceptar este duelo.");
+            alert("No tienes suficientes fichas en este momento para aceptar este duelo.");
             return;
         }
 
@@ -1417,7 +1417,7 @@ if (typeof window.farmApp === 'undefined') {
             if (isNaN(betAmount)) betAmount = 0;
             
             if (betAmount > 0 && window.farmApp && window.farmApp.state.seedsBalance < betAmount) {
-                return showPvPError("No tienes suficientes semillas para cubrir esta propuesta.");
+                return showPvPError("No tienes suficientes fichas para cubrir esta apuesta.");
             }
 
             const btn = document.getElementById('btn-propose-bet');
@@ -1529,7 +1529,7 @@ if (typeof window.farmApp === 'undefined') {
 
             if (targetId.length !== 4) return showPvPError("El ID del jugador debe tener 4 dígitos.");
             if (betAmount > 0 && window.farmApp && window.farmApp.state.seedsBalance < betAmount) {
-                return showPvPError("No tienes suficientes semillas para cubrir esta apuesta.");
+                return showPvPError("No tienes suficientes fichas para cubrir esta propuesta.");
             }
             
             document.getElementById('pvp-input-btn').innerText = "Enviando reto...";
@@ -1627,7 +1627,7 @@ if (typeof window.farmApp === 'undefined') {
                 window.currentChallenge = data;
                 document.getElementById('pvp-challenger-name').innerText = data.challenger_name;
                 
-                let betDisplay = data.bet > 0 ? data.bet.toLocaleString() + " 🌱" : "Amistoso (0 🌱)";
+                let betDisplay = data.bet > 0 ? data.bet.toLocaleString() + " 🪙" : "Amistoso (0 🪙)";
                 document.getElementById('pvp-bet-amount').innerText = betDisplay;
                 
                 const pvpModal = document.getElementById('pvp-incoming-modal');
@@ -2907,16 +2907,16 @@ if (typeof window.farmApp === 'undefined') {
                     </div>
                     <div class="flex gap-2 w-full mt-1">
                         <div class="flex-1 bg-yellow-50/50 rounded-xl p-2 border border-yellow-100 text-center shadow-sm">
-                            <span class="block text-[8px] font-black text-yellow-600 uppercase tracking-widest mb-0.5">Fichas (HP)</span>
-                            <span id="welcome-plant-hp" class="font-black text-yellow-700 text-sm sm:text-base">🪙 ${pHp}</span>
+                            <span class="block text-[8px] font-black text-yellow-600 uppercase tracking-widest mb-0.5">Fichas</span>
+                            <span id="welcome-plant-hp" class="font-black text-yellow-700 text-sm sm:text-base">🪙 ${Math.max(1, Math.floor(pHp / 10))}</span>
                         </div>
                         <div class="flex-1 bg-orange-50/50 rounded-xl p-2 border border-orange-100 text-center shadow-sm">
-                            <span class="block text-[8px] font-black text-orange-500 uppercase tracking-widest mb-0.5">Mult. (ATK)</span>
-                            <span id="welcome-plant-atk" class="font-black text-orange-600 text-sm sm:text-base">⭐ ${pAtk}</span>
+                            <span class="block text-[8px] font-black text-orange-500 uppercase tracking-widest mb-0.5">Multiplicador</span>
+                            <span id="welcome-plant-atk" class="font-black text-orange-600 text-sm sm:text-base">⭐ x${Math.max(1, Math.floor(pAtk / 10))}</span>
                         </div>
                         <div class="flex-1 bg-gray-50 rounded-xl p-2 border border-gray-200 text-center shadow-sm">
-                            <span class="block text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Control (DEF)</span>
-                            <span id="welcome-plant-def" class="font-black text-gray-600 text-sm sm:text-base">⚙️ ${pDef}%</span>
+                            <span class="block text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Control</span>
+                            <span id="welcome-plant-def" class="font-black text-gray-600 text-sm sm:text-base">⚙️ Nvl ${Math.max(1, Math.floor(pDef / 10))}</span>
                         </div>
                     </div>
                 `;
@@ -3866,7 +3866,7 @@ if (typeof window.farmApp === 'undefined') {
                                         </button>
                                     </div>
 
-                                    <!-- Fila Inferior: Stats (Tiempo, Vida, Ataque, Defensa, Cosecha Estimada) -->
+                                    <!-- Fila Inferior: Stats (Tiempo, Fichas, Mult, Control, Cosecha Estimada) -->
                                     <div class="grid grid-cols-5 gap-1 sm:gap-1.5 w-full text-center pt-2 border-t border-gray-100">
                                         <div class="bg-purple-50/80 rounded-lg p-1 border border-purple-100">
                                             <span class="block text-[8px] font-bold text-purple-400 uppercase leading-none">Tiempo</span>
@@ -3874,15 +3874,15 @@ if (typeof window.farmApp === 'undefined') {
                                         </div>
                                         <div class="bg-yellow-50/80 rounded-lg p-1 border border-yellow-100">
                                             <span class="block text-[8px] font-bold text-yellow-600 uppercase leading-none">Fichas</span>
-                                            <span class="font-black text-yellow-700 text-[10px] sm:text-xs leading-tight">🪙 ${dp.hp || 100}</span>
+                                            <span class="font-black text-yellow-700 text-[10px] sm:text-xs leading-tight">🪙 ${Math.max(1, Math.floor((dp.hp || 100) / 10))}</span>
                                         </div>
                                         <div class="bg-orange-50/80 rounded-lg p-1 border border-orange-100">
                                             <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none">Mult.</span>
-                                            <span class="font-black text-orange-600 text-[10px] sm:text-xs leading-tight">⭐ ${dp.atk || 40}</span>
+                                            <span class="font-black text-orange-600 text-[10px] sm:text-xs leading-tight">⭐ x${Math.max(1, Math.floor((dp.atk || 40) / 10))}</span>
                                         </div>
                                         <div class="bg-gray-100 rounded-lg p-1 border border-gray-200">
                                             <span class="block text-[8px] font-bold text-gray-500 uppercase leading-none">Control</span>
-                                            <span class="font-black text-gray-600 text-[10px] sm:text-xs leading-tight">⚙️ ${dp.def || 20}%</span>
+                                            <span class="font-black text-gray-600 text-[10px] sm:text-xs leading-tight">⚙️ Nvl ${Math.max(1, Math.floor((dp.def || 20) / 10))}</span>
                                         </div>
                                         <div class="bg-green-50/80 rounded-lg p-1 border border-green-200">
                                             <span class="block text-[8px] font-bold text-green-700 uppercase leading-none">Cosecha</span>
@@ -3932,9 +3932,9 @@ if (typeof window.farmApp === 'undefined') {
                     let statsHtml = `
                         <div class="flex flex-wrap gap-1.5 mt-2">
                             <span class="text-[9px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase font-black" title="Tiempo de crecimiento">⏳ ${pDuration}</span>
-                            <span class="text-[9px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 uppercase font-black" title="Fichas de Juego (Vida)">🪙 ${pHp}</span>
-                            <span class="text-[9px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 uppercase font-black" title="Multiplicador (Ataque)">⭐ ${pAtk}</span>
-                            <span class="text-[9px] bg-gray-50 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase font-black" title="Control (Defensa)">⚙️ ${pDef}%</span>
+                            <span class="text-[9px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 uppercase font-black" title="Fichas de Juego (Intentos)">🪙 ${Math.max(1, Math.floor(pHp / 10))}</span>
+                            <span class="text-[9px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 uppercase font-black" title="Multiplicador (Puntos)">⭐ x${Math.max(1, Math.floor(pAtk / 10))}</span>
+                            <span class="text-[9px] bg-gray-50 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase font-black" title="Control (Tolerancia Física)">⚙️ Nvl ${Math.max(1, Math.floor(pDef / 10))}</span>
                         </div>
                     `;
 
@@ -4398,9 +4398,9 @@ if (typeof window.farmApp === 'undefined') {
                                 <div>
                                     <h4 class="font-black text-cg_navy text-sm leading-tight flex items-center gap-1">${name} ${isArsenal ? '<span class="text-[8px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded uppercase">Arsenal</span>' : '<span class="text-[8px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase">Granja</span>'}</h4>
                                     <div class="flex gap-2 mt-1 text-[9px] font-bold text-gray-500 uppercase">
-                                        <span class="text-yellow-600">🪙 ${pHp}</span>
-                                        <span class="text-orange-500">⭐ ${pAtk}</span>
-                                        <span class="text-gray-500">⚙️ ${pDef}%</span>
+                                        <span class="text-yellow-600" title="Fichas">🪙 ${Math.max(1, Math.floor(pHp / 10))}</span>
+                                        <span class="text-orange-500" title="Multiplicador">⭐ x${Math.max(1, Math.floor(pAtk / 10))}</span>
+                                        <span class="text-gray-500" title="Control">⚙️ Nvl ${Math.max(1, Math.floor(pDef / 10))}</span>
                                     </div>
                                 </div>
                             </div>
@@ -4573,7 +4573,7 @@ if (typeof window.farmApp === 'undefined') {
                         this.state.seedsBalance += refundAmount;
                         this.saveState();
                         this.updateUI();
-                        this.showFarmAlert("Duelo Cancelado", `Se te han reembolsado las ${refundAmount.toLocaleString()} 🌱 de la apuesta.`, "💸");
+                        this.showFarmAlert("Duelo Cancelado", `Se te han reembolsado las ${refundAmount.toLocaleString()} 🪙 de la apuesta.`, "💸");
                     }
                     sessionStorage.removeItem('pve_bot_mode');
                     sessionStorage.removeItem('bot_bet_amount');

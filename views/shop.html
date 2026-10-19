@@ -172,9 +172,9 @@ window.shopApp = {
             { id: 'iap_elite_7d', name: 'Membresía Élite 7 Días', image: 'assets/Herramientas_y_Servicios/PaseVip.png', duration: '7 Días', usage: 'Todo Incl.', desc: 'Pase Granjero + Enfermería VIP. El paquete definitivo.', price_cop: 39000 }
         ],
         exchange: [
-            { id: 'exc_10k', name: 'Lote Básico', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 4,250 🌱 semillas.', price_cop: 10000, seeds: 4250 },
-            { id: 'exc_25k', name: 'Lote Profesional', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 11,000 🌱 semillas.', price_cop: 25000, seeds: 11000 },
-            { id: 'exc_50k', name: 'Lote Élite Magnate', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 22,500 🌱 semillas.', price_cop: 50000, seeds: 22500 }
+            { id: 'exc_10k', name: 'Lote Básico', image: 'assets/Herramientas_y_Servicios/lote_1.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 4,250 🪙 fichas.', price_cop: 10000, seeds: 4250 },
+            { id: 'exc_25k', name: 'Lote Profesional', image: 'assets/Herramientas_y_Servicios/lote_2.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 11,000 🪙 fichas.', price_cop: 25000, seeds: 11000 },
+            { id: 'exc_50k', name: 'Lote Élite Magnate', image: 'assets/Herramientas_y_Servicios/lote_3.png', duration: 'Permanente', usage: 'Instantáneo', desc: 'Recibe al instante 22,500 🪙 fichas.', price_cop: 50000, seeds: 22500 }
         ]
     },
 
@@ -428,19 +428,23 @@ window.shopApp = {
                 let reqSize = item.potType === 'small' ? 'Pequeña' : 'Grande';
                 reqPotHtml = `<span class="bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shrink-0">🏺 Maceta ${reqSize}</span>`;
 
+                let fichas = Math.max(1, Math.floor(item.hp / 10));
+                let multiplicador = Math.max(1, Math.floor(item.atk / 10));
+                let control = Math.max(1, Math.floor(item.def / 10));
+
                 statsHtml = `
                 <div class="grid grid-cols-3 gap-1.5 w-full text-center mb-4 mt-2">
                     <div class="bg-yellow-50 rounded-lg p-1.5 border border-yellow-100 shadow-sm">
-                        <span class="block text-[8px] font-bold text-yellow-600 uppercase leading-none mb-0.5">Fichas (HP)</span>
-                        <span class="font-black text-yellow-700 text-xs leading-none">🪙 ${item.hp}</span>
+                        <span class="block text-[8px] font-bold text-yellow-600 uppercase leading-none mb-0.5">Fichas</span>
+                        <span class="font-black text-yellow-700 text-xs leading-none">🪙 ${fichas}</span>
                     </div>
                     <div class="bg-orange-50 rounded-lg p-1.5 border border-orange-100 shadow-sm">
-                        <span class="block text-[8px] font-bold text-orange-500 uppercase leading-none mb-0.5">Mult. (ATK)</span>
-                        <span class="font-black text-orange-700 text-xs leading-none">⭐ ${item.atk}</span>
+                        <span class="block text-[8px] font-bold text-orange-500 uppercase leading-none mb-0.5">Multiplicador</span>
+                        <span class="font-black text-orange-700 text-xs leading-none">⭐ x${multiplicador}</span>
                     </div>
                     <div class="bg-gray-100 rounded-lg p-1.5 border border-gray-200 shadow-sm">
-                        <span class="block text-[8px] font-bold text-gray-500 uppercase leading-none mb-0.5">Control (DEF)</span>
-                        <span class="font-black text-gray-700 text-xs leading-none">⚙️ ${item.def}%</span>
+                        <span class="block text-[8px] font-bold text-gray-500 uppercase leading-none mb-0.5">Control</span>
+                        <span class="font-black text-gray-700 text-xs leading-none">⚙️ Nvl ${control}</span>
                     </div>
                 </div>`;
             }
@@ -614,7 +618,7 @@ window.shopApp = {
                 if(window.syncUserData) window.syncUserData(); 
 
                 let catItem = this.catalog.exchange.find(i => i.id === packageId);
-                this.showModalAlert(catItem.image, "Lote de Semillas (🌱)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
+                this.showModalAlert(catItem.image, "Lote de Fichas (🪙)", catItem.seeds, `-$${catItem.price_cop.toLocaleString()}`, 'CRÉDITOS Debitado:', 'success');
             } else {
                 this.showModalAlert(null, 'Operación Fallida', null, null, null, 'error', data.error || "Saldo de CRÉDITOS Insuficiente. Completa torneos o encuestas.");
             }

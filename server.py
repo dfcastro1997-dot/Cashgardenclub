@@ -934,7 +934,7 @@ def buy_practice():
         seeds_balance = state.get('seedsBalance', 0)
         
         if seeds_balance < cost:
-            return jsonify({"error": "No tienes Semillas (🌱) suficientes para comprar el pase."}), 400
+            return jsonify({"error": "No tienes Fichas (🪙) suficientes para comprar el pase."}), 400
             
         state['seedsBalance'] = seeds_balance - cost
         state['practiceTokens'] = state.get('practiceTokens', 0) + amount
@@ -2027,14 +2027,14 @@ def pvp_challenge():
     c_state = json.loads(challenger['game_state'] or '{}')
     if c_state.get('seedsBalance', 0) < bet:
         cur.close(); conn.close()
-        return jsonify({"error": "No tienes suficientes semillas."}), 400
+        return jsonify({"error": "No tienes suficientes fichas."}), 400
         
     # Validar saldo del objetivo (Rival)
     t_state = json.loads(target['game_state'] or '{}')
     t_seeds = t_state.get('seedsBalance', 0)
     if t_seeds < bet:
         cur.close(); conn.close()
-        return jsonify({"error": f"El oponente no tiene suficientes semillas para apostar (Máximo que posee: {t_seeds} 🌱)"}), 400
+        return jsonify({"error": f"El oponente no tiene suficientes fichas para apostar (Máximo que posee: {t_seeds} 🪙)"}), 400
     
     cur.execute("INSERT INTO pvp_matches (challenger_id, target_id, bet_seeds, status) VALUES (%s, %s, %s, 'pending') RETURNING id", (challenger['id'], target['id'], bet))
     match_id = cur.fetchone()['id']
