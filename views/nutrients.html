@@ -6,11 +6,11 @@
                 <span class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Torneos Sit & Go</span>
             </div>
             <h2 class="text-2xl md:text-3xl font-black text-cg_navy tracking-tight">Arena de Torneos</h2>
-            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Gana dinero real destruyendo a los guardianes. El torneo inicia automáticamente al llenarse la sala (10 cupos).</p>
+            <p class="text-xs md:text-sm text-gray-500 font-medium mt-1">Multiplica tu dinero destruyendo a los guardianes. El torneo inicia automáticamente al llenarse la sala (10 cupos).</p>
         </div>
     </div>
 
-    <!-- TARJETAS DE LIGAS (Luminosas y Atractivas) -->
+    <!-- TARJETAS DE LIGAS (Luminosas, Atractivas y Motivacionales) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         
         <!-- Liga Novato -->
@@ -26,19 +26,26 @@
             
             <!-- Panel de Pozo y Cupos (Claro y Llamativo) -->
             <div class="bg-green-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-green-200 relative z-10 mt-auto shadow-sm text-center">
+                
+                <!-- BANDERIN DE INVERSIÓN MOTIVACIONAL -->
+                <div class="w-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-2.5 mb-3 shadow-md border border-green-400 transform transition-transform hover:scale-105">
+                    <span class="block text-xs font-black text-white uppercase tracking-widest drop-shadow-sm">🔥 Invierte $5.000 COP</span>
+                    <span class="block text-[9px] font-black text-green-100 uppercase tracking-widest mt-0.5">Y puedes ganarte lo siguiente 👇</span>
+                </div>
+
                 <span class="text-[10px] font-black text-green-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-green-600 font-mono tracking-tight animated-number" data-target="40000" id="lb-pool-1">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-green-600 font-mono tracking-tight animated-number" data-target="40000" id="lb-pool-1">$40,000</span>
                 
                 <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-green-200/60">
                     <div class="text-left">
                         <span class="block text-[8px] text-green-800 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm animated-number" data-target="28000" id="lb-first-1">$0</span>
+                        <span class="font-black text-cg_gold text-sm animated-number" data-target="28000" id="lb-first-1">$28,000</span>
                     </div>
                     <div class="text-right">
                         <span class="block text-[8px] text-green-800 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-green-700 text-sm animated-number" data-target="12000" id="lb-second-1">$0</span>
+                        <span class="font-black text-green-700 text-sm animated-number" data-target="12000" id="lb-second-1">$12,000</span>
                     </div>
                 </div>
 
@@ -52,8 +59,8 @@
                 <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(1, 5000, '5.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
-                    Entrar: $5k
+                <button onclick="openPreTournamentModal(1, 5000, '5.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
+                    ¡Apostar $5k!
                 </button>
             </div>
         </div>
@@ -70,19 +77,26 @@
             </div>
             
             <div class="bg-blue-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-blue-200 relative z-10 mt-auto shadow-sm text-center">
+                
+                <!-- BANDERIN DE INVERSIÓN MOTIVACIONAL -->
+                <div class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-2.5 mb-3 shadow-md border border-blue-400 transform transition-transform hover:scale-105">
+                    <span class="block text-xs font-black text-white uppercase tracking-widest drop-shadow-sm">⚡ Invierte $10.000 COP</span>
+                    <span class="block text-[9px] font-black text-blue-100 uppercase tracking-widest mt-0.5">Y puedes ganarte lo siguiente 👇</span>
+                </div>
+
                 <span class="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-blue-600 font-mono tracking-tight animated-number" data-target="80000" id="lb-pool-3">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-blue-600 font-mono tracking-tight animated-number" data-target="80000" id="lb-pool-3">$80,000</span>
                 
                 <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-blue-200/60">
                     <div class="text-left">
                         <span class="block text-[8px] text-blue-800 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm animated-number" data-target="56000" id="lb-first-3">$0</span>
+                        <span class="font-black text-cg_gold text-sm animated-number" data-target="56000" id="lb-first-3">$56,000</span>
                     </div>
                     <div class="text-right">
                         <span class="block text-[8px] text-blue-800 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-blue-700 text-sm animated-number" data-target="24000" id="lb-second-3">$0</span>
+                        <span class="font-black text-blue-700 text-sm animated-number" data-target="24000" id="lb-second-3">$24,000</span>
                     </div>
                 </div>
 
@@ -96,8 +110,8 @@
                 <button onclick="viewLeaderboard(3)" class="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(3, 10000, '15.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
-                    Entrar: $10k
+                <button onclick="openPreTournamentModal(3, 10000, '15.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
+                    ¡Apostar $10k!
                 </button>
             </div>
         </div>
@@ -114,19 +128,26 @@
             </div>
             
             <div class="bg-orange-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-orange-200 relative z-10 mt-auto shadow-sm text-center">
+                
+                <!-- BANDERIN DE INVERSIÓN MOTIVACIONAL -->
+                <div class="w-full bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-2.5 mb-3 shadow-md border border-orange-400 transform transition-transform hover:scale-105">
+                    <span class="block text-xs font-black text-white uppercase tracking-widest drop-shadow-sm">🚀 Invierte $30.000 COP</span>
+                    <span class="block text-[9px] font-black text-orange-100 uppercase tracking-widest mt-0.5">Y puedes ganarte lo siguiente 👇</span>
+                </div>
+
                 <span class="text-[10px] font-black text-orange-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-orange-600 font-mono tracking-tight animated-number" data-target="240000" id="lb-pool-4">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-orange-600 font-mono tracking-tight animated-number" data-target="240000" id="lb-pool-4">$240,000</span>
                 
                 <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-orange-200/60">
                     <div class="text-left">
                         <span class="block text-[8px] text-orange-800 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm animated-number" data-target="168000" id="lb-first-4">$0</span>
+                        <span class="font-black text-cg_gold text-sm animated-number" data-target="168000" id="lb-first-4">$168,000</span>
                     </div>
                     <div class="text-right">
                         <span class="block text-[8px] text-orange-800 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-orange-700 text-sm animated-number" data-target="72000" id="lb-second-4">$0</span>
+                        <span class="font-black text-orange-700 text-sm animated-number" data-target="72000" id="lb-second-4">$72,000</span>
                     </div>
                 </div>
 
@@ -140,8 +161,8 @@
                 <button onclick="viewLeaderboard(4)" class="bg-white hover:bg-orange-50 text-orange-500 border border-orange-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(4, 30000, '30.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
-                    Entrar: $30k
+                <button onclick="openPreTournamentModal(4, 30000, '30.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
+                    ¡Apostar $30k!
                 </button>
             </div>
         </div>
@@ -158,19 +179,26 @@
             </div>
             
             <div class="bg-amber-50/80 rounded-2xl p-4 flex flex-col items-center justify-center border border-amber-200 relative z-10 mt-auto shadow-sm text-center">
+                
+                <!-- BANDERIN DE INVERSIÓN MOTIVACIONAL -->
+                <div class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl p-2.5 mb-3 shadow-md border border-yellow-400 transform transition-transform hover:scale-105">
+                    <span class="block text-xs font-black text-white uppercase tracking-widest drop-shadow-sm">👑 Invierte $50.000 COP</span>
+                    <span class="block text-[9px] font-black text-amber-100 uppercase tracking-widest mt-0.5">Y puedes ganarte lo siguiente 👇</span>
+                </div>
+
                 <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Pozo de Premios
                 </span>
-                <span class="text-2xl md:text-3xl font-black text-amber-500 font-mono tracking-tight animated-number" data-target="400000" id="lb-pool-5">$0</span>
+                <span class="text-2xl md:text-3xl font-black text-amber-500 font-mono tracking-tight animated-number" data-target="400000" id="lb-pool-5">$400,000</span>
                 
                 <div class="w-full grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-amber-200/60">
                     <div class="text-left">
                         <span class="block text-[8px] text-amber-800 font-bold uppercase">🥇 1er (70%)</span>
-                        <span class="font-black text-cg_gold text-sm animated-number" data-target="280000" id="lb-first-5">$0</span>
+                        <span class="font-black text-cg_gold text-sm animated-number" data-target="280000" id="lb-first-5">$280,000</span>
                     </div>
                     <div class="text-right">
                         <span class="block text-[8px] text-amber-800 font-bold uppercase">🥈 2do (30%)</span>
-                        <span class="font-black text-amber-700 text-sm animated-number" data-target="120000" id="lb-second-5">$0</span>
+                        <span class="font-black text-amber-700 text-sm animated-number" data-target="120000" id="lb-second-5">$120,000</span>
                     </div>
                 </div>
 
@@ -184,8 +212,8 @@
                 <button onclick="viewLeaderboard(5)" class="bg-white hover:bg-amber-50 text-amber-500 border border-amber-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(5, 50000, '50.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest">
-                    Entrar: $50k
+                <button onclick="openPreTournamentModal(5, 50000, '50.000 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
+                    ¡Apostar $50k!
                 </button>
             </div>
         </div>
@@ -322,13 +350,32 @@
         5: { name: 'Liga Élite', img: 'assets/Herramientas_y_Servicios/T4.png' }
     };
 
+    window.BASE_POOLS = {
+        1: 40000,
+        3: 80000,
+        4: 240000,
+        5: 400000
+    };
+
     window.pendingTournament = null;
     window.serverTournamentConfig = {};
     window.dynamicPlantsCache = [];
 
-    // Variables para el sistema FOMO (Fake Increment)
-    window.fakePlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
-    window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
+    // Lógica para que los cupos Falsos (FOMO) nunca empiecen en 0. (Entre 3 y 7)
+    function getFakeStartCount() {
+        return Math.floor(Math.random() * 5) + 3;
+    }
+
+    // Inicializar los contadores con valores pre-generados
+    if(!window.fakePlayersCounts) {
+        window.fakePlayersCounts = {
+            1: getFakeStartCount(), 
+            3: getFakeStartCount(), 
+            4: getFakeStartCount(), 
+            5: Math.floor(Math.random() * 4) + 2 // La Élite empieza un poco más lenta (2 a 5)
+        };
+        window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
+    }
 
     // Función de animación progresiva de números ("Efecto Casino")
     function animateValue(obj, start, end, duration) {
@@ -355,6 +402,7 @@
                 animateValue(el, 0, endVal, 1500);
             }
         });
+        renderPlayerCounts(); // Forzar el render de los números falsos iniciales
     }
     setTimeout(initCardAnimations, 100);
 
@@ -559,6 +607,8 @@
         document.getElementById('lb-tourney-name').innerText = window.TOURNAMENT_INFO[tId].name;
         
         let prizePool = parseFloat(data.prize_pool) || 0;
+        let basePool = window.BASE_POOLS[tId];
+        if (prizePool < basePool) prizePool = basePool; // Siempre mostrar al menos el pozo inicial
         
         // POZO DEL LEADERBOARD
         document.getElementById('lb-prize-pool').innerText = "$" + prizePool.toLocaleString() + " COP";
@@ -644,7 +694,7 @@
                     
                     // Si el conteo real bajó (se reseteó el torneo y empezó uno nuevo)
                     if (realCount < window.realPlayersCounts[id]) {
-                        window.fakePlayersCounts[id] = realCount;
+                        window.fakePlayersCounts[id] = getFakeStartCount(); // Reiniciar con falso
                     }
                     window.realPlayersCounts[id] = realCount;
                     
@@ -653,14 +703,15 @@
                         window.fakePlayersCounts[id] = realCount;
                     }
 
-                    // Actualizar Pozo en vivo en las tarjetas
+                    // Actualizar Pozo en vivo en las tarjetas garantizando el mínimo
                     if(data.prize_pool !== undefined) {
                         const poolEl = document.getElementById('lb-pool-' + id);
                         const firstEl = document.getElementById('lb-first-' + id);
                         const secEl = document.getElementById('lb-second-' + id);
                         
                         let pool = parseFloat(data.prize_pool);
-                        if (id == 1 && pool < 40000) pool = 40000; // Pozo Base Freeroll simulado
+                        let basePool = window.BASE_POOLS[id];
+                        if (pool < basePool) pool = basePool; // Siempre mostrar al menos el pozo inicial
                         
                         if(poolEl) poolEl.innerText = '$' + pool.toLocaleString();
                         if(firstEl) firstEl.innerText = '$' + (pool * 0.70).toLocaleString();
