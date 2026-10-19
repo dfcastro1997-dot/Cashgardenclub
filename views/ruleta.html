@@ -1,0 +1,396 @@
+<div class="fixed inset-0 z-[200] bg-slate-50 flex flex-col overflow-hidden font-sans">
+    
+    <!-- TOP HUD LUMINOSO Y LIMPIO -->
+    <div class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm relative z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
+                <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-10 h-10 object-contain drop-shadow-sm">
+            </div>
+            <div>
+                <h3 id="rul-plant-name" class="font-black text-cg_navy text-sm uppercase tracking-widest">Planta</h3>
+                <div class="flex gap-2 text-[10px] font-bold text-gray-500 mt-0.5 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                    <span id="rul-stat-hp">❤️ --</span>
+                    <span id="rul-stat-atk">⚔️ --</span>
+                    <span id="rul-stat-def">🛡️ --</span>
+                </div>
+            </div>
+        </div>
+        <div class="text-right bg-orange-50 px-4 py-1.5 rounded-xl border border-orange-100 shadow-sm">
+            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest">Puntaje Base</span>
+            <span id="rul-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none">0</span>
+        </div>
+    </div>
+
+    <!-- BARRA SECUNDARIA DE ESTADO -->
+    <div class="flex justify-between items-center bg-blue-50/50 px-5 py-3 border-b border-blue-100 shadow-sm shrink-0">
+        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm">
+            <span class="text-lg">⏱️</span>
+            <span id="rul-timer" class="text-lg font-black text-cg_navy font-mono w-14">60.0s</span>
+        </div>
+        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-green-100 shadow-sm">
+            <span class="text-lg drop-shadow-sm">🔄</span>
+            <span id="rul-ammo" class="text-lg font-black text-green-600 font-mono">0</span>
+            <span class="text-[10px] text-gray-400 font-black uppercase mt-0.5">Tiros Restantes</span>
+        </div>
+    </div>
+
+    <!-- ÁREA DE JUEGO (CANVAS LUMINOSO) -->
+    <div class="flex-1 relative bg-gradient-to-b from-sky-50 to-white flex items-center justify-center overflow-hidden">
+        
+        <!-- Indicador de Puntero Estático -->
+        <div class="absolute top-[8%] sm:top-[12%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
+            <div class="w-8 h-10 bg-red-600 rounded-b-full shadow-[0_4px_10px_rgba(220,38,38,0.6)] border-2 border-white flex items-end justify-center pb-1">
+                <span class="text-white text-xs">▼</span>
+            </div>
+        </div>
+
+        <canvas id="roulette-canvas" class="block w-full max-w-sm aspect-square mx-auto bg-transparent"></canvas>
+        
+        <!-- Botón de Acción Universal -->
+        <button id="rul-action-btn" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-cg_blue hover:bg-blue-500 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2">
+            <span>🎡</span> Girar Ruleta
+        </button>
+    </div>
+</div>
+
+<!-- MODAL DE RESULTADO LUMINOSO -->
+<div id="rul-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-cg_navy/80 backdrop-blur-sm font-sans">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border border-gray-100 shadow-2xl animate-fade-in relative overflow-hidden">
+        
+        <div class="w-20 h-20 bg-gradient-to-br from-yellow-300 to-cg_gold rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg border-4 border-white text-4xl animate-bounce">🏆</div>
+        
+        <h3 class="text-2xl font-black text-cg_navy mb-1 tracking-tight">¡Tiempo Agotado!</h3>
+        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido registrada en el servidor.</p>
+        
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left shadow-inner">
+            <div class="flex justify-between items-center text-xs mb-3">
+                <span class="text-gray-500 font-black uppercase tracking-widest">Puntaje Base:</span>
+                <span class="font-black text-cg_navy text-sm" id="res-base">0</span>
+            </div>
+            <div class="flex justify-between items-center text-xs mb-3">
+                <span class="text-green-600 font-black uppercase tracking-widest">Bono Velocidad:</span>
+                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md" id="res-time">+0</span>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                <span class="text-sm font-black text-cg_navy uppercase tracking-widest">Total Final:</span>
+                <span class="text-3xl font-black text-cg_gold drop-shadow-sm" id="res-total">0</span>
+            </div>
+        </div>
+
+        <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+            <span>💾</span> Registrar y Volver
+        </button>
+    </div>
+</div>
+
+<script>
+window.rouletteApp = {
+    canvas: document.getElementById('roulette-canvas'),
+    ctx: null,
+    size: 360,
+    
+    // Stats de la planta
+    hp: 100, atk: 50, def: 20,
+    
+    // Variables de juego
+    score: 0,
+    spinsTotal: 10,
+    spinsLeft: 10,
+    timeLeft: 60.0,
+    timerInterval: null,
+    isPlaying: false,
+    
+    // Físicas de la ruleta
+    slices: [],
+    numSlices: 8,
+    currentAngle: 0, // grados
+    velocity: 0,
+    maxVelocity: 14, // Velocidad de giro (grados por frame)
+    deceleration: 0.1, // Fricción determinada por DEF
+    
+    // Controles: READY -> SPINNING -> STOPPING
+    inputState: 'READY',
+    rafId: null,
+
+    init() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
+            let pData = window.farmApp.state.selectedCombatants[0];
+            if (pData) {
+                let realPlant;
+                if (pData.type === 'plot') {
+                    realPlant = window.farmApp.state.plots.find(p => p.id == pData.idTag)?.plant;
+                } else {
+                    realPlant = window.farmApp.state.arsenal.find(p => p.id == pData.idTag);
+                }
+                
+                if (realPlant) {
+                    this.hp = realPlant.hp || 100;
+                    this.atk = realPlant.atk || 50;
+                    this.def = realPlant.def || 20;
+                    document.getElementById('rul-plant-icon').src = realPlant.icon || 'assets/Fondos/logo.png';
+                    document.getElementById('rul-plant-name').innerText = realPlant.name;
+                }
+            }
+        }
+
+        document.getElementById('rul-stat-hp').innerText = `❤️ ${this.hp}`;
+        document.getElementById('rul-stat-atk').innerText = `⚔️ ${this.atk}`;
+        document.getElementById('rul-stat-def').innerText = `🛡️ ${this.def}`;
+
+        // BALANCE STANDARD:
+        // HP = Cantidad de giros (1 giro por cada 10 HP)
+        this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
+        this.spinsLeft = this.spinsTotal;
+        document.getElementById('rul-ammo').innerText = this.spinsLeft;
+
+        // DEF = Fricción (Mayor defensa frena más rápido, es más preciso)
+        // Deceleración base 0.05 + 0.1 por cada 100 de DEF
+        this.deceleration = 0.05 + (this.def / 100) * 0.1;
+
+        this.buildWheel();
+        this.startTimer();
+        
+        const actionBtn = document.getElementById('rul-action-btn');
+        actionBtn.onclick = () => this.handleInput();
+
+        this.isPlaying = true;
+        this.loop();
+    },
+
+    resize() {
+        this.canvas.width = this.size;
+        this.canvas.height = this.size;
+    },
+
+    buildWheel() {
+        // ATK = Multiplicador de puntos
+        const mult = 1 + (this.atk / 100);
+
+        // 8 Secciones (45 grados cada una)
+        this.slices = [
+            { id: 0, type: 'jackpot', bg: '#fef08a', border: '#eab308', text: '#854d0e', label: `⭐ ${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
+            { id: 1, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
+            { id: 2, type: 'bad',     bg: '#fee2e2', border: '#ef4444', text: '#991b1b', label: `💀 -500`, pts: -500 },
+            { id: 3, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
+            { id: 4, type: 'bad',     bg: '#fee2e2', border: '#ef4444', text: '#991b1b', label: `💀 -300`, pts: -300 },
+            { id: 5, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
+            { id: 6, type: 'good',    bg: '#dcfce7', border: '#22c55e', text: '#166534', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
+            { id: 7, type: 'bad',     bg: '#fee2e2', border: '#ef4444', text: '#991b1b', label: `💀 -400`, pts: -400 }
+        ];
+    },
+
+    startTimer() {
+        this.timerInterval = setInterval(() => {
+            if (!this.isPlaying) return;
+            this.timeLeft -= 0.1;
+            document.getElementById('rul-timer').innerText = this.timeLeft.toFixed(1) + 's';
+            
+            if (this.timeLeft <= 0 || this.score >= 10000) {
+                this.endGame();
+            }
+        }, 100);
+    },
+
+    handleInput() {
+        if (!this.isPlaying) return;
+        const btn = document.getElementById('rul-action-btn');
+
+        if (this.inputState === 'READY') {
+            if (this.spinsLeft <= 0) return;
+            
+            this.spinsLeft--;
+            document.getElementById('rul-ammo').innerText = this.spinsLeft;
+            
+            this.inputState = 'SPINNING';
+            this.velocity = this.maxVelocity;
+            
+            btn.innerHTML = "<span>🛑</span> ¡FRENAR!";
+            btn.classList.replace('bg-cg_blue', 'bg-red-500');
+            btn.classList.replace('hover:bg-blue-500', 'hover:bg-red-600');
+            btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_6px_0_#991b1b]');
+            
+        } else if (this.inputState === 'SPINNING') {
+            this.inputState = 'STOPPING';
+            btn.innerHTML = "<span>⏳</span> Frenando...";
+            btn.classList.replace('bg-red-500', 'bg-slate-400');
+            btn.classList.replace('hover:bg-red-600', 'hover:bg-slate-500');
+            btn.classList.replace('shadow-[0_6px_0_#991b1b]', 'shadow-[0_6px_0_#94a3b8]');
+            btn.disabled = true;
+        }
+    },
+
+    loop() {
+        if (!this.isPlaying) return;
+        this.update();
+        this.draw();
+        this.rafId = requestAnimationFrame(() => this.loop());
+    },
+
+    update() {
+        if (this.inputState === 'SPINNING') {
+            this.currentAngle = (this.currentAngle + this.velocity) % 360;
+        } 
+        else if (this.inputState === 'STOPPING') {
+            this.velocity -= this.deceleration;
+            if (this.velocity <= 0) {
+                this.velocity = 0;
+                this.resolveSpin();
+            } else {
+                this.currentAngle = (this.currentAngle + this.velocity) % 360;
+            }
+        }
+    },
+
+    resolveSpin() {
+        // La aguja estática está arriba, a los 270 grados en el canvas estándar.
+        // Calculamos qué sección quedó bajo los 270 grados.
+        let effectiveAngle = (270 - this.currentAngle) % 360;
+        if (effectiveAngle < 0) effectiveAngle += 360;
+        
+        let sliceAngle = 360 / this.numSlices;
+        let winningIndex = Math.floor(effectiveAngle / sliceAngle);
+        
+        let wonSlice = this.slices[winningIndex];
+        
+        this.score = Math.max(0, this.score + wonSlice.pts);
+        document.getElementById('rul-score').innerText = this.score;
+
+        // Efecto visual al ganar o perder puntos (ligero shake o destello podría ir por CSS, pero aquí reiniciamos botones)
+        if (this.score >= 10000 || this.spinsLeft <= 0) {
+            this.endGame();
+        } else {
+            this.inputState = 'READY';
+            const btn = document.getElementById('rul-action-btn');
+            btn.disabled = false;
+            btn.innerHTML = "<span>🎡</span> Girar Ruleta";
+            btn.classList.replace('bg-slate-400', 'bg-cg_blue');
+            btn.classList.replace('hover:bg-slate-500', 'hover:bg-blue-500');
+            btn.classList.replace('shadow-[0_6px_0_#94a3b8]', 'shadow-[0_6px_0_#1e3a8a]');
+        }
+    },
+
+    draw() {
+        this.ctx.clearRect(0, 0, this.size, this.size);
+        const center = this.size / 2;
+        const radius = (this.size / 2) - 10;
+
+        this.ctx.save();
+        this.ctx.translate(center, center);
+        this.ctx.rotate((this.currentAngle * Math.PI) / 180);
+
+        const sliceAngle = (2 * Math.PI) / this.numSlices;
+
+        // Dibujar Secciones
+        for (let i = 0; i < this.numSlices; i++) {
+            let slice = this.slices[i];
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, 0);
+            this.ctx.arc(0, 0, radius, i * sliceAngle, (i + 1) * sliceAngle);
+            this.ctx.closePath();
+            
+            this.ctx.fillStyle = slice.bg;
+            this.ctx.fill();
+            
+            this.ctx.lineWidth = 4;
+            this.ctx.strokeStyle = slice.border;
+            this.ctx.stroke();
+
+            // Dibujar Textos
+            this.ctx.save();
+            this.ctx.rotate(i * sliceAngle + sliceAngle / 2);
+            this.ctx.textAlign = 'right';
+            this.ctx.fillStyle = slice.text;
+            this.ctx.font = 'bold 16px sans-serif';
+            
+            // Si el texto es largo, lo separamos si tiene un espacio (ej: '💀 -500')
+            let textParts = slice.label.split(' ');
+            if (textParts.length > 1) {
+                this.ctx.font = '20px sans-serif';
+                this.ctx.fillText(textParts[0], radius - 70, 6);
+                this.ctx.font = 'bold 16px sans-serif';
+                this.ctx.fillText(textParts[1], radius - 15, 6);
+            } else {
+                this.ctx.fillText(slice.label, radius - 15, 6);
+            }
+            this.ctx.restore();
+        }
+
+        // Círculo Central Decorativo
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 30, 0, 2 * Math.PI);
+        this.ctx.fillStyle = '#f8fafc'; // slate-50
+        this.ctx.fill();
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = '#e2e8f0'; // slate-200
+        this.ctx.stroke();
+
+        this.ctx.restore();
+    },
+
+    endGame() {
+        this.isPlaying = false;
+        clearInterval(this.timerInterval);
+        cancelAnimationFrame(this.rafId);
+
+        let finalScore = this.score;
+        let timeBonus = 0;
+        if (finalScore >= 10000 && this.timeLeft > 0) {
+            timeBonus = Math.floor(this.timeLeft) * 10;
+        }
+
+        finalScore += timeBonus;
+        if (finalScore > 10000) finalScore = 10000;
+
+        document.getElementById('res-base').innerText = this.score.toLocaleString();
+        document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
+        document.getElementById('res-total').innerText = finalScore.toLocaleString();
+
+        window.finalRouletteScore = finalScore;
+
+        document.getElementById('rul-result-modal').classList.remove('hidden');
+        document.getElementById('rul-result-modal').classList.add('flex');
+    }
+};
+
+window.submitRouletteScore = async function() {
+    const btn = document.getElementById('btn-submit-score');
+    btn.innerHTML = "<span>⏳</span> Registrando...";
+    btn.disabled = true;
+
+    const username = sessionStorage.getItem('username');
+    const token = sessionStorage.getItem('session_token');
+    const instanceId = sessionStorage.getItem('pve_tournament_instance');
+
+    if (instanceId && token && username) {
+        try {
+            await fetch('/api/tournaments/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    session_token: token,
+                    instance_id: instanceId,
+                    score: window.finalRouletteScore
+                })
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    sessionStorage.removeItem('pve_tournament_id');
+    sessionStorage.removeItem('pve_tournament_fee');
+    sessionStorage.removeItem('pve_tournament_instance');
+    
+    if (window.farmApp) {
+        window.farmApp.state.combatLock = false;
+        window.farmApp.saveState();
+    }
+
+    loadView('nutrients'); 
+};
+
+setTimeout(() => window.rouletteApp.init(), 200);
+</script>
+</div>

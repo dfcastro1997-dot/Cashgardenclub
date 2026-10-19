@@ -62,8 +62,8 @@
                 <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
-                <button onclick="openPreTournamentModal(1, 0, '0 🌱')" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
-                    ¡Jugar Pachinko!
+                <button onclick="openInstructionsModal(1, 0)" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
+                    ¡Participar!
                 </button>
             </div>
         </div>
@@ -195,21 +195,22 @@
     </div>
 </div>
 
-<!-- VENTANA MODAL PRE-TORNEO (NUEVAS REGLAS CASINO DE DESTREZA) -->
-<div id="pre-tournament-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePreTournamentModal()"></div>
+<!-- ========================================== -->
+<!-- MODAL 1: INSTRUCCIONES GENERALES           -->
+<!-- ========================================== -->
+<div id="instructions-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeInstructionsModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 sm:p-8 text-center border-b border-gray-100 relative shrink-0">
-            <button onclick="closePreTournamentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
-            <span class="text-cg_gold text-[10px] md:text-xs font-black uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full border border-orange-200">Juego de Habilidad (Sin RNG)</span>
-            <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mt-4" id="pt-title">Pachinko de Polinización</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">Suelta las semillas controlando el ángulo y la fuerza. La física es 100% predecible y depende de tu destreza.</p>
+            <button onclick="closeInstructionsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
+            <span class="text-cg_gold text-[10px] md:text-xs font-black uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full border border-orange-200">Juegos de Habilidad</span>
+            <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mt-4">Arena de Minijuegos</h3>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">La física es 100% predecible. Tu destreza y la planta que elijas definirán tu puntuación.</p>
         </div>
 
         <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
             <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Fórmula Estándar de Balance</h4>
-            
             <div class="grid grid-cols-2 gap-3 mb-6">
                 <div class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm text-center">
                     <span class="block text-[9px] text-gray-400 font-bold uppercase">Puntaje Base Max</span>
@@ -225,52 +226,94 @@
                 </div>
                 <div class="bg-red-50 border border-red-200 p-3 rounded-xl shadow-sm text-center">
                     <span class="block text-[9px] text-red-700 font-bold uppercase">Penalización</span>
-                    <span class="font-black text-red-600 text-sm">-50 Pts x Fuego</span>
+                    <span class="font-black text-red-600 text-sm">Por fallos / fuego</span>
                 </div>
             </div>
             
-            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas Mecánicas de tu Planta</h4>
+            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas de tu Planta (Stats)</h4>
             <div class="space-y-3">
                 <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center gap-3">
                     <span class="text-2xl">❤️</span>
-                    <p class="text-[10px] sm:text-xs text-red-900 leading-snug"><strong class="font-black">Vida (HP):</strong> Determina tus "Oportunidades". A mayor HP, más semillas tienes para lanzar en 60s.</p>
+                    <p class="text-[10px] sm:text-xs text-red-900 leading-snug"><strong class="font-black">Vida (HP):</strong> Determina tus "Oportunidades". A mayor HP, más tiros/semillas tienes en 60s.</p>
                 </div>
                 <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3">
                     <span class="text-2xl">⚔️</span>
-                    <p class="text-[10px] sm:text-xs text-orange-900 leading-snug"><strong class="font-black">Ataque (ATK):</strong> Define el "Multiplicador". A mayor ATK, más puntos te da cada canasta acertada.</p>
+                    <p class="text-[10px] sm:text-xs text-orange-900 leading-snug"><strong class="font-black">Ataque (ATK):</strong> Define el "Multiplicador". A mayor ATK, más puntos base otorga cada acierto.</p>
                 </div>
                 <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center gap-3">
                     <span class="text-2xl">🛡️</span>
-                    <p class="text-[10px] sm:text-xs text-blue-900 leading-snug"><strong class="font-black">Defensa (DEF):</strong> Otorga "Margen de Tolerancia". A mayor DEF, las canastas ganadoras son más anchas.</p>
+                    <p class="text-[10px] sm:text-xs text-blue-900 leading-snug"><strong class="font-black">Defensa (DEF):</strong> Otorga "Margen de Tolerancia". En Pachinko agranda canastas, en Ruleta aumenta la fricción (frena más rápido).</p>
                 </div>
             </div>
         </div>
 
         <div class="p-4 md:p-5 border-t border-gray-200 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
-            <button onclick="closePreTournamentModal()" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold py-3 md:py-4 rounded-xl transition-colors shadow-sm text-sm md:text-base">Cancelar</button>
-            <button onclick="confirmJoinTournament()" id="btn-confirm-tournament" class="flex-[2] bg-cg_gold hover:bg-orange-500 text-white font-black py-3 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2 text-sm md:text-base">Elegir Planta y Jugar</button>
+            <button onclick="closeInstructionsModal()" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold py-3 md:py-4 rounded-xl transition-colors shadow-sm text-sm md:text-base">Cancelar</button>
+            <button onclick="openMinigameSelectionModal()" class="flex-[2] bg-cg_blue hover:bg-blue-600 text-white font-black py-3 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2 text-sm md:text-base">Siguiente ➔</button>
         </div>
     </div>
 </div>
 
-<!-- VENTANA MODAL SELECCIÓN DE PLANTA PARA PACHINKO -->
-<div id="pachinko-plant-selection-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePachinkoSelectionModal()"></div>
+<!-- ========================================== -->
+<!-- MODAL 2: SELECCIÓN DE MINIJUEGO            -->
+<!-- ========================================== -->
+<div id="minigame-selection-modal" class="fixed inset-0 z-[220] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeMinigameSelectionModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
+        
+        <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
+            <button onclick="closeMinigameSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
+            <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight mt-2">Selecciona un Minijuego</h3>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-1">Elige en qué modalidad demostrarás tu destreza.</p>
+        </div>
+
+        <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                
+                <!-- Opcion Pachinko -->
+                <div onclick="openPlantSelectionModal('pachinko')" class="bg-white border-2 border-gray-200 hover:border-cg_blue rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner">
+                        🎯
+                    </div>
+                    <h4 class="font-black text-lg text-cg_navy mb-2">Pachinko Botánico</h4>
+                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Suelta semillas calculando el ángulo y la fuerza correctos para encestarlas.</p>
+                </div>
+                
+                <!-- Opcion Ruleta -->
+                <div onclick="openPlantSelectionModal('ruleta')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
+                    <div class="w-20 h-20 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform shadow-inner">
+                        🎡
+                    </div>
+                    <h4 class="font-black text-lg text-cg_navy mb-2">Ruleta Táctica</h4>
+                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Frena la aguja en el momento exacto calculando la inercia del disco.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL 3: SELECCIÓN DE PLANTA FINAL         -->
+<!-- ========================================== -->
+<div id="plant-selection-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePlantSelectionModal()"></div>
     <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-3xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
-            <button onclick="closePachinkoSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
+            <button onclick="closePlantSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
             <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight mt-2">Selecciona tu Planta</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium mt-1">Elige 1 planta para competir en el Pachinko.</p>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-1">Elige 1 planta para competir en el minijuego.</p>
         </div>
 
-        <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto" id="pachinko-plant-list">
+        <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto" id="minigame-plant-list">
             <!-- Lista inyectada por JS -->
         </div>
     </div>
 </div>
 
-<!-- LÓGICA DEL TORNEO Y SELECCIÓN DE PLANTA DIRECTA AL PACHINKO -->
+
+<!-- LÓGICA DEL TORNEO, SELECCIÓN DE MINIJUEGO Y PLANTA -->
 <script>
     window.TOURNAMENT_INFO = {
         1: { name: 'Liga Novato' },
@@ -287,6 +330,7 @@
     };
 
     window.pendingTournament = null;
+    window.selectedMinigame = null;
 
     if(!window.fakePlayersCounts) {
         window.fakePlayersCounts = {
@@ -359,7 +403,12 @@
     };
     setTimeout(window.initCardAnimations, 100);
 
-    window.openPreTournamentModal = async function(t_id, fee_cop, seedCostStr) {
+    // ===============================================
+    // FLUJO DE MODALES
+    // ===============================================
+
+    // 1. Abrir Modal de Instrucciones (Primer Paso)
+    window.openInstructionsModal = async function(t_id, fee_cop) {
         if (!window.farmApp || !window.farmApp.state) {
             alert('Aviso: Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón.');
             return;
@@ -382,12 +431,35 @@
 
         window.pendingTournament = { id: t_id, fee: fee_cop };
         
-        document.getElementById('pre-tournament-modal').classList.remove('hidden');
-        document.getElementById('pre-tournament-modal').classList.add('flex');
+        document.getElementById('instructions-modal').classList.remove('hidden');
+        document.getElementById('instructions-modal').classList.add('flex');
     };
 
-    // --- NUEVO MÉTODO PARA SELECCIONAR PLANTAS Y ENVIAR AL PACHINKO DIRECTAMENTE ---
-    window.confirmJoinTournament = function() {
+    window.closeInstructionsModal = function() {
+        document.getElementById('instructions-modal').classList.add('hidden');
+        document.getElementById('instructions-modal').classList.remove('flex');
+        window.pendingTournament = null;
+    };
+
+    // 2. Abrir Modal de Selección de Minijuego (Paso 2)
+    window.openMinigameSelectionModal = function() {
+        document.getElementById('instructions-modal').classList.add('hidden');
+        document.getElementById('instructions-modal').classList.remove('flex');
+        
+        document.getElementById('minigame-selection-modal').classList.remove('hidden');
+        document.getElementById('minigame-selection-modal').classList.add('flex');
+    };
+
+    window.closeMinigameSelectionModal = function() {
+        document.getElementById('minigame-selection-modal').classList.add('hidden');
+        document.getElementById('minigame-selection-modal').classList.remove('flex');
+        window.pendingTournament = null;
+    };
+
+    // 3. Abrir Modal de Selección de Planta (Paso 3)
+    window.openPlantSelectionModal = function(minigame) {
+        window.selectedMinigame = minigame; // 'pachinko' o 'ruleta'
+        
         if (!window.pendingTournament) return;
         
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
@@ -401,7 +473,7 @@
             readyPlots.forEach(p => {
                 let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
                 html += `
-                    <div onclick="window.selectPlantForPachinko('plot', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
+                    <div onclick="window.selectPlantForMinigame('plot', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
                         <span class="block text-[10px] font-black text-green-600 mb-2 uppercase tracking-widest bg-green-50 rounded-md py-1">Terreno ${p.id}</span>
                         <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.plant.name}</h4>
@@ -416,7 +488,7 @@
             
             arsenal.forEach(p => {
                 html += `
-                    <div onclick="window.selectPlantForPachinko('arsenal', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
+                    <div onclick="window.selectPlantForMinigame('arsenal', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
                         <span class="block text-[10px] font-black text-red-600 mb-2 uppercase tracking-widest bg-red-50 rounded-md py-1">Arsenal</span>
                         <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.name}</h4>
@@ -431,44 +503,45 @@
         }
         
         html += '</div>';
+        document.getElementById('minigame-plant-list').innerHTML = html;
         
-        document.getElementById('pachinko-plant-list').innerHTML = html;
+        // Cerrar modal de minijuegos y abrir modal de plantas
+        document.getElementById('minigame-selection-modal').classList.add('hidden');
+        document.getElementById('minigame-selection-modal').classList.remove('flex');
         
-        // CORRECCIÓN: Ocultamos el modal anterior manualmente SIN borrar la variable 'pendingTournament'
-        document.getElementById('pre-tournament-modal').classList.add('hidden');
-        document.getElementById('pre-tournament-modal').classList.remove('flex');
-        
-        document.getElementById('pachinko-plant-selection-modal').classList.remove('hidden');
-        document.getElementById('pachinko-plant-selection-modal').classList.add('flex');
+        document.getElementById('plant-selection-modal').classList.remove('hidden');
+        document.getElementById('plant-selection-modal').classList.add('flex');
     };
 
-    window.closePachinkoSelectionModal = function() {
-        document.getElementById('pachinko-plant-selection-modal').classList.add('hidden');
-        document.getElementById('pachinko-plant-selection-modal').classList.remove('flex');
+    window.closePlantSelectionModal = function() {
+        document.getElementById('plant-selection-modal').classList.add('hidden');
+        document.getElementById('plant-selection-modal').classList.remove('flex');
         window.pendingTournament = null;
+        window.selectedMinigame = null;
     };
 
-    window.selectPlantForPachinko = function(type, idTag) {
-        if (!window.pendingTournament) return;
+    // 4. Seleccionar Planta y Ejecutar Juego
+    window.selectPlantForMinigame = function(type, idTag) {
+        if (!window.pendingTournament || !window.selectedMinigame) return;
         
         sessionStorage.setItem('pve_tournament_id', window.pendingTournament.id);
         sessionStorage.setItem('pve_tournament_fee', window.pendingTournament.fee);
         
-        // Asignar el equipo con 1 sola planta e ir a Pachinko directamente
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
         window.farmApp.state.combatLock = true;
         window.farmApp.saveState();
         
-        window.closePachinkoSelectionModal();
-        loadView('pachinko');
+        // Cierra este modal
+        document.getElementById('plant-selection-modal').classList.add('hidden');
+        document.getElementById('plant-selection-modal').classList.remove('flex');
+        
+        // Redirige a 'pachinko' o 'ruleta'
+        loadView(window.selectedMinigame);
     };
 
-    window.closePreTournamentModal = function() {
-        document.getElementById('pre-tournament-modal').classList.add('hidden');
-        document.getElementById('pre-tournament-modal').classList.remove('flex');
-        window.pendingTournament = null;
-    };
-    
+    // ===============================================
+    // LEADERBOARD
+    // ===============================================
     window.viewLeaderboard = function(tId) {
         window.currentLeaderboardTid = tId;
         const container = document.getElementById('live-leaderboard-container');
