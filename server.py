@@ -47,10 +47,10 @@ def admin_login():
     
     # Validar contra las variables de entorno de Railway
     if username == ADMIN_USER and password == ADMIN_PASS:
-        # Generar un token con expiración de 24 horas
+        # Generar un token con expiración de 24 horas usando timezone.utc y timedelta directos
         token = jwt.encode({
             'admin': True,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            'exp': datetime.now(timezone.utc) + timedelta(hours=24)
         }, ADMIN_SECRET, algorithm='HS256')
         
         return jsonify({"message": "Login exitoso", "admin_token": token}), 200

@@ -736,6 +736,13 @@
             return sessionStorage.getItem('admin_token') || '';
         }
 
+        // Mantener compatibilidad con todas las demás funciones que usan ADMIN_TOKEN
+        Object.defineProperty(window, 'ADMIN_TOKEN', {
+            get: function() {
+                return getAdminToken();
+            }
+        });
+
 
 
         function openReferralAdminModal(short_id, username) {
@@ -937,6 +944,17 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ admin_token: getAdminToken() })
                 });
+                
+                // Si el token expiró o es inválido, devolver al login
+                if (res.status === 403 || res.status === 401) {
+                    sessionStorage.removeItem('admin_logged_in');
+                    sessionStorage.removeItem('admin_token');
+                    document.getElementById('admin-main-app').classList.add('hidden');
+                    document.getElementById('admin-login-screen').classList.remove('hidden');
+                    document.getElementById('admin-login-screen').classList.remove('opacity-0');
+                    return;
+                }
+
                 const data = await res.json();
                 
                 if (res.ok) {
