@@ -357,13 +357,7 @@ def init_db():
 
 init_db()
 
-def get_season_multiplier(now_ms):
-    dt = datetime.fromtimestamp(now_ms / 1000.0, tz=timezone.utc)
-    day = dt.day
-    if 1 <= day <= 9: return 0.5   
-    elif 10 <= day <= 19: return 1.5 
-    elif 20 <= day <= 26: return 1.0 
-    else: return 2.0                 
+
 
 def process_server_tick(game_state_str, chat_id=None):
     import random
@@ -384,8 +378,6 @@ def process_server_tick(game_state_str, chat_id=None):
             auto_harvest_end = state.get('autoHarvestEndTime', 0)
             is_auto_harvesting = auto_harvest_end > now
             
-            season_multiplier = get_season_multiplier(now)
-
             any_plant_infected = any(
                 p.get('status') == 'planted' and p.get('hasCrow') 
                 for p in state.get('plots', [])
@@ -416,7 +408,7 @@ def process_server_tick(game_state_str, chat_id=None):
 
                 elif plot.get('status') in ['empty', 'pot']:
                     if plot.get('water', 0) > 0:
-                        accelerated_evap = 40.0 * 4.0 * season_multiplier 
+                        accelerated_evap = 40.0 * 4.0 
                         plot['water'] = max(0, plot['water'] - (accelerated_evap * delta_hours))
 
                 elif plot.get('status') == 'planted':
@@ -432,7 +424,7 @@ def process_server_tick(game_state_str, chat_id=None):
 
                     if not plot.get('isReady'):
                         if not is_auto_watering and plot.get('capsuleEndTime', 0) <= now:
-                            evap_rate = 40.0 * season_multiplier 
+                            evap_rate = 40.0 
                             
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))

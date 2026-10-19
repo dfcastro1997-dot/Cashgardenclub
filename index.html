@@ -1262,33 +1262,7 @@
             }
         }
 
-        // --- NUEVA LÓGICA DE TEMPORADA GLOBAL PARA FONDOS DESDE EL INICIO ---
-        function applySeasonalBackgrounds() {
-            const day = new Date().getDate();
-            let suffix = '_ver'; // Verano por defecto (27 al final del mes)
-            if (day >= 1 && day <= 9) suffix = '_invi';      // Invierno
-            else if (day >= 10 && day <= 19) suffix = '_oto'; // Otoño
-            else if (day >= 20 && day <= 26) suffix = '_pri'; // Primavera
-            
-            // 1. Aplicar al Login
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) {
-                // Forzamos el !important en línea si es necesario y nos aseguramos de que el path sea correcto
-                loginScreen.style.setProperty('background-image', `url('assets/Fondos/login_bg${suffix}.jpg')`, 'important');
-            }
-            
-            // 2. Aplicar al Dashboard
-            const dashboardBg = document.querySelector('#dashboard-screen .bg-cover');
-            if (dashboardBg) {
-                dashboardBg.style.setProperty('background-image', `url('assets/Fondos/dashboard_bg${suffix}.jpg')`, 'important');
-            }
-        }
         
-        // Ejecutar inmediatamente al abrir la página y re-ejecutar tras cargar el DOM
-        applySeasonalBackgrounds();
-        document.addEventListener('DOMContentLoaded', applySeasonalBackgrounds);
-        // --------------------------------------------------------------------
-
         // Login/registro: ver el <script> "LOGIN / REGISTRO INTERACTIVO" al final del archivo.
 
         function checkCookies() {
@@ -1472,18 +1446,7 @@
                 return;
             }
 
-            // --- NUEVO: ACTUALIZAR EL FONDO DEL DASHBOARD GLOBAL SEGÚN LA TEMPORADA ---
-            if (window.farmApp && typeof window.farmApp.getSeasonData === 'function') {
-                const season = window.farmApp.getSeasonData(Date.now());
-                const dashboardScreen = document.getElementById('dashboard-screen');
-                if (dashboardScreen) {
-                    const bgLayer = dashboardScreen.querySelector('.bg-cover');
-                    if (bgLayer) {
-                        bgLayer.style.backgroundImage = `url('assets/Fondos/dashboard_bg${season.suffix}.jpg')`;
-                    }
-                }
-            }
-            // --------------------------------------------------------------------------
+
             
             try {
                 const response = await fetch(`/api/sync/${username}?token=${token}`);
@@ -2704,19 +2667,8 @@
                 _pri: { name: 'Primavera', icon: '🌸', particles: ['🌸', '🌼'], colors: ['#FFB7D5', '#FFFFFF'], fall: 0.7, sway: 1 },
                 _ver: { name: 'Verano', icon: '☀️', particles: ['✨'], colors: ['#FDE062', '#FFF6B0'], fall: -0.25, sway: 0.5 }
             };
-            function seasonSuffix() {
-                const day = new Date().getDate();
-                if (day <= 9) return '_invi';
-                if (day <= 19) return '_oto';
-                if (day <= 26) return '_pri';
-                return '_ver';
-            }
-            const season = SEASONS[seasonSuffix()];
-            document.querySelectorAll('[data-cg-season]').forEach((el) => {
-                el.textContent = el.classList.contains('cg-season--mini')
-                    ? `${season.icon} ${season.name}`
-                    : `${season.icon} Temporada de ${season.name}`;
-            });
+
+            
 
             // ---------------- PARTÍCULAS DE TEMPORADA ----------------
             (function particles() {
@@ -2734,30 +2686,43 @@
                     const count = Math.round(Math.min(34, Math.max(12, w / 40)));
                     items = Array.from({ length: count }, () => spawn(true));
                 }
+
+
+
+
+                // ---------------- ESTÉTICA ESTÁNDAR ----------------
+                document.querySelectorAll('[data-cg-season]').forEach((el) => {
+                    el.textContent = el.classList.contains('cg-season--mini')
+                        ? `☀️ Verano`
+                        : `☀️ Temporada de Verano`;
+                });
+
+                // En la función particles(), cambia las variables a fijas:
                 function spawn(anywhere) {
                     const size = 12 + Math.random() * 14;
                     return {
                         x: Math.random() * w,
-                        y: anywhere ? Math.random() * h : (season.fall > 0 ? -30 : h + 30),
+                        y: anywhere ? Math.random() * h : (-30),
                         size,
-                        vy: (0.35 + Math.random() * 0.6) * season.fall * (size / 18),
+                        vy: (0.35 + Math.random() * 0.6) * (-0.25) * (size / 18),
                         phase: Math.random() * Math.PI * 2,
                         rot: Math.random() * Math.PI * 2,
                         vr: (Math.random() - 0.5) * 0.03,
-                        glyph: season.particles[Math.floor(Math.random() * season.particles.length)],
+                        glyph: '✨',
                         alpha: 0.55 + Math.random() * 0.4
                     };
                 }
+
                 function tick(t) {
                     if (screen.classList.contains('hidden')) { running = false; return; }
                     ctx.clearRect(0, 0, w, h);
                     for (const p of items) {
                         p.y += p.vy;
-                        p.x += Math.sin(t / 1400 + p.phase) * 0.45 * season.sway;
+                        p.x += Math.sin(t / 1400 + p.phase) * 0.45 * 0.5;
                         p.rot += p.vr;
                         if (p.y > h + 40 || p.y < -40) Object.assign(p, spawn(false));
                         ctx.save();
-                        ctx.globalAlpha = season.fall < 0 ? p.alpha * (0.5 + 0.5 * Math.sin(t / 500 + p.phase)) : p.alpha;
+                        ctx.globalAlpha = p.alpha * (0.5 + 0.5 * Math.sin(t / 500 + p.phase));
                         ctx.translate(p.x, p.y);
                         ctx.rotate(p.rot);
                         ctx.font = `${p.size}px serif`;
@@ -2768,6 +2733,8 @@
                     }
                     if (running) requestAnimationFrame(tick);
                 }
+
+                
                 resize();
                 window.addEventListener('resize', resize);
                 requestAnimationFrame(tick);

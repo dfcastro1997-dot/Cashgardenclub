@@ -1781,10 +1781,10 @@ if (typeof window.farmApp === 'undefined') {
             const end = new Date(d.getFullYear(), d.getMonth(), season.endDay, 23, 59, 59).getTime();
             const left = Math.max(0, end - now);
             
-            // --- NUEVO: ACTUALIZACIÓN DINÁMICA DE IMÁGENES SEGÚN TEMPORADA ---
-            this.state.images.terrain_empty = `assets/Fondos/terreno_vacio.png`; // Fijo, ya no usa season.suffix
-            this.state.images.crow = `assets/Enemigos/Cuervos/cuervo_base${season.suffix}.png`;
-            this.state.images.scarecrow = `assets/Herramientas_y_Servicios/espantapajaros${season.suffix}.png`;
+            // REEMPLAZA AMBOS MÉTODOS POR ESTA SIMPLE ASIGNACIÓN DIRECTA EN init() O updateUI():
+            this.state.images.terrain_empty = 'assets/Fondos/terreno_vacio.png';
+            this.state.images.crow = 'assets/Enemigos/Cuervos/cuervo_base.png';
+            this.state.images.scarecrow = 'assets/Herramientas_y_Servicios/espantapajaros.png';
             
             // Sincronizamos la imagen del inventario para que cambie en la parcela y en el panel
             if (this.state.inventory && this.state.inventory.tool_scarecrow) {
@@ -2184,7 +2184,7 @@ if (typeof window.farmApp === 'undefined') {
         },
 
         updateUI() {
-            // --- FIX GLOBAL DE IMÁGENES DE PLANTAS (PNG a GIF) ---
+            // FIX GLOBAL DE IMÁGENES DE PLANTAS (PNG a GIF)
             if (this.state.arsenal) {
                 this.state.arsenal.forEach(p => {
                     if (p.icon && p.icon.includes('assets/Plantas/') && p.icon.endsWith('.png')) {
@@ -2199,9 +2199,11 @@ if (typeof window.farmApp === 'undefined') {
                     }
                 });
             }
-            // -----------------------------------------------------
 
-
+            // Asignación de recursos sin temporadas
+            this.state.images.terrain_empty = 'assets/Fondos/terreno_vacio.png';
+            this.state.images.crow = 'assets/Enemigos/Cuervos/cuervo_base.png';
+            this.state.images.scarecrow = 'assets/Herramientas_y_Servicios/espantapajaros.png';
 
             const vitoBanner = document.getElementById('vito-contract-banner');
             if (vitoBanner) {
@@ -2209,12 +2211,9 @@ if (typeof window.farmApp === 'undefined') {
                 vitoBanner.classList.toggle('hidden', !hasActiveContract);
             }
 
-
-
             const localBalance = document.getElementById('global-seeds-display');
             if(localBalance) localBalance.innerText = this.state.seedsBalance.toLocaleString() + " 🌱";
             
-            this.updateSeasonWidget(); 
             this.updateAutomationUI(); 
             this.renderPlots();
             this.updateInventoryUI();
@@ -2607,13 +2606,6 @@ if (typeof window.farmApp === 'undefined') {
             const isAutoWatering = this.state.autoWaterEndTime > now;
             const isAutoHarvesting = (this.state.autoHarvestEndTime || 0) > now;
             let changesMade = false;
-            
-            const currentSeason = this.getSeasonData(now);
-            const seasonMultiplier = currentSeason.mult;
-            
-            if (typeof this.updateSeasonWidget === 'function') {
-                this.updateSeasonWidget(); 
-            }
 
             const anyPlantInfected = this.state.plots.some(p => p.status === 'planted' && p.hasCrow);
             
@@ -2628,7 +2620,7 @@ if (typeof window.farmApp === 'undefined') {
 
                 if (plot.status === 'empty' || plot.status === 'pot') {
                     if (plot.water > 0) {
-                        let acceleratedEvap = 40.0 * 4.0 * seasonMultiplier; 
+                        let acceleratedEvap = 40.0 * 4.0; 
                         plot.water = Math.max(0, plot.water - (acceleratedEvap * deltaHours));
                         changesMade = true;
                     }
@@ -2637,7 +2629,6 @@ if (typeof window.farmApp === 'undefined') {
                 if (plot.status === 'planted') {
                     let minSafe = 20, maxSafe = 80;
 
-                    // === CORRECCIÓN: AUTO-RIEGO O CÁPSULA ANCLA LA HUMEDAD ===
                     if (isAutoWatering || plot.capsuleEndTime > now) {
                         let safeMid = minSafe + ((maxSafe - minSafe) / 2);
                         plot.water = safeMid;
@@ -2652,7 +2643,6 @@ if (typeof window.farmApp === 'undefined') {
                                 if (this.state.dynamicPlants && this.state.dynamicPlants[plot.plant.id] && this.state.dynamicPlants[plot.plant.id].water_evap) {
                                     evapRate = this.state.dynamicPlants[plot.plant.id].water_evap;
                                 }
-                                evapRate = evapRate * seasonMultiplier;
                                 plot.water = Math.max(0, plot.water - (evapRate * deltaHours)); 
                                 changesMade = true;
                             }
@@ -2660,7 +2650,6 @@ if (typeof window.farmApp === 'undefined') {
                             if (plot.scarecrowEndTime > now) {
                                 plot.hasCrow = false;
                             } else {
-                                // PERIODO DE GRACIA: 60s al plantar o al espantar
                                 const justPlanted = (now - plot.plantedAt) < 60000;
                                 const justShooed = plot.lastShooAt ? (now - plot.lastShooAt) < 60000 : false;
                                 const inGracePeriod = justPlanted || justShooed;
@@ -2681,12 +2670,10 @@ if (typeof window.farmApp === 'undefined') {
                             }
                         }
 
-                        // Detenemos el crecimiento si hay cuervo o no hay agua
                         if (plot.water <= 0 || plot.hasCrow) {
                             plot.harvestAt += deltaMS; 
                             changesMade = true;
                         } else if (plot.capsuleEndTime > now) {
-                            // Penalidad del 30% de velocidad por la Bóveda
                             plot.harvestAt += (deltaMS * 0.30);
                             changesMade = true;
                         }
@@ -2725,7 +2712,6 @@ if (typeof window.farmApp === 'undefined') {
                             }
                         }
                     } else {
-                        // === CORRECCIÓN: AUTO-RIEGO PROTEGE PLANTA MADURA ===
                         if (plot.plantedAt && !isAutoWatering) {
                             const growthTime = plot.harvestAt - plot.plantedAt;
                             if (now >= (plot.harvestAt + growthTime) && !plot.isSpoiled) {
@@ -2790,7 +2776,6 @@ if (typeof window.farmApp === 'undefined') {
                 else if(pid === 'flower_bamboo' || pid === 'flower_small' || pid === 'flower_moon') { maxSafe = 90; }
                 else if(pid === 'flower_big') { minSafe = 50; maxSafe = 70; }
 
-                // --- 1. DESGLOSE PROFESIONAL DE EVAPORACIÓN ---
                 let baseEvapRate = 40;
                 if (this.state.dynamicPlants && this.state.dynamicPlants[pid]) {
                     if (this.state.dynamicPlants[pid].water_evap !== undefined && this.state.dynamicPlants[pid].water_evap !== null) {
@@ -2798,23 +2783,17 @@ if (typeof window.farmApp === 'undefined') {
                     }
                 }
                 
-                const seasonData = this.getSeasonData(Date.now());
-                const finalEvapRate = Math.floor(baseEvapRate * seasonData.mult);
-                
+                const finalEvapRate = baseEvapRate;
                 let exhaustionText = `Ya está en peligro por sequía (${minSafe}% o menos).`;
                 if (plot.water > minSafe) {
                     const hoursLeft = (plot.water - minSafe) / finalEvapRate;
                     const exhaustionTime = new Date(Date.now() + hoursLeft * 3600000);
                     exhaustionText = `Por lo tanto, a las <strong class="text-red-600">${exhaustionTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</strong> llegará al límite de sequía (${minSafe}%).`;
                 }
-
+                
                 scoreText = `
-                    <div class="bg-blue-50/80 border border-blue-100 rounded-xl p-2.5 mb-3 flex items-center justify-between gap-2 text-[9px] sm:text-[11px] shadow-sm">
-                        <div class="flex flex-col items-center"><span class="font-bold text-blue-400 uppercase tracking-widest">Base</span><span class="font-black text-blue-800">${baseEvapRate}%/h</span></div>
-                        <span class="text-blue-300 font-black">×</span>
-                        <div class="flex flex-col items-center"><span class="font-bold text-blue-400 uppercase tracking-widest">Clima (${seasonData.name})</span><span class="font-black text-blue-800">${seasonData.mult}x</span></div>
-                        <span class="text-blue-300 font-black">=</span>
-                        <div class="flex flex-col items-center"><span class="font-black text-blue-600 uppercase tracking-widest">Consumo Final</span><span class="font-black text-white bg-blue-500 px-2 py-0.5 rounded shadow-sm text-xs sm:text-sm leading-none mt-0.5">${finalEvapRate}%/h</span></div>
+                    <div class="bg-blue-50/80 border border-blue-100 rounded-xl p-2.5 mb-3 flex items-center justify-between gap-2 text-[11px] shadow-sm">
+                        <div class="flex flex-col items-center"><span class="font-bold text-blue-400 uppercase tracking-widest">Consumo Constante</span><span class="font-black text-blue-800">${finalEvapRate}%/h</span></div>
                     </div>
                     <span class="text-gray-500">${exhaustionText}</span>
                 `;
@@ -2848,7 +2827,6 @@ if (typeof window.farmApp === 'undefined') {
             
             const statsContainer = document.getElementById('plant-stats-container');
             if (isCombatPlant) {
-                // --- 2. DESGLOSE PROFESIONAL DE COSECHA (PENALIDADES POR ESTRÉS Y PLAGA) ---
                 let stress = plot.stressMarks || 0;
                 let penaltyPct = stress * 15;
                 let penaltyMultiplier = Math.max(0.1, 1 - (stress * 0.15));
@@ -2917,6 +2895,242 @@ if (typeof window.farmApp === 'undefined') {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         },
+
+
+
+
+def process_server_tick(game_state_str, chat_id=None):
+    import random
+    
+    if not game_state_str:
+        return game_state_str
+    try:
+        state = json.loads(game_state_str)
+        now = int(time.time() * 1000)
+        last_tick = state.get('lastTick', now)
+        delta_ms = now - last_tick
+        
+        if delta_ms > 0:
+            delta_hours = delta_ms / 3600000.0
+            auto_water_end = state.get('autoWaterEndTime', 0)
+            is_auto_watering = auto_water_end > now
+            
+            auto_harvest_end = state.get('autoHarvestEndTime', 0)
+            is_auto_harvesting = auto_harvest_end > now
+
+            any_plant_infected = any(
+                p.get('status') == 'planted' and p.get('hasCrow') 
+                for p in state.get('plots', [])
+            )
+
+            contagion_triggered = False
+
+            for plot in state.get('plots', []):
+                if 'notifyFlags' not in plot: 
+                    plot['notifyFlags'] = {'crow': False, 'ready': False, 'water': False, 'spoiled': False}
+                flags = plot['notifyFlags']
+
+                if plot.get('embargoEndTime', 0) > 0 and now >= plot.get('embargoEndTime', 0):
+                    plot['embargoEndTime'] = 0
+                    if plot.get('status') == 'embargoed':
+                        plot['status'] = 'empty'
+
+                if plot.get('status') in ['tournament_waiting']:
+                    continue
+
+                if plot.get('status') == 'tournament':
+                    if any_plant_infected and not plot.get('hasCrow') and plot.get('crowLeavingAt', 0) <= now:
+                        plot['hasCrow'] = True
+                    
+                    if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
+                        plot['hasCrow'] = False
+                        plot['crowLeavingAt'] = 0
+
+                elif plot.get('status') in ['empty', 'pot']:
+                    if plot.get('water', 0) > 0:
+                        accelerated_evap = 40.0 * 4.0 
+                        plot['water'] = max(0, plot['water'] - (accelerated_evap * delta_hours))
+
+                elif plot.get('status') == 'planted':
+                    plant_id = plot.get('plant', {}).get('id') if plot.get('plant') else None
+                    
+                    min_safe = 20
+                    max_safe = 80
+
+                    if is_auto_watering or plot.get('capsuleEndTime', 0) > now:
+                        safe_mid = min_safe + ((max_safe - min_safe) / 2.0)
+                        plot['water'] = safe_mid
+                        plot['hasCrow'] = False
+
+                    if not plot.get('isReady'):
+                        if not is_auto_watering and plot.get('capsuleEndTime', 0) <= now:
+                            evap_rate = 40.0 
+                            
+                            if plot.get('water', 0) > 0:
+                                plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
+                            
+                        just_planted = (now - plot.get('plantedAt', now)) < 60000
+                        just_shooed = (now - plot.get('lastShooAt', 0)) < 60000
+                        in_grace_period = just_planted or just_shooed
+
+                        if plot.get('scarecrowEndTime', 0) > now or plot.get('capsuleEndTime', 0) > now:
+                            plot['hasCrow'] = False
+                        elif not plot.get('hasCrow') and not is_auto_watering:
+                            if plot.get('water', 0) < min_safe and not in_grace_period:
+                                plot['hasCrow'] = True
+                                plot['stressMarks'] = plot.get('stressMarks', 0) + 1
+                            elif plot.get('water', 0) > max_safe and not in_grace_period:
+                                plot['hasCrow'] = True
+                                plot['stressMarks'] = plot.get('stressMarks', 0) + 1
+                            
+                        if plot.get('hasCrow'):
+                            plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
+                        elif plot.get('water', 0) <= 0:
+                            plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
+                        elif plot.get('capsuleEndTime', 0) > now:
+                            plot['harvestAt'] = plot.get('harvestAt', now) + (delta_ms * 0.30)
+
+                    if now >= plot.get('harvestAt', now):
+                        plot['isReady'] = True
+                        
+                        if is_auto_harvesting and not plot.get('isSpoiled'):
+                            base_reward = plot.get('plant', {}).get('reward', 1500)
+                            
+                            stress = plot.get('stressMarks', 0)
+                            penalty_multiplier = max(0.1, 1.0 - (stress * 0.15))
+                            final_reward = int(base_reward * penalty_multiplier)
+                            
+                            state['seedsBalance'] = state.get('seedsBalance', 0) + final_reward
+                            plot['potUses'] = plot.get('potUses', 0) + 1
+                            max_uses = 5 
+                            
+                            if plot['potUses'] >= max_uses:
+                                plot['status'] = 'empty'
+                                plot['pot'] = None
+                                plot['potUses'] = 0
+                            else:
+                                plot['status'] = 'pot'
+                                
+                            plot['plant'] = None
+                            plot['hasCrow'] = False
+                            plot['scarecrowEndTime'] = 0
+                            plot['capsuleEndTime'] = 0 
+                            plot['plantedAt'] = 0
+                            plot['harvestAt'] = 0
+                            plot['isReady'] = False
+                            plot['isSpoiled'] = False
+                            plot['stressMarks'] = 0
+                            plot['lastShooAt'] = 0
+                        else:
+                            if not is_auto_watering:
+                                growth_time = plot.get('harvestAt', now) - plot.get('plantedAt', now)
+                                grace_period = growth_time / 2.0  
+                                time_overdue = now - (plot.get('harvestAt', now) + grace_period)
+                                
+                                if time_overdue > 0:
+                                    plot['isSpoiled'] = True
+                                    plot['hasCrow'] = True
+                                    
+                                    if time_overdue > 2700000:
+                                        plot['crowsCount'] = 3
+                                        plot['rewardMultiplier'] = 0.0 
+                                        if not plot.get('contagionTriggered'):
+                                            plot['contagionTriggered'] = True
+                                            contagion_triggered = True
+                                            
+                                    elif time_overdue > 1800000: 
+                                        plot['crowsCount'] = 3
+                                        mins_w_three = (time_overdue - 1800000) / 60000.0
+                                        penalty = 0.30 + 0.45 + (mins_w_three * 0.05)
+                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                        
+                                    elif time_overdue > 900000: 
+                                        plot['crowsCount'] = 2
+                                        mins_w_two = (time_overdue - 900000) / 60000.0
+                                        penalty = 0.30 + (mins_w_two * 0.03)
+                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                        
+                                    else: 
+                                        plot['crowsCount'] = 1
+                                        mins_w_one = time_overdue / 60000.0
+                                        penalty = mins_w_one * 0.01
+                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                    
+                    if chat_id and plot.get('status') == 'planted':
+                        plant_name = plot.get('plant', {}).get('name', 'tu plantita')
+                        plant_img = plot.get('plant', {}).get('icon', None)
+                        p_id = plot['id'] + 1
+                        
+                        crow_msgs = [
+                            f"🦅 ¡Cua, cua! (Bueno, los cuervos no hacen así, pero entiendes la idea). ¡Un pajarraco me está picoteando en el Terreno {p_id}! 😭 ¡Ven a asustarlo antes de que me quede sin hojitas, por favor! 🥺",
+                            f"🦅 ¡Auxilio, granjero/a! 🚨 Un cuervo gruñón aterrizó en la parcela {p_id} y me está mirando con cara de ensalada. ¡Sálvame, soy tu {plant_name} favorita! 🛡️🌱",
+                            f"🦅 ¡Uy, qué miedo! 🫣 Hay un intruso con plumas en el Terreno {p_id} molestándome. Necesito a mi héroe (sí, ¡tú!) para que lo espante. 🥺"
+                        ]
+                        
+                        ready_msgs = [
+                            f"✨ ¡Tachán! 🎉 He crecido grande, fuerte y sanita en el Terreno {p_id}. Ya estoy lista para que me coseches y ganes tus semillitas. ¡Ven a verme, me veo genial! 🥰🌻",
+                            f"✨ ¡Misión botánica cumplida! 🫡 Soy tu {plant_name} del Terreno {p_id} y ya llegué a mi mejor etapa. ¡Apúrate a recogerme para celebrar juntos! 🥳🌱",
+                            f"✨ ¡Brillo más que el sol! 😍 Estoy lista en la parcela {p_id} y llena de recompensas para ti. ¡Ven rapidito a cosecharme, que huelo delicioso! 🧺💖"
+                        ]
+                        
+                        water_msgs = [
+                            f"💧 ¡Alerta Crítica! Tu {plant_name} en el Terreno {p_id} está sedienta. Ha alcanzado su límite seguro del 20% de agua. ¡Riégala ahora antes de que atraiga cuervos!"
+                        ]
+                        
+                        spoiled_msgs = [
+                            f"🥀 ¡Oh no! Tu {plant_name} en la parcela {p_id} se ha marchitado y podrido. Necesitas limpiarla pronto. 😭",
+                            f"🦠 Qué tragedia... tu {plant_name} en el Terreno {p_id} se pudrió. ¡Limpia el terreno antes de que contagie al resto!"
+                        ]
+                        
+                        if plot.get('hasCrow') and not flags.get('crow'):
+                            send_telegram_msg(chat_id, random.choice(crow_msgs), plant_img)
+                            flags['crow'] = True
+                        elif plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
+                            send_telegram_msg(chat_id, random.choice(ready_msgs), plant_img)
+                            flags['ready'] = True
+                        elif plot.get('water', 100) <= min_safe and not plot.get('isReady') and not plot.get('hasCrow') and not flags.get('water'):
+                            send_telegram_msg(chat_id, random.choice(water_msgs), plant_img)
+                            flags['water'] = True
+                        elif plot.get('isSpoiled') and not flags.get('spoiled'):
+                            send_telegram_msg(chat_id, random.choice(spoiled_msgs), plant_img)
+                            flags['spoiled'] = True
+
+                        if not plot.get('hasCrow'): flags['crow'] = False
+                        if not plot.get('isReady'): flags['ready'] = False
+                        if plot.get('water', 100) > min_safe: flags['water'] = False
+                        if not plot.get('isSpoiled'): flags['spoiled'] = False
+
+            if contagion_triggered:
+                for p in state.get('plots', []):
+                    if p.get('status') == 'planted' and not p.get('hasCrow') and not p.get('isSpoiled'):
+                        p['hasCrow'] = True
+                        p['crowArrivedAt'] = now
+                        break 
+
+            vito_contract = state.get('vitoContract')
+            if vito_contract and vito_contract.get('active'):
+                if now >= vito_contract.get('expiresAt', 0):
+                    current_seeds = state.get('seedsBalance', 0)
+                    penalty_seeds = int(current_seeds * 0.30)
+                    state['seedsBalance'] = max(0, current_seeds - penalty_seeds)
+                    
+                    vito_contract['active'] = False
+                    vito_contract['failed'] = True
+                    
+                    penalty_msg = f"⚖️ Don Vito ha embargado {penalty_seeds:,} 🌱 de tu cuenta por no cumplir el contrato en el plazo establecido de 4 horas."
+                    state['pending_gift'] = {
+                        "message": penalty_msg,
+                        "items": [{"icon": "📜", "text": f"-{penalty_seeds:,} Semillas (Embargo)"}]
+                    }
+                    
+                    if chat_id:
+                        send_telegram_msg(chat_id, f"💼 Don Vito: 'Se agotó tu tiempo. Te advertí que no juego con los plazos. He confiscado {penalty_seeds:,} 🌱 de tu cuenta por incumplir nuestro acuerdo.'")
+
+            state['lastTick'] = now
+            return json.dumps(state)
+    except Exception as e:
+        print("Server tick error:", e)
+    return game_state_str
 
         openWaterCalibration(plotId = 8) {
             this.calibration.currentPlotId = plotId;
