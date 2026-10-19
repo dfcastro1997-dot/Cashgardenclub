@@ -33,7 +33,7 @@
         <!-- PANTALLA 2: ANÁLISIS DE LA PLANTA (INTRO)  -->
         <!-- ========================================== -->
         <div id="pak-intro-screen" class="absolute inset-0 z-30 bg-slate-900 flex flex-col hidden overflow-y-auto hide-scrollbar pb-6 pt-10">
-            <div class="px-6 text-center mt-4">
+            <div class="px-6 text-center mt-4 shrink-0">
                 <span class="bg-blue-500/20 text-cg_cyan border border-blue-500/30 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Análisis de Despliegue</span>
                 
                 <!-- Planta Seleccionada -->
@@ -41,7 +41,7 @@
                     <div class="absolute inset-0 bg-blue-500/10 rounded-2xl animate-pulse"></div>
                     <img id="intro-plant-img" src="assets/Fondos/logo.png" class="w-full h-full object-contain drop-shadow-lg relative z-10">
                 </div>
-                <h3 id="intro-plant-name" class="text-xl font-black text-white mb-6 tracking-tight">Planta Desconocida</h3>
+                <h3 id="intro-plant-name" class="text-xl font-black text-white mb-6 tracking-tight">Cargando...</h3>
             </div>
 
             <!-- Desglose de Stats Moderno -->
@@ -51,15 +51,15 @@
                 <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
                     <div class="absolute right-0 top-0 w-16 h-16 bg-green-500/10 blur-xl"></div>
                     <div class="flex justify-between items-end mb-2 relative z-10">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-green-400">🪙</span> Vida / Intentos</span>
-                        <span id="intro-val-hp" class="text-sm font-black text-white">0 HP</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-green-400 text-base">🪙</span> Vida / Intentos</span>
+                        <span id="intro-val-hp" class="text-sm font-black text-white">-- HP</span>
                     </div>
                     <!-- Barra de escala -->
                     <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
-                        <div id="intro-bar-hp" class="h-full bg-green-500 rounded-full w-[50%]"></div>
+                        <div id="intro-bar-hp" class="h-full bg-green-500 rounded-full w-[0%] transition-all duration-1000"></div>
                     </div>
                     <p id="intro-desc-hp" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Esta planta te otorga <strong class="text-green-400">X Semillas</strong> para disparar.
+                        Esta planta te otorga <strong class="text-green-400">-- Semillas</strong> para disparar.
                     </p>
                 </div>
 
@@ -67,15 +67,15 @@
                 <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
                     <div class="absolute right-0 top-0 w-16 h-16 bg-orange-500/10 blur-xl"></div>
                     <div class="flex justify-between items-end mb-2 relative z-10">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-orange-400">⭐</span> Ataque / Puntos</span>
-                        <span id="intro-val-atk" class="text-sm font-black text-white">0 ATK</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-orange-400 text-base">⭐</span> Ataque / Puntos</span>
+                        <span id="intro-val-atk" class="text-sm font-black text-white">-- ATK</span>
                     </div>
                     <!-- Barra de escala -->
                     <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
-                        <div id="intro-bar-atk" class="h-full bg-orange-500 rounded-full w-[50%]"></div>
+                        <div id="intro-bar-atk" class="h-full bg-orange-500 rounded-full w-[0%] transition-all duration-1000"></div>
                     </div>
                     <p id="intro-desc-atk" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Multiplicador de daño de <strong class="text-orange-400">xY</strong>. Cada acierto verde valdrá <strong class="text-orange-400">+Z Puntos</strong>.
+                        Multiplicador de daño de <strong class="text-orange-400">x--</strong>. Cada acierto verde valdrá <strong class="text-orange-400">+-- Puntos</strong>.
                     </p>
                 </div>
 
@@ -83,15 +83,15 @@
                 <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
                     <div class="absolute right-0 top-0 w-16 h-16 bg-blue-500/10 blur-xl"></div>
                     <div class="flex justify-between items-end mb-2 relative z-10">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-blue-400">⚙️</span> Control / Físicas</span>
-                        <span id="intro-val-def" class="text-sm font-black text-white">0 DEF</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-blue-400 text-base">⚙️</span> Control / Físicas</span>
+                        <span id="intro-val-def" class="text-sm font-black text-white">-- DEF</span>
                     </div>
                     <!-- Barra de escala -->
                     <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
-                        <div id="intro-bar-def" class="h-full bg-blue-500 rounded-full w-[50%]"></div>
+                        <div id="intro-bar-def" class="h-full bg-blue-500 rounded-full w-[0%] transition-all duration-1000"></div>
                     </div>
                     <p id="intro-desc-def" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Nivel de dificultad <strong class="text-blue-400" id="intro-diff">Difícil</strong>. Ensancha las canastas ganadoras en la base.
+                        Nivel de dificultad <strong class="text-blue-400" id="intro-diff">--</strong>. Ensancha las canastas ganadoras en la base.
                     </p>
                 </div>
             </div>
@@ -132,7 +132,7 @@
             </div>
 
             <!-- ÁREA DEL CANVAS -->
-            <div class="flex-1 relative bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center overflow-hidden">
+            <div class="flex-1 relative bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center overflow-hidden w-full h-full">
                 
                 <!-- Péndulo de Ángulo -->
                 <div id="angle-meter-container" class="absolute top-4 left-1/2 -translate-x-1/2 w-[80%] h-6 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-600 shadow-md z-20 overflow-hidden">
@@ -145,9 +145,10 @@
                 </div>
 
                 <!-- Efecto de Luz de Fondo -->
-                <div class="absolute top-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-900/0 to-transparent pointer-events-none"></div>
+                <div class="absolute top-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-900/0 to-transparent pointer-events-none z-0"></div>
 
-                <canvas id="pachinko-canvas" class="block w-full h-full mx-auto bg-transparent relative z-10"></canvas>
+                <!-- CANVAS (IMPORTANTE: Resolución interna definida explícitamente y escalado CSS por object-fit) -->
+                <canvas id="pachinko-canvas" width="400" height="600" class="block w-full h-full max-h-full object-contain mx-auto bg-transparent relative z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"></canvas>
             </div>
 
             <!-- CONTROLES INFERIORES -->
@@ -195,9 +196,9 @@
 
 <script>
 window.pachinkoApp = {
-    canvas: document.getElementById('pachinko-canvas'),
+    canvas: null,
     ctx: null,
-    w: 400, h: 600, // Logical resolution
+    w: 400, h: 600, // Resolución interna estricta
     
     // Stats de la planta
     hp: 100, atk: 50, def: 20,
@@ -225,8 +226,14 @@ window.pachinkoApp = {
 
     // Inicializa la UI, lee la planta y muestra el Splash + Intro
     init() {
+        // Enlazar Canvas de forma segura
+        this.canvas = document.getElementById('pachinko-canvas');
+        if (!this.canvas) return; 
+        
         this.ctx = this.canvas.getContext('2d');
-        this.resize();
+        // Fijamos la resolución interna
+        this.canvas.width = this.w;
+        this.canvas.height = this.h;
         
         let plantName = "Semilla Base";
         let plantImg = "assets/Fondos/logo.png";
@@ -254,13 +261,16 @@ window.pachinkoApp = {
 
         // 1. Mostrar Splash Screen simulando carga
         setTimeout(() => {
-            document.getElementById('pak-loading-bar').style.width = '100%';
+            const bar = document.getElementById('pak-loading-bar');
+            if(bar) bar.style.width = '100%';
         }, 100);
 
         setTimeout(() => {
-            document.getElementById('pak-splash-screen').classList.add('opacity-0');
+            const splash = document.getElementById('pak-splash-screen');
+            if (splash) splash.classList.add('opacity-0');
+            
             setTimeout(() => {
-                document.getElementById('pak-splash-screen').classList.add('hidden');
+                if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
             }, 700);
         }, 2000);
@@ -268,7 +278,10 @@ window.pachinkoApp = {
 
     // Muestra la pantalla de análisis con las barras de progreso
     showIntroScreen(plantName, plantImg) {
-        document.getElementById('pak-intro-screen').classList.remove('hidden');
+        const screen = document.getElementById('pak-intro-screen');
+        if (!screen) return; // Validación de seguridad si el usuario se sale antes de tiempo
+        
+        screen.classList.remove('hidden');
 
         // Llenar datos de la planta
         document.getElementById('intro-plant-img').src = plantImg;
@@ -303,9 +316,7 @@ window.pachinkoApp = {
 
         // Datos para el HUD in-game
         document.getElementById('pak-plant-icon').src = plantImg;
-        document.getElementById('pak-stat-hp').innerText = `❤️ ${this.hp}`;
-        document.getElementById('pak-stat-atk').innerText = `⚔️ ${this.atk}`;
-        document.getElementById('pak-stat-def').innerText = `🛡️ ${this.def}`;
+        document.getElementById('pak-score').innerText = '0';
         
         this.seedsLeft = this.seedsTotal;
         document.getElementById('pak-ammo').innerText = this.seedsLeft;
@@ -316,25 +327,26 @@ window.pachinkoApp = {
         const basketW = Math.min(wBase + wBonus, this.w / 3);
         
         this.buildLevel(mult, basketW);
-        this.draw(); // Dibuja estado inicial in-game
+        this.draw(); // Dibuja estado inicial in-game para cuando aparezca
     },
 
     // Invocado por el botón "Iniciar Simulación"
     startGame() {
-        document.getElementById('pak-intro-screen').classList.add('hidden');
-        document.getElementById('pak-game-screen').classList.remove('hidden');
+        const intro = document.getElementById('pak-intro-screen');
+        const game = document.getElementById('pak-game-screen');
+        if(!intro || !game) return;
+        
+        intro.classList.add('hidden');
+        game.classList.remove('hidden');
         
         const actionBtn = document.getElementById('pak-action-btn');
         actionBtn.onclick = () => this.handleInput();
 
         this.isPlaying = true;
         this.startTimer();
+        
+        if (this.rafId) cancelAnimationFrame(this.rafId);
         this.loop();
-    },
-
-    resize() {
-        this.canvas.width = this.w;
-        this.canvas.height = this.h;
     },
 
     buildLevel(mult, basketW) {
@@ -350,16 +362,17 @@ window.pachinkoApp = {
             for (let c = 0; c < numCols; c++) {
                 this.pegs.push({
                     x: offsetX + (c * spacingX),
-                    y: 80 + (r * spacingY),
+                    y: 90 + (r * spacingY),
                     r: 6
                 });
             }
         }
 
+        // Las canastas abarcan los últimos 45 píxeles de altura del canvas (de 555 a 600)
         this.baskets = [
-            { x: 0, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(250, 204, 21, 0.15)', border: '#eab308', pts: Math.floor(100 * mult), label: `+${Math.floor(100 * mult)}` },
-            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(239, 68, 68, 0.15)', border: '#ef4444', pts: -50, label: '🔥 -50' },
-            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(34, 197, 94, 0.15)', border: '#22c55e', pts: Math.floor(250 * mult), label: `+${Math.floor(250 * mult)}` }
+            { x: 0, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(250, 204, 21, 0.4)', border: '#eab308', pts: Math.floor(100 * mult), label: `+${Math.floor(100 * mult)}` },
+            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(239, 68, 68, 0.4)', border: '#ef4444', pts: -50, label: '🔥 -50' },
+            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, bg: 'rgba(34, 197, 94, 0.4)', border: '#22c55e', pts: Math.floor(250 * mult), label: `+${Math.floor(250 * mult)}` }
         ];
     },
 
@@ -367,7 +380,9 @@ window.pachinkoApp = {
         this.timerInterval = setInterval(() => {
             if (!this.isPlaying) return;
             this.timeLeft -= 0.1;
-            document.getElementById('pak-timer').innerText = this.timeLeft.toFixed(1) + 's';
+            
+            const timerEl = document.getElementById('pak-timer');
+            if (timerEl) timerEl.innerText = this.timeLeft.toFixed(1) + 's';
             
             if (this.timeLeft <= 0 || this.score >= 10000) {
                 this.endGame();
@@ -382,10 +397,10 @@ window.pachinkoApp = {
         if (this.inputState === 'ANGLE') {
             this.inputState = 'POWER';
             document.getElementById('power-meter-container').classList.remove('hidden');
-            btn.innerHTML = "<span>💥</span> Disparar";
+            btn.innerHTML = "<span>💥</span> Disparar Fuerza";
             btn.classList.replace('bg-cg_cyan', 'bg-red-500');
             btn.classList.replace('hover:bg-blue-400', 'hover:bg-red-400');
-            btn.classList.replace('shadow-[0_0_20px_rgba(100,215,255,0.4)]', 'shadow-[0_0_20px_rgba(239,68,68,0.4)]');
+            btn.classList.replace('shadow-[0_0_20px_rgba(100,215,255,0.3)]', 'shadow-[0_0_20px_rgba(239,68,68,0.4)]');
             btn.classList.replace('text-slate-900', 'text-white');
         } else if (this.inputState === 'POWER') {
             if (this.seedsLeft <= 0) return;
@@ -413,6 +428,8 @@ window.pachinkoApp = {
         if (!this.isPlaying) return;
         this.update();
         this.draw();
+        
+        if (this.rafId) cancelAnimationFrame(this.rafId);
         this.rafId = requestAnimationFrame(() => this.loop());
     },
 
@@ -455,7 +472,7 @@ window.pachinkoApp = {
                 }
             }
 
-            // Hit bottom baskets
+            // Hit bottom baskets (Height 600, Baskets at 555)
             if (s.y > this.h - 40) {
                 for (let b of this.baskets) {
                     if (s.x > b.x && s.x < b.x + b.w) {
@@ -478,7 +495,7 @@ window.pachinkoApp = {
                     btn.innerHTML = "<span>🎯</span> Fijar Ángulo";
                     btn.classList.replace('bg-red-500', 'bg-cg_cyan');
                     btn.classList.replace('hover:bg-red-400', 'hover:bg-blue-400');
-                    btn.classList.replace('shadow-[0_0_20px_rgba(239,68,68,0.4)]', 'shadow-[0_0_20px_rgba(100,215,255,0.4)]');
+                    btn.classList.replace('shadow-[0_0_20px_rgba(239,68,68,0.4)]', 'shadow-[0_0_20px_rgba(100,215,255,0.3)]');
                     btn.classList.replace('text-white', 'text-slate-900');
                 }
             }
@@ -486,6 +503,7 @@ window.pachinkoApp = {
     },
 
     draw() {
+        if (!this.ctx) return;
         this.ctx.clearRect(0, 0, this.w, this.h);
 
         // Clavos Neón (Cyberpunk style)
@@ -501,20 +519,27 @@ window.pachinkoApp = {
 
         // Canastas Modernas
         for (let b of this.baskets) {
+            // Fondo sólido y visible
             this.ctx.fillStyle = b.bg;
             this.ctx.fillRect(b.x, b.y, b.w, b.h);
             
-            // Borde superior brillante
+            // Borde superior brillante y notorio
             this.ctx.fillStyle = b.border;
-            this.ctx.fillRect(b.x, b.y, b.w, 4);
+            this.ctx.fillRect(b.x, b.y, b.w, 5);
 
+            // Borde general de la canasta
+            this.ctx.strokeStyle = b.border;
+            this.ctx.lineWidth = 3;
+            this.ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+            // Texto de puntaje
             this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '900 16px sans-serif';
+            this.ctx.font = '900 18px sans-serif';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText(b.label, b.x + b.w/2, b.y + 28);
+            this.ctx.fillText(b.label, b.x + b.w/2, b.y + 32);
         }
 
-        // Semilla Activa (Verde brillante)
+        // Semilla Activa (Verde brillante radiactivo)
         if (this.activeSeed) {
             this.ctx.fillStyle = '#4ade80';
             this.ctx.beginPath();
@@ -533,7 +558,7 @@ window.pachinkoApp = {
             this.ctx.save();
             this.ctx.translate(this.w/2, 20);
             this.ctx.rotate(-this.angleVal * Math.PI / 180);
-            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([5, 5]);
             this.ctx.beginPath();
