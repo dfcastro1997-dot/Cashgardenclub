@@ -560,8 +560,11 @@
         document.getElementById('liga-restringida-modal').classList.add('flex');
     }
 
-    async function openPreTournamentModal(t_id, fee_cop, seedCostStr) {
-        if (!window.farmApp || !window.farmApp.state) return;
+    window.openPreTournamentModal = async function(t_id, fee_cop, seedCostStr) {
+        if (!window.farmApp || !window.farmApp.state) {
+            showAlertModal('Aviso de la Arena', 'Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón y tus recursos.', '🌾');
+            return;
+        }
         
         if (!window.dynamicPlantsCache || window.dynamicPlantsCache.length === 0) {
             await fetchTournamentGuardians();
@@ -671,15 +674,15 @@
 
         document.getElementById('pre-tournament-modal').classList.remove('hidden');
         document.getElementById('pre-tournament-modal').classList.add('flex');
-    }
+    };
 
-    async function confirmJoinTournament() {
+    window.confirmJoinTournament = async function() {
         if (!window.pendingTournament) return;
         
         sessionStorage.setItem('pve_tournament_id', window.pendingTournament.id);
         sessionStorage.setItem('pve_tournament_fee', window.pendingTournament.fee);
         
-        closePreTournamentModal();
+        window.closePreTournamentModal();
         
         const openSelection = () => {
             if (window.farmApp) {
@@ -699,15 +702,13 @@
         } else {
             openSelection();
         }
-    }
+    };
 
-    function closePreTournamentModal() {
+    window.closePreTournamentModal = function() {
         document.getElementById('pre-tournament-modal').classList.add('hidden');
         document.getElementById('pre-tournament-modal').classList.remove('flex');
         window.pendingTournament = null;
-    }
-
-    // ================= FUNCIONES LEADERBOARD =================
+    };
     
     window.viewLeaderboard = function(tId) {
         window.currentLeaderboardTid = tId;
