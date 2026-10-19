@@ -140,17 +140,59 @@
         transform: scale(0.96);
         box-shadow: 0 3px 8px rgba(185, 28, 28, 0.8);
     }
-
-    /* Ocultar cualquier barra de scroll/slider en toda el área de cartas y controles */
-    #cb-cards-hand, #cb-plant-tabs, #combat-root, body {
+    
+/* Ocultar scrollbars generales, EXCEPTO la mano de cartas en desktop */
+    #cb-plant-tabs, #combat-root, body {
         scrollbar-width: none !important;
         -ms-overflow-style: none !important;
     }
-    #cb-cards-hand::-webkit-scrollbar, #cb-plant-tabs::-webkit-scrollbar, #combat-root::-webkit-scrollbar {
+    #cb-plant-tabs::-webkit-scrollbar, #combat-root::-webkit-scrollbar {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
     }
+
+    /* Scrollbar profesional para la mano de cartas (Oculta en móvil, visible en PC) */
+    @media (max-width: 1023px) {
+        #cb-cards-hand { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        #cb-cards-hand::-webkit-scrollbar { display: none !important; }
+    }
+    @media (min-width: 1024px) {
+        #cb-cards-hand {
+            scrollbar-width: thin;
+            scrollbar-color: #f59e0b rgba(0, 0, 0, 0.5);
+            padding-bottom: 12px; /* Espacio para que la barra no pise las cartas */
+        }
+        #cb-cards-hand::-webkit-scrollbar {
+            height: 12px;
+        }
+        #cb-cards-hand::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin: 0 20px; /* Margen para que no toque los bordes de la pantalla */
+        }
+        #cb-cards-hand::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #f59e0b, #ed8936);
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.6);
+        }
+        #cb-cards-hand::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(90deg, #fbbf24, #f6ad55);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* Tarjetas de Ataque / Habilidad Estilo Axie Origin (Adaptables a móvil) */
     .axie-card {
@@ -878,7 +920,7 @@
                 </div>
 
                 <!-- CONTENEDOR DE CARTAS EN MANO (Deslizable horizontalmente) -->
-                <div id="cb-cards-hand" class="pointer-events-auto w-full flex items-end justify-start sm:justify-center gap-2 sm:gap-3 md:gap-4 py-2 px-4 max-w-full overflow-x-auto scroll-smooth snap-x" style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
+                <div id="cb-cards-hand" class="pointer-events-auto w-full flex items-end justify-start lg:justify-center gap-2 sm:gap-3 md:gap-4 py-2 px-4 max-w-full overflow-x-auto scroll-smooth" style="-webkit-overflow-scrolling: touch;">
                     <!-- Inyectado por JS: Ya sea las cartas de Plantas o las 5 cartas de Ataque de la planta seleccionada -->
                 </div>
 
@@ -1975,7 +2017,7 @@ window.combatApp = {
         const disabled = !o.enabled;
         const hotkey = o.hotkey ? `<span class="hidden lg:flex absolute -bottom-2 -right-1.5 w-5 h-5 rounded-md bg-black/85 border border-white/40 text-[10px] font-black text-white items-center justify-center z-40 pointer-events-none">${o.hotkey}</span>` : '';
         return `
-            <div class="flex flex-col items-center shrink-0 snap-center relative select-none ${o.widthClass} ${o.animClass || ''}">
+            <div class="flex flex-col items-center shrink-0 relative select-none ${o.widthClass}${o.animClass || ''}">
                 ${o.above || ''}
                 <div role="button" tabindex="${disabled ? -1 : 0}" aria-disabled="${disabled}" aria-label="${this.escapeHtml(o.ariaLabel)}"
                      onclick="${o.onclick}"
