@@ -1851,9 +1851,6 @@ def get_user_profile(username):
 
 
 
-# ==========================================================
-# ENDPOINT DE TRANSPARENCIA Y ECONOMÍA
-# ==========================================================
 @app.route('/api/transparency', methods=['GET'])
 def get_transparency():
     conn = get_db_connection()
@@ -1867,12 +1864,14 @@ def get_transparency():
             WHERE transaction_type = 'payout' 
             AND created_at >= NOW() - INTERVAL '7 days'
         """)
-        total_week = cur.fetchone()['total']
-        total_week = float(total_week) if total_week else 0.0
+        row = cur.fetchone()
+        
+        # Validar de forma segura si row o row['total'] es nulo
+        total_week = float(row['total']) if row and row['total'] is not None else 0.0
 
-        # Si el juego es nuevo y está en 0, poner un valor base simulado para marketing (opcional, recomiendo dejar el real)
+        # Si el juego es nuevo y está en 0, poner un valor base simulado para marketing
         if total_week == 0:
-            total_week = 1585000.0 # Base simulada temporal
+            total_week = 1585000.0 
 
         # 2. Últimos 50 retiros procesados
         cur.execute("""
@@ -1884,30 +1883,35 @@ def get_transparency():
         """)
         recent = cur.fetchall()
         
-        # Formatear datos censurando nombres
+        # Formatear datos censurando nombres de forma segura
         formatted_recent = []
         for r in recent:
-            uname = r['username']
+            uname = str(r.get('username', 'Usuario'))
             c_name = uname[:3] + "***" + uname[-2:] if len(uname) > 4 else uname[:2] + "***"
             
-            # Formato de hora estilo "15 Oct, 14:30"
-            date_str = r['created_at'].strftime('%d %b, %H:%M') if r['created_at'] else 'Reciente'
+            created_at = r.get('created_at')
+            # Validar si el campo creado es un objeto DateTime o un String plano
+            if hasattr(created_at, 'strftime'):
+                date_str = created_at.strftime('%d %b, %H:%M')
+            else:
+                date_str = str(created_at)[:16] if created_at else 'Reciente'
             
             formatted_recent.append({
                 'user': c_name,
-                'amount': float(r['amount_credits']),
+                'amount': float(r.get('amount_credits', 0)),
                 'date': date_str
             })
             
-        # Relleno simulado si no hay retiros aún (Ayuda en el día 1 de lanzamiento)
+        # Relleno simulado si no hay retiros aún
         if len(formatted_recent) < 3:
             import random
             from datetime import timedelta
             for i in range(10):
+                fake_date = datetime.now(timezone.utc) - timedelta(hours=i*2)
                 formatted_recent.append({
                     'user': f"Usu***_{random.randint(10,99)}",
                     'amount': float(random.choice([15000, 30000, 50000, 120000])),
-                    'date': (datetime.now(timezone.utc) - timedelta(hours=i*2)).strftime('%d %b, %H:%M')
+                    'date': fake_date.strftime('%d %b, %H:%M')
                 })
 
         return jsonify({
@@ -1916,6 +1920,7 @@ def get_transparency():
         }), 200
         
     except Exception as e:
+        print("Error API Transparencia:", str(e))
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
