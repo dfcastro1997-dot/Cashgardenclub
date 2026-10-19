@@ -1,155 +1,206 @@
-<div class="fixed inset-0 z-[200] flex flex-col overflow-hidden font-sans bg-cover bg-center" style="background-image: url('assets/Fondos/Ruleta.jpg');">
+<div class="fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center font-sans" style="background-image: url('assets/Fondos/Ruleta.jpg');">
     
-    <!-- OVERLAY OSCURO PARA DARLE ESTILO PROFESIONAL Y RESALTAR LA UI -->
-    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm z-0 pointer-events-none"></div>
+    <!-- OVERLAY OSCURO DE FONDO -->
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-0 pointer-events-none"></div>
 
     <!-- ========================================== -->
-    <!-- MODAL PRE-JUEGO: EXPLICACIÓN DE LA PLANTA  -->
+    <!-- MARCO DE CELULAR CENTRADO (PHONE FRAME)    -->
     <!-- ========================================== -->
-    <div id="rul-intro-modal" class="fixed inset-0 z-[250] flex items-center justify-center p-4 font-sans bg-black/60 backdrop-blur-md transition-opacity">
-        <div class="bg-white/95 backdrop-blur-xl rounded-[2rem] w-full max-w-md p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(237,153,37,0.3)] border border-white/20 animate-fade-in relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
-            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
-            
-            <span class="bg-cg_navy text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block shadow-sm">Disco Táctico</span>
-            <h2 class="text-xl sm:text-2xl font-black text-cg_navy mb-1 tracking-tight">Análisis de Despliegue</h2>
-            <p class="text-xs text-gray-500 font-medium mb-6">Conoce cómo las estadísticas de tu planta afectarán las físicas y reglas de la partida.</p>
-            
-            <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-white rounded-2xl border-4 border-gray-100 shadow-md flex items-center justify-center mb-3 p-2 relative z-10">
-                <img id="intro-plant-img" src="assets/Fondos/logo.png" class="w-full h-full object-contain drop-shadow-lg animate-bounce">
-            </div>
-            <h3 id="intro-plant-name" class="text-lg font-black text-cg_navy mb-5 relative z-10">Planta Desconocida</h3>
+    <div class="relative z-10 w-[95%] max-w-[400px] h-[95vh] max-h-[850px] bg-slate-900 rounded-[2.5rem] sm:rounded-[3rem] border-[8px] sm:border-[12px] border-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden">
+        
+        <!-- Notch del celular -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-2xl z-50 flex justify-center items-end pb-1">
+            <div class="w-12 h-1.5 bg-slate-900 rounded-full opacity-50"></div>
+        </div>
 
-            <!-- Desglose de Stats Explicado -->
-            <div class="space-y-3 text-left mb-8 relative z-10">
-                <div class="bg-yellow-50/80 border border-yellow-200 rounded-xl p-3 sm:p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[10px] font-black text-yellow-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">🪙</span> Fichas (Giros)</span>
-                        <span id="intro-spins" class="font-black text-yellow-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-yellow-100">--</span>
+        <!-- ========================================== -->
+        <!-- PANTALLA 1: SPLASH SCREEN (CARGA)          -->
+        <!-- ========================================== -->
+        <div id="rul-splash-screen" class="absolute inset-0 z-40 bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-700">
+            
+            <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+                <!-- Logo Principal (Desaparece) -->
+                <img id="splash-logo-1" src="assets/Fondos/logo.png" class="absolute w-full h-auto object-contain transition-all duration-700 ease-in-out z-20">
+                <!-- Logo del Juego (Aparece) -->
+                <img id="splash-logo-2" src="assets/Fondos/Juego_002.png" class="absolute w-[250px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
+            </div>
+            
+            <h2 class="text-white font-black text-2xl tracking-widest uppercase mb-1">Disco Táctico</h2>
+            <p class="text-cg_gold text-[10px] font-bold tracking-[0.3em] uppercase mb-12">Arcade System</p>
+            
+            <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="rul-loading-bar" class="h-full bg-cg_gold w-0 transition-all duration-[2500ms] ease-out"></div>
+            </div>
+            <p class="text-slate-500 text-[9px] uppercase tracking-widest mt-3 font-bold animate-pulse">Sincronizando Físicas...</p>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PANTALLA 2: ANÁLISIS DE LA PLANTA (INTRO)  -->
+        <!-- ========================================== -->
+        <div id="rul-intro-screen" class="absolute inset-0 z-30 bg-slate-900 flex flex-col hidden overflow-y-auto hide-scrollbar pb-6 pt-10">
+            <div class="px-6 text-center mt-4 shrink-0">
+                <span class="bg-yellow-500/20 text-cg_gold border border-yellow-500/30 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Análisis de Despliegue</span>
+                
+                <!-- Planta Seleccionada -->
+                <div class="w-24 h-24 mx-auto bg-slate-800/50 rounded-2xl border border-slate-700 shadow-lg flex items-center justify-center mb-3 p-2 relative">
+                    <div class="absolute inset-0 bg-yellow-500/10 rounded-2xl animate-pulse"></div>
+                    <img id="intro-plant-img" src="assets/Fondos/logo.png" class="w-full h-full object-contain drop-shadow-lg relative z-10">
+                </div>
+                <h3 id="intro-plant-name" class="text-xl font-black text-white mb-6 tracking-tight">Cargando...</h3>
+            </div>
+
+            <!-- Desglose de Stats Moderno -->
+            <div class="px-6 space-y-4 flex-1">
+                
+                <!-- FICHAS (TURNOS) -->
+                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-16 h-16 bg-green-500/10 blur-xl"></div>
+                    <div class="flex justify-between items-end mb-2 relative z-10">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-green-400 text-base">🪙</span> Vida / Intentos</span>
+                        <span id="intro-val-hp" class="text-sm font-black text-white">-- HP</span>
                     </div>
-                    <p class="text-[10px] text-yellow-700 leading-relaxed font-medium">Define cuántas veces podrás girar la ruleta. A mayor vida (HP) de la planta, más intentos tendrás.</p>
+                    <!-- Barra de escala -->
+                    <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
+                        <div id="intro-bar-hp" class="h-full bg-green-500 rounded-full w-[0%] transition-all duration-1000"></div>
+                    </div>
+                    <p id="intro-desc-hp" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
+                        Esta planta te otorga <strong class="text-green-400" id="intro-spins">-- Giros</strong> para la ruleta.
+                    </p>
+                </div>
+
+                <!-- MULTIPLICADOR (PUNTOS) -->
+                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-16 h-16 bg-orange-500/10 blur-xl"></div>
+                    <div class="flex justify-between items-end mb-2 relative z-10">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-orange-400 text-base">⭐</span> Ataque / Puntos</span>
+                        <span id="intro-val-atk" class="text-sm font-black text-white">-- ATK</span>
+                    </div>
+                    <!-- Barra de escala -->
+                    <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
+                        <div id="intro-bar-atk" class="h-full bg-orange-500 rounded-full w-[0%] transition-all duration-1000"></div>
+                    </div>
+                    <p id="intro-desc-atk" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
+                        Multiplicador de premio de <strong class="text-orange-400" id="intro-mult">x--</strong>. El Jackpot máximo será de <strong class="text-orange-400" id="intro-pts">+-- Pts</strong>.
+                    </p>
+                </div>
+
+                <!-- CONTROL (DIFICULTAD / FRICCIÓN) -->
+                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-16 h-16 bg-blue-500/10 blur-xl"></div>
+                    <div class="flex justify-between items-end mb-2 relative z-10">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-blue-400 text-base">⚙️</span> Control / Fricción</span>
+                        <span id="intro-val-def" class="text-sm font-black text-white">-- DEF</span>
+                    </div>
+                    <!-- Barra de escala -->
+                    <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
+                        <div id="intro-bar-def" class="h-full bg-blue-500 rounded-full w-[0%] transition-all duration-1000"></div>
+                    </div>
+                    <p id="intro-desc-def" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
+                        Fricción mecánica de <strong class="text-blue-400" id="intro-control">--</strong>. A mayor defensa, más rápido se detiene el disco al frenar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="px-6 mt-6 shrink-0">
+                <button onclick="window.rouletteApp.startGame()" class="w-full bg-cg_gold hover:bg-orange-500 text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(237,153,37,0.4)] transition-all uppercase tracking-widest text-sm active:scale-95 flex justify-center items-center gap-2">
+                    Iniciar Simulación <span class="text-lg leading-none">▶</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PANTALLA 3: INTERFAZ DEL JUEGO             -->
+        <!-- ========================================== -->
+        <div id="rul-game-screen" class="absolute inset-0 z-20 bg-slate-900 flex flex-col hidden pt-8">
+            
+            <!-- TOP HUD -->
+            <div class="px-4 py-3 flex justify-between items-center bg-slate-900/90 border-b border-slate-800 z-10 shrink-0">
+                <div class="flex items-center gap-3">
+                    <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-8 h-8 object-contain drop-shadow-md">
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Score</span>
+                        <span id="rul-score" class="text-xl font-black text-cg_gold font-mono leading-none drop-shadow-[0_0_8px_rgba(237,153,37,0.5)]">0</span>
+                    </div>
                 </div>
                 
-                <div class="bg-orange-50/80 border border-orange-200 rounded-xl p-3 sm:p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[10px] font-black text-orange-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">⭐</span> Multiplicador (Puntos)</span>
-                        <span id="intro-pts" class="font-black text-orange-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-orange-100">--</span>
+                <div class="flex items-center gap-3">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tiempo</span>
+                        <span id="rul-timer" class="text-sm font-black text-red-400 font-mono">60.0s</span>
                     </div>
-                    <p class="text-[10px] text-orange-700 leading-relaxed font-medium">Amplifica tu rentabilidad. El poder de ataque (ATK) determina el premio máximo en la casilla del Jackpot.</p>
-                </div>
-                
-                <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-3 sm:p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[10px] font-black text-blue-800 uppercase tracking-widest flex items-center gap-1.5"><span class="text-base">⚙️</span> Control (Fricción)</span>
-                        <span id="intro-control" class="font-black text-blue-600 text-sm bg-white px-2 py-0.5 rounded shadow-sm border border-blue-100">--</span>
+                    <div class="w-px h-6 bg-slate-700"></div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Giros</span>
+                        <span id="rul-ammo" class="text-sm font-black text-green-400 font-mono">0</span>
                     </div>
-                    <p class="text-[10px] text-blue-700 leading-relaxed font-medium">El nivel de defensa (DEF) aumenta la fricción mecánica de la ruleta, permitiendo que el disco frene más rápido al presionar el botón.</p>
                 </div>
             </div>
 
-            <button onclick="window.rouletteApp.startGame()" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_5px_0_#c27818] active:translate-y-[5px] active:shadow-none uppercase tracking-widest text-sm relative z-10">
-                Iniciar Misión ➔
+            <!-- ÁREA DEL CANVAS -->
+            <div class="flex-1 relative bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center overflow-hidden w-full h-full">
+                
+                <!-- Efecto de Luz de Fondo -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-yellow-500/20 via-slate-900/0 to-transparent pointer-events-none z-0"></div>
+
+                <!-- Indicador de Puntero Moderno Estático (Top Center) -->
+                <div class="absolute top-[5%] sm:top-[8%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]">
+                    <div class="w-10 h-12 bg-gradient-to-b from-red-500 to-red-700 rounded-b-full shadow-lg border-2 border-white/80 flex items-end justify-center pb-2">
+                        <div class="w-3 h-3 bg-white rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- CANVAS DE LA RULETA -->
+                <canvas id="roulette-canvas" width="360" height="360" class="block w-full max-w-sm aspect-square mx-auto bg-transparent relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] object-contain"></canvas>
+            </div>
+
+            <!-- CONTROLES INFERIORES -->
+            <div class="p-5 bg-slate-900 border-t border-slate-800 shrink-0 pb-8">
+                <button id="rul-action-btn" class="w-full bg-cg_blue hover:bg-blue-500 text-slate-900 font-black text-lg py-4 rounded-2xl shadow-[0_0_20px_rgba(41,150,218,0.3)] transition-all uppercase tracking-widest z-30 flex items-center justify-center gap-2 active:scale-95 border border-white/20">
+                    <span>🎡</span> Girar Ruleta
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PANTALLA 4: RESULTADO DE LA MISIÓN         -->
+        <!-- ========================================== -->
+        <div id="rul-result-screen" class="absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-center">
+            
+            <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(237,153,37,0.4)] border border-slate-700 text-4xl animate-bounce">
+                🏆
+            </div>
+            
+            <h3 class="text-2xl font-black text-white mb-1 tracking-tight">Fin de Simulación</h3>
+            <p class="text-xs text-slate-400 font-medium mb-8">Rendimiento evaluado y registrado.</p>
+            
+            <div class="w-full bg-slate-800/80 border border-slate-700 rounded-2xl p-5 mb-8 text-left shadow-inner">
+                <div class="flex justify-between items-center text-xs mb-4 border-b border-slate-700 pb-3">
+                    <span class="text-slate-400 font-black uppercase tracking-widest">Puntaje Base:</span>
+                    <span class="font-black text-white text-sm font-mono" id="res-base">0</span>
+                </div>
+                <div class="flex justify-between items-center text-xs mb-4 border-b border-slate-700 pb-3">
+                    <span class="text-cg_gold font-black uppercase tracking-widest">Bono Velocidad:</span>
+                    <span class="font-black text-slate-900 text-xs bg-cg_gold px-2 py-1 rounded-md font-mono shadow-[0_0_10px_rgba(237,153,37,0.4)]" id="res-time">+0</span>
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-sm font-black text-white uppercase tracking-widest">Total Final:</span>
+                    <span class="text-3xl font-black text-cg_gold drop-shadow-md font-mono" id="res-total">0</span>
+                </div>
+            </div>
+
+            <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(237,153,37,0.3)] active:scale-95 flex items-center justify-center gap-2">
+                <span>💾</span> Confirmar y Salir
             </button>
         </div>
-    </div>
 
-    <!-- ========================================== -->
-    <!-- INTERFAZ PRINCIPAL DEL JUEGO               -->
-    <!-- ========================================== -->
-
-    <!-- TOP HUD LUMINOSO Y LIMPIO -->
-    <div class="bg-white/95 backdrop-blur-md border-b border-white/20 p-4 flex justify-between items-center shadow-lg relative z-10 shrink-0 mt-safe pt-safe">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-gray-50 rounded-full border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden shrink-0">
-                <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-10 h-10 object-contain drop-shadow-sm">
-            </div>
-            <div>
-                <h3 id="rul-plant-name" class="font-black text-cg_navy text-sm uppercase tracking-widest">Planta</h3>
-                <div class="flex gap-1.5 text-[9px] font-black text-gray-500 mt-0.5">
-                    <span id="rul-stat-hp" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">❤️ --</span>
-                    <span id="rul-stat-atk" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">⚔️ --</span>
-                    <span id="rul-stat-def" class="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">🛡️ --</span>
-                </div>
-            </div>
-        </div>
-        <div class="text-right bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-2 rounded-xl border border-orange-200 shadow-inner">
-            <span class="block text-[9px] font-black text-orange-600 uppercase tracking-widest mb-0.5">Puntos</span>
-            <span id="rul-score" class="text-2xl sm:text-3xl font-black text-cg_gold font-mono leading-none drop-shadow-sm">0</span>
-        </div>
-    </div>
-
-    <!-- BARRA SECUNDARIA DE ESTADO -->
-    <div class="flex justify-between items-center bg-cg_navy/80 backdrop-blur-md px-5 py-3 border-b border-gray-700 shadow-md shrink-0 relative z-10">
-        <div class="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-gray-600 shadow-inner">
-            <span class="text-lg">⏱️</span>
-            <span id="rul-timer" class="text-lg font-black text-white font-mono w-14 tracking-wider">60.0s</span>
-        </div>
-        <div class="flex items-center gap-2 bg-yellow-900/40 px-3 py-1.5 rounded-lg border border-yellow-700 shadow-inner">
-            <span class="text-lg drop-shadow-sm">🔄</span>
-            <span id="rul-ammo" class="text-lg font-black text-yellow-400 font-mono">0</span>
-            <span class="text-[9px] text-yellow-200/70 font-black uppercase mt-0.5">Tiros Restantes</span>
-        </div>
-    </div>
-
-    <!-- ÁREA DE JUEGO (CANVAS LUMINOSO) -->
-    <div class="flex-1 relative flex items-center justify-center overflow-hidden z-10">
-        
-        <!-- Efecto Resplandor Detrás de la Ruleta -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-white/10 rounded-full blur-[80px] pointer-events-none z-0"></div>
-
-        <!-- Indicador de Puntero Moderno -->
-        <div class="absolute top-[10%] sm:top-[15%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]">
-            <div class="w-10 h-12 bg-gradient-to-b from-red-500 to-red-700 rounded-b-full shadow-lg border-2 border-white flex items-end justify-center pb-2">
-                <div class="w-3 h-3 bg-white rounded-full"></div>
-            </div>
-        </div>
-
-        <canvas id="roulette-canvas" class="block w-full max-w-sm aspect-square mx-auto bg-transparent relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"></canvas>
-        
-        <!-- Botón de Acción Universal -->
-        <button id="rul-action-btn" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-cg_blue hover:bg-blue-500 text-white font-black text-lg sm:text-xl px-10 py-4 rounded-2xl shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none transition-all uppercase tracking-widest z-30 flex items-center gap-2 border border-blue-400">
-            <span>🎡</span> Girar Ruleta
-        </button>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL DE RESULTADO LUMINOSO                -->
-<!-- ========================================== -->
-<div id="rul-result-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md font-sans">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center border-4 border-cg_gold shadow-[0_0_40px_rgba(237,153,37,0.3)] animate-fade-in relative overflow-hidden">
-        
-        <div class="w-20 h-20 bg-gradient-to-br from-yellow-300 to-cg_gold rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg border-4 border-white text-4xl animate-bounce">🏆</div>
-        
-        <h3 class="text-2xl font-black text-cg_navy mb-1 tracking-tight">¡Tiempo Agotado!</h3>
-        <p class="text-xs text-gray-500 font-medium mb-6">Tu puntuación ha sido calculada exitosamente.</p>
-        
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left shadow-inner">
-            <div class="flex justify-between items-center text-xs mb-3 border-b border-gray-100 pb-2">
-                <span class="text-gray-500 font-black uppercase tracking-widest">Puntaje Base:</span>
-                <span class="font-black text-cg_navy text-sm" id="res-base">0</span>
-            </div>
-            <div class="flex justify-between items-center text-xs mb-3 border-b border-gray-100 pb-2">
-                <span class="text-green-600 font-black uppercase tracking-widest">Bono Velocidad:</span>
-                <span class="font-black text-green-600 text-sm bg-green-100 px-2 py-0.5 rounded-md border border-green-200" id="res-time">+0</span>
-            </div>
-            <div class="flex justify-between items-center pt-2">
-                <span class="text-sm font-black text-cg_navy uppercase tracking-widest">Total Final:</span>
-                <span class="text-3xl font-black text-cg_gold drop-shadow-sm" id="res-total">0</span>
-            </div>
-        </div>
-
-        <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="w-full bg-cg_navy hover:bg-black text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_5px_0_#000000] active:translate-y-[5px] active:shadow-none flex items-center justify-center gap-2">
-            <span>💾</span> Registrar Puntuación
-        </button>
     </div>
 </div>
 
 <script>
 window.rouletteApp = {
-    canvas: document.getElementById('roulette-canvas'),
+    canvas: null,
     ctx: null,
-    size: 360,
+    size: 360, 
     
     // Stats de la planta
     hp: 100, atk: 50, def: 20,
@@ -165,21 +216,36 @@ window.rouletteApp = {
     // Físicas de la ruleta
     slices: [],
     numSlices: 8,
-    currentAngle: 0, // grados
+    currentAngle: 0, 
     velocity: 0,
-    maxVelocity: 14, // Velocidad de giro (grados por frame)
-    deceleration: 0.1, // Fricción determinada por DEF
+    maxVelocity: 14, 
+    deceleration: 0.1, 
     
     // Controles: READY -> SPINNING -> STOPPING
     inputState: 'READY',
     rafId: null,
 
-    // Inicializa la UI y el modal de análisis
+    // Audio Managers
+    sounds: {
+        bonus: [
+            new Audio('assets/Sonidos/Maquinas/Bonus_01.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_02.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_03.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_04.mp3'),
+            new Audio('assets/Sonidos/Maquinas/Bonus_05.mp3')
+        ],
+        error: new Audio('assets/Sonidos/Maquinas/Error.mp3')
+    },
+
+    // Inicializa la UI, lee la planta y muestra el Splash + Intro
     init() {
+        this.canvas = document.getElementById('roulette-canvas');
+        if (!this.canvas) return;
+
         this.ctx = this.canvas.getContext('2d');
         this.resize();
         
-        let plantName = "Planta Base";
+        let plantName = "Semilla Base";
         let plantImg = "assets/Fondos/logo.png";
 
         // Obtener datos de la planta seleccionada
@@ -203,47 +269,96 @@ window.rouletteApp = {
             }
         }
 
-        // Llenar datos de la barra HUD
-        document.getElementById('rul-plant-icon').src = plantImg;
-        document.getElementById('rul-plant-name').innerText = plantName;
-        document.getElementById('rul-stat-hp').innerText = `❤️ ${this.hp}`;
-        document.getElementById('rul-stat-atk').innerText = `⚔️ ${this.atk}`;
-        document.getElementById('rul-stat-def').innerText = `🛡️ ${this.def}`;
+        // 1. Mostrar Splash Screen simulando carga
+        setTimeout(() => {
+            const bar = document.getElementById('rul-loading-bar');
+            if(bar) bar.style.width = '100%';
+            
+            // Animación de transición de Logos
+            setTimeout(() => {
+                const logo1 = document.getElementById('splash-logo-1');
+                const logo2 = document.getElementById('splash-logo-2');
+                if (logo1) logo1.classList.add('opacity-0', 'scale-110');
+                if (logo2) {
+                    logo2.classList.remove('opacity-0', 'scale-50');
+                    logo2.classList.add('opacity-100', 'scale-100', 'drop-shadow-[0_0_40px_rgba(237,153,37,0.6)]');
+                }
+            }, 1000);
 
-        // Llenar datos del Modal Pre-Juego
+        }, 100);
+
+        setTimeout(() => {
+            const splash = document.getElementById('rul-splash-screen');
+            if (splash) splash.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                if(splash) splash.classList.add('hidden');
+                this.showIntroScreen(plantName, plantImg);
+            }, 700);
+        }, 3000); // 3 segundos de splash
+    },
+
+    // Muestra la pantalla de análisis con las barras de progreso
+    showIntroScreen(plantName, plantImg) {
+        const screen = document.getElementById('rul-intro-screen');
+        if (!screen) return;
+        
+        screen.classList.remove('hidden');
+
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // BALANCE STANDARD:
-        // HP = Cantidad de giros (1 giro por cada 10 HP)
+        // Cálculos
         this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
-        this.spinsLeft = this.spinsTotal;
-        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Giros`;
-        
-        // ATK = Multiplicador de puntos
         const mult = 1 + (this.atk / 100);
-        document.getElementById('intro-pts').innerText = `+${Math.floor(1000 * mult)} Pts Max`;
-        
-        // DEF = Fricción (Mayor defensa frena más rápido, es más preciso)
-        // Deceleración base 0.05 + 0.1 por cada 100 de DEF
+        const jackpotPoints = Math.floor(1000 * mult);
         this.deceleration = 0.05 + (this.def / 100) * 0.1;
+        
+        // Calcular porcentaje visual
+        const hpPct = Math.min(100, (this.hp / 500) * 100); 
+        const atkPct = Math.min(100, (this.atk / 350) * 100); 
+        const defPct = Math.min(100, (this.def / 150) * 100); 
+
+        // Llenar UI del Análisis
+        document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
+        document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
+        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Giros`;
+
+        document.getElementById('intro-val-atk').innerText = `${this.atk} ATK`;
+        document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
+        document.getElementById('intro-mult').innerText = `x${mult.toFixed(1)}`;
+        document.getElementById('intro-pts').innerText = `+${jackpotPoints} Pts`;
+
+        document.getElementById('intro-val-def').innerText = `${this.def} DEF`;
+        document.getElementById('intro-bar-def').style.width = `${defPct}%`;
         document.getElementById('intro-control').innerText = `${this.deceleration.toFixed(2)} Fricción`;
 
+        // Datos HUD in-game
+        document.getElementById('rul-plant-icon').src = plantImg;
+        document.getElementById('rul-score').innerText = '0';
+        this.spinsLeft = this.spinsTotal;
         document.getElementById('rul-ammo').innerText = this.spinsLeft;
 
         this.buildWheel(mult);
-        this.draw(); // Dibuja la ruleta en el fondo detrás del modal
+        this.draw(); 
     },
 
-    // Invocado por el botón "Iniciar Misión" del modal
+    // Invocado por el botón "Iniciar Simulación"
     startGame() {
-        document.getElementById('rul-intro-modal').classList.add('hidden');
+        const intro = document.getElementById('rul-intro-screen');
+        const game = document.getElementById('rul-game-screen');
+        if(!intro || !game) return;
+
+        intro.classList.add('hidden');
+        game.classList.remove('hidden');
         
         const actionBtn = document.getElementById('rul-action-btn');
         actionBtn.onclick = () => this.handleInput();
 
         this.isPlaying = true;
         this.startTimer();
+        
+        if (this.rafId) cancelAnimationFrame(this.rafId);
         this.loop();
     },
 
@@ -255,14 +370,14 @@ window.rouletteApp = {
     buildWheel(mult) {
         // 8 Secciones (45 grados cada una)
         this.slices = [
-            { id: 0, type: 'jackpot', bg: 'rgba(250, 204, 21, 0.95)', border: '#ca8a04', text: '#854d0e', label: `⭐ ${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
-            { id: 1, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
-            { id: 2, type: 'bad',     bg: 'rgba(248, 113, 113, 0.95)', border: '#dc2626', text: '#7f1d1d', label: `💀 -500`, pts: -500 },
-            { id: 3, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
-            { id: 4, type: 'bad',     bg: 'rgba(248, 113, 113, 0.95)', border: '#dc2626', text: '#7f1d1d', label: `💀 -300`, pts: -300 },
-            { id: 5, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
-            { id: 6, type: 'good',    bg: 'rgba(74, 222, 128, 0.95)', border: '#16a34a', text: '#14532d', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
-            { id: 7, type: 'bad',     bg: 'rgba(248, 113, 113, 0.95)', border: '#dc2626', text: '#7f1d1d', label: `💀 -400`, pts: -400 }
+            { id: 0, type: 'jackpot', bg: 'rgba(234, 179, 8, 0.9)', border: '#fef08a', text: '#ffffff', label: `⭐ ${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
+            { id: 1, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
+            { id: 2, type: 'bad',     bg: 'rgba(239, 68, 68, 0.85)', border: '#fca5a5', text: '#ffffff', label: `💀 -500`, pts: -500 },
+            { id: 3, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
+            { id: 4, type: 'bad',     bg: 'rgba(239, 68, 68, 0.85)', border: '#fca5a5', text: '#ffffff', label: `💀 -300`, pts: -300 },
+            { id: 5, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
+            { id: 6, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
+            { id: 7, type: 'bad',     bg: 'rgba(239, 68, 68, 0.85)', border: '#fca5a5', text: '#ffffff', label: `💀 -400`, pts: -400 }
         ];
     },
 
@@ -270,12 +385,26 @@ window.rouletteApp = {
         this.timerInterval = setInterval(() => {
             if (!this.isPlaying) return;
             this.timeLeft -= 0.1;
-            document.getElementById('rul-timer').innerText = this.timeLeft.toFixed(1) + 's';
+            
+            const timerEl = document.getElementById('rul-timer');
+            if (timerEl) timerEl.innerText = this.timeLeft.toFixed(1) + 's';
             
             if (this.timeLeft <= 0 || this.score >= 10000) {
                 this.endGame();
             }
         }, 100);
+    },
+
+    playBonusSound() {
+        const snd = this.sounds.bonus[Math.floor(Math.random() * this.sounds.bonus.length)];
+        snd.currentTime = 0;
+        snd.play().catch(e => console.warn('Audio play prevented', e));
+    },
+
+    playErrorSound() {
+        const snd = this.sounds.error;
+        snd.currentTime = 0;
+        snd.play().catch(e => console.warn('Audio play prevented', e));
     },
 
     handleInput() {
@@ -294,16 +423,15 @@ window.rouletteApp = {
             btn.innerHTML = "<span>🛑</span> ¡FRENAR!";
             btn.classList.replace('bg-cg_blue', 'bg-red-500');
             btn.classList.replace('hover:bg-blue-500', 'hover:bg-red-600');
-            btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_6px_0_#991b1b]');
-            btn.classList.replace('border-blue-400', 'border-red-400');
+            btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_0_20px_rgba(239,68,68,0.5)]');
+            btn.classList.replace('text-slate-900', 'text-white');
             
         } else if (this.inputState === 'SPINNING') {
             this.inputState = 'STOPPING';
             btn.innerHTML = "<span>⏳</span> Frenando...";
             btn.classList.replace('bg-red-500', 'bg-slate-500');
             btn.classList.replace('hover:bg-red-600', 'hover:bg-slate-600');
-            btn.classList.replace('shadow-[0_6px_0_#991b1b]', 'shadow-[0_6px_0_#334155]');
-            btn.classList.replace('border-red-400', 'border-slate-400');
+            btn.classList.replace('shadow-[0_0_20px_rgba(239,68,68,0.5)]', 'shadow-[0_0_20px_rgba(100,116,139,0.5)]');
             btn.disabled = true;
         }
     },
@@ -312,6 +440,8 @@ window.rouletteApp = {
         if (!this.isPlaying) return;
         this.update();
         this.draw();
+        
+        if (this.rafId) cancelAnimationFrame(this.rafId);
         this.rafId = requestAnimationFrame(() => this.loop());
     },
 
@@ -343,8 +473,15 @@ window.rouletteApp = {
         this.score = Math.max(0, this.score + wonSlice.pts);
         document.getElementById('rul-score').innerText = this.score;
 
+        // Reproducir sonido según resultado
+        if (wonSlice.pts > 0) {
+            this.playBonusSound();
+        } else {
+            this.playErrorSound();
+        }
+
         if (this.score >= 10000 || this.spinsLeft <= 0) {
-            this.endGame();
+            setTimeout(() => this.endGame(), 800);
         } else {
             this.inputState = 'READY';
             const btn = document.getElementById('rul-action-btn');
@@ -352,12 +489,13 @@ window.rouletteApp = {
             btn.innerHTML = "<span>🎡</span> Girar Ruleta";
             btn.classList.replace('bg-slate-500', 'bg-cg_blue');
             btn.classList.replace('hover:bg-slate-600', 'hover:bg-blue-500');
-            btn.classList.replace('shadow-[0_6px_0_#334155]', 'shadow-[0_6px_0_#1e3a8a]');
-            btn.classList.replace('border-slate-400', 'border-blue-400');
+            btn.classList.replace('shadow-[0_0_20px_rgba(100,116,139,0.5)]', 'shadow-[0_6px_0_#1e3a8a]');
+            btn.classList.replace('text-white', 'text-slate-900');
         }
     },
 
     draw() {
+        if (!this.ctx) return;
         this.ctx.clearRect(0, 0, this.size, this.size);
         const center = this.size / 2;
         const radius = (this.size / 2) - 10;
@@ -368,7 +506,7 @@ window.rouletteApp = {
 
         const sliceAngle = (2 * Math.PI) / this.numSlices;
 
-        // Dibujar Secciones con estilo moderno
+        // Dibujar Secciones Glassmorphism
         for (let i = 0; i < this.numSlices; i++) {
             let slice = this.slices[i];
             this.ctx.beginPath();
@@ -379,15 +517,6 @@ window.rouletteApp = {
             this.ctx.fillStyle = slice.bg;
             this.ctx.fill();
             
-            this.ctx.lineWidth = 4;
-            this.ctx.strokeStyle = '#ffffff'; // Borde blanco cristalino
-            this.ctx.stroke();
-
-            // Sombreado interior de cada segmento
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, 0);
-            this.ctx.arc(0, 0, radius - 4, i * sliceAngle, (i + 1) * sliceAngle);
-            this.ctx.closePath();
             this.ctx.lineWidth = 2;
             this.ctx.strokeStyle = slice.border;
             this.ctx.stroke();
@@ -397,42 +526,49 @@ window.rouletteApp = {
             this.ctx.rotate(i * sliceAngle + sliceAngle / 2);
             this.ctx.textAlign = 'right';
             this.ctx.fillStyle = slice.text;
+            this.ctx.shadowColor = 'rgba(0,0,0,0.6)';
+            this.ctx.shadowBlur = 4;
             
             let textParts = slice.label.split(' ');
             if (textParts.length > 1) {
-                this.ctx.font = '22px sans-serif';
-                this.ctx.fillText(textParts[0], radius - 75, 7);
+                this.ctx.font = '24px sans-serif';
+                this.ctx.fillText(textParts[0], radius - 70, 8);
                 this.ctx.font = '900 16px sans-serif';
-                this.ctx.fillText(textParts[1], radius - 20, 6);
+                this.ctx.fillText(textParts[1], radius - 15, 6);
             } else {
                 this.ctx.font = '900 16px sans-serif';
-                this.ctx.fillText(slice.label, radius - 20, 6);
+                this.ctx.fillText(slice.label, radius - 15, 6);
             }
+            this.ctx.shadowBlur = 0;
             this.ctx.restore();
         }
 
-        // Círculo Central Decorativo
+        // Círculo Central Decorativo Cyberpunk
         this.ctx.beginPath();
         this.ctx.arc(0, 0, 35, 0, 2 * Math.PI);
-        this.ctx.fillStyle = '#ffffff'; 
+        this.ctx.fillStyle = '#0f172a'; 
         this.ctx.fill();
-        this.ctx.lineWidth = 6;
-        this.ctx.strokeStyle = '#e2e8f0'; 
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = '#38bdf8'; 
         this.ctx.stroke();
         
         // Punto central interno
         this.ctx.beginPath();
         this.ctx.arc(0, 0, 15, 0, 2 * Math.PI);
-        this.ctx.fillStyle = '#94a3b8'; 
+        this.ctx.fillStyle = '#eab308'; 
         this.ctx.fill();
+        this.ctx.shadowColor = '#facc15';
+        this.ctx.shadowBlur = 10;
+        this.ctx.stroke();
+        this.ctx.shadowBlur = 0;
 
         this.ctx.restore();
         
-        // Borde exterior maestro de la ruleta
+        // Borde exterior maestro de la ruleta luminoso
         this.ctx.beginPath();
         this.ctx.arc(center, center, radius + 2, 0, 2 * Math.PI);
-        this.ctx.lineWidth = 6;
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.lineWidth = 8;
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
         this.ctx.stroke();
     },
 
@@ -456,8 +592,8 @@ window.rouletteApp = {
 
         window.finalRouletteScore = finalScore;
 
-        document.getElementById('rul-result-modal').classList.remove('hidden');
-        document.getElementById('rul-result-modal').classList.add('flex');
+        document.getElementById('rul-result-screen').classList.remove('hidden');
+        document.getElementById('rul-result-screen').classList.add('flex');
     }
 };
 
