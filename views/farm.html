@@ -2476,11 +2476,19 @@ if (typeof window.farmApp === 'undefined') {
                     }
 
                     // NUEVO: Sobrescribir imagen si la Bóveda está activa
+                    let capsuleHtml = '';
                     if (plot.capsuleEndTime > now) {
                         currentPlantImg = 'assets/Herramientas_y_Servicios/Capsula.gif';
                         imgOnError = "";
                         plantImgClass = "absolute h-32 sm:h-40 w-full object-contain z-30 drop-shadow-xl";
                         plantImgStyle = "transform: translateY(-5%);";
+                        
+                        const capLeft = plot.capsuleEndTime - now;
+                        const ch = Math.floor(capLeft / 3600000);
+                        const cm = Math.floor((capLeft % 3600000) / 60000);
+                        const cs = Math.floor((capLeft % 60000) / 1000);
+                        const capTimeStr = `${ch.toString().padStart(2, '0')}:${cm.toString().padStart(2, '0')}:${cs.toString().padStart(2, '0')}`;
+                        capsuleHtml = `<span id="capsule-timer-${plot.id}" class="bg-white/90 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black text-indigo-700 border border-indigo-200 shadow-sm leading-tight flex items-center gap-1">🛡️ ${capTimeStr}</span>`;
                     }
 
                     let crowHtml = '';
@@ -2505,6 +2513,7 @@ if (typeof window.farmApp === 'undefined') {
                         <div class="absolute top-2 sm:top-3 left-2 sm:left-3 flex flex-col items-start gap-1 z-20 pointer-events-none">
                             <span class="bg-white/90 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded text-[7px] sm:text-[8px] font-black text-cg_blue border border-blue-200 uppercase shadow-sm tracking-widest">${plantCategoryName}</span>
                             <span class="bg-white/90 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black text-cg_navy border border-gray-200 shadow-sm leading-tight">${currentPlantName}</span>
+                            ${capsuleHtml}
                         </div>
 
                         <div class="absolute top-2 right-2 flex flex-col items-center gap-1.5 sm:gap-2 z-50 pointer-events-none">
@@ -3678,6 +3687,20 @@ if (typeof window.farmApp === 'undefined') {
                             // Inyección directa en el DOM sin recargar la tarjeta
                             timerEl.innerText = timeLeftText;
                             if (progressEl) progressEl.style.width = `${currentProgress}%`;
+                        }
+                    }
+
+                    // NUEVO: Temporizador en vivo para la Bóveda Hidropónica
+                    const capTimerEl = document.getElementById(`capsule-timer-${plot.id}`);
+                    if (capTimerEl) {
+                        if (plot.capsuleEndTime > now) {
+                            const capLeft = plot.capsuleEndTime - now;
+                            const ch = Math.floor(capLeft / 3600000);
+                            const cm = Math.floor((capLeft % 3600000) / 60000);
+                            const cs = Math.floor((capLeft % 60000) / 1000);
+                            capTimerEl.innerHTML = `🛡️ ${ch.toString().padStart(2, '0')}:${cm.toString().padStart(2, '0')}:${cs.toString().padStart(2, '0')}`;
+                        } else {
+                            capTimerEl.remove();
                         }
                     }
                 }
