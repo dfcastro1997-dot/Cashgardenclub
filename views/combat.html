@@ -4445,7 +4445,7 @@ window.combatApp = {
         sessionStorage.removeItem('pve_tournament_id');
         sessionStorage.removeItem('pve_tournament_fee');
         sessionStorage.removeItem('pve_tournament_instance');
-    }
+    }, // <--- ¡AQUÍ ESTÁ LA COMA QUE SOLUCIONA EL ERROR!
 
     confirmFlee() {
         if (this.combatEnded) return;
