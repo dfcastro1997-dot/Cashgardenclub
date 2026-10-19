@@ -357,9 +357,15 @@
             
             try {
                 const res = await fetch('/api/transparency');
+                
+                // PROTECCIÓN AÑADIDA: Verificar si la respuesta fue exitosa antes de parsear JSON
+                if (!res.ok) {
+                    throw new Error(`Error HTTP: ${res.status}`);
+                }
+                
                 const data = await res.json();
                 
-                if (data.recent_payouts && data.recent_payouts.length > 0) {
+                if (data && data.recent_payouts && data.recent_payouts.length > 0) {
                     // Combinar datos reales de la base de datos con los datos generados
                     combinedPayouts = data.recent_payouts.map(p => ({
                         date: p.date,
@@ -368,7 +374,7 @@
                     }));
                 }
             } catch (e) {
-                console.warn("No se pudo obtener datos del servidor. Usando solo datos simulados.");
+                console.warn("El servidor no pudo entregar los datos. Usando simulación de contingencia.", e.message);
             }
             
             // Generar suficientes datos falsos para llenar la tabla y hacerla ver activa (hasta 50 filas)
@@ -379,23 +385,25 @@
             }
 
             // Renderizar la tabla con los pagos (reales + falsos)
-            tbody.innerHTML = combinedPayouts.slice(0, 50).map(r => `
-                <tr class="hover:bg-blue-50/30 transition-colors">
-                    <td class="p-4 text-xs text-gray-500 font-bold">${r.date}</td>
-                    <td class="p-4 font-black text-cg_navy flex items-center gap-2">
-                        <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-[10px]">👤</div>
-                        ${r.user}
-                    </td>
-                    <td class="p-4 text-right font-black text-cg_gold text-base">
-                        $${r.amount.toLocaleString('es-CO')} COP
-                    </td>
-                    <td class="p-4 text-center">
-                        <span class="bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest shadow-sm">
-                            Enviado
-                        </span>
-                    </td>
-                </tr>
-            `).join('');
+            if (tbody) {
+                tbody.innerHTML = combinedPayouts.slice(0, 50).map(r => `
+                    <tr class="hover:bg-blue-50/30 transition-colors">
+                        <td class="p-4 text-xs text-gray-500 font-bold">${r.date}</td>
+                        <td class="p-4 font-black text-cg_navy flex items-center gap-2">
+                            <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-[10px]">👤</div>
+                            ${r.user}
+                        </td>
+                        <td class="p-4 text-right font-black text-cg_gold text-base">
+                            $${r.amount.toLocaleString('es-CO')} COP
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                Enviado
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         };
         
         // Iniciar carga de datos
