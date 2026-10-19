@@ -253,6 +253,7 @@
     </div>
 </div>
 
+<!-- REEMPLAZA ESTE SCRIPT COMPLETO EN nutrients.html -->
 <script>
     window.TOURNAMENT_INFO = {
         1: { name: 'Liga Novato' },
@@ -270,6 +271,7 @@
 
     window.pendingTournament = null;
 
+    // Lógica para que los cupos Falsos (FOMO) de la liga 1 comiencen bajos (2 a 4)
     if(!window.fakePlayersCounts) {
         window.fakePlayersCounts = {
             1: Math.floor(Math.random() * 3) + 2, 
@@ -278,14 +280,16 @@
         window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
     }
 
-    const FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; 
-    const FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime();
+    // --- LÓGICA DEL TEMPORIZADOR BIDIARIO (CORREGIDO PARA SPA) ---
+    // Usamos window para evitar el error "Identifier has already been declared"
+    window.FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; 
+    window.FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime();
     
-    function updateFreerollTimer() {
+    window.updateFreerollTimer = function() {
         const now = Date.now();
-        const elapsed = now - FREEROLL_ORIGIN;
-        const currentCycle = Math.floor(elapsed / FREEROLL_CYCLE_MS);
-        const deadline = FREEROLL_ORIGIN + (currentCycle + 1) * FREEROLL_CYCLE_MS;
+        const elapsed = now - window.FREEROLL_ORIGIN;
+        const currentCycle = Math.floor(elapsed / window.FREEROLL_CYCLE_MS);
+        const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
         let diff = deadline - now;
         const timerEl = document.getElementById('freeroll-timer');
@@ -296,7 +300,7 @@
             timerEl.classList.add('text-red-500', 'animate-pulse');
             setTimeout(() => {
                 window.fakePlayersCounts[1] = Math.floor(Math.random() * 2) + 1; 
-                renderPlayerCounts();
+                if (typeof window.renderPlayerCounts === 'function') window.renderPlayerCounts();
                 timerEl.classList.remove('text-red-500', 'animate-pulse');
             }, 5000); 
             return;
@@ -307,13 +311,13 @@
         let s = Math.floor((diff % 60000) / 1000);
         
         timerEl.innerText = `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
-    }
+    };
 
     if(window.freerollInterval) clearInterval(window.freerollInterval);
-    window.freerollInterval = setInterval(updateFreerollTimer, 1000);
-    updateFreerollTimer(); 
+    window.freerollInterval = setInterval(window.updateFreerollTimer, 1000);
+    window.updateFreerollTimer(); 
 
-    function animateValue(obj, start, end, duration) {
+    window.animateValue = function(obj, start, end, duration) {
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
@@ -327,19 +331,19 @@
             }
         };
         window.requestAnimationFrame(step);
-    }
+    };
 
-    function initCardAnimations() {
+    window.initCardAnimations = function() {
         document.querySelectorAll('.animated-number').forEach(el => {
             const targetStr = el.getAttribute('data-target');
             if (targetStr) {
                 const endVal = parseInt(targetStr);
-                animateValue(el, 0, endVal, 1500);
+                window.animateValue(el, 0, endVal, 1500);
             }
         });
-        renderPlayerCounts();
-    }
-    setTimeout(initCardAnimations, 100);
+        if (typeof window.renderPlayerCounts === 'function') window.renderPlayerCounts();
+    };
+    setTimeout(window.initCardAnimations, 100);
 
     window.openPreTournamentModal = async function(t_id, fee_cop, seedCostStr) {
         if (!window.farmApp || !window.farmApp.state) {
@@ -380,7 +384,7 @@
             if (window.farmApp) {
                 let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
                 let arsenal = window.farmApp.state.arsenal || [];
-                // IMPORTANTE: Redirigimos a pachinko.html
+                // Redirigir al Minijuego (pachinko.html) en lugar de la arena de combate vieja
                 window.farmApp.openTeamSelection(readyPlots, arsenal, null, 'pachinko');
             }
         };
@@ -405,7 +409,7 @@
         container.classList.remove('hidden');
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
         window.refreshLeaderboard();
-    }
+    };
 
     window.renderLeaderboardUI = function(data, tId) {
         document.getElementById('lb-tourney-name').innerText = window.TOURNAMENT_INFO[tId].name;
@@ -475,18 +479,18 @@
         } else {
             tbody.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-gray-500 font-bold bg-gray-50 rounded-b-xl border-t border-gray-100">La sala está vacía. Sé el primero en jugar.</td></tr>`;
         }
-    }
+    };
 
-    function renderPlayerCounts() {
+    window.renderPlayerCounts = function() {
         const countEl = document.getElementById('card-players-1');
         if (countEl && countEl.innerText != window.fakePlayersCounts[1]) {
             countEl.innerText = window.fakePlayersCounts[1];
             countEl.classList.add('scale-150', 'text-green-500');
             setTimeout(() => countEl.classList.remove('scale-150', 'text-green-500'), 300);
         }
-    }
+    };
 
-    async function updateAllTournamentCounts() {
+    window.updateAllTournamentCounts = async function() {
         try {
             const res = await fetch('/api/tournaments/global_leaderboard/1');
             if (res.ok) {
@@ -498,14 +502,14 @@
                 if (window.fakePlayersCounts[1] < realCount) window.fakePlayersCounts[1] = realCount;
             }
         } catch(e) {}
-        renderPlayerCounts();
-    }
+        window.renderPlayerCounts();
+    };
 
     if(window.fomoInterval) clearInterval(window.fomoInterval);
     window.fomoInterval = setInterval(() => {
         let bump = Math.random() > 0.6 ? 2 : 1; 
         window.fakePlayersCounts[1] += bump;
-        renderPlayerCounts();
+        if (typeof window.renderPlayerCounts === 'function') window.renderPlayerCounts();
     }, 18000);
 
     window.refreshLeaderboard = async function() {
@@ -514,17 +518,17 @@
             const res = await fetch('/api/tournaments/global_leaderboard/' + tId);
             if (res.ok) {
                 const data = await res.json();
-                window.renderLeaderboardUI(data, tId);
+                if (typeof window.renderLeaderboardUI === 'function') window.renderLeaderboardUI(data, tId);
             }
         } catch(e) {}
-    }
+    };
 
     if(window.lbInterval) clearInterval(window.lbInterval);
     window.lbInterval = setInterval(window.refreshLeaderboard, 5000); 
 
-    updateAllTournamentCounts();
+    window.updateAllTournamentCounts();
     if(window.tourneyFetchInterval) clearInterval(window.tourneyFetchInterval);
-    window.tourneyFetchInterval = setInterval(updateAllTournamentCounts, 10000);
+    window.tourneyFetchInterval = setInterval(window.updateAllTournamentCounts, 10000);
 
 </script>
 </div>

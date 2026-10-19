@@ -1220,52 +1220,62 @@ def join_tournament():
         if not user or (user.get('session_token') and user['session_token'] != token):
             return jsonify({"error": "Sesión inválida"}), 401
 
-        # 1. Validar que el usuario tenga saldo suficiente
         current_balance = float(user['balance'] or 0)
         if fee > 0 and current_balance < fee:
             return jsonify({"error": "Saldo COP Insuficiente"}), 400
 
-        # Buscar sala en espera, si no existe, crearla con horario programado
-        cur.execute("SELECT id FROM tournament_config WHERE id = 1 FOR UPDATE") # Bloqueo atómico
+        cur.execute("SELECT id FROM tournament_config WHERE id = 1 FOR UPDATE")
         cur.execute("SELECT id, players_count, max_players, start_time FROM tournament_instances WHERE template_id = %s AND status = 'waiting' LIMIT 1", (t_id,))
         instance = cur.fetchone()
         
         if not instance:
             start_time = get_next_schedule_ms(t_id)
             cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_credits, max_players, start_time, prize_pool_credits) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, 10000 if t_id == 1 else 0))
-            instance_id = cur.fetchone()['id']
+            instance_id = int(cur.fetchone()['id'])
             players_count = 0
             tourney_status = 'waiting'
             end_time = 0
         else:
-            instance_id = instance['id']
+            instance_id = int(instance['id'])
             players_count = instance['players_count']
             start_time = instance['start_time']
             tourney_status = 'waiting'
             end_time = 0
 
-        seed_cost = {0: 5000, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 5000)
-        state = json.loads(user['game_state'] or '{}')
-        if state.get('seedsBalance', 0) < seed_cost:
+        # Costos en semillas mapeados correctamente
+        seed_cost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 0)
+        
+        # Validar y cargar JSON de forma segura
+        state_str = user['game_state'] if user['game_state'] else '{}'
+        state = json.loads(state_str)
+        current_seeds = int(state.get('seedsBalance', 0))
+        
+        if current_seeds < seed_cost:
             return jsonify({"error": f"Requiere {seed_cost} 🌱 para participar"}), 400
 
-        # Anti-Duplicado
+        # Anti-Duplicado: Borrar inscripciones previas en instancias en espera
         cur.execute("DELETE FROM tournament_players WHERE user_id = %s AND instance_id IN (SELECT id FROM tournament_instances WHERE status = 'waiting')", (user['id'],))
 
-        # 2. Cobro de Semillas y Dinero Real (Solución al Error 500 y falta de cobro)
-        # 2. Cobro de Semillas y Dinero Real (Solución al Error 500 y falta de cobro)
-        state['seedsBalance'] -= seed_cost
+        # Cobro
+        state['seedsBalance'] = current_seeds - seed_cost
         if fee > 0:
-            prize_addition = fee * 0.80 # ANTES ERA 0.85. AHORA EL POZO RECIBE EL 80% DE LA ENTRADA
+            prize_addition = float(fee * 0.80) 
             cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (fee, user['id'])) 
             cur.execute("UPDATE tournament_instances SET prize_pool_credits = prize_pool_credits + %s WHERE id = %s", (prize_addition, instance_id))
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"TOURNEY-{user['id']}-{int(time.time()*1000)}"))
 
-        # 3. FIX DE RANKING: Se inserta con 0.00. De esta manera, si pierde y se queda en 0, no será empujado por "inactivos" con 10,000.
-        cur.execute("INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time, current_score) VALUES (%s, %s, %s, %s, %s, %s)",(instance_id, user['id'], username, 0.000, 0.00, 0.00))
+        # Inserción segura con tipos casteados explícitamente
+        cur.execute(
+            "INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time, current_score) VALUES (%s, %s, %s, %s, %s, %s)",
+            (instance_id, int(user['id']), str(username), 0.000, 0.00, 0.00)
+        )
 
         cur.execute("UPDATE tournament_instances SET players_count = players_count + 1 WHERE id = %s", (instance_id,))
-        cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(state), user['id']))
+        
+        # Guardado de JSON asegurado
+        safe_state_json = json.dumps(state)
+        cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (safe_state_json, user['id']))
+        
         conn.commit()
         
         return jsonify({
@@ -1279,9 +1289,11 @@ def join_tournament():
         })
     except Exception as e:
         conn.rollback()
-        return jsonify({"error": str(e)}), 500
+        print(f"Error en join_tournament: {str(e)}") # Esto imprimirá el error real en tu consola de Railway
+        return jsonify({"error": "Error interno al registrar inscripción. Ver consola."}), 500
     finally:
-        cur.close(); conn.close()
+        cur.close()
+        conn.close()
 
 @app.route('/api/tournaments/submit_score', methods=['POST'])
 def submit_tournament_score():
