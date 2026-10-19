@@ -253,7 +253,24 @@
     </div>
 </div>
 
-<!-- REEMPLAZA ESTE SCRIPT COMPLETO EN nutrients.html -->
+<!-- VENTANA MODAL SELECCIÓN DE PLANTA PARA PACHINKO -->
+<div id="pachinko-plant-selection-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePachinkoSelectionModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-3xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
+        
+        <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
+            <button onclick="closePachinkoSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
+            <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight mt-2">Selecciona tu Planta</h3>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-1">Elige 1 planta para competir en el Pachinko.</p>
+        </div>
+
+        <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto" id="pachinko-plant-list">
+            <!-- Lista inyectada por JS -->
+        </div>
+    </div>
+</div>
+
+<!-- LÓGICA DEL TORNEO Y SELECCIÓN DE PLANTA DIRECTA AL PACHINKO -->
 <script>
     window.TOURNAMENT_INFO = {
         1: { name: 'Liga Novato' },
@@ -271,7 +288,6 @@
 
     window.pendingTournament = null;
 
-    // Lógica para que los cupos Falsos (FOMO) de la liga 1 comiencen bajos (2 a 4)
     if(!window.fakePlayersCounts) {
         window.fakePlayersCounts = {
             1: Math.floor(Math.random() * 3) + 2, 
@@ -280,8 +296,6 @@
         window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
     }
 
-    // --- LÓGICA DEL TEMPORIZADOR BIDIARIO (CORREGIDO PARA SPA) ---
-    // Usamos window para evitar el error "Identifier has already been declared"
     window.FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; 
     window.FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime();
     
@@ -372,29 +386,78 @@
         document.getElementById('pre-tournament-modal').classList.add('flex');
     };
 
-    window.confirmJoinTournament = async function() {
+    // --- NUEVO MÉTODO PARA SELECCIONAR PLANTAS Y ENVIAR AL PACHINKO DIRECTAMENTE ---
+    window.confirmJoinTournament = function() {
+        if (!window.pendingTournament) return;
+        
+        let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
+        let arsenal = window.farmApp.state.arsenal || [];
+        
+        let html = '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">';
+        
+        if (readyPlots.length === 0 && arsenal.length === 0) {
+            html = '<p class="text-center text-gray-500 font-bold w-full col-span-full">No tienes plantas listas.</p>';
+        } else {
+            readyPlots.forEach(p => {
+                let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
+                html += `
+                    <div onclick="window.selectPlantForPachinko('plot', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
+                        <span class="block text-[10px] font-black text-green-600 mb-2 uppercase tracking-widest bg-green-50 rounded-md py-1">Terreno ${p.id}</span>
+                        <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
+                        <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.plant.name}</h4>
+                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
+                            <span title="Vida">❤️ ${p.plant.hp || 100}</span>
+                            <span title="Ataque">⚔️ ${p.plant.atk || 50}</span>
+                            <span title="Defensa">🛡️ ${p.plant.def || 20}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            arsenal.forEach(p => {
+                html += `
+                    <div onclick="window.selectPlantForPachinko('arsenal', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
+                        <span class="block text-[10px] font-black text-red-600 mb-2 uppercase tracking-widest bg-red-50 rounded-md py-1">Arsenal</span>
+                        <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
+                        <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.name}</h4>
+                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
+                            <span title="Vida">❤️ ${p.hp || 100}</span>
+                            <span title="Ataque">⚔️ ${p.atk || 50}</span>
+                            <span title="Defensa">🛡️ ${p.def || 20}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        html += '</div>';
+        
+        document.getElementById('pachinko-plant-list').innerHTML = html;
+        
+        window.closePreTournamentModal();
+        document.getElementById('pachinko-plant-selection-modal').classList.remove('hidden');
+        document.getElementById('pachinko-plant-selection-modal').classList.add('flex');
+    };
+
+    window.closePachinkoSelectionModal = function() {
+        document.getElementById('pachinko-plant-selection-modal').classList.add('hidden');
+        document.getElementById('pachinko-plant-selection-modal').classList.remove('flex');
+        window.pendingTournament = null;
+    };
+
+    window.selectPlantForPachinko = function(type, idTag) {
         if (!window.pendingTournament) return;
         
         sessionStorage.setItem('pve_tournament_id', window.pendingTournament.id);
         sessionStorage.setItem('pve_tournament_fee', window.pendingTournament.fee);
         
-        window.closePreTournamentModal();
+        // Asignar el equipo con 1 sola planta e ir a Pachinko directamente
+        window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
+        window.farmApp.state.combatLock = true;
+        window.farmApp.saveState();
         
-        const openSelection = () => {
-            if (window.farmApp) {
-                let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
-                let arsenal = window.farmApp.state.arsenal || [];
-                // Redirigir al Minijuego (pachinko.html) en lugar de la arena de combate vieja
-                window.farmApp.openTeamSelection(readyPlots, arsenal, null, 'pachinko');
-            }
-        };
-
-        if (!document.getElementById('team-selection-list')) {
-            await loadView('farm', document.querySelectorAll('.nav-btn-desktop')[0]);
-            setTimeout(openSelection, 50); 
-        } else {
-            openSelection();
-        }
+        window.closePachinkoSelectionModal();
+        loadView('pachinko');
     };
 
     window.closePreTournamentModal = function() {
