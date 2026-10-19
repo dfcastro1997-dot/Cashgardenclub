@@ -1739,7 +1739,7 @@
                                     <img src="${p.image_url}" class="w-10 h-10 object-contain drop-shadow-sm bg-white rounded-md border border-gray-100 p-1">
                                     <div>
                                         <h4 class="font-black text-cg_navy text-sm">${p.name} <span class="text-[9px] bg-cg_blue text-white px-1.5 py-0.5 rounded">${p.category}</span></h4>
-                                        <div class="text-[9px] font-bold text-gray-500 mt-0.5">❤️ ${p.hp} | ⚔️ ${p.atk} | 🛡️ ${p.def} | 🛒 Costo: ${p.price} | 💰 Cosecha: ${p.reward} | ⏱ ${p.grow_time_minutes}m | 🏺 Maceta: ${p.pot_type === 'big' ? 'Grande' : 'Pequeña'} | 💧 Evap: ${p.water_evap || 40}%/h</div>
+                                        <div class="text-[9px] font-bold text-gray-500 mt-0.5">🪙 ${Math.max(1, Math.floor(p.hp/10))} Fichas | ⭐ x${Math.max(1, Math.floor(p.atk/10))} Mult. | ⚙️ Nvl ${Math.max(1, Math.floor(p.def/10))} Control | 🛒 Costo: ${p.price} | 💰 Cosecha: ${p.reward} | ⏱ ${p.grow_time_minutes}m | 🏺 Maceta: ${p.pot_type === 'big' ? 'Grande' : 'Pequeña'} | 💧 Evap: ${p.water_evap || 40}%/h</div>
                                     </div>
                                 </div>
                                 <div class="flex gap-2">
@@ -1809,9 +1809,9 @@
                             hasChanges = (
                                 existingPlant.category !== (row['Categoria'] || 'Planta Estándar') ||
                                 existingPlant.image_url !== imgName ||
-                                existingPlant.hp != row['Vida'] ||
-                                existingPlant.atk != row['Ataque'] ||
-                                existingPlant.def != row['Defensa'] ||
+                                existingPlant.hp != (row['Fichas'] * 10) ||
+                                existingPlant.atk != (row['Multiplicador'] * 10) ||
+                                existingPlant.def != (row['Control'] * 10) ||
                                 existingPlant.price != row['Costo'] ||
                                 existingPlant.reward != row['Produccion'] ||
                                 existingPlant.grow_time_minutes != row['Tiempo'] ||
@@ -1826,9 +1826,9 @@
                                 category: row['Categoria'] || 'Planta Estándar',
                                 name: name,
                                 image_url: imgName,
-                                hp: row['Vida'] || 100,
-                                atk: row['Ataque'] || 50,
-                                def: row['Defensa'] || 20,
+                                hp: (row['Fichas'] * 10) || 100,             // Escala de Fichas al Motor DB
+                                atk: (row['Multiplicador'] * 10) || 50,      // Escala de Multiplicador al Motor DB
+                                def: (row['Control'] * 10) || 20,            // Escala de Control al Motor DB
                                 price: row['Costo'] || 5000,
                                 reward: row['Produccion'] || 15000,
                                 grow_time_minutes: row['Tiempo'] || 60,
