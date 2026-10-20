@@ -547,23 +547,50 @@
         window.selectedMinigame = null;
     };
 
-    // 4. Seleccionar Planta y Ejecutar Juego
-    window.selectPlantForMinigame = function(type, idTag) {
+    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
+    window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
-        
-        sessionStorage.setItem('pve_tournament_id', window.pendingTournament.id);
-        sessionStorage.setItem('pve_tournament_fee', window.pendingTournament.fee);
-        
-        window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
-        window.farmApp.state.combatLock = true;
-        window.farmApp.saveState();
-        
-        // Cierra este modal
-        document.getElementById('plant-selection-modal').classList.add('hidden');
-        document.getElementById('plant-selection-modal').classList.remove('flex');
-        
-        // Redirige a los minijuegos en la subcarpeta views/Juegos/
-        loadView('Juegos/' + window.selectedMinigame);
+
+        const username = sessionStorage.getItem('username');
+        const token = sessionStorage.getItem('session_token');
+        const t_id = window.pendingTournament.id;
+        const fee = window.pendingTournament.fee;
+
+        try {
+            // Unirse al torneo en el servidor para obtener el instance_id
+            const res = await fetch('/api/tournaments/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    session_token: token,
+                    fee: fee,
+                    tournament_id: t_id
+                })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                sessionStorage.setItem('pve_tournament_id', t_id);
+                sessionStorage.setItem('pve_tournament_fee', fee);
+                sessionStorage.setItem('pve_tournament_instance', data.instance_id); // Guardar el ID de instancia real
+                
+                window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
+                window.farmApp.state.combatLock = true;
+                window.farmApp.saveState();
+                
+                // Cierra este modal
+                document.getElementById('plant-selection-modal').classList.add('hidden');
+                document.getElementById('plant-selection-modal').classList.remove('flex');
+                
+                // Redirige a los minijuegos en la subcarpeta views/Juegos/
+                loadView('Juegos/' + window.selectedMinigame);
+            } else {
+                alert("Error al inscribirse en el torneo: " + (data.error || "Desconocido"));
+            }
+        } catch(e) {
+            alert("Error de conexión al intentar unirse al torneo.");
+        }
     };
 
     // ===============================================
