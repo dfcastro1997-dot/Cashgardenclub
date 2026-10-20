@@ -101,7 +101,7 @@
                                 </div>
                             </div>
                             <p class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                La Gran Cosecha vale <strong class="text-[#B8701A]">+2000 Pts</strong>. Frena la rueda en el momento exacto. Si caes en plagas, perderás puntos.
+                                La Gran Cosecha vale <strong class="text-[#B8701A]">+2000 Pts</strong>. Frena la rueda en el momento exacto. Ahora también hay giros extra y multiplicadores.
                             </p>
                         </div>
 
@@ -129,7 +129,12 @@
             <div class="hz-flies"><b style="left:8%;top:40%"></b><b style="left:90%;top:35%;animation-delay:-3s,-1s"></b><b style="left:50%;top:85%;animation-delay:-5s,-2s"></b><b style="left:30%;top:20%;animation-delay:-7s,-1.5s"></b></div>
 
             <!-- MARQUESINA + HUD -->
-            <div class="hz-marquee shrink-0 px-3 lg:px-16 pt-5 pb-4 z-10">
+            <div class="hz-marquee shrink-0 px-3 lg:px-16 pt-5 pb-4 z-10 relative">
+                <!-- Indicador Doble Puntos -->
+                <div id="rul-double-badge" class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#e0b3ff] border-[3px] border-[#1C2634] text-[#1C2634] px-4 py-0.5 rounded-full font-black text-xs shadow-md uppercase tracking-widest hidden z-50 animate-bounce">
+                    ¡Puntos x2 Activo!
+                </div>
+
                 <div class="flex items-center gap-2 lg:gap-4">
                     <div class="hz-plank flex items-center gap-2 px-2 py-1.5 flex-1 min-w-0 lg:flex-none lg:w-[250px] lg:px-3">
                         <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-9 h-9 lg:w-11 lg:h-11 object-contain drop-shadow-md shrink-0">
@@ -175,7 +180,7 @@
                     <div class="hz-side">
                         <div class="hz-side__title">🧺 Casillas de la rueda</div>
                         <div id="rul-paytable"></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">La física de la rueda y el freno son iguales para todos. La cosecha nunca baja de 0.</p>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Hay 12 casillas en total con premios y penalizaciones variadas.</p>
                     </div>
 
                     <div class="hz-side">
@@ -193,10 +198,10 @@
                     <div class="hz-leaves"><span style="left:6%;animation-duration:14s">🍃</span><span style="left:92%;animation-duration:11s;animation-delay:-5s">🌼</span></div>
 
                     <!-- Leyenda -->
-                    <div class="relative z-10 flex gap-2 mb-3 lg:mb-5 text-[10px] font-black uppercase tracking-widest">
-                        <span class="hz-tag !text-[11px] lg:!text-sm bg-[#FDE062] text-[#1C2634]">🌻 Gran cosecha</span>
-                        <span class="hz-tag !text-[11px] lg:!text-sm bg-[#7ED957] text-[#1C2634]">🌿 Cosecha</span>
-                        <span class="hz-tag !text-[11px] lg:!text-sm bg-[#a8437a] text-white">🐛 Plaga</span>
+                    <div class="relative z-10 flex flex-wrap justify-center gap-2 mb-3 lg:mb-5 text-[10px] font-black uppercase tracking-widest">
+                        <span class="hz-tag !text-[11px] lg:!text-xs bg-[#FDE062] text-[#1C2634]">🌻 +Puntos</span>
+                        <span class="hz-tag !text-[11px] lg:!text-xs bg-[#a8437a] text-white">🐛 Plaga</span>
+                        <span class="hz-tag !text-[11px] lg:!text-xs bg-[#9fe3ff] text-[#1C2634]">🎟️ Especial</span>
                     </div>
 
                     <div id="rul-wheel-wrap" class="hz-wheel-size relative w-full max-w-sm aspect-square z-10">
@@ -398,7 +403,6 @@ window.rouletteApp = {
     ctx: null,
     size: 360,
 
-    // Stats de la planta (solo vida/turnos importa ahora)
     hp: 100,
 
     // Variables de juego
@@ -411,25 +415,23 @@ window.rouletteApp = {
 
     // Físicas de la ruleta
     slices: [],
-    numSlices: 8,
+    numSlices: 12,
     currentAngle: 0,
     velocity: 0,
     maxVelocity: 14,
-    deceleration: 0.15, // Velocidad de frenado universal
+    deceleration: 0.15,
 
-    // Controles: READY -> SPINNING -> STOPPING
+    // Controles: READY -> SPINNING -> STOPPING -> RESOLVING
     inputState: 'READY',
     rafId: null,
 
-    // Efectos visuales
-    lastWin: null,       // { index, until, good }
+    // Efectos visuales y mecánicas extra
+    lastWin: null,
     lastTickIndex: -1,
-
-    // Estadísticas de la partida (solo visuales)
     goodSpins: 0,
     badSpins: 0,
+    doubleNext: false, // Mecánica: Multiplicar x2 el próximo tiro
 
-    // Audio Managers
     sounds: {
         bonus: [
             new Audio('assets/Sonidos/Maquinas/Bonus_01.mp3'),
@@ -441,7 +443,6 @@ window.rouletteApp = {
         error: new Audio('assets/Sonidos/Maquinas/Error.mp3')
     },
 
-    // Inicializa la UI, lee la planta y muestra el Splash + Intro
     init() {
         this.canvas = document.getElementById('roulette-canvas');
         if (!this.canvas) return;
@@ -454,7 +455,6 @@ window.rouletteApp = {
         let plantImg = "assets/Fondos/logo.png";
         this.hp = 100;
 
-        // Obtener datos de la planta seleccionada
         if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
             let pData = window.farmApp.state.selectedCombatants[0];
             if (pData) {
@@ -473,12 +473,10 @@ window.rouletteApp = {
             }
         }
 
-        // 1. Mostrar Splash Screen simulando carga
         setTimeout(() => {
             const bar = document.getElementById('rul-loading-bar');
             if(bar) bar.style.width = '100%';
 
-            // Animación de transición de Logos
             setTimeout(() => {
                 const logo1 = document.getElementById('splash-logo-1');
                 const logo2 = document.getElementById('splash-logo-2');
@@ -499,12 +497,9 @@ window.rouletteApp = {
                 if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
             }, 700);
-        }, 3000); // 3 segundos de splash
+        }, 3000);
     },
 
-
-
-    // Invocado por el botón "¡A Girar!"
     startGame() {
         const intro = document.getElementById('rul-intro-screen');
         const game = document.getElementById('rul-game-screen');
@@ -538,22 +533,13 @@ window.rouletteApp = {
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // --- CÁLCULOS UNIVERSALES SIMPLIFICADOS ---
-        // La Vida (hp) de la BD ahora es la cantidad directa de Turnos.
         this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
-        
-        // Multiplicador y Control fijos
         const mult = 1;
         const baseJackpot = 2000;
-        
-        // Fricción/Deceleración fija y universal
         this.deceleration = 0.15; 
 
-        // Llenar UI del Análisis (Solo Turnos)
         document.getElementById('intro-val-hp').innerText = `${this.spinsTotal}`;
         document.getElementById('intro-spins').innerText = `${this.spinsTotal} Intentos`;
-
-        // Datos HUD in-game
         document.getElementById('rul-plant-icon').src = plantImg;
         document.getElementById('rul-score').innerText = '0';
         this.spinsLeft = this.spinsTotal;
@@ -562,7 +548,7 @@ window.rouletteApp = {
         this.buildWheel(mult, baseJackpot);
         this.renderPaytable();
         this.draw();
-        if (document.fonts && document.fonts.load) document.fonts.load("20px 'Lilita One'").then(() => this.draw()).catch(() => {});
+        if (document.fonts && document.fonts.load) document.fonts.load("16px 'Lilita One'").then(() => this.draw()).catch(() => {});
     },
 
     buildWheel(mult, baseJackpot) {
@@ -570,35 +556,60 @@ window.rouletteApp = {
         const leafA = ['#9be86f', '#3f9a3c'];
         const leafB = ['#7fd35c', '#2c7a33'];
         const plague = ['#c45a92', '#5e1f45'];
+        const blue = ['#e6f7ff', '#2996DA'];
+        const dark = ['#ff8a8d', '#8b2f63'];
+        const purple = ['#f4e6ff', '#a8437a'];
         
-        // Proporciones balanceadas
         const p100 = Math.floor(baseJackpot * mult);
         const p40 = Math.floor((baseJackpot * 0.4) * mult);
         const p20 = Math.floor((baseJackpot * 0.2) * mult);
         const p10 = Math.floor((baseJackpot * 0.1) * mult);
 
+        this.numSlices = 12;
         this.slices = [
-            { id: 0, type: 'jackpot', grad: gold,   text: '#1C2634', icon: '🌻', label: `+${p100}`, pts: p100 },
-            { id: 1, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${p20}`, pts: p20 },
-            { id: 2, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-500`, pts: -500 },
-            { id: 3, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍀', label: `+${p40}`, pts: p40 },
-            { id: 4, type: 'bad',     grad: plague, text: '#ffffff', icon: '🥀', label: `-300`, pts: -300 },
-            { id: 5, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌱', label: `+${p10}`, pts: p10 },
-            { id: 6, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍎', label: `+${p40}`, pts: p40 },
-            { id: 7, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-400`, pts: -400 }
+            { id: 0,  type: 'jackpot',     grad: gold,   text: '#1C2634', icon: '🌻', label: `+${p100}`, pts: p100 },
+            { id: 1,  type: 'good',        grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${p20}`, pts: p20 },
+            { id: 2,  type: 'lose_spin',   grad: dark,   text: '#ffffff', icon: '💨', label: `-1 Giro`, pts: 0 },
+            { id: 3,  type: 'good',        grad: leafB,  text: '#ffffff', icon: '🍀', label: `+${p40}`, pts: p40 },
+            { id: 4,  type: 'bad',         grad: plague, text: '#ffffff', icon: '🥀', label: `-300`, pts: -300 },
+            { id: 5,  type: 'extra_spin',  grad: blue,   text: '#ffffff', icon: '🎟️', label: `+1 Giro`, pts: 0 },
+            { id: 6,  type: 'good',        grad: leafB,  text: '#ffffff', icon: '🍎', label: `+${p40}`, pts: p40 },
+            { id: 7,  type: 'bad',         grad: plague, text: '#ffffff', icon: '🐛', label: `-500`, pts: -500 },
+            { id: 8,  type: 'double_next', grad: purple, text: '#ffffff', icon: '✨', label: `x2 Próx.`, pts: 0 },
+            { id: 9,  type: 'good',        grad: leafA,  text: '#ffffff', icon: '🌱', label: `+${p10}`, pts: p10 },
+            { id: 10, type: 'bad',         grad: plague, text: '#ffffff', icon: '🐛', label: `-400`, pts: -400 },
+            { id: 11, type: 'good',        grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${p20}`, pts: p20 }
         ];
     },
 
-    // Lista de casillas para el panel de escritorio
     renderPaytable() {
         const box = document.getElementById('rul-paytable');
         if (!box) return;
-        const order = [...this.slices].sort((a, b) => b.pts - a.pts);
-        box.innerHTML = order.map(s => {
-            const color = s.type === 'jackpot' ? '#FDE062' : (s.pts > 0 ? '#7ED957' : '#ff8a8d');
-            const name = s.type === 'jackpot' ? 'Gran Cosecha' : (s.pts > 0 ? 'Cosecha' : 'Plaga');
+        
+        const unique = [];
+        const seen = new Set();
+        for(let s of this.slices) {
+            let key = s.type + s.label;
+            if(!seen.has(key)) { seen.add(key); unique.push(s); }
+        }
+        
+        box.innerHTML = unique.map(s => {
+            let color = s.type === 'jackpot' ? '#FDE062' : (s.pts > 0 ? '#7ED957' : '#ff8a8d');
+            if(s.type === 'extra_spin') color = '#64D7FF';
+            if(s.type === 'lose_spin') color = '#ff8a8d';
+            if(s.type === 'double_next') color = '#e0b3ff';
+
+            let name = 'Casilla';
+            if(s.type === 'jackpot') name = 'Gran Cosecha';
+            else if(s.type === 'good') name = 'Cosecha';
+            else if(s.type === 'bad') name = 'Plaga';
+            else if(s.type === 'extra_spin') name = 'Giro Extra';
+            else if(s.type === 'lose_spin') name = 'Pierde Giro';
+            else if(s.type === 'double_next') name = 'Doble Puntos';
+
             const extra = s.type === 'jackpot' ? ' !bg-[#FDE062]/15' : '';
-            return `<div class="hz-pay${extra}"><span class="hz-pay__l">${s.icon} ${name}</span><span class="hz-pay__r" style="color:${color}">${s.pts > 0 ? '+' : ''}${s.pts.toLocaleString()}</span></div>`;
+            const val = s.pts !== 0 ? (s.pts > 0 ? '+' : '') + s.pts.toLocaleString() : s.label;
+            return `<div class="hz-pay${extra}"><span class="hz-pay__l">${s.icon} ${name}</span><span class="hz-pay__r" style="color:${color}">${val}</span></div>`;
         }).join('');
     },
 
@@ -629,7 +640,7 @@ window.rouletteApp = {
     },
 
     handleInput() {
-        if (!this.isPlaying) return;
+        if (!this.isPlaying || this.inputState === 'RESOLVING') return;
         const btn = document.getElementById('rul-action-btn');
 
         if (this.inputState === 'READY') {
@@ -676,6 +687,7 @@ window.rouletteApp = {
             this.velocity -= this.deceleration;
             if (this.velocity <= 0) {
                 this.velocity = 0;
+                this.inputState = 'RESOLVING'; // Bloqueo para evitar múltiples ejecuciones del mismo tiro
                 this.resolveSpin();
             } else {
                 this.currentAngle = (this.currentAngle + this.velocity) % 360;
@@ -683,7 +695,7 @@ window.rouletteApp = {
         }
 
         // El puntero da un golpecito cada vez que pasa una casilla
-        if (this.inputState !== 'READY') {
+        if (this.inputState !== 'READY' && this.inputState !== 'RESOLVING') {
             const idx = this.sliceUnderPointer();
             if (idx !== this.lastTickIndex) {
                 this.lastTickIndex = idx;
@@ -694,43 +706,72 @@ window.rouletteApp = {
     },
 
     resolveSpin() {
-        // La aguja estática está arriba, a los 270 grados en el canvas estándar.
         let winningIndex = this.sliceUnderPointer();
-
         let wonSlice = this.slices[winningIndex];
+        
+        let actualPts = wonSlice.pts;
+        let isSpecial = false;
 
-        this.score = Math.max(0, this.score + wonSlice.pts);
+        // Evaluamos efectos especiales de la casilla
+        if (wonSlice.type === 'extra_spin') {
+            this.spinsLeft++;
+            isSpecial = true;
+        } else if (wonSlice.type === 'lose_spin') {
+            this.spinsLeft = Math.max(0, this.spinsLeft - 1);
+            isSpecial = true;
+        } else if (wonSlice.type === 'double_next') {
+            this.doubleNext = true;
+            isSpecial = true;
+            document.getElementById('rul-double-badge').classList.remove('hidden');
+        } else {
+            // Aplicar multiplicador si estaba activo en una casilla de puntos
+            if (this.doubleNext) {
+                actualPts *= 2;
+                this.doubleNext = false;
+                document.getElementById('rul-double-badge').classList.add('hidden');
+            }
+        }
+
+        this.score = Math.max(0, this.score + actualPts);
         document.getElementById('rul-score').innerText = this.score;
+        document.getElementById('rul-ammo').innerText = this.spinsLeft;
 
         // Efectos según resultado
         const fx = document.getElementById('rul-fx');
         const wrap = document.getElementById('rul-wheel-wrap');
         const wr = wrap.getBoundingClientRect(), fr = fx.getBoundingClientRect();
         const cx = wr.left - fr.left + wr.width / 2, cy = wr.top - fr.top + wr.height / 2;
-        this.lastWin = { index: winningIndex, until: performance.now() + 1800, good: wonSlice.pts > 0 };
-        const sliceName = wonSlice.type === 'jackpot' ? 'Gran Cosecha' : (wonSlice.pts > 0 ? 'Cosecha' : 'Plaga');
-        if (wonSlice.pts > 0) this.goodSpins++; else this.badSpins++;
-        window.hzUi.log('rul-log', wonSlice.icon, `Giro ${this.spinsTotal - this.spinsLeft} · ${sliceName}`,
-            `${wonSlice.pts > 0 ? '+' : ''}${wonSlice.pts.toLocaleString()}`, wonSlice.type === 'jackpot' ? 'gold' : (wonSlice.pts > 0 ? 'good' : 'bad'));
+        this.lastWin = { index: winningIndex, until: performance.now() + 1800, good: (actualPts > 0 || isSpecial) };
+        
+        const sliceName = wonSlice.type === 'jackpot' ? 'Gran Cosecha' : (wonSlice.pts > 0 ? 'Cosecha' : (isSpecial ? 'Especial' : 'Plaga'));
+        if (actualPts > 0 || isSpecial) this.goodSpins++; else this.badSpins++;
+        
+        let logVal = isSpecial ? wonSlice.label : `${actualPts > 0 ? '+' : ''}${actualPts.toLocaleString()}`;
+        let logColor = wonSlice.type === 'jackpot' ? 'gold' : ((actualPts > 0 || isSpecial) ? 'good' : 'bad');
+        
+        window.hzUi.log('rul-log', wonSlice.icon, `Giro ${this.spinsTotal - this.spinsLeft} · ${sliceName}`, logVal, logColor);
         window.hzUi.goal(this.score);
         window.hzUi.set('rul-st-used', this.spinsTotal - this.spinsLeft);
         window.hzUi.set('rul-st-good', this.goodSpins);
         window.hzUi.set('rul-st-bad', this.badSpins);
 
-        // Reproducir sonido según resultado
-        if (wonSlice.pts > 0) {
+        // Reproducir sonido e invocar partículas
+        if (actualPts > 0 || isSpecial) {
             this.playBonusSound();
             if (wonSlice.type === 'jackpot') {
                 window.hzFx.pop(fx, cx, cy - 50, '¡GRAN COSECHA!');
-                window.hzFx.pop(fx, cx, cy, `+${wonSlice.pts.toLocaleString()}`);
+                window.hzFx.pop(fx, cx, cy, `+${actualPts.toLocaleString()}`);
                 window.hzFx.burst(fx, cx, cy, 30, ['🌻', '🪙', '✨', '🍃']);
+            } else if (isSpecial) {
+                window.hzFx.pop(fx, cx, cy - 20, `${wonSlice.label}`);
+                window.hzFx.burst(fx, cx, cy, 14, [wonSlice.icon, '✨', '🎟️']);
             } else {
-                window.hzFx.pop(fx, cx, cy - 20, `+${wonSlice.pts.toLocaleString()}`);
+                window.hzFx.pop(fx, cx, cy - 20, `+${actualPts.toLocaleString()}`);
                 window.hzFx.burst(fx, cx, cy, 14, [wonSlice.icon, '🍃', '✨']);
             }
         } else {
             this.playErrorSound();
-            window.hzFx.pop(fx, cx, cy - 20, `${wonSlice.pts}`, true);
+            window.hzFx.pop(fx, cx, cy - 20, `${actualPts}`, true);
             window.hzFx.burst(fx, cx, cy, 10, ['🐛', '🥀', '🍂']);
             window.hzFx.retrigger(wrap, 'hz-shake');
         }
@@ -738,6 +779,7 @@ window.rouletteApp = {
         if (this.score >= 10000 || this.spinsLeft <= 0) {
             setTimeout(() => this.endGame(), 800);
         } else {
+            // Liberamos el bloqueo de botones para el próximo tiro
             this.inputState = 'READY';
             const btn = document.getElementById('rul-action-btn');
             btn.disabled = false;
@@ -827,19 +869,19 @@ window.rouletteApp = {
             ctx.rotate(a0 + sliceAngle / 2);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(radius - 30, 0);
+            ctx.translate(radius - 28, 0);
             ctx.rotate(Math.PI / 2);
-            ctx.font = '26px sans-serif';
+            ctx.font = '22px sans-serif';
             ctx.fillText(slice.icon, 0, 0);
             ctx.restore();
 
             ctx.save();
             ctx.rotate(a0 + sliceAngle / 2);
-            ctx.translate(radius - 72, 0);
+            ctx.translate(radius - 68, 0);
             ctx.rotate(Math.PI / 2);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.font = "19px 'Lilita One', sans-serif";
+            ctx.font = "16px 'Lilita One', sans-serif";
             ctx.lineWidth = 4;
             ctx.strokeStyle = '#1C2634';
             ctx.lineJoin = 'round';

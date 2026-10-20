@@ -1,11 +1,12 @@
 <link rel="stylesheet" href="views/Juegos/juegos.css">
-<div class="hz fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center" style="background-image: url('assets/Fondos/Pachinko.jpg');">
+<div class="hz fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center" style="background-image: url('assets/Fondos/Maquina.jpg');">
 
     <!-- Velo verde del invernadero -->
     <div class="hz-stage-shade absolute inset-0 z-0 pointer-events-none"></div>
 
     <!-- ========================================== -->
     <!-- GABINETE (MARCO DEL JUEGO)                 -->
+    <!-- Móvil: formato teléfono · Escritorio: ancho -->
     <!-- ========================================== -->
     <div class="hz-cabinet relative z-10 w-[95%] max-w-[400px] h-[95vh] max-h-[850px] lg:w-[94%] lg:max-w-[1200px] lg:h-[92vh] lg:max-h-[880px] rounded-[2.2rem] flex flex-col overflow-hidden">
 
@@ -15,9 +16,8 @@
         <!-- ========================================== -->
         <!-- PANTALLA 1: SPLASH (CARGA)                 -->
         <!-- ========================================== -->
-        <div id="pak-splash-screen" class="hz-felt absolute inset-0 z-40 flex flex-col items-center justify-center transition-opacity duration-700 overflow-hidden">
-            <div class="hz-leaves"><span style="left:8%;animation-duration:9s">🌱</span><span style="left:30%;animation-duration:12s;animation-delay:-4s">🍃</span><span style="left:62%;animation-duration:10s;animation-delay:-2s">✨</span><span style="left:85%;animation-duration:13s;animation-delay:-7s">🍃</span></div>
-
+        <div id="trg-splash-screen" class="hz-felt absolute inset-0 z-40 flex flex-col items-center justify-center transition-opacity duration-700 overflow-hidden">
+            <div class="hz-leaves"><span style="left:8%;animation-duration:9s">🍃</span><span style="left:30%;animation-duration:12s;animation-delay:-4s">🌿</span><span style="left:62%;animation-duration:10s;animation-delay:-2s">🍃</span><span style="left:85%;animation-duration:13s;animation-delay:-7s">🌱</span></div>
             <div class="hz-flies"><b style="left:20%;top:30%"></b><b style="left:75%;top:25%;animation-delay:-3s,-1s"></b><b style="left:60%;top:70%;animation-delay:-5s,-2s"></b><b style="left:15%;top:75%;animation-delay:-2s,-.5s"></b></div>
 
             <div class="hz-medal flex items-center justify-center mb-6 relative z-10 lg:scale-125 lg:mb-12">
@@ -25,25 +25,25 @@
                 <!-- Logo Principal (Desaparece) -->
                 <img id="splash-logo-1" src="assets/Fondos/logo.png" class="absolute w-full h-auto object-contain transition-all duration-700 ease-in-out z-20">
                 <!-- Logo del Juego (Aparece) -->
-                <img id="splash-logo-2" src="assets/Fondos/Juego_001.png" class="absolute w-[230px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
+                <img id="splash-logo-2" src="assets/Fondos/Juego_003.png" class="absolute w-[230px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
             </div>
 
-            <h2 class="hz-title text-4xl lg:text-6xl mb-1 relative z-10">Lluvia de Semillas</h2>
-            <p class="hz-sub mb-8 relative z-10">Apunta, lanza y siembra</p>
+            <h2 class="hz-title text-4xl lg:text-6xl mb-1 relative z-10">Cosecha Triple</h2>
+            <p class="hz-sub mb-8 relative z-10">Rodillos del Huerto</p>
 
             <div class="hz-vinebar w-52 lg:w-80 relative z-10">
-                <div id="pak-loading-bar" class="transition-all duration-[2500ms] ease-out"></div>
+                <div id="trg-loading-bar" class="transition-all duration-[2000ms] ease-out"></div>
             </div>
-            <p class="hz-label mt-4 animate-pulse relative z-10">Plantando los clavos...</p>
+            <p class="hz-label mt-4 animate-pulse relative z-10">Regando los rodillos...</p>
         </div>
 
         <!-- ========================================== -->
         <!-- PANTALLA 2: ANÁLISIS DE LA PLANTA (INTRO)  -->
         <!-- ========================================== -->
-        <div id="pak-intro-screen" class="hz-felt hz-scroll absolute inset-0 z-30 flex flex-col hidden overflow-y-auto pb-6 lg:pb-0">
+        <div id="trg-intro-screen" class="hz-felt hz-scroll absolute inset-0 z-30 flex flex-col hidden overflow-y-auto pb-6 lg:pb-0">
             <div class="hz-flies"><b style="left:12%;top:40%"></b><b style="left:85%;top:30%;animation-delay:-3s,-1s"></b><b style="left:50%;top:80%;animation-delay:-5s,-2s"></b></div>
             <div class="hz-marquee shrink-0 pt-5 pb-4 text-center relative z-10">
-                <h2 class="hz-title text-2xl lg:text-4xl leading-none">Lluvia de Semillas</h2>
+                <h2 class="hz-title text-2xl lg:text-4xl leading-none">Cosecha Triple</h2>
             </div>
 
             <div class="flex-1 flex flex-col relative z-10 lg:grid lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:items-center lg:max-w-5xl lg:w-full lg:mx-auto lg:px-10 lg:py-6">
@@ -62,9 +62,9 @@
                     <div class="hidden lg:block hz-side text-left max-w-sm mx-auto">
                         <div class="hz-side__title">📜 Cómo se juega</div>
                         <ol class="hz-steps">
-                            <li>Fija el ángulo cuando el brote esté donde quieres.</li>
-                            <li>Fija la fuerza del lanzamiento.</li>
-                            <li>La semilla rebota entre los clavos: ¡que caiga en la maceta verde!</li>
+                            <li>Mira la semilla objetivo de la ronda.</li>
+                            <li>Frena cada rodillo cuando esa semilla pase por la línea dorada.</li>
+                            <li>Con 1, 2 o 3 aciertos cosechas puntos y tu racha crece.</li>
                         </ol>
                     </div>
                 </div>
@@ -75,17 +75,17 @@
                         <!-- TURNOS (Única estadística) -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#b6f59a]">🎟️</div>
+                                <div class="hz-card__icon bg-[#ffb3b5]">🎟️</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
                                         <span class="text-[11px] font-black uppercase tracking-widest">Turnos en la Arena</span>
                                         <span id="intro-val-hp" class="hz-num text-lg">--</span>
                                     </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#4CAF50] w-[100%]"></div></div>
+                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#E5484D] w-[100%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Esta planta te da <strong class="text-[#2e7d32]" id="intro-seeds">-- Intentos</strong> para alcanzar los 10,000 puntos.
+                                Tienes <strong class="text-[#E5484D]" id="intro-lives">-- Intentos</strong>. Si la semilla objetivo no aparece en la línea, pierdes uno.
                             </p>
                         </div>
 
@@ -100,7 +100,7 @@
                                 </div>
                             </div>
                             <p class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Las canastas verdes valen <strong class="text-[#B8701A]">+2000 Pts</strong>. Si la semilla cae en la maceta con plagas o fuera del tablero pierdes el turno sin sumar.
+                                3 semillas en línea otorgan <strong class="text-[#B8701A]">+4000 Pts</strong>. Los puntos se multiplican según tu racha de aciertos.
                             </p>
                         </div>
 
@@ -112,8 +112,8 @@
                     </div>
 
                     <div class="px-5 mt-6 shrink-0 lg:px-0">
-                        <button onclick="window.pachinkoApp.startGame()" class="hz-btn lg:!text-2xl lg:!py-5" data-state="go">
-                            ¡A Sembrar! <span class="text-xl leading-none">▶</span>
+                        <button onclick="window.slotApp.startGame()" class="hz-btn lg:!text-2xl lg:!py-5" data-state="go">
+                            ¡A Cosechar! <span class="text-xl leading-none">▶</span>
                         </button>
                     </div>
                 </div>
@@ -123,27 +123,27 @@
         <!-- ========================================== -->
         <!-- PANTALLA 3: INTERFAZ DEL JUEGO             -->
         <!-- ========================================== -->
-        <div id="pak-game-screen" class="hz-felt absolute inset-0 z-20 flex flex-col hidden">
+        <div id="trg-game-screen" class="hz-felt absolute inset-0 z-20 flex flex-col hidden">
             <div class="hz-flies"><b style="left:8%;top:40%"></b><b style="left:90%;top:35%;animation-delay:-3s,-1s"></b><b style="left:50%;top:85%;animation-delay:-5s,-2s"></b><b style="left:30%;top:20%;animation-delay:-7s,-1.5s"></b></div>
 
             <!-- MARQUESINA + HUD -->
             <div class="hz-marquee shrink-0 px-3 lg:px-16 pt-5 pb-4 z-10">
                 <div class="flex items-center gap-2 lg:gap-4">
                     <div class="hz-plank flex items-center gap-2 px-2 py-1.5 flex-1 min-w-0 lg:flex-none lg:w-[250px] lg:px-3">
-                        <img id="pak-plant-icon" src="assets/Fondos/logo.png" class="w-9 h-9 lg:w-11 lg:h-11 object-contain drop-shadow-md shrink-0">
+                        <img id="trg-plant-icon" src="assets/Fondos/logo.png" class="w-9 h-9 lg:w-11 lg:h-11 object-contain drop-shadow-md shrink-0">
                         <div class="flex flex-col min-w-0">
                             <span class="hz-label !text-[#FCE9BE]">Cosecha</span>
-                            <span id="pak-score" class="hz-num text-xl lg:text-2xl text-[#FDE062] leading-none drop-shadow-[0_2px_0_#1C2634]">0</span>
+                            <span id="trg-score" class="hz-num text-xl lg:text-2xl text-[#FDE062] leading-none drop-shadow-[0_2px_0_#1C2634]">0</span>
                         </div>
                     </div>
-                    <h2 class="hidden lg:block flex-1 text-center hz-title text-4xl leading-none">Lluvia de Semillas</h2>
+                    <h2 class="hidden lg:block flex-1 text-center hz-title text-4xl leading-none">Cosecha Triple</h2>
                     <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
                         <span class="hz-label !text-[#FCE9BE]">Tiempo</span>
-                        <span id="pak-timer" class="hz-num text-base lg:text-xl text-white leading-none">60.0s</span>
+                        <span id="trg-timer" class="hz-num text-base lg:text-xl text-white leading-none">60.0s</span>
                     </div>
                     <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
                         <span class="hz-label !text-[#FCE9BE]">Turnos</span>
-                        <span class="hz-num text-base lg:text-xl text-[#b6f59a] leading-none">⏳ <span id="pak-ammo">0</span></span>
+                        <span class="hz-num text-base lg:text-xl text-[#ff8a8d] leading-none">⏳ <span id="trg-ammo">0</span></span>
                     </div>
                 </div>
                 <!-- Meta (móvil) -->
@@ -154,7 +154,7 @@
                 </div>
             </div>
 
-            <!-- CUERPO: [panel izq] [tablero] [panel der] -->
+            <!-- CUERPO: [panel izq] [máquina] [panel der] -->
             <div class="flex-1 min-h-0 flex lg:grid lg:grid-cols-[270px_1fr_270px] lg:gap-5 lg:px-6 lg:py-5">
 
                 <!-- PANEL IZQUIERDO (escritorio) -->
@@ -162,7 +162,7 @@
                     <div class="hz-side text-center">
                         <div class="relative w-[120px] h-[120px] mx-auto">
                             <div class="hz-pedestal__glow"></div>
-                            <img data-mirror="pak-plant-icon" src="assets/Fondos/logo.png" class="absolute inset-0 w-full h-full object-contain z-10 drop-shadow-[0_5px_0_rgba(28,38,52,0.6)]">
+                            <img data-mirror="trg-plant-icon" src="assets/Fondos/logo.png" class="absolute inset-0 w-full h-full object-contain z-10 drop-shadow-[0_5px_0_rgba(28,38,52,0.6)]">
                         </div>
                         <div data-mirror="intro-plant-name" class="hz-title text-xl mt-1 mb-3 truncate">—</div>
                         <div class="grid grid-cols-1 gap-2">
@@ -171,25 +171,55 @@
                     </div>
 
                     <div class="hz-side">
-                        <div class="hz-side__title">🪴 Macetas</div>
-                        <div id="pak-paytable"></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Cada canasta verde suma 2000 puntos directos a tu meta. ¡Apunta bien!</p>
+                        <div class="hz-side__title">🧺 Tabla de cosecha</div>
+                        <div class="hz-pay"><span class="hz-pay__l">🌱 1 semilla en línea</span><span class="hz-pay__r text-[#b6f59a]">500</span></div>
+                        <div class="hz-pay"><span class="hz-pay__l">🌿 2 semillas en línea</span><span class="hz-pay__r text-[#7ED957]">1500</span></div>
+                        <div class="hz-pay !bg-[#FDE062]/15"><span class="hz-pay__l">🌻 3 · Gran Cosecha</span><span class="hz-pay__r text-[#FDE062]">4000</span></div>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los puntos se multiplican por tu racha actual.</p>
                     </div>
 
                     <div class="hz-side">
                         <div class="hz-side__title">📜 Cómo se juega</div>
                         <ol class="hz-steps">
-                            <li>Fija el ángulo del lanzador.</li>
-                            <li>Fija la fuerza del tiro.</li>
-                            <li>Mira caer la semilla entre los clavos.</li>
+                            <li>Mira la semilla objetivo de la ronda.</li>
+                            <li>Frena los rodillos uno por uno cuando pase por la línea dorada.</li>
+                            <li>Sin aciertos pierdes un turno y la racha vuelve a x1.</li>
                         </ol>
                     </div>
                 </aside>
 
-                <!-- ÁREA DEL TABLERO -->
-                <div class="flex-1 relative flex items-center justify-center overflow-hidden w-full pt-2 lg:pt-0">
-                    <!-- CANVAS (resolución interna definida explícitamente) -->
-                    <canvas id="pachinko-canvas" width="400" height="600" class="block w-full h-full max-h-full object-contain mx-auto bg-transparent relative z-10"></canvas>
+                <!-- ÁREA DE JUEGO -->
+                <div class="flex-1 relative flex flex-col items-center justify-center overflow-hidden w-full p-4 gap-5 lg:p-0 lg:gap-6">
+                    <div class="hz-leaves"><span style="left:6%;animation-duration:14s">🍃</span><span style="left:92%;animation-duration:11s;animation-delay:-5s">🌿</span></div>
+
+                    <!-- Racha + objetivo -->
+                    <div class="hz-slot-size relative z-10 flex items-stretch gap-2 w-full max-w-[320px] lg:max-w-[560px] lg:gap-3">
+                        <div class="hz-card !p-2 lg:!p-3 flex-1 flex items-center gap-2 lg:gap-3">
+                            <div id="target-symbol-display" class="w-14 h-14 lg:w-20 lg:h-20 shrink-0 rounded-xl bg-[#1C2634] border-[3px] border-[#1C2634] flex items-center justify-center text-3xl shadow-[inset_0_0_14px_rgba(126,217,87,0.6)]">❓</div>
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-[#1C2634]/60">Semilla objetivo</span>
+                                <span id="target-symbol-name" class="font-['Lilita_One'] text-base lg:text-2xl leading-tight truncate">—</span>
+                                <span class="text-[9px] lg:text-xs font-bold text-[#1C2634]/60 leading-tight">Atrápala en la línea dorada</span>
+                            </div>
+                        </div>
+                        <div class="hz-card !p-2 lg:!p-3 flex flex-col items-center justify-center min-w-[72px] lg:min-w-[110px]">
+                            <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-[#1C2634]/60">Racha</span>
+                            <span id="trg-combo" class="hz-num text-xl lg:text-3xl text-[#B8701A]">x1.0</span>
+                        </div>
+                    </div>
+
+                    <!-- MÁQUINA -->
+                    <div id="trg-machine" class="hz-lights hz-slot-size relative w-full max-w-[320px] lg:max-w-[560px] rounded-[26px] z-10 mt-2">
+                        <div class="relative aspect-[4/3] rounded-[22px] overflow-hidden border-[5px] border-[#1C2634] shadow-[0_8px_0_#1C2634,0_20px_40px_rgba(0,0,0,0.6)] bg-[#1C2634] z-10">
+                            <canvas id="slot-canvas" width="384" height="288" class="absolute inset-0 block w-full h-full bg-transparent z-10"></canvas>
+                            <!-- Línea dorada de cosecha -->
+                            <div class="absolute top-1/2 left-0 w-full h-[29%] -translate-y-1/2 z-20 pointer-events-none border-y-[3px] border-[#FDE062] bg-[#FDE062]/10 shadow-[0_0_18px_rgba(253,224,98,0.55),inset_0_0_18px_rgba(253,224,98,0.25)]"></div>
+                            <div class="absolute top-1/2 -left-1 -translate-y-1/2 z-20 text-[#FDE062] text-xl drop-shadow-[0_0_6px_#FDE062] pointer-events-none">▶</div>
+                            <div class="absolute top-1/2 -right-1 -translate-y-1/2 z-20 text-[#FDE062] text-xl drop-shadow-[0_0_6px_#FDE062] pointer-events-none">◀</div>
+                            <!-- Cristal -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/20 z-30 pointer-events-none"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- PANEL DERECHO (escritorio) -->
@@ -197,7 +227,7 @@
                     <div class="hz-side">
                         <div class="hz-side__title">🏆 Meta de cosecha</div>
                         <div class="flex items-baseline justify-between mb-2">
-                            <span data-mirror="pak-score" class="hz-num text-3xl text-[#FDE062] drop-shadow-[0_2px_0_#1C2634]">0</span>
+                            <span data-mirror="trg-score" class="hz-num text-3xl text-[#FDE062] drop-shadow-[0_2px_0_#1C2634]">0</span>
                             <span class="hz-label">de 10.000</span>
                         </div>
                         <div class="hz-goal"><div data-goal-fill></div></div>
@@ -207,75 +237,66 @@
                     <div class="hz-side">
                         <div class="hz-side__title">📊 Esta partida</div>
                         <div class="grid grid-cols-2 gap-2">
-                            <div class="hz-stat"><b id="pak-st-shots">0</b><span>Lanzamientos</span></div>
-                            <div class="hz-stat"><b class="!text-[#b6f59a]" data-mirror="pak-ammo">0</b><span>Turnos</span></div>
-                            <div class="hz-stat"><b id="pak-st-good" class="!text-[#7ED957]">0</b><span>En maceta</span></div>
-                            <div class="hz-stat"><b id="pak-st-bad" class="!text-[#ff8a8d]">0</b><span>Plagas</span></div>
+                            <div class="hz-stat"><b id="trg-st-rounds">0</b><span>Rondas</span></div>
+                            <div class="hz-stat"><b id="trg-st-hits">0</b><span>Con acierto</span></div>
+                            <div class="hz-stat"><b id="trg-st-best">x1.0</b><span>Mejor racha</span></div>
+                            <div class="hz-stat"><b class="!text-[#ff8a8d]" data-mirror="trg-ammo">0</b><span>Turnos rest.</span></div>
                         </div>
                     </div>
 
                     <div class="hz-side flex-1">
                         <div class="hz-side__title">🗒️ Historial</div>
-                        <ul id="pak-log" class="hz-log"><li class="hz-log__empty !bg-transparent !border-0">Aún no hay lanzamientos</li></ul>
+                        <ul id="trg-log" class="hz-log"><li class="hz-log__empty !bg-transparent !border-0">Aún no hay rondas</li></ul>
                     </div>
                 </aside>
             </div>
 
             <!-- CONTROLES INFERIORES -->
-            <div class="hz-marquee !border-b-0 border-t-4 border-[#1C2634] px-4 pt-4 pb-7 lg:pb-5 shrink-0 relative z-20">
-              <div class="lg:max-w-md lg:mx-auto">
-                <!-- Medidores (alto fijo para que el tablero no salte) -->
-                <div class="relative h-[50px] mb-3">
-                    <!-- Medidor de ángulo -->
-                    <div id="angle-meter-container" class="absolute top-0 inset-x-0 h-7 rounded-full overflow-hidden border-[3px] border-[#1C2634] shadow-[0_4px_0_#1C2634] bg-[linear-gradient(90deg,#5a3418,#9c6434_50%,#5a3418)]">
-                        <div class="absolute inset-y-0 left-1/2 w-[3px] -translate-x-1/2 bg-[#FDE062]/60"></div>
-                        <div id="angle-cursor" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-6 h-6 rounded-full bg-[#7ED957] border-[3px] border-[#1C2634] shadow-[0_0_12px_rgba(126,217,87,0.9)] flex items-center justify-center text-[10px]">🌱</div>
-                    </div>
-                    <!-- Medidor de fuerza -->
-                    <div id="power-meter-container" class="absolute bottom-0 inset-x-0 h-5 rounded-full overflow-hidden hidden border-[3px] border-[#1C2634] shadow-[0_3px_0_#1C2634] bg-[#0b1a12]">
-                        <div id="power-fill" class="h-full w-0 bg-[linear-gradient(90deg,#7ED957,#FDE062_55%,#E5484D)] shadow-[inset_0_2px_0_rgba(255,255,255,0.4)]"></div>
-                    </div>
+            <div class="hz-marquee !border-b-0 border-t-4 border-[#1C2634] p-4 pb-7 lg:pb-5 shrink-0 relative z-20">
+                <div class="lg:max-w-md lg:mx-auto">
+                    <button id="trg-action-btn" class="hz-btn" data-state="stop">
+                        <span>✋</span> Iniciar
+                    </button>
+                    <p class="hidden lg:block text-center hz-label !text-[#FCE9BE] mt-3">También puedes pulsar <span class="hz-kbd">Espacio</span></p>
                 </div>
-                <button id="pak-action-btn" class="hz-btn" data-state="next">
-                    <span>🎯</span> Fijar Ángulo
-                </button>
-                <p id="pak-falling-msg" class="hidden w-full text-center hz-title text-2xl py-[14px]">¡Cayendo...!</p>
-                <p class="hidden lg:block text-center hz-label !text-[#FCE9BE] mt-3">También puedes pulsar <span class="hz-kbd">Espacio</span></p>
-              </div>
             </div>
 
-            <div id="pak-fx" class="hz-fx"></div>
+            <div id="trg-fx" class="hz-fx"></div>
         </div>
 
         <!-- ========================================== -->
         <!-- PANTALLA 4: RESULTADO                      -->
         <!-- ========================================== -->
-        <div id="pak-result-screen" class="hz-felt absolute inset-0 z-50 hidden flex-col items-center justify-center p-6 text-center overflow-hidden">
+        <div id="trg-result-screen" class="hz-felt absolute inset-0 z-50 hidden flex-col items-center justify-center p-6 text-center overflow-hidden">
+            <div class="hz-leaves"><span style="left:10%;animation-duration:7s">🍃</span><span style="left:35%;animation-duration:9s;animation-delay:-3s">🪙</span><span style="left:60%;animation-duration:8s;animation-delay:-1s">🌿</span><span style="left:85%;animation-duration:10s;animation-delay:-6s">🪙</span></div>
             <div class="hz-flies"><b style="left:20%;top:30%"></b><b style="left:80%;top:40%;animation-delay:-3s,-1s"></b></div>
-            <div class="hz-leaves"><span style="left:10%;animation-duration:7s">🌱</span><span style="left:35%;animation-duration:9s;animation-delay:-3s">🪙</span><span style="left:60%;animation-duration:8s;animation-delay:-1s">🍃</span><span style="left:85%;animation-duration:10s;animation-delay:-6s">🪙</span></div>
 
             <div class="w-full max-w-md lg:max-w-4xl lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center relative z-10">
                 <div>
                     <div class="hz-trophy mb-5 lg:!w-[150px] lg:!h-[150px] lg:!text-[72px]">🏆</div>
-                    <h3 class="hz-title text-3xl lg:text-5xl mb-1">¡Fin de la Siembra!</h3>
+                    <h3 class="hz-title text-3xl lg:text-5xl mb-1" id="result-title">¡Fin de la Cosecha!</h3>
                     <p class="hz-sub mb-6">Tu cosecha quedó registrada</p>
                     <div class="hidden lg:flex items-center justify-center gap-3 hz-side !py-3 max-w-xs mx-auto">
-                        <img data-mirror="pak-plant-icon" src="assets/Fondos/logo.png" class="w-14 h-14 object-contain">
+                        <img data-mirror="trg-plant-icon" src="assets/Fondos/logo.png" class="w-14 h-14 object-contain">
                         <div class="text-left"><div class="hz-label">Jugaste con</div><div data-mirror="intro-plant-name" class="hz-title text-xl">—</div></div>
                     </div>
                 </div>
 
                 <div>
                     <div class="grid grid-cols-3 gap-2 mb-4">
-                        <div class="hz-stat"><b id="res-rounds">0</b><span>Lanzamientos</span></div>
-                        <div class="hz-stat"><b id="res-hits">0</b><span>En maceta</span></div>
-                        <div class="hz-stat"><b id="res-acc">0%</b><span>Puntería</span></div>
+                        <div class="hz-stat"><b id="res-rounds">0</b><span>Rondas</span></div>
+                        <div class="hz-stat"><b id="res-hits">0</b><span>Con acierto</span></div>
+                        <div class="hz-stat"><b id="res-acc">0%</b><span>Precisión</span></div>
                     </div>
 
                     <div class="hz-card w-full mb-7 text-left !px-5">
                         <div class="hz-row">
                             <span class="text-[11px] font-black uppercase tracking-widest">Cosecha base</span>
                             <span class="hz-num text-lg" id="res-base">0</span>
+                        </div>
+                        <div class="hz-row">
+                            <span class="text-[11px] font-black uppercase tracking-widest">Mejor racha</span>
+                            <span class="hz-tag bg-[#FDE062]" id="res-combo">x1</span>
                         </div>
                         <div class="hz-row">
                             <span class="text-[11px] font-black uppercase tracking-widest">Bono de tiempo</span>
@@ -291,7 +312,7 @@
                         </div>
                     </div>
 
-                    <button onclick="window.submitPachinkoScore()" id="btn-submit-score" class="hz-btn" data-state="go">
+                    <button onclick="window.submitSlotScore()" id="btn-submit-score" class="hz-btn" data-state="go">
                         <span>🧺</span> Guardar Cosecha
                     </button>
                 </div>
@@ -302,7 +323,7 @@
 </div>
 
 <script>
-// Pequeños efectos visuales compartidos (textos flotantes y explosión de hojas)
+// Efectos visuales compartidos (textos flotantes y explosión de hojas)
 window.hzFx = {
     pop(layer, x, y, text, bad) {
         if (!layer) return;
@@ -384,39 +405,54 @@ window.hzUi = {
     }
 };
 
-window.pachinkoApp = {
+window.slotApp = {
     canvas: null,
     ctx: null,
-    w: 400, h: 600, // Resolución interna estricta
+    w: 384, h: 288, // Proporción 4:3 aprox para el slot
+
+    // Stats de la planta (Solo se usará para vidas)
+    hp: 100,
 
     // Variables de juego
     score: 0,
-    seedsTotal: 10,
-    seedsLeft: 10,
+    livesTotal: 3,
+    livesLeft: 3,
     timeLeft: 60.0,
     timerInterval: null,
     isPlaying: false,
 
-    // Físicas (Deterministas)
-    pegs: [],
-    baskets: [],
-    activeSeed: null,
-
-    // Efectos visuales
-    trail: [],
-    sparks: [],
-    basketFlash: null, // { index, until }
+    // Mecánica Combos
+    currentCombo: 1,
+    maxComboReached: 1,
 
     // Estadísticas de la partida (solo visuales)
-    goodPots: 0,
-    badPots: 0,
+    roundsPlayed: 0,
+    roundsWon: 0,
 
-    // Controles
-    inputState: 'ANGLE', // ANGLE -> POWER -> SIMULATING
-    angleVal: 0,
-    angleDir: 1,
-    powerVal: 20,
-    powerDir: 1,
+    // Elementos del Slot: cada símbolo es un tipo de semilla del juego
+    symbols: ['ignea', 'glaciar', 'electrica', 'radiactiva', 'espacial', 'acuatica', 'demoniaca'],
+    symbolInfo: {
+        ignea:      { name: 'Semilla Ígnea',      img: 'assets/Semillas/Plantas Ígneas.png',      emoji: '🔥', glow: '#ff7a2f' },
+        glaciar:    { name: 'Semilla Glaciar',    img: 'assets/Semillas/Plantas Glaciares.png',   emoji: '❄️', glow: '#9fe3ff' },
+        electrica:  { name: 'Semilla Eléctrica',  img: 'assets/Semillas/Plantas Eléctricas.png',  emoji: '⚡', glow: '#fde062' },
+        radiactiva: { name: 'Semilla Radiactiva', img: 'assets/Semillas/Plantas Radiactivas.png', emoji: '☢️', glow: '#7ed957' },
+        espacial:   { name: 'Semilla Espacial',   img: 'assets/Semillas/Plantas Espaciales.png',  emoji: '🌌', glow: '#b48cff' },
+        acuatica:   { name: 'Semilla Acuática',   img: 'assets/Semillas/Plantas Acuáticas.png',   emoji: '💧', glow: '#64d7ff' },
+        demoniaca:  { name: 'Semilla Demoníaca',  img: 'assets/Semillas/Plantas Demoníacas.png',  emoji: '😈', glow: '#ff4d6d' }
+    },
+    symbolImgs: {},
+    reels: [
+        { offset: 0, speed: 0.15, state: 'STOPPED', finalSymbol: null },
+        { offset: 0, speed: 0.18, state: 'STOPPED', finalSymbol: null },
+        { offset: 0, speed: 0.22, state: 'STOPPED', finalSymbol: null }
+    ],
+    targetSymbol: '❓',
+    activeReelIndex: 0,
+    inputState: 'PRE_ROUND', // PRE_ROUND -> SPINNING -> EVALUATING
+
+    // Efecto visual del último resultado: { until, hits: [bool,bool,bool], win }
+    resultFx: null,
+
     rafId: null,
 
     // Audio Managers
@@ -431,32 +467,33 @@ window.pachinkoApp = {
         error: new Audio('assets/Sonidos/Maquinas/Error.mp3')
     },
 
-    // Inicializa la UI, lee la planta y muestra el Splash + Intro
     init() {
-        // Enlazar Canvas de forma segura
-        this.canvas = document.getElementById('pachinko-canvas');
+        this.canvas = document.getElementById('slot-canvas');
         if (!this.canvas) return;
 
         this.ctx = this.canvas.getContext('2d');
-        // Fijamos la resolución interna
-        this.canvas.width = this.w;
-        this.canvas.height = this.h;
+        this.resize();
         window.hzUi.bindMirrors();
+
+        // Precargar los íconos de semillas (si alguno falla se usa su emoji)
+        this.symbols.forEach(key => {
+            const img = new Image();
+            img.onload = () => this.draw();
+            img.src = this.symbolInfo[key].img;
+            this.symbolImgs[key] = img;
+        });
 
         let plantName = "Semilla Base";
         let plantImg = "assets/Fondos/logo.png";
         this.hp = 100;
 
-        // Obtener datos de la planta seleccionada desde el estado de FarmApp
+        // Obtener datos de la planta
         if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
             let pData = window.farmApp.state.selectedCombatants[0];
             if (pData) {
                 let realPlant;
-                if (pData.type === 'plot') {
-                    realPlant = window.farmApp.state.plots.find(p => p.id == pData.idTag)?.plant;
-                } else {
-                    realPlant = window.farmApp.state.arsenal.find(p => p.id == pData.idTag);
-                }
+                if (pData.type === 'plot') realPlant = window.farmApp.state.plots.find(p => p.id == pData.idTag)?.plant;
+                else realPlant = window.farmApp.state.arsenal.find(p => p.id == pData.idTag);
 
                 if (realPlant) {
                     this.hp = realPlant.hp || 100;
@@ -466,12 +503,12 @@ window.pachinkoApp = {
             }
         }
 
-        // 1. Mostrar Splash Screen simulando carga y animación de logo
+        // 1. Mostrar Splash Screen simulando carga
         setTimeout(() => {
-            const bar = document.getElementById('pak-loading-bar');
+            const bar = document.getElementById('trg-loading-bar');
             if(bar) bar.style.width = '100%';
 
-            // Animación de transición de Logos
+            // Transición de logos (desaparece el logo, aparece Juego_003)
             setTimeout(() => {
                 const logo1 = document.getElementById('splash-logo-1');
                 const logo2 = document.getElementById('splash-logo-2');
@@ -480,131 +517,137 @@ window.pachinkoApp = {
                     logo2.classList.remove('opacity-0', 'scale-50');
                     logo2.classList.add('opacity-100', 'scale-100', 'drop-shadow-[0_0_40px_rgba(253,224,98,0.6)]');
                 }
-            }, 1000); // Aparece a la mitad del progress bar
+            }, 800);
 
         }, 100);
 
         setTimeout(() => {
-            const splash = document.getElementById('pak-splash-screen');
+            const splash = document.getElementById('trg-splash-screen');
             if (splash) splash.classList.add('opacity-0');
 
             setTimeout(() => {
                 if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
             }, 700);
-        }, 3000); // Tiempo para apreciar el logo
+        }, 3000); // 3 segundos para disfrutar el logo
     },
 
+    showIntroScreen(plantName, plantImg) {
+        const screen = document.getElementById('trg-intro-screen');
+        if (!screen) return;
+        screen.classList.remove('hidden');
 
+        // Llenar UI del Intro
+        document.getElementById('intro-plant-img').src = plantImg;
+        document.getElementById('intro-plant-name').innerText = plantName;
 
-    // Invocado por el botón "¡A Sembrar!"
+        // --- CÁLCULOS UNIVERSALES SIMPLIFICADOS ---
+        // La Vida (hp) de la BD ahora es la cantidad directa de Turnos.
+        this.livesTotal = Math.max(3, Math.floor(this.hp / 10));
+        
+        // Velocidad fija universal para todos
+        this.baseSpeeds = [0.15, 0.18, 0.22]; 
+
+        // Llenar UI del Análisis (Solo Turnos)
+        document.getElementById('intro-val-hp').innerText = `${this.livesTotal}`;
+        document.getElementById('intro-lives').innerText = `${this.livesTotal} Intentos`;
+
+        // Llenar HUD In-Game
+        document.getElementById('trg-plant-icon').src = plantImg;
+        this.livesLeft = this.livesTotal;
+        document.getElementById('trg-ammo').innerText = this.livesLeft;
+
+        this.draw();
+    },
+
     startGame() {
-        const intro = document.getElementById('pak-intro-screen');
-        const game = document.getElementById('pak-game-screen');
+        const intro = document.getElementById('trg-intro-screen');
+        const game = document.getElementById('trg-game-screen');
         if(!intro || !game) return;
 
         intro.classList.add('hidden');
         game.classList.remove('hidden');
 
-        const actionBtn = document.getElementById('pak-action-btn');
+        const actionBtn = document.getElementById('trg-action-btn');
         actionBtn.onclick = () => this.handleInput();
-        window.hzUi.bindKey('pak-game-screen', 'pak-action-btn');
+        window.hzUi.bindKey('trg-game-screen', 'trg-action-btn');
 
         this.isPlaying = true;
         this.startTimer();
 
         if (this.rafId) cancelAnimationFrame(this.rafId);
         this.loop();
+
+        this.startRound();
     },
 
-    showIntroScreen(plantName, plantImg) {
-        const screen = document.getElementById('pak-intro-screen');
-        if (!screen) return;
-
-        screen.classList.remove('hidden');
-
-        // Llenar datos de la planta
-        document.getElementById('intro-plant-img').src = plantImg;
-        document.getElementById('intro-plant-name').innerText = plantName;
-
-        // --- CÁLCULOS UNIVERSALES SIMPLIFICADOS ---
-        // La Vida (hp) de la BD ahora es la cantidad directa de Turnos.
-        this.seedsTotal = Math.max(5, Math.floor(this.hp / 10)); 
-        
-        // El multiplicador y el control ya no existen. Todo es fijo.
-        const mult = 1; 
-        const basePtsPerHit = 2000; // Cada acierto da 2000 puntos para permitir que una planta de 5 turnos logre 10,000 pts
-        const basketW = 120; // Ancho de canasta fijo y universal para todos
-
-        // Actualizar UI del Análisis (Solo Turnos)
-        document.getElementById('intro-val-hp').innerText = `${this.seedsTotal}`;
-        document.getElementById('intro-seeds').innerText = `${this.seedsTotal} Intentos`;
-
-        // Datos para el HUD in-game
-        document.getElementById('pak-plant-icon').src = plantImg;
-        document.getElementById('pak-score').innerText = '0';
-
-        this.seedsLeft = this.seedsTotal;
-        document.getElementById('pak-ammo').innerText = this.seedsLeft;
-
-        // Construir el nivel con físicas universales
-        this.buildLevel(mult, basketW, basePtsPerHit);
-        this.renderPaytable();
-        this.draw(); 
-        if (document.fonts && document.fonts.load) document.fonts.load("20px 'Lilita One'").then(() => this.draw()).catch(() => {});
+    resize() {
+        this.canvas.width = this.w;
+        this.canvas.height = this.h;
     },
 
-    buildLevel(mult, basketW, basePtsPerHit) {
-        this.pegs = [];
-        const rows = 8;
-        const cols = 7;
-        const spacingX = this.w / cols;
-        const spacingY = 400 / rows;
-
-        for (let r = 0; r < rows; r++) {
-            let numCols = (r % 2 === 0) ? cols - 1 : cols;
-            let offsetX = (r % 2 === 0) ? spacingX : spacingX / 2;
-            for (let c = 0; c < numCols; c++) {
-                this.pegs.push({
-                    x: offsetX + (c * spacingX),
-                    y: 90 + (r * spacingY),
-                    r: 6,
-                    hitAt: 0
-                });
-            }
+    showTarget() {
+        const box = document.getElementById('target-symbol-display');
+        const name = document.getElementById('target-symbol-name');
+        const info = this.symbolInfo[this.targetSymbol];
+        if (!box || !info) return;
+        const img = this.symbolImgs[this.targetSymbol];
+        if (img && img.complete && img.naturalWidth) {
+            box.innerHTML = `<img src="${info.img}" class="w-full h-full object-contain p-1" style="filter: drop-shadow(0 0 8px ${info.glow})">`;
+        } else {
+            box.innerText = info.emoji;
         }
-
-        // Puntuaciones Equilibradas
-        const goodPts = Math.floor(basePtsPerHit * mult);
-        const goldPts = Math.floor((basePtsPerHit * 0.4) * mult); // Canasta segura pero da menos
-        
-        this.baskets = [
-            { x: 0, y: this.h - 45, w: basketW, h: 45, kind: 'gold', pts: goldPts, label: `+${goldPts}` },
-            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, kind: 'bad', pts: -500, label: '🐛 -500' },
-            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, kind: 'good', pts: goodPts, label: `+${goodPts}` }
-        ];
+        box.style.boxShadow = `inset 0 0 16px ${info.glow}`;
+        if (name) name.innerText = info.name;
+        window.hzFx.retrigger(box.parentElement, 'hz-flash');
     },
 
-    // Lista de macetas para el panel de escritorio
-    renderPaytable() {
-        const box = document.getElementById('pak-paytable');
-        if (!box) return;
-        const names = { good: ['🌿', 'Maceta verde', '#7ED957'], gold: ['🌼', 'Maceta dorada', '#FDE062'], bad: ['🐛', 'Maceta con plaga', '#ff8a8d'] };
-        box.innerHTML = [...this.baskets].sort((a, b) => b.pts - a.pts).map(b => {
-            const [icon, name, color] = names[b.kind];
-            return `<div class="hz-pay"><span class="hz-pay__l">${icon} ${name}</span><span class="hz-pay__r" style="color:${color}">${b.pts > 0 ? '+' : ''}${b.pts.toLocaleString()}</span></div>`;
-        }).join('');
+    startRound() {
+        if (!this.isPlaying) return;
+
+        this.targetSymbol = this.symbols[Math.floor(Math.random() * this.symbols.length)];
+        this.showTarget();
+
+        this.reels[0].offset = Math.random() * 5;
+        this.reels[1].offset = Math.random() * 5;
+        this.reels[2].offset = Math.random() * 5;
+
+        this.reels[0].speed = this.baseSpeeds[0];
+        this.reels[1].speed = this.baseSpeeds[1];
+        this.reels[2].speed = this.baseSpeeds[2];
+
+        this.reels.forEach(r => { r.state = 'SPINNING'; r.finalSymbol = null; });
+
+        this.resultFx = null;
+        this.activeReelIndex = 0;
+        this.inputState = 'SPINNING';
+        this.updateButtonUI();
+    },
+
+    updateButtonUI() {
+        const btn = document.getElementById('trg-action-btn');
+        if (this.inputState === 'SPINNING') {
+            btn.innerHTML = `<span>✋</span> Frenar Rodillo ${this.activeReelIndex + 1}`;
+            btn.dataset.state = 'stop';
+            btn.disabled = false;
+        } else if (this.inputState === 'PRE_ROUND') {
+            btn.innerHTML = `<span>🌱</span> Siguiente Ronda`;
+            btn.dataset.state = 'next';
+            btn.disabled = false;
+        } else {
+            btn.innerHTML = `<span>⏳</span> Revisando cosecha...`;
+            btn.dataset.state = 'wait';
+            btn.disabled = true;
+        }
     },
 
     startTimer() {
         this.timerInterval = setInterval(() => {
             if (!this.isPlaying) return;
             this.timeLeft -= 0.1;
+            document.getElementById('trg-timer').innerText = this.timeLeft.toFixed(1) + 's';
 
-            const timerEl = document.getElementById('pak-timer');
-            if (timerEl) timerEl.innerText = this.timeLeft.toFixed(1) + 's';
-
-            if (this.timeLeft <= 0 || this.score >= 10000) {
+            if (this.timeLeft <= 0 || this.score >= 10000 || this.livesLeft <= 0) {
                 this.endGame();
             }
         }, 100);
@@ -624,34 +667,113 @@ window.pachinkoApp = {
 
     handleInput() {
         if (!this.isPlaying) return;
-        const btn = document.getElementById('pak-action-btn');
 
-        if (this.inputState === 'ANGLE') {
-            this.inputState = 'POWER';
-            document.getElementById('power-meter-container').classList.remove('hidden');
-            btn.innerHTML = "<span>💥</span> ¡Lanzar Semilla!";
-            btn.dataset.state = 'stop';
-        } else if (this.inputState === 'POWER') {
-            if (this.seedsLeft <= 0) return;
-            this.inputState = 'SIMULATING';
-            btn.classList.add('hidden');
-            document.getElementById('pak-falling-msg').classList.remove('hidden');
-            document.getElementById('power-meter-container').classList.add('hidden');
-            document.getElementById('angle-meter-container').classList.add('hidden');
+        if (this.inputState === 'PRE_ROUND') {
+            this.startRound();
+        }
+        else if (this.inputState === 'SPINNING') {
+            let reel = this.reels[this.activeReelIndex];
+            reel.state = 'STOPPED';
 
-            this.seedsLeft--;
-            document.getElementById('pak-ammo').innerText = this.seedsLeft;
+            // Redondear el offset para que el símbolo caiga centrado
+            reel.offset = Math.round(reel.offset);
 
-            const rad = this.angleVal * Math.PI / 180;
-            const force = this.powerVal / 15;
-            this.activeSeed = {
-                x: this.w / 2,
-                y: 20,
-                vx: Math.sin(rad) * force,
-                vy: Math.cos(rad) * force,
-                r: 8
-            };
-            this.trail = [];
+            let centerIndex = (reel.offset % this.symbols.length + this.symbols.length) % this.symbols.length;
+            reel.finalSymbol = this.symbols[centerIndex];
+            reel.stopAt = performance.now();
+
+            this.activeReelIndex++;
+
+            if (this.activeReelIndex > 2) {
+                this.inputState = 'EVALUATING';
+                this.updateButtonUI();
+                setTimeout(() => this.evaluateRound(), 500);
+            } else {
+                this.updateButtonUI();
+            }
+        }
+    },
+
+    evaluateRound() {
+        if (!this.isPlaying) return;
+
+        let r1 = this.reels[0].finalSymbol;
+        let r2 = this.reels[1].finalSymbol;
+        let r3 = this.reels[2].finalSymbol;
+
+        let matchesCount = 0;
+        if (r1 === this.targetSymbol) matchesCount++;
+        if (r2 === this.targetSymbol) matchesCount++;
+        if (r3 === this.targetSymbol) matchesCount++;
+
+        const hits = [r1, r2, r3].map(s => s === this.targetSymbol);
+        const fx = document.getElementById('trg-fx');
+        const machine = document.getElementById('trg-machine');
+        const btn = document.getElementById('trg-action-btn');
+        const mRect = machine.getBoundingClientRect(), fRect = fx.getBoundingClientRect();
+        const cx = mRect.left - fRect.left + mRect.width / 2, cy = mRect.top - fRect.top + mRect.height / 2;
+        const targetName = this.symbolInfo[this.targetSymbol]?.name.replace('Semilla ', '') || '';
+        this.roundsPlayed++;
+
+        // Gana puntos si al menos 1 por línea coincide
+        if (matchesCount > 0) {
+            this.playBonusSound();
+
+            // PUNTOS FIJOS BASE (Sin Multiplicador de Planta)
+            let baseRoundPts = 0;
+            if (matchesCount === 1) baseRoundPts = 500;
+            else if (matchesCount === 2) baseRoundPts = 1500;
+            else if (matchesCount === 3) baseRoundPts = 4000;
+
+            let ptsEarned = Math.floor(baseRoundPts * this.currentCombo);
+
+            this.score += ptsEarned;
+
+            this.currentCombo += 0.5 * matchesCount;
+            if (this.currentCombo > this.maxComboReached) this.maxComboReached = this.currentCombo;
+
+            document.getElementById('trg-score').innerText = this.score.toLocaleString();
+            document.getElementById('trg-combo').innerText = 'x' + this.currentCombo.toFixed(1);
+
+            btn.dataset.state = 'win';
+            this.resultFx = { until: performance.now() + 1600, hits, win: true };
+            const label = matchesCount === 3 ? '¡GRAN COSECHA!' : `+${ptsEarned.toLocaleString()}`;
+            window.hzFx.pop(fx, cx, cy - 40, label);
+            if (matchesCount === 3) window.hzFx.pop(fx, cx, cy + 10, `+${ptsEarned.toLocaleString()}`);
+            window.hzFx.burst(fx, cx, cy, 10 + matchesCount * 8, matchesCount === 3 ? ['🪙', '🍃', '✨', '🌼'] : ['🍃', '✨', '🪙']);
+            window.hzFx.retrigger(machine, 'hz-flash');
+
+            this.roundsWon++;
+            window.hzUi.log('trg-log', matchesCount === 3 ? '🌻' : '🌿', `${matchesCount}/3 · ${targetName}`, `+${ptsEarned.toLocaleString()}`, matchesCount === 3 ? 'gold' : 'good');
+
+        } else {
+            this.playErrorSound();
+
+            this.livesLeft--;
+            this.currentCombo = 1;
+
+            document.getElementById('trg-ammo').innerText = this.livesLeft;
+            document.getElementById('trg-combo').innerText = 'x1.0';
+
+            btn.dataset.state = 'lose';
+            this.resultFx = { until: performance.now() + 1000, hits, win: false };
+            window.hzFx.pop(fx, cx, cy - 30, '-1 ⏳', true);
+            window.hzFx.burst(fx, cx, cy, 8, ['🥀', '🍂']);
+            window.hzFx.retrigger(machine, 'hz-shake');
+
+            window.hzUi.log('trg-log', '🥀', `0/3 · ${targetName}`, '-1 ⏳', 'bad');
+        }
+
+        window.hzUi.goal(this.score);
+        window.hzUi.set('trg-st-rounds', this.roundsPlayed);
+        window.hzUi.set('trg-st-hits', this.roundsWon);
+        window.hzUi.set('trg-st-best', 'x' + this.maxComboReached.toFixed(1));
+
+        if (this.score >= 10000 || this.livesLeft <= 0 || this.timeLeft <= 0) {
+            setTimeout(() => this.endGame(), 1000);
+        } else {
+            this.inputState = 'PRE_ROUND';
+            this.updateButtonUI();
         }
     },
 
@@ -664,327 +786,136 @@ window.pachinkoApp = {
         this.rafId = requestAnimationFrame(() => this.loop());
     },
 
-    // Convierte coordenadas del canvas a la capa de efectos (el canvas usa object-contain)
-    toFx(x, y) {
-        const fx = document.getElementById('pak-fx');
-        const cr = this.canvas.getBoundingClientRect(), fr = fx.getBoundingClientRect();
-        const k = Math.min(cr.width / this.w, cr.height / this.h);
-        const ox = cr.left + (cr.width - this.w * k) / 2 - fr.left;
-        const oy = cr.top + (cr.height - this.h * k) / 2 - fr.top;
-        return { fx, x: ox + x * k, y: oy + y * k };
-    },
-
     update() {
-        // Chispas decorativas
-        this.sparks = this.sparks.filter(s => (s.life -= 1) > 0);
-        this.sparks.forEach(s => { s.x += s.vx; s.y += s.vy; s.vy += 0.08; });
-
-        // Factor de velocidad FIJO (Física Universal para todos los jugadores)
-        const speedFactor = 0.8; 
-
-        if (this.inputState === 'ANGLE') {
-            this.angleVal += (1.5 * speedFactor) * this.angleDir;
-            if (this.angleVal >= 45 || this.angleVal <= -45) this.angleDir *= -1;
-            document.getElementById('angle-cursor').style.left = `${50 + (this.angleVal / 45 * 50)}%`;
-        }
-        else if (this.inputState === 'POWER') {
-            this.powerVal += (2.0 * speedFactor) * this.powerDir;
-            if (this.powerVal >= 100 || this.powerVal <= 20) this.powerDir *= -1;
-            document.getElementById('power-fill').style.width = `${this.powerVal}%`;
-        }
-        else if (this.inputState === 'SIMULATING' && this.activeSeed) {
-            let s = this.activeSeed;
-            s.vy += 0.2; // Gravity
-            s.x += s.vx;
-            s.y += s.vy;
-
-            this.trail.push({ x: s.x, y: s.y });
-            if (this.trail.length > 14) this.trail.shift();
-
-            // Bounce walls
-            if (s.x - s.r < 0) { s.x = s.r; s.vx *= -0.6; }
-            if (s.x + s.r > this.w) { s.x = this.w - s.r; s.vx *= -0.6; }
-
-            // Collide with pegs
-            for (let p of this.pegs) {
-                let dx = s.x - p.x;
-                let dy = s.y - p.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < s.r + p.r) {
-                    let overlap = (s.r + p.r) - dist;
-                    let nx = dx / dist;
-                    let ny = dy / dist;
-                    s.x += nx * overlap;
-                    s.y += ny * overlap;
-
-                    let dotProduct = (s.vx * nx) + (s.vy * ny);
-                    s.vx = (s.vx - 2 * dotProduct * nx) * 0.6;
-                    s.vy = (s.vy - 2 * dotProduct * ny) * 0.6;
-
-                    // Efecto visual del golpe
-                    if (performance.now() - p.hitAt > 120) {
-                        for (let k = 0; k < 4; k++) {
-                            this.sparks.push({ x: p.x, y: p.y, vx: (Math.random() - .5) * 3, vy: -Math.random() * 2.5, life: 22 });
-                        }
-                    }
-                    p.hitAt = performance.now();
-                }
+        this.reels.forEach(r => {
+            if(r.state === 'SPINNING') {
+                r.offset = (r.offset + r.speed) % this.symbols.length;
             }
-
-            // Hit bottom baskets (Height 600, Baskets at 555)
-            if (s.y > this.h - 40) {
-                let hitBasket = false;
-                for (let i = 0; i < this.baskets.length; i++) {
-                    const b = this.baskets[i];
-                    if (s.x > b.x && s.x < b.x + b.w) {
-                        this.score = Math.max(0, this.score + b.pts);
-                        document.getElementById('pak-score').innerText = this.score;
-                        hitBasket = true;
-                        this.basketFlash = { index: i, until: performance.now() + 900, good: b.pts > 0 };
-                        const potName = { good: 'Maceta verde', gold: 'Maceta dorada', bad: 'Plaga' }[b.kind];
-                        if (b.pts > 0) this.goodPots++; else this.badPots++;
-                        window.hzUi.log('pak-log', { good: '🌿', gold: '🌼', bad: '🐛' }[b.kind], `Tiro ${this.seedsTotal - this.seedsLeft} · ${potName}`,
-                            `${b.pts > 0 ? '+' : ''}${b.pts.toLocaleString()}`, b.pts > 0 ? (b.kind === 'good' ? 'gold' : 'good') : 'bad');
-
-                        const p = this.toFx(b.x + b.w / 2, b.y);
-                        // Efectos de sonido
-                        if (b.pts > 0) {
-                            this.playBonusSound();
-                            window.hzFx.pop(p.fx, p.x, p.y - 30, `+${b.pts.toLocaleString()}`);
-                            window.hzFx.burst(p.fx, p.x, p.y, b.kind === 'good' ? 18 : 12, ['🌱', '🍃', '✨', '🪙']);
-                        } else {
-                            this.playErrorSound();
-                            window.hzFx.pop(p.fx, p.x, p.y - 30, `${b.pts}`, true);
-                            window.hzFx.burst(p.fx, p.x, p.y, 8, ['🐛', '🥀']);
-                        }
-                        break;
-                    }
-                }
-
-                // Si cayó fuera de todas las macetas por algún bug de colisión, se cuenta como fallo sonoro
-                if (!hitBasket) {
-                    this.playErrorSound();
-                    window.hzUi.log('pak-log', '💨', `Tiro ${this.seedsTotal - this.seedsLeft} · Fuera`, '0', 'bad');
-                }
-                window.hzUi.goal(this.score);
-                window.hzUi.set('pak-st-shots', this.seedsTotal - this.seedsLeft);
-                window.hzUi.set('pak-st-good', this.goodPots);
-                window.hzUi.set('pak-st-bad', this.badPots);
-
-                this.activeSeed = null;
-                this.trail = [];
-
-                if (this.score >= 10000 || this.seedsLeft <= 0) {
-                    this.endGame();
-                } else {
-                    // Volver a apuntar
-                    this.inputState = 'ANGLE';
-                    document.getElementById('angle-meter-container').classList.remove('hidden');
-                    document.getElementById('pak-falling-msg').classList.add('hidden');
-                    const btn = document.getElementById('pak-action-btn');
-                    btn.classList.remove('hidden');
-                    btn.innerHTML = "<span>🎯</span> Fijar Ángulo";
-                    btn.dataset.state = 'next';
-                }
-            }
-        }
+        });
     },
 
-    drawPot(b, i, now) {
+    drawSymbol(key, x, y, size, alpha) {
         const ctx = this.ctx;
-        const flash = this.basketFlash && this.basketFlash.index === i && now < this.basketFlash.until;
-        const palette = {
-            gold: ['#FDE062', '#ED9925', '#B8701A'],
-            good: ['#9be86f', '#4CAF50', '#2c7a33'],
-            bad:  ['#c45a92', '#8b2f63', '#5e1f45']
-        }[b.kind];
-        const inset = 6;
-        const top = b.y + 8, bottom = this.h - 1;
-
-        // Cuerpo de la maceta (trapecio)
-        ctx.beginPath();
-        ctx.moveTo(b.x + inset, top);
-        ctx.lineTo(b.x + b.w - inset, top);
-        ctx.lineTo(b.x + b.w - inset - 8, bottom);
-        ctx.lineTo(b.x + inset + 8, bottom);
-        ctx.closePath();
-        const body = ctx.createLinearGradient(b.x, 0, b.x + b.w, 0);
-        body.addColorStop(0, palette[2]);
-        body.addColorStop(0.35, palette[1]);
-        body.addColorStop(1, palette[2]);
-        ctx.fillStyle = body;
-        ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#1C2634';
-        ctx.stroke();
-
-        // Borde superior (labio de la maceta)
-        ctx.beginPath();
-        ctx.roundRect ? ctx.roundRect(b.x + 2, b.y, b.w - 4, 12, 5) : ctx.rect(b.x + 2, b.y, b.w - 4, 12);
-        ctx.fillStyle = palette[0];
-        if (flash) { ctx.shadowColor = palette[0]; ctx.shadowBlur = 20 + 10 * Math.sin(now / 60); }
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.stroke();
-
-        // Puntos
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = "17px 'Lilita One', sans-serif";
-        ctx.lineJoin = 'round';
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = '#1C2634';
-        ctx.strokeText(b.label, b.x + b.w / 2, b.y + 30);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(b.label, b.x + b.w / 2, b.y + 30);
+        const img = this.symbolImgs[key];
+        ctx.globalAlpha = alpha;
+        if (img && img.complete && img.naturalWidth) {
+            const k = size / Math.max(img.naturalWidth, img.naturalHeight);
+            const w = img.naturalWidth * k, h = img.naturalHeight * k;
+            ctx.drawImage(img, x - w / 2, y - h / 2, w, h);
+        } else {
+            ctx.font = `${Math.round(size * 0.8)}px sans-serif`;
+            ctx.fillText(this.symbolInfo[key]?.emoji || '❓', x, y);
+        }
+        ctx.globalAlpha = 1;
     },
 
     draw() {
         if (!this.ctx) return;
         const ctx = this.ctx;
-        const now = performance.now();
         ctx.clearRect(0, 0, this.w, this.h);
 
-        // Rieles laterales de madera
-        for (const x of [0, this.w - 6]) {
-            const g = ctx.createLinearGradient(x, 0, x + 6, 0);
-            g.addColorStop(0, '#4A2A12');
-            g.addColorStop(0.5, '#9c6434');
-            g.addColorStop(1, '#4A2A12');
-            ctx.fillStyle = g;
-            ctx.fillRect(x, 60, 6, this.h - 110);
-        }
+        const colWidth = this.w / 3;
+        const symHeight = 80;
+        const centerY = this.h / 2;
+        const gap = 7;
+        const now = performance.now();
+        const fx = this.resultFx && now < this.resultFx.until ? this.resultFx : null;
 
-        // Enredaderas tenues detrás de los clavos
-        ctx.strokeStyle = 'rgba(126,217,87,0.12)';
-        ctx.lineWidth = 3;
-        for (let k = 0; k < 4; k++) {
-            ctx.beginPath();
-            for (let y = 70; y < 520; y += 10) {
-                const x = 50 + k * 100 + Math.sin(y / 30 + k) * 18;
-                y === 70 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        }
+        // Fondo entre rodillos (madera oscura)
+        ctx.fillStyle = '#1C2634';
+        ctx.fillRect(0, 0, this.w, this.h);
 
-        // Clavos de latón (brillan en verde al ser golpeados)
-        for (let p of this.pegs) {
-            const glow = Math.max(0, 1 - (now - p.hitAt) / 400);
-            if (glow > 0) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r + 8 * glow, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(126,217,87,${0.45 * glow})`;
-                ctx.fill();
-            }
-            const g = ctx.createRadialGradient(p.x - 2, p.y - 2, 0.5, p.x, p.y, p.r);
-            g.addColorStop(0, glow > 0 ? '#eaffd9' : '#fff6b8');
-            g.addColorStop(0.5, glow > 0 ? '#7ED957' : '#FDE062');
-            g.addColorStop(1, glow > 0 ? '#2c7a33' : '#B8701A');
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = g;
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#1C2634';
-            ctx.stroke();
-        }
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
-        // Chispas
-        for (const s of this.sparks) {
-            ctx.globalAlpha = s.life / 22;
-            ctx.fillStyle = '#b6f59a';
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, 2, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.globalAlpha = 1;
+        for (let i = 0; i < 3; i++) {
+            const r = this.reels[i];
+            const x0 = i * colWidth + (i === 0 ? 0 : gap / 2);
+            const x1 = (i + 1) * colWidth - (i === 2 ? 0 : gap / 2);
+            const rw = x1 - x0;
+            const xPos = x0 + rw / 2;
 
-        // Macetas
-        this.baskets.forEach((b, i) => this.drawPot(b, i, now));
-
-        // Estela de la semilla
-        this.trail.forEach((t, i) => {
-            const k = i / this.trail.length;
-            ctx.beginPath();
-            ctx.arc(t.x, t.y, 2 + 5 * k, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(126,217,87,${0.35 * k})`;
-            ctx.fill();
-        });
-
-        // Semilla activa
-        if (this.activeSeed) {
-            const s = this.activeSeed;
             ctx.save();
-            ctx.translate(s.x, s.y);
-            ctx.rotate(now / 120);
-            ctx.shadowColor = '#7ED957';
-            ctx.shadowBlur = 16;
             ctx.beginPath();
-            ctx.ellipse(0, 0, s.r * 0.85, s.r * 1.15, 0, 0, Math.PI * 2);
-            const sg = ctx.createRadialGradient(-2, -3, 1, 0, 0, s.r * 1.2);
-            sg.addColorStop(0, '#d9a066');
-            sg.addColorStop(1, '#6b3d1c');
-            ctx.fillStyle = sg;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#1C2634';
-            ctx.stroke();
-            // Brote saliendo de la semilla
-            ctx.beginPath();
-            ctx.ellipse(3, -s.r - 1, 3, 5, 0.6, 0, Math.PI * 2);
-            ctx.fillStyle = '#7ED957';
-            ctx.fill();
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            ctx.restore();
-        }
+            ctx.rect(x0, 0, rw, this.h);
+            ctx.clip();
 
-        // Lanzador y mira
-        if (this.inputState === 'ANGLE' || this.inputState === 'POWER') {
-            ctx.save();
-            ctx.translate(this.w/2, 20);
-            ctx.rotate(-this.angleVal * Math.PI / 180);
+            // Tira del rodillo: crema con brillo cilíndrico
+            const strip = ctx.createLinearGradient(x0, 0, x1, 0);
+            strip.addColorStop(0, '#e9dcb9');
+            strip.addColorStop(0.5, '#fff7e3');
+            strip.addColorStop(1, '#e9dcb9');
+            ctx.fillStyle = strip;
+            ctx.fillRect(x0, 0, rw, this.h);
 
-            // Trayectoria de puntos
-            const len = this.inputState === 'POWER' ? 60 + this.powerVal * 0.9 : 110;
-            for (let d = 26; d < len; d += 12) {
-                ctx.beginPath();
-                ctx.arc(0, d, 3 - d / len * 1.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(253,224,98,${1 - d / len})`;
-                ctx.fill();
+            // Brillo de acierto/fallo en la casilla central
+            if (fx) {
+                const pulse = 0.55 + 0.45 * Math.sin(now / 90);
+                if (fx.hits[i]) {
+                    const glow = this.symbolInfo[r.finalSymbol]?.glow || '#7ed957';
+                    const g = ctx.createRadialGradient(xPos, centerY, 4, xPos, centerY, 70);
+                    g.addColorStop(0, glow);
+                    g.addColorStop(1, 'rgba(255,247,227,0)');
+                    ctx.globalAlpha = 0.85 * pulse;
+                    ctx.fillStyle = g;
+                    ctx.fillRect(x0, centerY - symHeight / 2, rw, symHeight);
+                    ctx.globalAlpha = 1;
+                } else if (!fx.win) {
+                    ctx.fillStyle = `rgba(229,72,77,${0.25 * pulse})`;
+                    ctx.fillRect(x0, centerY - symHeight / 2, rw, symHeight);
+                }
             }
 
-            // Boquilla de latón
-            ctx.beginPath();
-            ctx.moveTo(-9, -6);
-            ctx.lineTo(9, -6);
-            ctx.lineTo(6, 24);
-            ctx.lineTo(-6, 24);
-            ctx.closePath();
-            const ng = ctx.createLinearGradient(-9, 0, 9, 0);
-            ng.addColorStop(0, '#B8701A');
-            ng.addColorStop(0.5, '#FDE062');
-            ng.addColorStop(1, '#B8701A');
-            ctx.fillStyle = ng;
-            ctx.fill();
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#1C2634';
-            ctx.stroke();
+            // Pequeño rebote al frenar
+            let bounce = 0;
+            if (r.state === 'STOPPED' && r.stopAt) {
+                const t = (now - r.stopAt) / 260;
+                if (t < 1) bounce = Math.sin(t * Math.PI) * 9 * (1 - t);
+            }
+
+            for (let row = -2; row <= 2; row++) {
+                let symIndex = Math.floor(r.offset) + row;
+                let actualIndex = (symIndex % this.symbols.length + this.symbols.length) % this.symbols.length;
+                let sym = this.symbols[actualIndex];
+                let yPos = centerY + (row - (r.offset % 1)) * symHeight + bounce;
+
+                if (r.state === 'SPINNING') {
+                    // Estela de movimiento
+                    this.drawSymbol(sym, xPos, yPos - 14, 60, 0.25);
+                    this.drawSymbol(sym, xPos, yPos, 60, 0.6);
+                    this.drawSymbol(sym, xPos, yPos + 14, 60, 0.25);
+                } else {
+                    const big = fx && row === 0 && fx.hits[i] ? 1 + 0.08 * Math.sin(now / 80) : 1;
+                    this.drawSymbol(sym, xPos, yPos, 64 * big, 1);
+                }
+            }
+
+            // Sombra de cilindro arriba y abajo
+            const shade = ctx.createLinearGradient(0, 0, 0, this.h);
+            shade.addColorStop(0, 'rgba(28,38,52,0.85)');
+            shade.addColorStop(0.22, 'rgba(28,38,52,0)');
+            shade.addColorStop(0.78, 'rgba(28,38,52,0)');
+            shade.addColorStop(1, 'rgba(28,38,52,0.85)');
+            ctx.fillStyle = shade;
+            ctx.fillRect(x0, 0, rw, this.h);
+
+            // Oscurecer rodillos que aún no toca frenar
+            if (this.inputState === 'SPINNING' && i !== this.activeReelIndex && r.state !== 'STOPPED') {
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+                ctx.fillRect(x0, 0, rw, this.h);
+            }
             ctx.restore();
 
-            // Base del lanzador (no rota)
-            ctx.beginPath();
-            ctx.arc(this.w / 2, 16, 13, 0, Math.PI * 2);
-            ctx.fillStyle = '#4CAF50';
-            ctx.fill();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#1C2634';
-            ctx.stroke();
-            ctx.font = '13px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🌱', this.w / 2, 16);
+            // Rodillo activo: marco verde que late
+            if (this.inputState === 'SPINNING' && i === this.activeReelIndex) {
+                ctx.save();
+                ctx.strokeStyle = '#7ED957';
+                ctx.lineWidth = 4;
+                ctx.shadowColor = '#7ED957';
+                ctx.shadowBlur = 10 + 6 * Math.sin(now / 150);
+                ctx.strokeRect(x0 + 2, 2, rw - 4, this.h - 4);
+                ctx.restore();
+            }
         }
     },
 
@@ -1001,31 +932,31 @@ window.pachinkoApp = {
             if (this.timeLeft > 0) {
                 timeBonus = Math.floor(this.timeLeft) * 10;
             }
-            if (this.seedsLeft > 0) {
-                turnsBonus = this.seedsLeft * 50;
+            if (this.livesLeft > 0) {
+                turnsBonus = this.livesLeft * 50;
             }
         }
 
         let finalScore = baseScore + timeBonus + turnsBonus;
 
+        document.getElementById('result-title').innerText = this.livesLeft <= 0 ? "¡Sin Turnos!" : "¡Tiempo Agotado!";
         document.getElementById('res-base').innerText = baseScore.toLocaleString();
+        document.getElementById('res-combo').innerText = 'x' + this.maxComboReached.toFixed(1);
         document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
         document.getElementById('res-turns').innerText = '+' + turnsBonus.toLocaleString();
         document.getElementById('res-total').innerText = finalScore.toLocaleString();
-        
-        const shots = this.seedsTotal - this.seedsLeft;
-        window.hzUi.set('res-rounds', shots);
-        window.hzUi.set('res-hits', this.goodPots);
-        window.hzUi.set('res-acc', (shots ? Math.round(this.goodPots / shots * 100) : 0) + '%');
+        window.hzUi.set('res-rounds', this.roundsPlayed);
+        window.hzUi.set('res-hits', this.roundsWon);
+        window.hzUi.set('res-acc', (this.roundsPlayed ? Math.round(this.roundsWon / this.roundsPlayed * 100) : 0) + '%');
 
-        window.finalPachinkoScore = finalScore;
+        window.finalSlotScore = finalScore;
 
-        document.getElementById('pak-result-screen').classList.remove('hidden');
-        document.getElementById('pak-result-screen').classList.add('flex');
+        document.getElementById('trg-result-screen').classList.remove('hidden');
+        document.getElementById('trg-result-screen').classList.add('flex');
     }
 };
 
-window.submitPachinkoScore = async function() {
+window.submitSlotScore = async function() {
     const btn = document.getElementById('btn-submit-score');
     btn.innerHTML = "<span>⏳</span> Registrando...";
     btn.dataset.state = 'wait';
@@ -1072,8 +1003,8 @@ window.submitPachinkoScore = async function() {
                     username: username,
                     session_token: token,
                     instance_id: instanceId,
-                    score: window.finalPachinkoScore,
-                    played_game: 'pachinko'
+                    score: window.finalSlotScore,
+                    played_game: 'tragamonedas'
                 })
             });
         } catch(e) { console.error(e); }
@@ -1109,5 +1040,5 @@ window.submitPachinkoScore = async function() {
 };
 
 // Iniciar aplicación
-setTimeout(() => window.pachinkoApp.init(), 100);
+setTimeout(() => window.slotApp.init(), 100);
 </script>
