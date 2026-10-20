@@ -315,49 +315,27 @@
                     <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full opacity-50 z-0"></div>
                     ${winsBadge}
                     
-                    <!-- CONTENEDOR VISUAL -->
                     <div class="flex items-center justify-center w-full h-28 sm:h-32 mb-3 relative z-10 group">
                         <img src="${currentTerrain}" class="absolute h-20 sm:h-24 w-auto object-contain drop-shadow-sm mt-6">
                         <img src="${plant.icon}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md group-hover:scale-110 transition-transform ${isInjured ? 'opacity-80' : ''} relative z-10 mb-2">
                     </div>
                     
-                    <h4 class="font-black text-cg_navy text-base sm:text-lg text-center mb-1 relative z-10">${plant.name}</h4>
+                    <h4 class="font-black text-cg_navy text-base sm:text-lg text-center mb-4 relative z-10">${plant.name}</h4>
                     
-                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-1 relative z-10 shadow-inner">
-                        <div class="${hpColor} h-full transition-all" style="width: ${hpPct}%"></div>
-                    </div>
-                    <div class="flex justify-between text-[9px] sm:text-[10px] font-bold text-gray-500 mb-3 relative z-10">
-                        <span>🪙 Fichas: ${Math.max(1, Math.floor(plant.hp / 10))}</span>
-                        ${isInjured ? '<span class="text-blue-500 animate-pulse">Curando...</span>' : '<span class="text-green-500">Sana</span>'}
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-center relative z-10 mb-2">
-                        <div class="bg-orange-50 rounded-lg p-1.5 sm:p-2 border border-orange-100">
-                            <span class="block text-[8px] font-bold text-orange-400 uppercase">Multiplicador</span>
-                            <span class="font-black text-orange-600 text-sm">⭐ x${Math.max(1, Math.floor(plant.atk / 10))}</span>
-                        </div>
-                        <div class="bg-gray-100 rounded-lg p-1.5 sm:p-2 border border-gray-200">
-                            <span class="block text-[8px] font-bold text-gray-500 uppercase">Control</span>
-                            <span class="font-black text-gray-600 text-sm">⚙️ Nvl ${Math.max(1, Math.floor(plant.def / 10))}</span>
-                        </div>
+                    <!-- NUEVA CAJA SIMPLE: SOLO TURNOS -->
+                    <div class="bg-blue-50 rounded-lg p-2 border border-blue-100 text-center relative z-10 mb-4 shadow-sm">
+                        <span class="block text-[9px] sm:text-[10px] font-bold text-blue-500 uppercase tracking-widest">🎟️ Turnos para Jugar</span>
+                        <span class="font-black text-blue-800 text-sm">${Math.max(1, Math.floor(plant.hp / 10))} Intentos</span>
                     </div>
                     
-                    <!-- NUEVA CAJA: VALOR EN MERCADO -->
-                    <div class="bg-gray-50 rounded-lg p-1.5 sm:p-2 border border-gray-200 text-center relative z-10 mb-4">
-                        <span class="block text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Valor en Mercado</span>
+                    <!-- VALOR EN MERCADO -->
+                    <div class="bg-gray-50 rounded-lg p-2 border border-gray-200 text-center relative z-10 mb-4">
+                        <span class="block text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Valor de Venta</span>
                         <span class="font-black text-cg_navy text-sm">${shopPrice.toLocaleString()} 🌱</span>
                     </div>
                     
-                    <!-- NUEVO BOTÓN CURAR (Aparece solo si le falta vida) -->
-                    ${isInjured ? `
-                    <button onclick="healArsenalPlant('${plant.id}')" class="mb-2 w-full bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 border border-green-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10 flex items-center justify-center gap-1.5">
-                        <img src="assets/Herramientas_y_Servicios/pocion.png" class="w-4 h-4 object-contain">
-                        Curar: ${calculateHealCost(plant).toLocaleString()} 🌱
-                    </button>
-                    ` : ''}
-                    
                     <button onclick="sellArsenalPlant('${plant.id}')" class="mt-auto w-full bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 border border-gray-200 hover:border-red-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10">
-                        Vender: ${sellPrice.toLocaleString()} 🌱
+                        Vender
                     </button>
                 </div>
             `;

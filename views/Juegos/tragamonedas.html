@@ -72,61 +72,42 @@
                 <!-- Columna estadísticas -->
                 <div class="flex flex-col">
                     <div class="px-5 space-y-3 flex-1 lg:px-0">
-                        <!-- TURNOS -->
+                        <!-- TURNOS (Única estadística) -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#ffb3b5]">⏳</div>
+                                <div class="hz-card__icon bg-[#ffb3b5]">🎟️</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Turnos</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Turnos en la Arena</span>
                                         <span id="intro-val-hp" class="hz-num text-lg">--</span>
                                     </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#E5484D] w-[0%]"></div></div>
+                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#E5484D] w-[100%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Tienes <strong class="text-[#E5484D]" id="intro-lives">-- Turnos</strong>. Si la semilla objetivo no aparece en la línea, pierdes uno.
+                                Tienes <strong class="text-[#E5484D]" id="intro-lives">-- Intentos</strong>. Si la semilla objetivo no aparece en la línea, pierdes uno.
                             </p>
                         </div>
 
-                        <!-- MULTIPLICADOR -->
+                        <!-- REGLA DE PUNTOS FIJA (Visual) -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="hz-card__icon bg-[#FDE062]">⭐</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Multiplicador</span>
-                                        <span id="intro-val-atk" class="hz-num text-lg">--</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Reglas del Juego</span>
                                     </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-atk" class="bg-[#ED9925] w-[0%]"></div></div>
                                 </div>
                             </div>
-                            <p id="intro-desc-atk" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Multiplicador base <strong class="text-[#B8701A]" id="intro-mult">x--</strong>. Cada acierto seguido hace crecer tu cosecha.
-                            </p>
-                        </div>
-
-                        <!-- VELOCIDAD -->
-                        <div class="hz-card">
-                            <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#9fe3ff]">⚙️</div>
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Velocidad</span>
-                                        <span id="intro-val-def" class="hz-num text-lg">--</span>
-                                    </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-def" class="bg-[#2996DA] w-[0%]"></div></div>
-                                </div>
-                            </div>
-                            <p id="intro-desc-def" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Velocidad <strong class="text-[#2996DA]" id="intro-speed">--</strong>. Mayor control, rodillos más lentos.
+                            <p class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
+                                3 semillas en línea otorgan <strong class="text-[#B8701A]">+4000 Pts</strong>. Los puntos se multiplican según tu racha de aciertos.
                             </p>
                         </div>
 
                         <!-- META (escritorio) -->
                         <div class="hidden lg:flex hz-card items-center gap-3">
                             <div class="hz-card__icon bg-[#b6f59a]">🏆</div>
-                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong> y lo que te sobre de tiempo y turnos suma bono.</p>
+                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La meta es <strong>10,000 pts</strong>; los turnos y tiempo sobrantes suman bono.</p>
                         </div>
                     </div>
 
@@ -184,19 +165,17 @@
                             <img data-mirror="trg-plant-icon" src="assets/Fondos/logo.png" class="absolute inset-0 w-full h-full object-contain z-10 drop-shadow-[0_5px_0_rgba(28,38,52,0.6)]">
                         </div>
                         <div data-mirror="intro-plant-name" class="hz-title text-xl mt-1 mb-3 truncate">—</div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Turnos</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Mult.</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Veloc.</span></div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Turnos Totales</span></div>
                         </div>
                     </div>
 
                     <div class="hz-side">
                         <div class="hz-side__title">🧺 Tabla de cosecha</div>
-                        <div class="hz-pay"><span class="hz-pay__l">🌱 1 semilla en línea</span><span class="hz-pay__r text-[#b6f59a]">100</span></div>
-                        <div class="hz-pay"><span class="hz-pay__l">🌿 2 semillas en línea</span><span class="hz-pay__r text-[#7ED957]">300</span></div>
-                        <div class="hz-pay !bg-[#FDE062]/15"><span class="hz-pay__l">🌻 3 · Gran Cosecha</span><span class="hz-pay__r text-[#FDE062]">800</span></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los puntos se multiplican por tu multiplicador (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>) y por tu racha actual.</p>
+                        <div class="hz-pay"><span class="hz-pay__l">🌱 1 semilla en línea</span><span class="hz-pay__r text-[#b6f59a]">500</span></div>
+                        <div class="hz-pay"><span class="hz-pay__l">🌿 2 semillas en línea</span><span class="hz-pay__r text-[#7ED957]">1500</span></div>
+                        <div class="hz-pay !bg-[#FDE062]/15"><span class="hz-pay__l">🌻 3 · Gran Cosecha</span><span class="hz-pay__r text-[#FDE062]">4000</span></div>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los puntos se multiplican por tu racha actual.</p>
                     </div>
 
                     <div class="hz-side">
@@ -431,8 +410,8 @@ window.slotApp = {
     ctx: null,
     w: 384, h: 288, // Proporción 4:3 aprox para el slot
 
-    // Stats de la planta
-    hp: 100, atk: 50, def: 20,
+    // Stats de la planta (Solo se usará para vidas)
+    hp: 100,
 
     // Variables de juego
     score: 0,
@@ -506,6 +485,7 @@ window.slotApp = {
 
         let plantName = "Semilla Base";
         let plantImg = "assets/Fondos/logo.png";
+        this.hp = 100;
 
         // Obtener datos de la planta
         if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
@@ -517,8 +497,6 @@ window.slotApp = {
 
                 if (realPlant) {
                     this.hp = realPlant.hp || 100;
-                    this.atk = realPlant.atk || 50;
-                    this.def = realPlant.def || 20;
                     plantImg = realPlant.icon || 'assets/Fondos/logo.png';
                     plantName = realPlant.name;
                 }
@@ -563,37 +541,16 @@ window.slotApp = {
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // Cálculos Botánicos -> Dificultad del juego (Sin Azar)
-        // El HP define los Turnos (Vidas/Rondas permitidas)
-        this.livesTotal = Math.max(3, Math.floor(this.hp / 20));
+        // --- CÁLCULOS UNIVERSALES SIMPLIFICADOS ---
+        // La Vida (hp) de la BD ahora es la cantidad directa de Turnos.
+        this.livesTotal = Math.max(3, Math.floor(this.hp / 10));
         
-        // Escalamiento drástico de velocidad basado en Defensa
-        let speedMultiplier = Math.max(0.2, 1.0 - (this.def / 100)); // Plantas caras giran MUY lento
-        this.baseSpeeds = [0.15 * speedMultiplier, 0.20 * speedMultiplier, 0.25 * speedMultiplier];
-        
-        const atkMultiplier = 1 + (this.atk / 100);
+        // Velocidad fija universal para todos
+        this.baseSpeeds = [0.15, 0.18, 0.22]; 
 
-        // Actualizar barras Intro
-        const hpPct = Math.min(100, (this.hp / 500) * 100);
-        const atkPct = Math.min(100, (this.atk / 350) * 100);
-        const defPct = Math.min(100, (this.def / 150) * 100);
-
-        // Reemplazar textos de HP, ATK, DEF por Turnos, Multiplicador, Velocidad
-        document.getElementById('intro-val-hp').innerText = `${this.hp}`;
-        document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
-        document.getElementById('intro-lives').innerText = `${this.livesTotal} Turnos`;
-
-        document.getElementById('intro-val-atk').innerText = `x${atkMultiplier.toFixed(1)}`;
-        document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
-        document.getElementById('intro-mult').innerText = `x${atkMultiplier.toFixed(1)}`;
-
-        document.getElementById('intro-val-def').innerText = `${this.def}`;
-        document.getElementById('intro-bar-def').style.width = `${defPct}%`;
-
-        let speedText = "Rápida";
-        if(this.def > 50) speedText = "Controlada";
-        if(this.def > 100) speedText = "Lenta y Precisa";
-        document.getElementById('intro-speed').innerText = speedText;
+        // Llenar UI del Análisis (Solo Turnos)
+        document.getElementById('intro-val-hp').innerText = `${this.livesTotal}`;
+        document.getElementById('intro-lives').innerText = `${this.livesTotal} Intentos`;
 
         // Llenar HUD In-Game
         document.getElementById('trg-plant-icon').src = plantImg;
@@ -762,14 +719,13 @@ window.slotApp = {
         if (matchesCount > 0) {
             this.playBonusSound();
 
-            // PUNTOS FIJOS BASE (Ya no se dividen entre los turnos)
+            // PUNTOS FIJOS BASE (Sin Multiplicador de Planta)
             let baseRoundPts = 0;
             if (matchesCount === 1) baseRoundPts = 500;
             else if (matchesCount === 2) baseRoundPts = 1500;
             else if (matchesCount === 3) baseRoundPts = 4000;
 
-            let atkMultiplier = 1 + (this.atk / 100);
-            let ptsEarned = Math.floor(baseRoundPts * atkMultiplier * this.currentCombo);
+            let ptsEarned = Math.floor(baseRoundPts * this.currentCombo);
 
             this.score += ptsEarned;
 
@@ -1086,3 +1042,4 @@ window.submitSlotScore = async function() {
 // Iniciar aplicación
 setTimeout(() => window.slotApp.init(), 100);
 </script>
+</div>

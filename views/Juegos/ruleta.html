@@ -72,62 +72,45 @@
                 <!-- Columna estadísticas -->
                 <div class="flex flex-col">
                     <div class="px-5 space-y-3 flex-1 lg:px-0">
-                        <!-- TURNOS -->
+                        
+                        <!-- TURNOS (Única estadística) -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#b6f59a]">🌱</div>
+                                <div class="hz-card__icon bg-[#b6f59a]">🎟️</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Turnos</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Turnos en la Arena</span>
                                         <span id="intro-val-hp" class="hz-num text-lg">--</span>
                                     </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#4CAF50] w-[0%]"></div></div>
+                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#4CAF50] w-[100%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Esta planta te da <strong class="text-[#2e7d32]" id="intro-spins">-- Turnos</strong> en la rueda.
+                                Esta planta te da <strong class="text-[#2e7d32]" id="intro-spins">-- Intentos</strong> en la rueda.
                             </p>
                         </div>
 
-                        <!-- MULTIPLICADOR -->
+                        <!-- REGLA DE PUNTOS FIJA (Visual) -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#FDE062]">🌻</div>
+                                <div class="hz-card__icon bg-[#FDE062]">⭐</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Multiplicador</span>
-                                        <span id="intro-val-atk" class="hz-num text-lg">--</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Reglas del Juego</span>
                                     </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-atk" class="bg-[#ED9925] w-[0%]"></div></div>
                                 </div>
                             </div>
-                            <p id="intro-desc-atk" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Multiplicador <strong class="text-[#B8701A]" id="intro-mult">x--</strong>. La Gran Cosecha vale <strong class="text-[#B8701A]" id="intro-pts">+-- Pts</strong>.
-                            </p>
-                        </div>
-
-                        <!-- VELOCIDAD -->
-                        <div class="hz-card">
-                            <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#9fe3ff]">🌀</div>
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Velocidad</span>
-                                        <span id="intro-val-def" class="hz-num text-lg">--</span>
-                                    </div>
-                                    <div class="hz-meter mt-1"><div id="intro-bar-def" class="bg-[#2996DA] w-[0%]"></div></div>
-                                </div>
-                            </div>
-                            <p id="intro-desc-def" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Freno de <strong class="text-[#2996DA]" id="intro-control">--</strong>. Mayor control, la rueda se detiene antes.
+                            <p class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
+                                La Gran Cosecha vale <strong class="text-[#B8701A]">+2000 Pts</strong>. Frena la rueda en el momento exacto. Si caes en plagas, perderás puntos.
                             </p>
                         </div>
 
                         <!-- META (escritorio) -->
                         <div class="hidden lg:flex hz-card items-center gap-3">
                             <div class="hz-card__icon bg-[#b6f59a]">🏆</div>
-                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong>; si la alcanzas antes, el tiempo y turnos sobrantes suman bono.</p>
+                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La meta es <strong>10,000 pts</strong>; los turnos y tiempo sobrantes suman bono.</p>
                         </div>
+
                     </div>
 
                     <div class="px-5 mt-6 shrink-0 lg:px-0">
@@ -184,17 +167,15 @@
                             <img data-mirror="rul-plant-icon" src="assets/Fondos/logo.png" class="absolute inset-0 w-full h-full object-contain z-10 drop-shadow-[0_5px_0_rgba(28,38,52,0.6)]">
                         </div>
                         <div data-mirror="intro-plant-name" class="hz-title text-xl mt-1 mb-3 truncate">—</div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Turnos</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Mult.</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Veloc.</span></div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Turnos Totales</span></div>
                         </div>
                     </div>
 
                     <div class="hz-side">
                         <div class="hz-side__title">🧺 Casillas de la rueda</div>
                         <div id="rul-paytable"></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los premios verdes y dorados ya incluyen tu multiplicador (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>). La cosecha nunca baja de 0.</p>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">La física de la rueda y el freno son iguales para todos. La cosecha nunca baja de 0.</p>
                     </div>
 
                     <div class="hz-side">
@@ -417,8 +398,8 @@ window.rouletteApp = {
     ctx: null,
     size: 360,
 
-    // Stats de la planta
-    hp: 100, atk: 50, def: 20,
+    // Stats de la planta (solo vida/turnos importa ahora)
+    hp: 100,
 
     // Variables de juego
     score: 0,
@@ -434,7 +415,7 @@ window.rouletteApp = {
     currentAngle: 0,
     velocity: 0,
     maxVelocity: 14,
-    deceleration: 0.1,
+    deceleration: 0.15, // Velocidad de frenado universal
 
     // Controles: READY -> SPINNING -> STOPPING
     inputState: 'READY',
@@ -471,6 +452,7 @@ window.rouletteApp = {
 
         let plantName = "Semilla Base";
         let plantImg = "assets/Fondos/logo.png";
+        this.hp = 100;
 
         // Obtener datos de la planta seleccionada
         if (window.farmApp && window.farmApp.state && window.farmApp.state.selectedCombatants) {
@@ -485,8 +467,6 @@ window.rouletteApp = {
 
                 if (realPlant) {
                     this.hp = realPlant.hp || 100;
-                    this.atk = realPlant.atk || 50;
-                    this.def = realPlant.def || 20;
                     plantImg = realPlant.icon || 'assets/Fondos/logo.png';
                     plantName = realPlant.name;
                 }
@@ -558,35 +538,20 @@ window.rouletteApp = {
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // Cálculos EQUILIBRADOS
+        // --- CÁLCULOS UNIVERSALES SIMPLIFICADOS ---
+        // La Vida (hp) de la BD ahora es la cantidad directa de Turnos.
         this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
-        const mult = 1 + (this.atk / 100);
         
-        // Jackpot Fijo base
+        // Multiplicador y Control fijos
+        const mult = 1;
         const baseJackpot = 2000;
-        const jackpotPoints = Math.floor(baseJackpot * mult);
         
-        // Escalamiento drástico del freno basado en Defensa
-        this.deceleration = 0.01 + (this.def / 100) * 0.4;
+        // Fricción/Deceleración fija y universal
+        this.deceleration = 0.15; 
 
-        // Calcular porcentaje visual
-        const hpPct = Math.min(100, (this.hp / 500) * 100);
-        const atkPct = Math.min(100, (this.atk / 350) * 100);
-        const defPct = Math.min(100, (this.def / 150) * 100);
-
-        // Llenar UI del Análisis (Sin textos de HP, ATK, DEF)
-        document.getElementById('intro-val-hp').innerText = `${this.hp}`;
-        document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
-        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Turnos`;
-
-        document.getElementById('intro-val-atk').innerText = `x${mult.toFixed(1)}`;
-        document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
-        document.getElementById('intro-mult').innerText = `x${mult.toFixed(1)}`;
-        document.getElementById('intro-pts').innerText = `+${jackpotPoints} Pts`;
-
-        document.getElementById('intro-val-def').innerText = `${this.def}`;
-        document.getElementById('intro-bar-def').style.width = `${defPct}%`;
-        document.getElementById('intro-control').innerText = `${this.deceleration.toFixed(2)}`;
+        // Llenar UI del Análisis (Solo Turnos)
+        document.getElementById('intro-val-hp').innerText = `${this.spinsTotal}`;
+        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Intentos`;
 
         // Datos HUD in-game
         document.getElementById('rul-plant-icon').src = plantImg;
@@ -613,7 +578,7 @@ window.rouletteApp = {
         const p10 = Math.floor((baseJackpot * 0.1) * mult);
 
         this.slices = [
-            { id: 0, type: 'jackpot', grad: gold,   text: '#1C2634', icon: '🌻', label: `${p100}`, pts: p100 },
+            { id: 0, type: 'jackpot', grad: gold,   text: '#1C2634', icon: '🌻', label: `+${p100}`, pts: p100 },
             { id: 1, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${p20}`, pts: p20 },
             { id: 2, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-500`, pts: -500 },
             { id: 3, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍀', label: `+${p40}`, pts: p40 },
@@ -944,7 +909,7 @@ window.rouletteApp = {
         clearInterval(this.timerInterval);
         cancelAnimationFrame(this.rafId);
 
-        let baseScore = Math.min(this.score, 10000);
+        let baseScore = Math.min(this.score, 10000); // Límite de puntaje base
         let timeBonus = 0;
         let turnsBonus = 0;
 

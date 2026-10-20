@@ -4352,11 +4352,9 @@ if (typeof window.farmApp === 'undefined') {
                                     <img src="${icon}" onerror="this.src='assets/Fondos/logo.png'" class="w-full h-full object-contain">
                                 </div>
                                 <div>
-                                    <h4 class="font-black text-cg_navy text-sm leading-tight flex items-center gap-1">${name} ${isArsenal ? '<span class="text-[8px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded uppercase">Arsenal</span>' : '<span class="text-[8px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded uppercase">Granja</span>'}</h4>
-                                    <div class="flex gap-2 mt-1 text-[9px] font-bold text-gray-500 uppercase">
-                                        <span class="text-yellow-600" title="Fichas">🪙 ${Math.max(1, Math.floor(pHp / 10))}</span>
-                                        <span class="text-orange-500" title="Multiplicador">⭐ x${Math.max(1, Math.floor(pAtk / 10))}</span>
-                                        <span class="text-gray-500" title="Control">⚙️ Nvl ${Math.max(1, Math.floor(pDef / 10))}</span>
+                                    <h4 class="font-black text-cg_navy text-sm leading-tight flex items-center gap-1">${name}</h4>
+                                    <div class="mt-1">
+                                        <span class="text-[9px] font-black bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded uppercase tracking-widest">🎟️ ${Math.max(1, Math.floor(pHp / 10))} Turnos</span>
                                     </div>
                                 </div>
                             </div>
