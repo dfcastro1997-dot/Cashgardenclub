@@ -410,7 +410,8 @@
                     btnFreeroll.innerHTML = `REINTENTO: ${cost.toLocaleString()} 🌱`;
                     btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
                     btnFreeroll.disabled = false;
-                    btnFreeroll.onclick = () => openInstructionsModal(1, cost);
+                    // CORRECCIÓN: Se envía 0 de tarifa COP, el minijuego calculará el costo de semillas internamente.
+                    btnFreeroll.onclick = () => openInstructionsModal(1, 0);
                 } else {
                     btnFreeroll.innerHTML = "¡PARTICIPAR GRATIS!";
                     btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
@@ -743,6 +744,7 @@
         document.getElementById('plant-selection-modal').classList.remove('hidden');
         document.getElementById('plant-selection-modal').classList.add('flex');
     };
+
     window.closePlantSelectionModal = function() {
         document.getElementById('plant-selection-modal').classList.add('hidden');
         document.getElementById('plant-selection-modal').classList.remove('flex');
@@ -750,7 +752,7 @@
         window.selectedMinigame = null;
     };
 
-    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
+    // 4. Seleccionar Planta y Ejecutar Juego
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -781,25 +783,26 @@
             selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5));
         }
 
-        limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
-        limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
+        // GUARDAR ESTADO PREVIO PARA ROLLBACK EN CASO DE ERROR DE RED O DEL SERVIDOR
+        let previousEntries = window.farmApp.state.freerollEntries || 0;
+        let previousMgUses = limits.minigames[window.selectedMinigame] || 0;
+        let previousPlantUses = limits.plants[plantRefId] || 0;
+
+        // Actualizamos de manera especulativa en el cliente
+        limits.minigames[window.selectedMinigame] = previousMgUses + 1;
+        limits.plants[plantRefId] = previousPlantUses + 1;
 
         if (t_id === 1) {
-            window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
+            window.farmApp.state.freerollEntries = previousEntries + 1;
             window.farmApp.state.currentFreerollCycle = Math.floor((Date.now() - window.FREEROLL_ORIGIN) / window.FREEROLL_CYCLE_MS);
-            if (seedCost > 0) {
-                window.farmApp.state.seedsBalance -= seedCost;
-            }
+            // CORRECCIÓN IMPORTANTE: No se descuenta localmente el "seedCost".
+            // El backend (/api/tournaments/join) se encargará de validarlo y descontarlo.
+            // Si lo hacemos aquí, se causa un doble cobro.
         }
 
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
         window.farmApp.state.combatLock = true;
         window.farmApp.state.lastTick = Date.now() + 2000;
-
-        // 🚨 FORZAR GUARDADO EN BD INMEDIATO ANTES DE ENTRAR
-        if (window.farmApp.saveState) {
-            await window.farmApp.saveState();
-        }
 
         try {
             const res = await fetch('/api/tournaments/join', {
@@ -821,14 +824,32 @@
                 sessionStorage.setItem('pve_tournament_fee', fee);
                 sessionStorage.setItem('pve_tournament_instance', data.instance_id); 
                 
+                // Actualizamos el estado con el balance oficial de semillas que devuelve el servidor
+                if (data.new_game_state) {
+                    window.farmApp.state = data.new_game_state;
+                    if (window.farmApp.updateUI) window.farmApp.updateUI();
+                }
+
                 document.getElementById('plant-selection-modal').classList.add('hidden');
                 document.getElementById('plant-selection-modal').classList.remove('flex');
                 
                 loadView('Juegos/' + window.selectedMinigame);
             } else {
+                // FALLO EL SERVIDOR (ej. saldo insuficiente): REVERTIMOS EL INTENTO LOCALMENTE
+                limits.minigames[window.selectedMinigame] = previousMgUses;
+                limits.plants[plantRefId] = previousPlantUses;
+                if (t_id === 1) window.farmApp.state.freerollEntries = previousEntries;
+                window.farmApp.state.combatLock = false;
+                
                 window.showNutrientsAlert('Error de Inscripción', "Error al inscribirse en el torneo: " + (data.error || "Desconocido"), '⚠️');
             }
         } catch(e) {
+            // ERROR DE RED: REVERTIMOS EL INTENTO LOCALMENTE
+            limits.minigames[window.selectedMinigame] = previousMgUses;
+            limits.plants[plantRefId] = previousPlantUses;
+            if (t_id === 1) window.farmApp.state.freerollEntries = previousEntries;
+            window.farmApp.state.combatLock = false;
+
             window.showNutrientsAlert('Error de Conexión', 'Ocurrió un error de red al intentar unirse al torneo.', '🔌');
         }
     };
