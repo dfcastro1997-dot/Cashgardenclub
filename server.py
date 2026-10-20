@@ -322,6 +322,7 @@ def init_db():
     
     # NUEVA LÍNEA: Asegura que la columna exista en la base de datos sin borrar la tabla
     cur.execute("ALTER TABLE tournament_instances ADD COLUMN IF NOT EXISTS entry_fee_credits NUMERIC(10, 2) DEFAULT 0.00;")
+    cur.execute("ALTER TABLE tournament_instances ADD COLUMN IF NOT EXISTS prize_pool_credits NUMERIC(12, 2) DEFAULT 0.00;")
 
     
     cur.execute('''
