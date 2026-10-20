@@ -208,43 +208,39 @@
                 <span class="text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-widest bg-white px-4 py-1.5 rounded-full border border-orange-200 shadow-sm">Juegos de Habilidad</span>
             </div>
             <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mb-2">Arena de Minijuegos</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium">La física es 100% predecible. Tu destreza y la planta que elijas definirán tu puntuación.</p>
+            <p class="text-gray-500 text-xs md:text-sm font-medium">La física es idéntica para todos los jugadores. Solo los Turnos definirán tu éxito.</p>
         </div>
 
         <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
-            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Fórmula Estándar de Balance</h4>
+            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Reglas de la Arena</h4>
             <div class="grid grid-cols-2 gap-3 mb-8">
                 <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
                     <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Puntaje Base Max</span>
-                    <span class="font-black text-cg_navy text-sm md:text-base">10.000 Puntos</span>
+                    <span class="font-black text-cg_navy text-sm md:text-base">10,000 Puntos</span>
                 </div>
                 <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
                     <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Tiempo Límite</span>
                     <span class="font-black text-cg_navy text-sm md:text-base">60 Segundos</span>
                 </div>
                 <div class="bg-green-50 border border-green-200 p-4 rounded-xl shadow-sm text-center">
-                    <span class="block text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">Bono Velocidad</span>
+                    <span class="block text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">Bono Tiempo</span>
                     <span class="font-black text-green-600 text-sm md:text-base">+10 Pts x Seg</span>
                 </div>
-                <div class="bg-red-50 border border-red-200 p-4 rounded-xl shadow-sm text-center">
-                    <span class="block text-[9px] text-red-700 font-bold uppercase tracking-widest mb-1">Penalización</span>
-                    <span class="font-black text-red-600 text-sm md:text-base">Por fallos / fuego</span>
+                <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-blue-700 font-bold uppercase tracking-widest mb-1">Bono Turnos</span>
+                    <span class="font-black text-blue-600 text-sm md:text-base">+50 Pts x Turno</span>
                 </div>
             </div>
             
-            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas de tu Planta (Stats Arcade)</h4>
-            <div class="space-y-3">
-                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl flex items-start sm:items-center gap-3 shadow-sm">
-                    <span class="text-2xl drop-shadow-sm grayscale opacity-80">🪙</span>
-                    <p class="text-[11px] sm:text-xs text-yellow-900 leading-relaxed"><strong class="font-black">Fichas (HP):</strong> Determina tus "Intentos". A mayor cantidad, más semillas puedes lanzar o más fallos soportas en 60s.</p>
-                </div>
-                <div class="bg-orange-50 border border-orange-200 p-4 rounded-xl flex items-start sm:items-center gap-3 shadow-sm">
-                    <span class="text-2xl drop-shadow-sm">⭐</span>
-                    <p class="text-[11px] sm:text-xs text-orange-900 leading-relaxed"><strong class="font-black">Multiplicador (ATK):</strong> Define la "Rentabilidad". A mayor nivel, más puntos base otorga cada acierto en los minijuegos.</p>
-                </div>
-                <div class="bg-white border border-gray-200 p-4 rounded-xl flex items-start sm:items-center gap-3 shadow-sm">
-                    <span class="text-2xl drop-shadow-sm opacity-60">⚙️</span>
-                    <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed"><strong class="font-black">Control (DEF):</strong> Otorga "Margen de Tolerancia Física". Agranda las canastas ganadoras, aumenta la fricción de frenado o ralentiza los obstáculos.</p>
+            <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Tu única ventaja: Los Turnos</h4>
+            <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl shadow-sm flex items-start gap-4">
+                <span class="text-3xl drop-shadow-sm mt-1">🎟️</span>
+                <div>
+                    <h5 class="font-black text-cg_navy text-sm mb-1">Tus Intentos en la Arena</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        En la Arena, las físicas y velocidades son exactamente iguales para todos los jugadores. La única ventaja que te da una planta superior es la cantidad de <strong>Turnos (Vidas)</strong>.<br><br>
+                        Si la meta es de 10,000 puntos, una planta común te dará apenas 10 turnos (cero margen de error). Una planta premium te dará muchos más, permitiéndote fallar múltiples veces y asegurando que te lleves el bono extra.
+                    </p>
                 </div>
             </div>
         </div>
@@ -323,7 +319,7 @@
         <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
             <button onclick="closePlantSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
             <h3 class="text-xl sm:text-2xl font-black text-cg_navy tracking-tight mt-2">Selecciona tu Planta</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium mt-1">Elige 1 planta para competir en el minijuego.</p>
+            <p class="text-gray-500 text-xs md:text-sm font-medium mt-1">Elige 1 planta de tu granja o arsenal. Solo importan sus Turnos.</p>
         </div>
 
         <div class="p-4 sm:p-6 bg-gray-50 flex-1 overflow-y-auto" id="minigame-plant-list">
@@ -382,7 +378,6 @@
         const currentCycle = Math.floor(elapsed / window.FREEROLL_CYCLE_MS);
         const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
-        // Solo desbloquea el botón si la base de datos ya se sincronizó con el cliente y pasamos la validación inicial
         if (window.farmApp && window.farmApp.state && window.farmApp.state.isSynced && window.isFreerollValidated) {
             let storedCycle = window.farmApp.state.currentFreerollCycle;
             
@@ -399,7 +394,6 @@
             if (btnFreeroll) {
                 let entries = window.farmApp.state.freerollEntries || 0;
                 
-                // Remover clases de bloqueo
                 btnFreeroll.className = "tournament-action-btn flex-1 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest";
                 
                 if (entries >= 5) {
@@ -412,7 +406,6 @@
                     btnFreeroll.innerHTML = `REINTENTO: ${cost.toLocaleString()} 🌱`;
                     btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
                     btnFreeroll.disabled = false;
-                    // IMPORTANTE: Para Freeroll, la tarifa COP es siempre 0. La tarifa en semillas se pasa por aparte.
                     btnFreeroll.onclick = () => openInstructionsModal(1, 0);
                 } else {
                     btnFreeroll.innerHTML = "¡PARTICIPAR GRATIS!";
@@ -510,10 +503,8 @@
             return;
         }
         
-        // Calcular costo de semillas para inscripciones según el fee_cop original (en Freeroll se recalcula más abajo)
         let seedCost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}[fee_cop] || 0;
         
-        // --- LÓGICA DE FREEROLL CON MODAL DE CONFIRMACIÓN ---
         if (t_id === 1) {
             let entries = window.farmApp.state.freerollEntries || 0;
             
@@ -596,7 +587,6 @@
         document.getElementById('instructions-modal').classList.add('hidden');
         document.getElementById('instructions-modal').classList.remove('flex');
         
-        // --- ACTUALIZAR ESTADO VISUAL DE LÍMITES DE MINIJUEGOS ---
         if (window.pendingTournament) {
             const t_id = window.pendingTournament.id;
             const limits = window.farmApp.state.tournamentLimits?.[t_id]?.minigames || {};
@@ -642,28 +632,13 @@
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
         let arsenal = window.farmApp.state.arsenal || [];
         
-        // DISEÑO RESPONSIVO CON CARTAS MÁS GRANDES
         let html = '<div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">';
         
-        // Funciones de traducción de stats a valores de juego real (Vidas, Multiplicador, Velocidad)
+        // FUNCIÓN SIMPLE: SOLO TURNOS
         const getAttempts = (hp, mg) => {
             const h = hp || 100;
             if (mg === 'tragamonedas') return Math.max(3, Math.floor(h / 20));
             return Math.max(5, Math.floor(h / 10)); // Pachinko y Ruleta
-        };
-
-        const getMultiplier = (atk) => {
-            let a = atk || 50;
-            let val = 1 + Math.floor(a / 10) / 10;
-            return 'x' + val.toFixed(1);
-        };
-
-        const getControlLevel = (def) => {
-            let d = def || 20;
-            if (d >= 80) return 'Lenta';
-            if (d >= 50) return 'Media';
-            if (d >= 30) return 'Rápida';
-            return 'M.Rápida';
         };
 
         const plantLimits = window.farmApp.state.tournamentLimits?.[t_id]?.plants || {};
@@ -674,10 +649,7 @@
             readyPlots.forEach(p => {
                 let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
                 let actualHp = Math.floor(p.plant.hp || 100);
-                
                 let attempts = getAttempts(p.plant.hp, minigame);
-                let multiplier = getMultiplier(p.plant.atk);
-                let control = getControlLevel(p.plant.def);
                 
                 let refId = 'plot_' + p.id;
                 let uses = plantLimits[refId] || 0;
@@ -706,25 +678,10 @@
                         </div>
                         <h4 class="font-black text-xs sm:text-base text-cg_navy text-center mb-3 sm:mb-4 w-full truncate relative z-10 shrink-0 px-1">${p.plant.name}</h4>
                         
-                        <div class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 sm:p-3 mt-auto relative z-10 flex flex-col gap-1.5 sm:gap-2.5 shadow-inner">
-                            <div class="flex justify-between items-center text-[10px] sm:text-xs">
-                                <span class="text-gray-500 font-bold flex items-center gap-1">
-                                    <span class="text-sm sm:text-base grayscale opacity-70 drop-shadow-sm">🪙</span> Turnos
-                                </span>
-                                <span class="font-black text-cg_navy">${attempts}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-[10px] sm:text-xs">
-                                <span class="text-yellow-600 font-bold flex items-center gap-1">
-                                    <span class="text-sm sm:text-base drop-shadow-sm">⭐</span> Racha
-                                </span>
-                                <span class="font-black text-cg_navy">${multiplier}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-[10px] sm:text-xs">
-                                <span class="text-gray-500 font-bold flex items-center gap-1">
-                                    <span class="text-sm sm:text-base opacity-50">⚙️</span> Veloc.
-                                </span>
-                                <span class="font-black text-cg_navy">${control}</span>
-                            </div>
+                        <!-- BLOQUE SIMPLIFICADO: SOLO TURNOS -->
+                        <div class="w-full bg-blue-50/50 border border-blue-100 rounded-xl p-2 sm:p-3 mt-auto relative z-10 flex flex-col items-center justify-center gap-1 shadow-inner">
+                            <span class="text-[9px] sm:text-[10px] text-blue-500 font-bold uppercase tracking-widest">🎟️ Turnos Arena</span>
+                            <span class="font-black text-blue-800 text-sm sm:text-base">${attempts} Intentos</span>
                         </div>
                     </div>
                 `;
@@ -732,10 +689,7 @@
             
             arsenal.forEach(p => {
                 let actualHp = Math.floor(p.hp || 100);
-                
                 let attempts = getAttempts(p.hp, minigame);
-                let multiplier = getMultiplier(p.atk);
-                let control = getControlLevel(p.def);
                 
                 let refId = 'arsenal_' + p.id;
                 let uses = plantLimits[refId] || 0;
@@ -764,25 +718,10 @@
                         </div>
                         <h4 class="font-black text-xs sm:text-base text-cg_navy text-center mb-3 sm:mb-4 w-full truncate relative z-10 shrink-0 px-1">${p.name}</h4>
                         
-                        <div class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 sm:p-3 mt-auto relative z-10 flex flex-col gap-1.5 sm:gap-2.5 shadow-inner">
-                            <div class="flex justify-between items-center text-[10px] sm:text-xs">
-                                <span class="text-gray-500 font-bold flex items-center gap-1">
-                                    <span class="text-sm sm:text-base grayscale opacity-70 drop-shadow-sm">🪙</span> Turnos
-                                </span>
-                                <span class="font-black text-cg_navy">${attempts}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-[10px] sm:text-xs">
-                                <span class="text-yellow-600 font-bold flex items-center gap-1">
-                                    <span class="text-sm sm:text-base drop-shadow-sm">⭐</span> Racha
-                                </span>
-                                <span class="font-black text-cg_navy">${multiplier}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-[10px] sm:text-xs">
-                                <span class="text-gray-500 font-bold flex items-center gap-1">
-                                    <span class="text-sm sm:text-base opacity-50">⚙️</span> Veloc.
-                                </span>
-                                <span class="font-black text-cg_navy">${control}</span>
-                            </div>
+                        <!-- BLOQUE SIMPLIFICADO: SOLO TURNOS -->
+                        <div class="w-full bg-blue-50/50 border border-blue-100 rounded-xl p-2 sm:p-3 mt-auto relative z-10 flex flex-col items-center justify-center gap-1 shadow-inner">
+                            <span class="text-[9px] sm:text-[10px] text-blue-500 font-bold uppercase tracking-widest">🎟️ Turnos Arena</span>
+                            <span class="font-black text-blue-800 text-sm sm:text-base">${attempts} Intentos</span>
                         </div>
                     </div>
                 `;
@@ -829,19 +768,16 @@
             selectedPlant = window.farmApp.state.arsenal.find(p => p.id === idTag);
         }
 
-        // --- VALIDACIONES DE SEGURIDAD PRE-VUELO ---
         if (!selectedPlant || selectedPlant.hp <= 1) {
             window.showNutrientsAlert('Planta Agotada', 'Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.', '🏥');
             return;
         }
 
-        // GUARDAR ESTADO PREVIO PARA ROLLBACK INTACTO
         let originalHp = selectedPlant.hp;
         let previousEntries = window.farmApp.state.freerollEntries || 0;
         let previousMgUses = limits.minigames[window.selectedMinigame] || 0;
         let previousPlantUses = limits.plants[plantRefId] || 0;
 
-        // APLICAR ESPECULATIVAMENTE EN EL CLIENTE
         selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5));
         limits.minigames[window.selectedMinigame] = previousMgUses + 1;
         limits.plants[plantRefId] = previousPlantUses + 1;
@@ -855,7 +791,6 @@
         window.farmApp.state.combatLock = true;
         window.farmApp.state.lastTick = Date.now() + 2000;
 
-        // Mostrar Loading Visual en el modal para prevenir doble clics
         document.getElementById('plant-selection-modal').classList.add('opacity-50', 'pointer-events-none');
 
         try {
@@ -873,16 +808,13 @@
             });
             const data = await res.json();
             
-            // Revertir efecto visual de loading
             document.getElementById('plant-selection-modal').classList.remove('opacity-50', 'pointer-events-none');
 
             if (res.ok) {
-                // INSCRIPCIÓN EXITOSA: Todo el backend procesó el pago de semillas/fiat
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
                 sessionStorage.setItem('pve_tournament_instance', data.instance_id); 
                 
-                // Asegurar sincronía perfecta si el backend devolvió el estado final
                 if (data.new_game_state) {
                     window.farmApp.state = data.new_game_state;
                     if (window.farmApp.updateUI) window.farmApp.updateUI();
@@ -893,7 +825,6 @@
                 
                 loadView('Juegos/' + window.selectedMinigame);
             } else {
-                // FALLO EL SERVIDOR (ej. saldo insuficiente): REVERTIMOS EL ESTADO AL 100%
                 selectedPlant.hp = originalHp;
                 limits.minigames[window.selectedMinigame] = previousMgUses;
                 limits.plants[plantRefId] = previousPlantUses;
@@ -903,7 +834,6 @@
                 window.showNutrientsAlert('Error de Inscripción', (data.error || "Fallo del servidor"), '⚠️');
             }
         } catch(e) {
-            // ERROR DE RED: REVERTIMOS EL ESTADO AL 100%
             document.getElementById('plant-selection-modal').classList.remove('opacity-50', 'pointer-events-none');
             
             selectedPlant.hp = originalHp;
