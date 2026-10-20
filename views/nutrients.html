@@ -760,9 +760,13 @@
         limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
         limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
 
+        // --- nutrients.html (Dentro de selectPlantForMinigame) ---
         if (t_id === 1) {
             window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
         }
+
+        // Guarda la memoria local inmediatamente
+        window.farmApp.saveState();
 
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
         window.farmApp.state.combatLock = true;

@@ -1507,11 +1507,14 @@
                                 if ((state.lastTick || 0) > (window.farmApp.state.lastTick || 0)) {
                                     window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
                                     window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
+                                    
+                                    // 🚨 REGISTRO DE FREEROLL Y LÍMITES RECUPERADOS DE LA BD:
                                     window.farmApp.state.freerollEntries = state.freerollEntries ?? window.farmApp.state.freerollEntries;
                                     window.farmApp.state.currentFreerollCycle = state.currentFreerollCycle ?? window.farmApp.state.currentFreerollCycle;
                                     window.farmApp.state.tournamentLimits = state.tournamentLimits ?? window.farmApp.state.tournamentLimits;
                                     window.farmApp.state.unlockedAvatars = state.unlockedAvatars ?? window.farmApp.state.unlockedAvatars;
                                     window.farmApp.state.arsenal = state.arsenal ?? window.farmApp.state.arsenal;
+                                    
                                     window.farmApp.state.autoWaterEndTime = state.autoWaterEndTime ?? window.farmApp.state.autoWaterEndTime;
                                     if (state.plots) {
                                         if (state.plots.length === 6) {

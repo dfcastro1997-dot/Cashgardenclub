@@ -799,6 +799,7 @@ def save_state():
             db_tick = db_state.get('lastTick', 0)
             in_tick = incoming_state.get('lastTick', 0)
             
+            # --- server.py (Dentro de save_state) ---
             if db_tick > in_tick:
                 incoming_state['seedsBalance'] = db_state.get('seedsBalance', 0)
                 incoming_state['lastTick'] = db_tick
@@ -808,6 +809,8 @@ def save_state():
                 if 'pending_gift' in db_state: incoming_state['pending_gift'] = db_state['pending_gift']
                 if 'profilePic' in db_state: incoming_state['profilePic'] = db_state['profilePic']
                 if 'unlockedAvatars' in db_state: incoming_state['unlockedAvatars'] = db_state['unlockedAvatars']
+                
+                # 🚨 PRESERVAR INTENTOS Y LÍMITES EN LA BASE DE DATOS:
                 if 'freerollEntries' in db_state: incoming_state['freerollEntries'] = db_state['freerollEntries']
                 if 'currentFreerollCycle' in db_state: incoming_state['currentFreerollCycle'] = db_state['currentFreerollCycle']
                 if 'tournamentLimits' in db_state: incoming_state['tournamentLimits'] = db_state['tournamentLimits']
