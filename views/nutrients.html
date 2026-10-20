@@ -766,19 +766,21 @@
         limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
         limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
 
-        // 🚨 CORRECCIÓN CRÍTICA: Descontar semillas e incrementar historial ANTES del POST al servidor
+        // 🚨 CORRECCIÓN CRÍTICA: Aumentar historial local
         if (t_id === 1) {
             window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
+            // Descontamos visualmente, pero el descuento real lo hace el servidor en join
             if (seedCost > 0) {
                 window.farmApp.state.seedsBalance -= seedCost;
             }
         }
 
-        // Guarda la memoria local inmediatamente con los nuevos valores
-        window.farmApp.saveState();
+        // 🚨 ELIMINAMOS window.farmApp.saveState() para evitar que choque 
+        // con el guardado que hace el servidor en /api/tournaments/join.
 
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
         window.farmApp.state.combatLock = true;
+        window.farmApp.state.lastTick = Date.now() + 2000; // Forzar timestamp futuro
 
         try {
             const res = await fetch('/api/tournaments/join', {
@@ -788,8 +790,9 @@
                     username: username,
                     session_token: token,
                     fee: fee,
+                    seed_cost: seedCost, // <- PASAR EL COSTO
                     tournament_id: t_id,
-                    client_state: window.farmApp.state // SE ENVÍA EL ESTADO COMPLETO CON BALANCE YA DESCONTADO
+                    client_state: window.farmApp.state 
                 })
             });
             const data = await res.json();

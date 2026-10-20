@@ -796,6 +796,28 @@ def save_state():
                 incoming_state['arsenal'] = sanitized_arsenal
             # 🚨 FIN PARCHE DE SEGURIDAD 🚨
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # Asegurar que el cliente no borre propiedades de los torneos si no las mapeó en su inicio
+            if 'freerollEntries' in db_state and 'freerollEntries' not in incoming_state:
+                incoming_state['freerollEntries'] = db_state['freerollEntries']
+            if 'currentFreerollCycle' in db_state and 'currentFreerollCycle' not in incoming_state:
+                incoming_state['currentFreerollCycle'] = db_state['currentFreerollCycle']
+            if 'tournamentLimits' in db_state and 'tournamentLimits' not in incoming_state:
+                incoming_state['tournamentLimits'] = db_state['tournamentLimits']
+
             db_tick = db_state.get('lastTick', 0)
             in_tick = incoming_state.get('lastTick', 0)
             
@@ -1262,7 +1284,11 @@ def join_tournament():
             end_time = 0
 
         # Mapeo de costos en semillas
-        seed_cost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 0)
+        client_seed_cost = data.get('seed_cost')
+        if client_seed_cost is not None:
+            seed_cost = int(client_seed_cost)
+        else:
+            seed_cost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 0)
         
         # Validar JSON y evitar errores de NoneType
         state_str = user['game_state'] if user['game_state'] else '{}'

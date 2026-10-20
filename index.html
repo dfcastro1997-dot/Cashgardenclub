@@ -1504,6 +1504,17 @@
                             if (seedsEl) seedsEl.innerText = (state.seedsBalance || 0).toLocaleString() + " 🌱";
                             
                             if (window.farmApp && window.farmApp.state) {
+                                // 🚨 Restaurar variables que farm.html pudo borrar al inicializar
+                                if (window.farmApp.state.freerollEntries === undefined && state.freerollEntries !== undefined) {
+                                    window.farmApp.state.freerollEntries = state.freerollEntries;
+                                }
+                                if (window.farmApp.state.currentFreerollCycle === undefined && state.currentFreerollCycle !== undefined) {
+                                    window.farmApp.state.currentFreerollCycle = state.currentFreerollCycle;
+                                }
+                                if (window.farmApp.state.tournamentLimits === undefined && state.tournamentLimits !== undefined) {
+                                    window.farmApp.state.tournamentLimits = state.tournamentLimits;
+                                }
+
                                 if ((state.lastTick || 0) > (window.farmApp.state.lastTick || 0)) {
                                     window.farmApp.state.seedsBalance = state.seedsBalance ?? window.farmApp.state.seedsBalance;
                                     window.farmApp.state.practiceTokens = state.practiceTokens ?? window.farmApp.state.practiceTokens;
