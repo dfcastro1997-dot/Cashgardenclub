@@ -1320,6 +1320,15 @@ def submit_tournament_score():
             WHERE instance_id = %s AND user_id = %s
         """, (final_score, played_game, int(instance_id), user['id']))
         conn.commit()
+        return jsonify({"message": "Puntaje guardado exitosamente"}), 200
+        
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
+        
+    finally:
+        cur.close()
+        conn.close()
 
 @app.route('/api/tournaments/global_leaderboard/<int:t_id>', methods=['GET'])
 def global_leaderboard(t_id):
