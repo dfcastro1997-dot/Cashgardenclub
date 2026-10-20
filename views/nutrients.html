@@ -62,8 +62,8 @@
                 <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
-                <button id="btn-freeroll-entry" onclick="openInstructionsModal(1, 0)" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
-                    ¡Participar!
+                <button id="btn-freeroll-entry" disabled class="tournament-action-btn flex-1 bg-gray-300 text-gray-500 font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest cursor-not-allowed">
+                    <span class="animate-pulse">⏳ Validando...</span>
                 </button>
             </div>
         </div>
@@ -367,34 +367,42 @@
         const currentCycle = Math.floor(elapsed / window.FREEROLL_CYCLE_MS);
         const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
-        // --- RESETEAR ENTRADAS SI CAMBIA EL CICLO Y ACTUALIZAR TEXTO DEL BOTÓN ---
-        // 🚨 CORRECCIÓN: Solo verificar ciclos si la granja ya terminó de sincronizar con la Base de Datos
+        // Solo desbloquea el botón si la base de datos ya se sincronizó con el cliente
         if (window.farmApp && window.farmApp.state && window.farmApp.state.isSynced) {
             let storedCycle = window.farmApp.state.currentFreerollCycle;
             
             if (storedCycle !== undefined && storedCycle !== currentCycle) {
                 window.farmApp.state.currentFreerollCycle = currentCycle;
-                window.farmApp.state.freerollEntries = 0; // Reinicia las entradas
-                window.farmApp.state.tournamentLimits = {}; // REINICIA LÍMITES DE MINIJUEGOS Y PLANTAS
-                window.farmApp.saveState();
+                window.farmApp.state.freerollEntries = 0;
+                window.farmApp.state.tournamentLimits = {};
+                if(window.farmApp.saveState) window.farmApp.saveState();
             } else if (storedCycle === undefined) {
-                // Si es un usuario antiguo que no tenía ciclo, se lo asignamos sin borrarle las entradas
                 window.farmApp.state.currentFreerollCycle = currentCycle;
             }
             
             const btnFreeroll = document.getElementById('btn-freeroll-entry');
             if (btnFreeroll) {
                 let entries = window.farmApp.state.freerollEntries || 0;
+                
+                // Remover clases de bloqueo
+                btnFreeroll.className = "tournament-action-btn flex-1 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest";
+                
                 if (entries >= 5) {
                     btnFreeroll.innerHTML = "LÍMITE ALCANZADO";
-                    btnFreeroll.classList.add('opacity-50', 'cursor-not-allowed');
+                    btnFreeroll.classList.add('bg-gray-400', 'cursor-not-allowed', 'opacity-80');
+                    btnFreeroll.disabled = true;
+                    btnFreeroll.onclick = null;
                 } else if (entries > 0) {
                     let cost = Math.floor(5000 * Math.pow(1.5, entries - 1));
                     btnFreeroll.innerHTML = `REINTENTO: ${cost.toLocaleString()} 🌱`;
-                    btnFreeroll.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
+                    btnFreeroll.disabled = false;
+                    btnFreeroll.onclick = () => openInstructionsModal(1, cost);
                 } else {
                     btnFreeroll.innerHTML = "¡PARTICIPAR GRATIS!";
-                    btnFreeroll.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
+                    btnFreeroll.disabled = false;
+                    btnFreeroll.onclick = () => openInstructionsModal(1, 0);
                 }
             }
         }
@@ -729,7 +737,6 @@
         window.selectedMinigame = null;
     };
 
-    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -745,7 +752,6 @@
         let limits = window.farmApp.state.tournamentLimits[t_id];
         let plantRefId = type + '_' + idTag; 
         
-        // --- DESGASTE DE LA PLANTA (PIERDE 50% DE HP) ---
         let selectedPlant;
         if (type === 'plot') {
             selectedPlant = window.farmApp.state.plots.find(p => p.id == idTag)?.plant;
@@ -754,33 +760,32 @@
         }
 
         if (selectedPlant) {
-            // Validar que la planta no esté al borde de la muerte (mínimo 2 HP para poder perder la mitad)
             if (selectedPlant.hp <= 1) {
                 window.showNutrientsAlert('Planta Agotada', 'Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.', '🏥');
                 return;
             }
-            selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5)); // Resta el 50%
+            selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5));
         }
 
-        // --- REGISTRAR EL USO Y DESGASTE ANTES DE ENVIAR A LA BASE DE DATOS ---
         limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
         limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
 
-        // 🚨 CORRECCIÓN CRÍTICA: Aumentar historial local
         if (t_id === 1) {
             window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
-            // Descontamos visualmente, pero el descuento real lo hace el servidor en join
+            window.farmApp.state.currentFreerollCycle = Math.floor((Date.now() - window.FREEROLL_ORIGIN) / window.FREEROLL_CYCLE_MS);
             if (seedCost > 0) {
                 window.farmApp.state.seedsBalance -= seedCost;
             }
         }
 
-        // 🚨 ELIMINAMOS window.farmApp.saveState() para evitar que choque 
-        // con el guardado que hace el servidor en /api/tournaments/join.
-
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
         window.farmApp.state.combatLock = true;
-        window.farmApp.state.lastTick = Date.now() + 2000; // Forzar timestamp futuro
+        window.farmApp.state.lastTick = Date.now() + 2000;
+
+        // 🚨 FORZAR GUARDADO EN BD INMEDIATO ANTES DE ENTRAR
+        if (window.farmApp.saveState) {
+            await window.farmApp.saveState();
+        }
 
         try {
             const res = await fetch('/api/tournaments/join', {
@@ -790,7 +795,7 @@
                     username: username,
                     session_token: token,
                     fee: fee,
-                    seed_cost: seedCost, // <- PASAR EL COSTO
+                    seed_cost: seedCost,
                     tournament_id: t_id,
                     client_state: window.farmApp.state 
                 })
@@ -798,8 +803,6 @@
             const data = await res.json();
             
             if (res.ok) {
-                // Ya no necesitamos descontar las semillas aquí, se descontaron antes de enviar el state
-                
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
                 sessionStorage.setItem('pve_tournament_instance', data.instance_id); 
