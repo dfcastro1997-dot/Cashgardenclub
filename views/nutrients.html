@@ -62,7 +62,7 @@
                 <button onclick="viewLeaderboard(1)" class="bg-white hover:bg-green-50 text-green-600 border border-green-200 px-3 py-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center text-lg" title="Ver Tabla de Posiciones">
                     📊
                 </button>
-                <button onclick="openInstructionsModal(1, 0)" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
+                <button id="btn-freeroll-entry" onclick="openInstructionsModal(1, 0)" class="tournament-action-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition-all shadow-md uppercase tracking-widest active:scale-95">
                     ¡Participar!
                 </button>
             </div>
@@ -358,12 +358,28 @@
         const currentCycle = Math.floor(elapsed / window.FREEROLL_CYCLE_MS);
         const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
-        // --- RESETEAR ENTRADAS SI CAMBIA EL CICLO ---
+        // --- RESETEAR ENTRADAS SI CAMBIA EL CICLO Y ACTUALIZAR TEXTO DEL BOTÓN ---
         if (window.farmApp && window.farmApp.state) {
             if (window.farmApp.state.currentFreerollCycle !== currentCycle) {
                 window.farmApp.state.currentFreerollCycle = currentCycle;
                 window.farmApp.state.freerollEntries = 0; // Reinicia las entradas
                 window.farmApp.saveState();
+            }
+            
+            const btnFreeroll = document.getElementById('btn-freeroll-entry');
+            if (btnFreeroll) {
+                let entries = window.farmApp.state.freerollEntries || 0;
+                if (entries >= 5) {
+                    btnFreeroll.innerHTML = "LÍMITE ALCANZADO";
+                    btnFreeroll.classList.add('opacity-50', 'cursor-not-allowed');
+                } else if (entries > 0) {
+                    let cost = Math.floor(5000 * Math.pow(1.5, entries - 1));
+                    btnFreeroll.innerHTML = `REINTENTO: ${cost.toLocaleString()} 🌱`;
+                    btnFreeroll.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btnFreeroll.innerHTML = "¡PARTICIPAR GRATIS!";
+                    btnFreeroll.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
             }
         }
 
@@ -433,25 +449,59 @@
         
         let seedCost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}[fee_cop] || 0;
         
-        // --- LÓGICA DE FREEROLL (LIGA NOVATO) Y RECOMPRA ---
+        // --- LÓGICA DE FREEROLL CON MODAL DE CONFIRMACIÓN ---
         if (t_id === 1) {
-            if (!window.farmApp.state.freerollEntries) window.farmApp.state.freerollEntries = 0;
+            let entries = window.farmApp.state.freerollEntries || 0;
             
-            if (window.farmApp.state.freerollEntries >= 5) {
+            if (entries >= 5) {
                 alert('Has alcanzado el límite máximo de 5 participaciones en este ciclo del Freeroll.');
                 return;
             }
             
-            if (window.farmApp.state.freerollEntries > 0) {
-                // Costo base 5000, incrementa 50% cada vez (5000, 7500, 11250, 16875)
-                seedCost = Math.floor(5000 * Math.pow(1.5, window.farmApp.state.freerollEntries - 1));
+            if (entries > 0) {
+                seedCost = Math.floor(5000 * Math.pow(1.5, entries - 1));
             } else {
-                seedCost = 0; // Primera entrada gratis
+                seedCost = 0; 
             }
+
+            let confirmModal = document.getElementById('freeroll-confirm-modal');
+            if (!confirmModal) {
+                confirmModal = document.createElement('div');
+                confirmModal.id = 'freeroll-confirm-modal';
+                confirmModal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in';
+                document.body.appendChild(confirmModal);
+            }
+
+            let msg = entries === 0 
+                ? `Esta es tu <strong>primera entrada gratuita</strong> de este ciclo.<br>¡Aprovéchala al máximo!` 
+                : `Esta es tu entrada número <strong>${entries + 1} de 5</strong>.<br>Costo de recompra: <strong class="text-red-500">${seedCost.toLocaleString()} 🌱</strong>.`;
+
+            confirmModal.innerHTML = `
+                <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="document.getElementById('freeroll-confirm-modal').classList.add('hidden')"></div>
+                <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-green-200 overflow-hidden text-center p-6">
+                    <div class="text-5xl mb-4 drop-shadow-md">🎟️</div>
+                    <h3 class="text-xl font-black text-cg_navy mb-2">Entrada al Freeroll</h3>
+                    <p class="text-sm text-gray-600 mb-6 font-medium leading-relaxed">${msg}</p>
+                    
+                    <div class="flex justify-center gap-3">
+                        <button onclick="document.getElementById('freeroll-confirm-modal').classList.add('hidden')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                        <button onclick="window.proceedToInstructions(${t_id}, ${fee_cop}, ${seedCost})" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Confirmar</button>
+                    </div>
+                </div>
+            `;
+            confirmModal.classList.remove('hidden');
+            return;
         }
         
+        window.proceedToInstructions(t_id, fee_cop, seedCost);
+    };
+
+    window.proceedToInstructions = function(t_id, fee_cop, seedCost) {
+        const confirmModal = document.getElementById('freeroll-confirm-modal');
+        if (confirmModal) confirmModal.classList.add('hidden');
+
         if (window.farmApp.state.seedsBalance < seedCost) {
-            alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para tu entrada número ${window.farmApp.state.freerollEntries + 1} al Freeroll.`);
+            alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para participar.`);
             return;
         }
 
@@ -468,6 +518,7 @@
         document.getElementById('instructions-modal').classList.remove('hidden');
         document.getElementById('instructions-modal').classList.add('flex');
     };
+
 
     window.closeInstructionsModal = function() {
         document.getElementById('instructions-modal').classList.add('hidden');
