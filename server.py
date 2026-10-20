@@ -358,6 +358,21 @@ def init_db():
         cur.execute("INSERT INTO tournament_config (id, config_json) VALUES (1, '{}')")
 
     conn.commit()
+    
+    # --- INICIO PARCHE: Elimina la restricción NOT NULL de las columnas antiguas ---
+    try:
+        cur.execute("ALTER TABLE tournament_instances ALTER COLUMN entry_fee_cop DROP NOT NULL;")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        
+    try:
+        cur.execute("ALTER TABLE tournament_instances ALTER COLUMN prize_pool_cop DROP NOT NULL;")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+    # --- FIN PARCHE ---
+
     cur.close()
     conn.close()
 
