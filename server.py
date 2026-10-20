@@ -808,6 +808,9 @@ def save_state():
                 if 'pending_gift' in db_state: incoming_state['pending_gift'] = db_state['pending_gift']
                 if 'profilePic' in db_state: incoming_state['profilePic'] = db_state['profilePic']
                 if 'unlockedAvatars' in db_state: incoming_state['unlockedAvatars'] = db_state['unlockedAvatars']
+                if 'freerollEntries' in db_state: incoming_state['freerollEntries'] = db_state['freerollEntries']
+                if 'currentFreerollCycle' in db_state: incoming_state['currentFreerollCycle'] = db_state['currentFreerollCycle']
+                if 'tournamentLimits' in db_state: incoming_state['tournamentLimits'] = db_state['tournamentLimits']
 
             # CORRECCIÓN: Respetar el gasto de semillas de la tienda y granja.
             # Solo sobrescribimos el balance con el de la BD si el cliente solicita omitirlo (skipSeedsSave) tras PvP o Donaciones.
