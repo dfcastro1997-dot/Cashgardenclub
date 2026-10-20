@@ -363,6 +363,7 @@
             if (window.farmApp.state.currentFreerollCycle !== currentCycle) {
                 window.farmApp.state.currentFreerollCycle = currentCycle;
                 window.farmApp.state.freerollEntries = 0; // Reinicia las entradas
+                window.farmApp.state.tournamentLimits = {}; // REINICIA LÍMITES DE MINIJUEGOS Y PLANTAS
                 window.farmApp.saveState();
             }
             
@@ -542,9 +543,20 @@
     };
 
     window.openPlantSelectionModal = function(minigame) {
-        window.selectedMinigame = minigame; 
-        
         if (!window.pendingTournament) return;
+        
+        const t_id = window.pendingTournament.id;
+        
+        // --- VALIDAR LÍMITE DE MINIJUEGO (MAX 2) ---
+        if (!window.farmApp.state.tournamentLimits) window.farmApp.state.tournamentLimits = {};
+        if (!window.farmApp.state.tournamentLimits[t_id]) window.farmApp.state.tournamentLimits[t_id] = { minigames: {}, plants: {} };
+        
+        if ((window.farmApp.state.tournamentLimits[t_id].minigames[minigame] || 0) >= 2) {
+            alert('Has alcanzado el límite máximo de 2 usos para este minijuego en este torneo.');
+            return;
+        }
+
+        window.selectedMinigame = minigame; 
         
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
         let arsenal = window.farmApp.state.arsenal || [];
@@ -626,6 +638,7 @@
     };
 
     // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
+    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -634,6 +647,18 @@
         const t_id = window.pendingTournament.id;
         const fee = window.pendingTournament.fee;
         const seedCost = window.pendingTournament.seedCost || 0;
+
+        // --- VALIDAR LÍMITES DE LA PLANTA (MAX 2) ---
+        if (!window.farmApp.state.tournamentLimits) window.farmApp.state.tournamentLimits = {};
+        if (!window.farmApp.state.tournamentLimits[t_id]) window.farmApp.state.tournamentLimits[t_id] = { minigames: {}, plants: {} };
+        
+        let limits = window.farmApp.state.tournamentLimits[t_id];
+        let plantRefId = type + '_' + idTag; // Identificador único de la planta
+        
+        if ((limits.plants[plantRefId] || 0) >= 2) {
+            alert('Has alcanzado el límite máximo de 2 usos para esta planta en este torneo.');
+            return;
+        }
 
         // --- DESGASTE DE LA PLANTA (PIERDE 50% DE HP) ---
         let selectedPlant;
@@ -673,6 +698,10 @@
                         window.farmApp.state.seedsBalance -= seedCost;
                     }
                 }
+
+                // --- REGISTRAR EL USO DEL MINIJUEGO Y LA PLANTA ---
+                limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
+                limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
 
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
