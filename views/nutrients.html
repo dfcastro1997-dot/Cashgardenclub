@@ -358,6 +358,15 @@
         const currentCycle = Math.floor(elapsed / window.FREEROLL_CYCLE_MS);
         const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
+        // --- RESETEAR ENTRADAS SI CAMBIA EL CICLO ---
+        if (window.farmApp && window.farmApp.state) {
+            if (window.farmApp.state.currentFreerollCycle !== currentCycle) {
+                window.farmApp.state.currentFreerollCycle = currentCycle;
+                window.farmApp.state.freerollEntries = 0; // Reinicia las entradas
+                window.farmApp.saveState();
+            }
+        }
+
         let diff = deadline - now;
         const timerEl = document.getElementById('freeroll-timer');
         if(!timerEl) return;
@@ -416,7 +425,6 @@
     // FLUJO DE MODALES
     // ===============================================
 
-    // 1. Abrir Modal de Instrucciones (Primer Paso)
     window.openInstructionsModal = async function(t_id, fee_cop) {
         if (!window.farmApp || !window.farmApp.state) {
             alert('Aviso: Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón.');
@@ -425,8 +433,25 @@
         
         let seedCost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}[fee_cop] || 0;
         
+        // --- LÓGICA DE FREEROLL (LIGA NOVATO) Y RECOMPRA ---
+        if (t_id === 1) {
+            if (!window.farmApp.state.freerollEntries) window.farmApp.state.freerollEntries = 0;
+            
+            if (window.farmApp.state.freerollEntries >= 5) {
+                alert('Has alcanzado el límite máximo de 5 participaciones en este ciclo del Freeroll.');
+                return;
+            }
+            
+            if (window.farmApp.state.freerollEntries > 0) {
+                // Costo base 5000, incrementa 50% cada vez (5000, 7500, 11250, 16875)
+                seedCost = Math.floor(5000 * Math.pow(1.5, window.farmApp.state.freerollEntries - 1));
+            } else {
+                seedCost = 0; // Primera entrada gratis
+            }
+        }
+        
         if (window.farmApp.state.seedsBalance < seedCost) {
-            alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para entrar a este torneo.`);
+            alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para tu entrada número ${window.farmApp.state.freerollEntries + 1} al Freeroll.`);
             return;
         }
 
@@ -438,7 +463,7 @@
             return;
         }
 
-        window.pendingTournament = { id: t_id, fee: fee_cop };
+        window.pendingTournament = { id: t_id, fee: fee_cop, seedCost: seedCost };
         
         document.getElementById('instructions-modal').classList.remove('hidden');
         document.getElementById('instructions-modal').classList.add('flex');
@@ -465,7 +490,6 @@
         window.pendingTournament = null;
     };
 
-    // 3. Abrir Modal de Selección de Planta (Paso 3)
     window.openPlantSelectionModal = function(minigame) {
         window.selectedMinigame = minigame; 
         
@@ -498,12 +522,14 @@
             readyPlots.forEach(p => {
                 let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
                 let attempts = getAttempts(p.plant.hp);
+                let actualHp = Math.floor(p.plant.hp || 100);
                 html += `
                     <div onclick="window.selectPlantForMinigame('plot', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
                         <span class="block text-[10px] font-black text-green-600 mb-2 uppercase tracking-widest bg-green-50 rounded-md py-1">Terreno ${p.id}</span>
                         <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.plant.name}</h4>
                         <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
+                            <span title="Salud Actual (HP)">💖 ${actualHp}</span>
                             <span title="${getLabel()}">${getIcon()} ${attempts}</span>
                             <span title="Multiplicador (ATK)">⭐ ${p.plant.atk || 50}</span>
                             <span title="Control (DEF)">⚙️ ${p.plant.def || 20}</span>
@@ -514,12 +540,14 @@
             
             arsenal.forEach(p => {
                 let attempts = getAttempts(p.hp);
+                let actualHp = Math.floor(p.hp || 100);
                 html += `
                     <div onclick="window.selectPlantForMinigame('arsenal', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
                         <span class="block text-[10px] font-black text-red-600 mb-2 uppercase tracking-widest bg-red-50 rounded-md py-1">Arsenal</span>
                         <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.name}</h4>
                         <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
+                            <span title="Salud Actual (HP)">💖 ${actualHp}</span>
                             <span title="${getLabel()}">${getIcon()} ${attempts}</span>
                             <span title="Multiplicador (ATK)">⭐ ${p.atk || 50}</span>
                             <span title="Control (DEF)">⚙️ ${p.def || 20}</span>
@@ -532,7 +560,6 @@
         html += '</div>';
         document.getElementById('minigame-plant-list').innerHTML = html;
         
-        // Cerrar modal de minijuegos y abrir modal de plantas
         document.getElementById('minigame-selection-modal').classList.add('hidden');
         document.getElementById('minigame-selection-modal').classList.remove('flex');
         
@@ -555,9 +582,26 @@
         const token = sessionStorage.getItem('session_token');
         const t_id = window.pendingTournament.id;
         const fee = window.pendingTournament.fee;
+        const seedCost = window.pendingTournament.seedCost || 0;
+
+        // --- DESGASTE DE LA PLANTA (PIERDE 50% DE HP) ---
+        let selectedPlant;
+        if (type === 'plot') {
+            selectedPlant = window.farmApp.state.plots.find(p => p.id == idTag)?.plant;
+        } else {
+            selectedPlant = window.farmApp.state.arsenal.find(p => p.id === idTag);
+        }
+
+        if (selectedPlant) {
+            // Validar que la planta no esté al borde de la muerte (mínimo 2 HP para poder perder la mitad)
+            if (selectedPlant.hp <= 1) {
+                alert("Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.");
+                return;
+            }
+            selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5)); // Resta el 50%
+        }
 
         try {
-            // Unirse al torneo en el servidor para obtener el instance_id
             const res = await fetch('/api/tournaments/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -571,19 +615,25 @@
             const data = await res.json();
             
             if (res.ok) {
+                // --- APLICAR COSTOS DE RECOMPRA Y CONTEO FREEROLL ---
+                if (t_id === 1) {
+                    window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
+                    if (seedCost > 0) {
+                        window.farmApp.state.seedsBalance -= seedCost;
+                    }
+                }
+
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
-                sessionStorage.setItem('pve_tournament_instance', data.instance_id); // Guardar el ID de instancia real
+                sessionStorage.setItem('pve_tournament_instance', data.instance_id); 
                 
                 window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
                 window.farmApp.state.combatLock = true;
                 window.farmApp.saveState();
                 
-                // Cierra este modal
                 document.getElementById('plant-selection-modal').classList.add('hidden');
                 document.getElementById('plant-selection-modal').classList.remove('flex');
                 
-                // Redirige a los minijuegos en la subcarpeta views/Juegos/
                 loadView('Juegos/' + window.selectedMinigame);
             } else {
                 alert("Error al inscribirse en el torneo: " + (data.error || "Desconocido"));
