@@ -518,7 +518,33 @@ window.rouletteApp = {
         }, 3000); // 3 segundos de splash
     },
 
-    // Muestra la pantalla de análisis con las barras de progreso
+
+
+    // Invocado por el botón "¡A Girar!"
+    startGame() {
+        const intro = document.getElementById('rul-intro-screen');
+        const game = document.getElementById('rul-game-screen');
+        if(!intro || !game) return;
+
+        intro.classList.add('hidden');
+        game.classList.remove('hidden');
+
+        const actionBtn = document.getElementById('rul-action-btn');
+        actionBtn.onclick = () => this.handleInput();
+        window.hzUi.bindKey('rul-game-screen', 'rul-action-btn');
+
+        this.isPlaying = true;
+        this.startTimer();
+
+        if (this.rafId) cancelAnimationFrame(this.rafId);
+        this.loop();
+    },
+
+    resize() {
+        this.canvas.width = this.size;
+        this.canvas.height = this.size;
+    },
+
     showIntroScreen(plantName, plantImg) {
         const screen = document.getElementById('rul-intro-screen');
         if (!screen) return;
@@ -528,10 +554,14 @@ window.rouletteApp = {
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // Cálculos
+        // Cálculos EQUILIBRADOS
         this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
         const mult = 1 + (this.atk / 100);
-        const jackpotPoints = Math.floor(1000 * mult);
+        
+        // El Jackpot debe estar fraccionado por la cantidad de giros para que la suma perfecta de 10,000
+        const baseJackpot = Math.floor(10000 / this.spinsTotal);
+        const jackpotPoints = Math.floor(baseJackpot * mult);
+        
         this.deceleration = 0.05 + (this.def / 100) * 0.1;
 
         // Calcular porcentaje visual
@@ -559,53 +589,32 @@ window.rouletteApp = {
         this.spinsLeft = this.spinsTotal;
         document.getElementById('rul-ammo').innerText = this.spinsLeft;
 
-        this.buildWheel(mult);
+        this.buildWheel(mult, baseJackpot);
         this.renderPaytable();
         this.draw();
-        // Redibujar cuando cargue la fuente de los números
         if (document.fonts && document.fonts.load) document.fonts.load("20px 'Lilita One'").then(() => this.draw()).catch(() => {});
     },
 
-    // Invocado por el botón "¡A Girar!"
-    startGame() {
-        const intro = document.getElementById('rul-intro-screen');
-        const game = document.getElementById('rul-game-screen');
-        if(!intro || !game) return;
-
-        intro.classList.add('hidden');
-        game.classList.remove('hidden');
-
-        const actionBtn = document.getElementById('rul-action-btn');
-        actionBtn.onclick = () => this.handleInput();
-        window.hzUi.bindKey('rul-game-screen', 'rul-action-btn');
-
-        this.isPlaying = true;
-        this.startTimer();
-
-        if (this.rafId) cancelAnimationFrame(this.rafId);
-        this.loop();
-    },
-
-    resize() {
-        this.canvas.width = this.size;
-        this.canvas.height = this.size;
-    },
-
-    buildWheel(mult) {
-        // 8 secciones (45 grados cada una). Mismos puntos de siempre, ahora con look de huerto:
-        // gran cosecha = girasol dorado, cosecha = hojas verdes, plaga = morado.
+    buildWheel(mult, baseJackpot) {
         const gold = ['#fff2a6', '#ED9925'];
         const leafA = ['#9be86f', '#3f9a3c'];
         const leafB = ['#7fd35c', '#2c7a33'];
         const plague = ['#c45a92', '#5e1f45'];
+        
+        // Proporciones balanceadas relativas al jackpot base para asegurar igualdad
+        const p100 = Math.floor(baseJackpot * mult);
+        const p40 = Math.floor((baseJackpot * 0.4) * mult);
+        const p20 = Math.floor((baseJackpot * 0.2) * mult);
+        const p10 = Math.floor((baseJackpot * 0.1) * mult);
+
         this.slices = [
-            { id: 0, type: 'jackpot', grad: gold,   text: '#1C2634', icon: '🌻', label: `${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
-            { id: 1, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
+            { id: 0, type: 'jackpot', grad: gold,   text: '#1C2634', icon: '🌻', label: `${p100}`, pts: p100 },
+            { id: 1, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${p20}`, pts: p20 },
             { id: 2, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-500`, pts: -500 },
-            { id: 3, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍀', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
+            { id: 3, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍀', label: `+${p40}`, pts: p40 },
             { id: 4, type: 'bad',     grad: plague, text: '#ffffff', icon: '🥀', label: `-300`, pts: -300 },
-            { id: 5, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌱', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
-            { id: 6, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍎', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
+            { id: 5, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌱', label: `+${p10}`, pts: p10 },
+            { id: 6, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍎', label: `+${p40}`, pts: p40 },
             { id: 7, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-400`, pts: -400 }
         ];
     },

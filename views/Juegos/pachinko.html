@@ -516,7 +516,28 @@ window.pachinkoApp = {
         }, 3000); // Tiempo para apreciar el logo
     },
 
-    // Muestra la pantalla de análisis con las barras de progreso
+
+
+    // Invocado por el botón "¡A Sembrar!"
+    startGame() {
+        const intro = document.getElementById('pak-intro-screen');
+        const game = document.getElementById('pak-game-screen');
+        if(!intro || !game) return;
+
+        intro.classList.add('hidden');
+        game.classList.remove('hidden');
+
+        const actionBtn = document.getElementById('pak-action-btn');
+        actionBtn.onclick = () => this.handleInput();
+        window.hzUi.bindKey('pak-game-screen', 'pak-action-btn');
+
+        this.isPlaying = true;
+        this.startTimer();
+
+        if (this.rafId) cancelAnimationFrame(this.rafId);
+        this.loop();
+    },
+
     showIntroScreen(plantName, plantImg) {
         const screen = document.getElementById('pak-intro-screen');
         if (!screen) return;
@@ -527,15 +548,17 @@ window.pachinkoApp = {
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // Cálculos para la Intro
+        // Cálculos para la Intro (EQUILIBRADOS PARA 10k MAX)
         this.seedsTotal = Math.max(5, Math.floor(this.hp / 10));
         const mult = 1 + (this.atk / 100);
-        const ptsPerHit = Math.floor(250 * mult);
+        // Si tienes 10 semillas y caen en la buena, cada una debe dar ~1000 base para llegar a 10k
+        const basePtsPerHit = Math.floor(10000 / this.seedsTotal);
+        const ptsPerHit = Math.floor(basePtsPerHit * mult);
 
-        // Calcular porcentaje visual de las barras (topes teóricos para diseño)
-        const hpPct = Math.min(100, (this.hp / 500) * 100); // Max visual 500 HP
-        const atkPct = Math.min(100, (this.atk / 350) * 100); // Max visual 350 ATK
-        const defPct = Math.min(100, (this.def / 150) * 100); // Max visual 150 DEF
+        // Calcular porcentaje visual de las barras
+        const hpPct = Math.min(100, (this.hp / 500) * 100); 
+        const atkPct = Math.min(100, (this.atk / 350) * 100); 
+        const defPct = Math.min(100, (this.def / 150) * 100); 
 
         // Actualizar UI del Análisis
         document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
@@ -562,38 +585,18 @@ window.pachinkoApp = {
         this.seedsLeft = this.seedsTotal;
         document.getElementById('pak-ammo').innerText = this.seedsLeft;
 
-        // Construir el nivel físicamente
+        // Construir el nivel
         const wBase = (this.w / 4);
         const wBonus = wBase * (this.def / 100);
         const basketW = Math.min(wBase + wBonus, this.w / 3);
 
-        this.buildLevel(mult, basketW);
+        this.buildLevel(mult, basketW, basePtsPerHit);
         this.renderPaytable();
-        this.draw(); // Dibuja estado inicial in-game para cuando aparezca
+        this.draw(); 
         if (document.fonts && document.fonts.load) document.fonts.load("20px 'Lilita One'").then(() => this.draw()).catch(() => {});
     },
 
-    // Invocado por el botón "¡A Sembrar!"
-    startGame() {
-        const intro = document.getElementById('pak-intro-screen');
-        const game = document.getElementById('pak-game-screen');
-        if(!intro || !game) return;
-
-        intro.classList.add('hidden');
-        game.classList.remove('hidden');
-
-        const actionBtn = document.getElementById('pak-action-btn');
-        actionBtn.onclick = () => this.handleInput();
-        window.hzUi.bindKey('pak-game-screen', 'pak-action-btn');
-
-        this.isPlaying = true;
-        this.startTimer();
-
-        if (this.rafId) cancelAnimationFrame(this.rafId);
-        this.loop();
-    },
-
-    buildLevel(mult, basketW) {
+    buildLevel(mult, basketW, basePtsPerHit) {
         this.pegs = [];
         const rows = 8;
         const cols = 7;
@@ -613,11 +616,14 @@ window.pachinkoApp = {
             }
         }
 
-        // Las macetas abarcan los últimos 45 píxeles de altura del canvas (de 555 a 600)
+        // Puntuaciones Equilibradas
+        const goodPts = Math.floor(basePtsPerHit * mult);
+        const goldPts = Math.floor((basePtsPerHit * 0.4) * mult); // Canasta segura pero da menos
+        
         this.baskets = [
-            { x: 0, y: this.h - 45, w: basketW, h: 45, kind: 'gold', pts: Math.floor(100 * mult), label: `+${Math.floor(100 * mult)}` },
-            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, kind: 'bad', pts: -50, label: '🐛 -50' },
-            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, kind: 'good', pts: Math.floor(250 * mult), label: `+${Math.floor(250 * mult)}` }
+            { x: 0, y: this.h - 45, w: basketW, h: 45, kind: 'gold', pts: goldPts, label: `+${goldPts}` },
+            { x: this.w/2 - basketW/2, y: this.h - 45, w: basketW, h: 45, kind: 'bad', pts: -500, label: '🐛 -500' },
+            { x: this.w - basketW, y: this.h - 45, w: basketW, h: 45, kind: 'good', pts: goodPts, label: `+${goodPts}` }
         ];
     },
 

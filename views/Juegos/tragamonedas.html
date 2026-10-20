@@ -753,8 +753,17 @@ window.slotApp = {
         if (matchesCount > 0) {
             this.playBonusSound();
 
-            // Puntos progresivos: 1 acierto (100 pts), 2 (300 pts), 3 (800 pts)
-            let baseRoundPts = matchesCount === 1 ? 100 : (matchesCount === 2 ? 300 : 800);
+            // PUNTOS EQUILIBRADOS PARA ALCANZAR LOS 10k EN 60s
+            // Calculamos un estimado de rondas posibles basadas en las Vidas
+            const estimatedRounds = this.livesTotal * 4; 
+            const basePointsToHit10k = 10000 / estimatedRounds;
+
+            // Escala progresiva basada en aciertos y ATK
+            let baseRoundPts = 0;
+            if (matchesCount === 1) baseRoundPts = basePointsToHit10k * 0.3;
+            else if (matchesCount === 2) baseRoundPts = basePointsToHit10k * 0.8;
+            else if (matchesCount === 3) baseRoundPts = basePointsToHit10k * 2.5;
+
             let atkMultiplier = 1 + (this.atk / 100);
             let ptsEarned = Math.floor(baseRoundPts * atkMultiplier * this.currentCombo);
 
