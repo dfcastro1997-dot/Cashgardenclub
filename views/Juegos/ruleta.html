@@ -1,210 +1,421 @@
-<div class="fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center font-sans" style="background-image: url('assets/Fondos/Ruleta.jpg');">
-    
-    <!-- OVERLAY OSCURO DE FONDO -->
-    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-0 pointer-events-none"></div>
+<link rel="stylesheet" href="views/Juegos/juegos.css">
+<div class="hz fixed inset-0 z-[200] flex items-center justify-center bg-cover bg-center" style="background-image: url('assets/Fondos/Ruleta.jpg');">
+
+    <!-- Velo verde del invernadero -->
+    <div class="hz-stage-shade absolute inset-0 z-0 pointer-events-none"></div>
 
     <!-- ========================================== -->
-    <!-- MARCO DE CELULAR CENTRADO (PHONE FRAME)    -->
+    <!-- GABINETE (MARCO DEL JUEGO)                 -->
+    <!-- Móvil: formato teléfono · Escritorio: ancho -->
     <!-- ========================================== -->
-    <div class="relative z-10 w-[95%] max-w-[400px] h-[95vh] max-h-[850px] bg-slate-900 rounded-[2.5rem] sm:rounded-[3rem] border-[8px] sm:border-[12px] border-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden">
-        
-        <!-- Notch del celular -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-2xl z-50 flex justify-center items-end pb-1">
-            <div class="w-12 h-1.5 bg-slate-900 rounded-full opacity-50"></div>
-        </div>
+    <div class="hz-cabinet relative z-10 w-[95%] max-w-[400px] h-[95vh] max-h-[850px] lg:w-[94%] lg:max-w-[1200px] lg:h-[92vh] lg:max-h-[880px] rounded-[2.2rem] flex flex-col overflow-hidden">
+
+        <!-- Enredaderas en las esquinas -->
+        <div class="hz-decor"><i></i><i></i><i></i><i></i></div>
 
         <!-- ========================================== -->
-        <!-- PANTALLA 1: SPLASH SCREEN (CARGA)          -->
+        <!-- PANTALLA 1: SPLASH (CARGA)                 -->
         <!-- ========================================== -->
-        <div id="rul-splash-screen" class="absolute inset-0 z-40 bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-700">
-            
-            <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+        <div id="rul-splash-screen" class="hz-felt absolute inset-0 z-40 flex flex-col items-center justify-center transition-opacity duration-700 overflow-hidden">
+            <div class="hz-leaves"><span style="left:8%;animation-duration:9s">🌻</span><span style="left:30%;animation-duration:12s;animation-delay:-4s">🍃</span><span style="left:62%;animation-duration:10s;animation-delay:-2s">🌼</span><span style="left:85%;animation-duration:13s;animation-delay:-7s">🍃</span></div>
+            <div class="hz-flies"><b style="left:20%;top:30%"></b><b style="left:75%;top:25%;animation-delay:-3s,-1s"></b><b style="left:60%;top:70%;animation-delay:-5s,-2s"></b><b style="left:15%;top:75%;animation-delay:-2s,-.5s"></b></div>
+
+            <div class="hz-medal flex items-center justify-center mb-6 relative z-10 lg:scale-125 lg:mb-12">
+                <div class="hz-rays"></div>
                 <!-- Logo Principal (Desaparece) -->
                 <img id="splash-logo-1" src="assets/Fondos/logo.png" class="absolute w-full h-auto object-contain transition-all duration-700 ease-in-out z-20">
                 <!-- Logo del Juego (Aparece) -->
-                <img id="splash-logo-2" src="assets/Fondos/Juego_002.png" class="absolute w-[250px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
+                <img id="splash-logo-2" src="assets/Fondos/Juego_002.png" class="absolute w-[230px] max-w-none h-auto object-contain opacity-0 scale-50 transition-all duration-1000 ease-out z-10">
             </div>
-            
-            <h2 class="text-white font-black text-2xl tracking-widest uppercase mb-1">Disco Táctico</h2>
-            <p class="text-cg_gold text-[10px] font-bold tracking-[0.3em] uppercase mb-12">Arcade System</p>
-            
-            <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="rul-loading-bar" class="h-full bg-cg_gold w-0 transition-all duration-[2500ms] ease-out"></div>
+
+            <h2 class="hz-title text-4xl lg:text-6xl mb-1 relative z-10">Rueda del Huerto</h2>
+            <p class="hz-sub mb-8 relative z-10">Gira, frena y cosecha</p>
+
+            <div class="hz-vinebar w-52 lg:w-80 relative z-10">
+                <div id="rul-loading-bar" class="transition-all duration-[2500ms] ease-out"></div>
             </div>
-            <p class="text-slate-500 text-[9px] uppercase tracking-widest mt-3 font-bold animate-pulse">Sincronizando Físicas...</p>
+            <p class="hz-label mt-4 animate-pulse relative z-10">Aceitando el girasol...</p>
         </div>
 
         <!-- ========================================== -->
         <!-- PANTALLA 2: ANÁLISIS DE LA PLANTA (INTRO)  -->
         <!-- ========================================== -->
-        <div id="rul-intro-screen" class="absolute inset-0 z-30 bg-slate-900 flex flex-col hidden overflow-y-auto hide-scrollbar pb-6 pt-10">
-            <div class="px-6 text-center mt-4 shrink-0">
-                <span class="bg-yellow-500/20 text-cg_gold border border-yellow-500/30 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Análisis de Despliegue</span>
-                
-                <!-- Planta Seleccionada -->
-                <div class="w-24 h-24 mx-auto bg-slate-800/50 rounded-2xl border border-slate-700 shadow-lg flex items-center justify-center mb-3 p-2 relative">
-                    <div class="absolute inset-0 bg-yellow-500/10 rounded-2xl animate-pulse"></div>
-                    <img id="intro-plant-img" src="assets/Fondos/logo.png" class="w-full h-full object-contain drop-shadow-lg relative z-10">
-                </div>
-                <h3 id="intro-plant-name" class="text-xl font-black text-white mb-6 tracking-tight">Cargando...</h3>
+        <div id="rul-intro-screen" class="hz-felt hz-scroll absolute inset-0 z-30 flex flex-col hidden overflow-y-auto pb-6 lg:pb-0">
+            <div class="hz-flies"><b style="left:12%;top:40%"></b><b style="left:85%;top:30%;animation-delay:-3s,-1s"></b><b style="left:50%;top:80%;animation-delay:-5s,-2s"></b></div>
+            <div class="hz-marquee shrink-0 pt-5 pb-4 text-center relative z-10">
+                <h2 class="hz-title text-2xl lg:text-4xl leading-none">Rueda del Huerto</h2>
             </div>
 
-            <!-- Desglose de Stats Moderno -->
-            <div class="px-6 space-y-4 flex-1">
-                
-                <!-- FICHAS (TURNOS) -->
-                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-16 h-16 bg-green-500/10 blur-xl"></div>
-                    <div class="flex justify-between items-end mb-2 relative z-10">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-green-400 text-base">🪙</span> Vida / Intentos</span>
-                        <span id="intro-val-hp" class="text-sm font-black text-white">-- HP</span>
+            <div class="flex-1 flex flex-col relative z-10 lg:grid lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:items-center lg:max-w-5xl lg:w-full lg:mx-auto lg:px-10 lg:py-6">
+                <!-- Columna planta -->
+                <div class="px-6 text-center mt-5 shrink-0 lg:mt-0">
+                    <span class="hz-sub inline-block mb-3">Tu planta jugadora</span>
+                    <!-- Planta Seleccionada -->
+                    <div class="hz-pedestal mb-2 lg:!w-[270px] lg:!h-[270px]">
+                        <div class="hz-pedestal__glow"></div>
+                        <div class="hz-pedestal__base lg:!w-[200px] lg:!h-[40px]"></div>
+                        <img id="intro-plant-img" src="assets/Fondos/logo.png" class="absolute inset-0 w-full h-full object-contain drop-shadow-[0_6px_0_rgba(28,38,52,0.6)] z-10">
                     </div>
-                    <!-- Barra de escala -->
-                    <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
-                        <div id="intro-bar-hp" class="h-full bg-green-500 rounded-full w-[0%] transition-all duration-1000"></div>
+                    <h3 id="intro-plant-name" class="hz-title text-2xl lg:text-4xl mb-5">Cargando...</h3>
+
+                    <!-- Reglas rápidas (escritorio) -->
+                    <div class="hidden lg:block hz-side text-left max-w-sm mx-auto">
+                        <div class="hz-side__title">📜 Cómo se juega</div>
+                        <ol class="hz-steps">
+                            <li>Pulsa girar para lanzar la rueda.</li>
+                            <li>Pulsa frenar y la rueda irá perdiendo velocidad.</li>
+                            <li>La casilla bajo la hoja dorada es tu premio... o tu plaga.</li>
+                        </ol>
                     </div>
-                    <p id="intro-desc-hp" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Esta planta te otorga <strong class="text-green-400" id="intro-spins">-- Giros</strong> para la ruleta.
-                    </p>
                 </div>
 
-                <!-- MULTIPLICADOR (PUNTOS) -->
-                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-16 h-16 bg-orange-500/10 blur-xl"></div>
-                    <div class="flex justify-between items-end mb-2 relative z-10">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-orange-400 text-base">⭐</span> Ataque / Puntos</span>
-                        <span id="intro-val-atk" class="text-sm font-black text-white">-- ATK</span>
-                    </div>
-                    <!-- Barra de escala -->
-                    <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
-                        <div id="intro-bar-atk" class="h-full bg-orange-500 rounded-full w-[0%] transition-all duration-1000"></div>
-                    </div>
-                    <p id="intro-desc-atk" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Multiplicador de premio de <strong class="text-orange-400" id="intro-mult">x--</strong>. El Jackpot máximo será de <strong class="text-orange-400" id="intro-pts">+-- Pts</strong>.
-                    </p>
-                </div>
+                <!-- Columna estadísticas -->
+                <div class="flex flex-col">
+                    <div class="px-5 space-y-3 flex-1 lg:px-0">
+                        <!-- GIROS -->
+                        <div class="hz-card">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="hz-card__icon bg-[#b6f59a]">🌱</div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-baseline">
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Vida / Giros</span>
+                                        <span id="intro-val-hp" class="hz-num text-lg">-- HP</span>
+                                    </div>
+                                    <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#4CAF50] w-[0%]"></div></div>
+                                </div>
+                            </div>
+                            <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
+                                Esta planta te da <strong class="text-[#2e7d32]" id="intro-spins">-- Giros</strong> en la rueda.
+                            </p>
+                        </div>
 
-                <!-- CONTROL (DIFICULTAD / FRICCIÓN) -->
-                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-16 h-16 bg-blue-500/10 blur-xl"></div>
-                    <div class="flex justify-between items-end mb-2 relative z-10">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><span class="text-blue-400 text-base">⚙️</span> Control / Fricción</span>
-                        <span id="intro-val-def" class="text-sm font-black text-white">-- DEF</span>
-                    </div>
-                    <!-- Barra de escala -->
-                    <div class="w-full h-1.5 bg-slate-900 rounded-full mb-2 overflow-hidden relative z-10">
-                        <div id="intro-bar-def" class="h-full bg-blue-500 rounded-full w-[0%] transition-all duration-1000"></div>
-                    </div>
-                    <p id="intro-desc-def" class="text-[10px] text-slate-400 leading-snug font-medium relative z-10">
-                        Fricción mecánica de <strong class="text-blue-400" id="intro-control">--</strong>. A mayor defensa, más rápido se detiene el disco al frenar.
-                    </p>
-                </div>
-            </div>
+                        <!-- PREMIO -->
+                        <div class="hz-card">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="hz-card__icon bg-[#FDE062]">🌻</div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-baseline">
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Ataque / Premio</span>
+                                        <span id="intro-val-atk" class="hz-num text-lg">-- ATK</span>
+                                    </div>
+                                    <div class="hz-meter mt-1"><div id="intro-bar-atk" class="bg-[#ED9925] w-[0%]"></div></div>
+                                </div>
+                            </div>
+                            <p id="intro-desc-atk" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
+                                Multiplicador <strong class="text-[#B8701A]" id="intro-mult">x--</strong>. La Gran Cosecha vale <strong class="text-[#B8701A]" id="intro-pts">+-- Pts</strong>.
+                            </p>
+                        </div>
 
-            <div class="px-6 mt-6 shrink-0">
-                <button onclick="window.rouletteApp.startGame()" class="w-full bg-cg_gold hover:bg-orange-500 text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(237,153,37,0.4)] transition-all uppercase tracking-widest text-sm active:scale-95 flex justify-center items-center gap-2">
-                    Iniciar Simulación <span class="text-lg leading-none">▶</span>
-                </button>
+                        <!-- FRICCIÓN -->
+                        <div class="hz-card">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="hz-card__icon bg-[#9fe3ff]">🌀</div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-baseline">
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Control / Freno</span>
+                                        <span id="intro-val-def" class="hz-num text-lg">-- DEF</span>
+                                    </div>
+                                    <div class="hz-meter mt-1"><div id="intro-bar-def" class="bg-[#2996DA] w-[0%]"></div></div>
+                                </div>
+                            </div>
+                            <p id="intro-desc-def" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
+                                Freno de <strong class="text-[#2996DA]" id="intro-control">--</strong>. Más defensa, la rueda se detiene antes.
+                            </p>
+                        </div>
+
+                        <!-- META (escritorio) -->
+                        <div class="hidden lg:flex hz-card items-center gap-3">
+                            <div class="hz-card__icon bg-[#b6f59a]">🏆</div>
+                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong>; si la alcanzas antes, el tiempo sobrante suma bono.</p>
+                        </div>
+                    </div>
+
+                    <div class="px-5 mt-6 shrink-0 lg:px-0">
+                        <button onclick="window.rouletteApp.startGame()" class="hz-btn lg:!text-2xl lg:!py-5" data-state="go">
+                            ¡A Girar! <span class="text-xl leading-none">▶</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- ========================================== -->
         <!-- PANTALLA 3: INTERFAZ DEL JUEGO             -->
         <!-- ========================================== -->
-        <div id="rul-game-screen" class="absolute inset-0 z-20 bg-slate-900 flex flex-col hidden pt-8">
-            
-            <!-- TOP HUD -->
-            <div class="px-4 py-3 flex justify-between items-center bg-slate-900/90 border-b border-slate-800 z-10 shrink-0">
-                <div class="flex items-center gap-3">
-                    <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-8 h-8 object-contain drop-shadow-md">
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Score</span>
-                        <span id="rul-score" class="text-xl font-black text-cg_gold font-mono leading-none drop-shadow-[0_0_8px_rgba(237,153,37,0.5)]">0</span>
+        <div id="rul-game-screen" class="hz-felt absolute inset-0 z-20 flex flex-col hidden">
+            <div class="hz-flies"><b style="left:8%;top:40%"></b><b style="left:90%;top:35%;animation-delay:-3s,-1s"></b><b style="left:50%;top:85%;animation-delay:-5s,-2s"></b><b style="left:30%;top:20%;animation-delay:-7s,-1.5s"></b></div>
+
+            <!-- MARQUESINA + HUD -->
+            <div class="hz-marquee shrink-0 px-3 lg:px-16 pt-5 pb-4 z-10">
+                <div class="flex items-center gap-2 lg:gap-4">
+                    <div class="hz-plank flex items-center gap-2 px-2 py-1.5 flex-1 min-w-0 lg:flex-none lg:w-[250px] lg:px-3">
+                        <img id="rul-plant-icon" src="assets/Fondos/logo.png" class="w-9 h-9 lg:w-11 lg:h-11 object-contain drop-shadow-md shrink-0">
+                        <div class="flex flex-col min-w-0">
+                            <span class="hz-label !text-[#FCE9BE]">Cosecha</span>
+                            <span id="rul-score" class="hz-num text-xl lg:text-2xl text-[#FDE062] leading-none drop-shadow-[0_2px_0_#1C2634]">0</span>
+                        </div>
+                    </div>
+                    <h2 class="hidden lg:block flex-1 text-center hz-title text-4xl leading-none">Rueda del Huerto</h2>
+                    <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
+                        <span class="hz-label !text-[#FCE9BE]">Tiempo</span>
+                        <span id="rul-timer" class="hz-num text-base lg:text-xl text-white leading-none">60.0s</span>
+                    </div>
+                    <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
+                        <span class="hz-label !text-[#FCE9BE]">Giros</span>
+                        <span class="hz-num text-base lg:text-xl text-[#b6f59a] leading-none">🌱 <span id="rul-ammo">0</span></span>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-3">
-                    <div class="flex flex-col items-end">
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tiempo</span>
-                        <span id="rul-timer" class="text-sm font-black text-red-400 font-mono">60.0s</span>
-                    </div>
-                    <div class="w-px h-6 bg-slate-700"></div>
-                    <div class="flex flex-col items-end">
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Giros</span>
-                        <span id="rul-ammo" class="text-sm font-black text-green-400 font-mono">0</span>
-                    </div>
+                <!-- Meta (móvil) -->
+                <div class="mt-3 flex items-center gap-2 lg:hidden">
+                    <span class="hz-label !text-[#FCE9BE]">Meta</span>
+                    <div class="hz-goal hz-goal--thin flex-1"><div data-goal-fill></div></div>
+                    <span class="hz-label !text-[#FDE062]" data-goal-text>0%</span>
                 </div>
             </div>
 
-            <!-- ÁREA DEL CANVAS -->
-            <div class="flex-1 relative bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center overflow-hidden w-full h-full">
-                
-                <!-- Efecto de Luz de Fondo -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-yellow-500/20 via-slate-900/0 to-transparent pointer-events-none z-0"></div>
+            <!-- CUERPO: [panel izq] [rueda] [panel der] -->
+            <div class="flex-1 min-h-0 flex lg:grid lg:grid-cols-[270px_1fr_270px] lg:gap-5 lg:px-6 lg:py-5">
 
-                <!-- Indicador de Puntero Moderno Estático (Top Center) -->
-                <div class="absolute top-[5%] sm:top-[8%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]">
-                    <div class="w-10 h-12 bg-gradient-to-b from-red-500 to-red-700 rounded-b-full shadow-lg border-2 border-white/80 flex items-end justify-center pb-2">
-                        <div class="w-3 h-3 bg-white rounded-full"></div>
+                <!-- PANEL IZQUIERDO (escritorio) -->
+                <aside class="hidden lg:flex flex-col gap-4 min-h-0 overflow-y-auto hz-scroll relative z-10">
+                    <div class="hz-side text-center">
+                        <div class="relative w-[120px] h-[120px] mx-auto">
+                            <div class="hz-pedestal__glow"></div>
+                            <img data-mirror="rul-plant-icon" src="assets/Fondos/logo.png" class="absolute inset-0 w-full h-full object-contain z-10 drop-shadow-[0_5px_0_rgba(28,38,52,0.6)]">
+                        </div>
+                        <div data-mirror="intro-plant-name" class="hz-title text-xl mt-1 mb-3 truncate">—</div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Vida</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Ataque</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Defensa</span></div>
+                        </div>
+                    </div>
+
+                    <div class="hz-side">
+                        <div class="hz-side__title">🧺 Casillas de la rueda</div>
+                        <div id="rul-paytable"></div>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los premios verdes y dorados ya incluyen tu ataque (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>). La cosecha nunca baja de 0.</p>
+                    </div>
+
+                    <div class="hz-side">
+                        <div class="hz-side__title">📜 Cómo se juega</div>
+                        <ol class="hz-steps">
+                            <li>Gira la rueda.</li>
+                            <li>Frena cuando quieras: se detendrá poco a poco.</li>
+                            <li>Gana la casilla bajo la hoja dorada.</li>
+                        </ol>
+                    </div>
+                </aside>
+
+                <!-- ÁREA DE LA RUEDA -->
+                <div class="flex-1 relative flex flex-col items-center justify-center overflow-hidden w-full px-3 lg:px-0">
+                    <div class="hz-leaves"><span style="left:6%;animation-duration:14s">🍃</span><span style="left:92%;animation-duration:11s;animation-delay:-5s">🌼</span></div>
+
+                    <!-- Leyenda -->
+                    <div class="relative z-10 flex gap-2 mb-3 lg:mb-5 text-[10px] font-black uppercase tracking-widest">
+                        <span class="hz-tag !text-[11px] lg:!text-sm bg-[#FDE062] text-[#1C2634]">🌻 Gran cosecha</span>
+                        <span class="hz-tag !text-[11px] lg:!text-sm bg-[#7ED957] text-[#1C2634]">🌿 Cosecha</span>
+                        <span class="hz-tag !text-[11px] lg:!text-sm bg-[#a8437a] text-white">🐛 Plaga</span>
+                    </div>
+
+                    <div id="rul-wheel-wrap" class="hz-wheel-size relative w-full max-w-sm aspect-square z-10">
+                        <!-- Puntero: hoja de latón -->
+                        <div id="rul-pointer" class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[30%] z-20 pointer-events-none origin-top drop-shadow-[0_4px_0_#1C2634]">
+                            <svg width="46" height="58" viewBox="0 0 46 58">
+                                <path d="M23 56 C10 40 4 28 4 18 A19 19 0 0 1 42 18 C42 28 36 40 23 56 Z" fill="#FDE062" stroke="#1C2634" stroke-width="4" stroke-linejoin="round"/>
+                                <path d="M23 46 C17 36 14 28 14 20 A9 9 0 0 1 32 20 C32 28 29 36 23 46 Z" fill="#4CAF50" stroke="#1C2634" stroke-width="2.5"/>
+                                <path d="M23 44 L23 16" stroke="#1C2634" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="15" cy="12" r="3" fill="#fff" opacity=".8"/>
+                            </svg>
+                        </div>
+                        <!-- CANVAS DE LA RUEDA -->
+                        <canvas id="roulette-canvas" width="360" height="360" class="block w-full h-full bg-transparent drop-shadow-[0_12px_0_rgba(28,38,52,0.9)]"></canvas>
                     </div>
                 </div>
 
-                <!-- CANVAS DE LA RULETA -->
-                <canvas id="roulette-canvas" width="360" height="360" class="block w-full max-w-sm aspect-square mx-auto bg-transparent relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] object-contain"></canvas>
+                <!-- PANEL DERECHO (escritorio) -->
+                <aside class="hidden lg:flex flex-col gap-4 min-h-0 overflow-y-auto hz-scroll relative z-10">
+                    <div class="hz-side">
+                        <div class="hz-side__title">🏆 Meta de cosecha</div>
+                        <div class="flex items-baseline justify-between mb-2">
+                            <span data-mirror="rul-score" class="hz-num text-3xl text-[#FDE062] drop-shadow-[0_2px_0_#1C2634]">0</span>
+                            <span class="hz-label">de 10.000</span>
+                        </div>
+                        <div class="hz-goal"><div data-goal-fill></div></div>
+                        <div class="flex justify-between mt-1.5"><span class="hz-label">Progreso</span><span class="hz-label !text-[#FDE062]" data-goal-text>0%</span></div>
+                    </div>
+
+                    <div class="hz-side">
+                        <div class="hz-side__title">📊 Esta partida</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="hz-stat"><b id="rul-st-used">0</b><span>Giros usados</span></div>
+                            <div class="hz-stat"><b class="!text-[#b6f59a]" data-mirror="rul-ammo">0</b><span>Giros restantes</span></div>
+                            <div class="hz-stat"><b id="rul-st-good" class="!text-[#7ED957]">0</b><span>Cosechas</span></div>
+                            <div class="hz-stat"><b id="rul-st-bad" class="!text-[#ff8a8d]">0</b><span>Plagas</span></div>
+                        </div>
+                    </div>
+
+                    <div class="hz-side flex-1">
+                        <div class="hz-side__title">🗒️ Historial</div>
+                        <ul id="rul-log" class="hz-log"><li class="hz-log__empty !bg-transparent !border-0">Aún no hay giros</li></ul>
+                    </div>
+                </aside>
             </div>
 
             <!-- CONTROLES INFERIORES -->
-            <div class="p-5 bg-slate-900 border-t border-slate-800 shrink-0 pb-8">
-                <button id="rul-action-btn" class="w-full bg-cg_blue hover:bg-blue-500 text-slate-900 font-black text-lg py-4 rounded-2xl shadow-[0_0_20px_rgba(41,150,218,0.3)] transition-all uppercase tracking-widest z-30 flex items-center justify-center gap-2 active:scale-95 border border-white/20">
-                    <span>🎡</span> Girar Ruleta
-                </button>
+            <div class="hz-marquee !border-b-0 border-t-4 border-[#1C2634] p-4 pb-7 lg:pb-5 shrink-0 relative z-20">
+                <div class="lg:max-w-md lg:mx-auto">
+                    <button id="rul-action-btn" class="hz-btn" data-state="go">
+                        <span>🌻</span> Girar la Rueda
+                    </button>
+                    <p class="hidden lg:block text-center hz-label !text-[#FCE9BE] mt-3">También puedes pulsar <span class="hz-kbd">Espacio</span></p>
+                </div>
             </div>
+
+            <div id="rul-fx" class="hz-fx"></div>
         </div>
 
         <!-- ========================================== -->
-        <!-- PANTALLA 4: RESULTADO DE LA MISIÓN         -->
+        <!-- PANTALLA 4: RESULTADO                      -->
         <!-- ========================================== -->
-        <div id="rul-result-screen" class="absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-center">
-            
-            <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(237,153,37,0.4)] border border-slate-700 text-4xl animate-bounce">
-                🏆
-            </div>
-            
-            <h3 class="text-2xl font-black text-white mb-1 tracking-tight">Fin de Simulación</h3>
-            <p class="text-xs text-slate-400 font-medium mb-8">Rendimiento evaluado y registrado.</p>
-            
-            <div class="w-full bg-slate-800/80 border border-slate-700 rounded-2xl p-5 mb-8 text-left shadow-inner">
-                <div class="flex justify-between items-center text-xs mb-4 border-b border-slate-700 pb-3">
-                    <span class="text-slate-400 font-black uppercase tracking-widest">Puntaje Base:</span>
-                    <span class="font-black text-white text-sm font-mono" id="res-base">0</span>
-                </div>
-                <div class="flex justify-between items-center text-xs mb-4 border-b border-slate-700 pb-3">
-                    <span class="text-cg_gold font-black uppercase tracking-widest">Bono Velocidad:</span>
-                    <span class="font-black text-slate-900 text-xs bg-cg_gold px-2 py-1 rounded-md font-mono shadow-[0_0_10px_rgba(237,153,37,0.4)]" id="res-time">+0</span>
-                </div>
-                <div class="flex justify-between items-center pt-2">
-                    <span class="text-sm font-black text-white uppercase tracking-widest">Total Final:</span>
-                    <span class="text-3xl font-black text-cg_gold drop-shadow-md font-mono" id="res-total">0</span>
-                </div>
-            </div>
+        <div id="rul-result-screen" class="hz-felt absolute inset-0 z-50 hidden flex-col items-center justify-center p-6 text-center overflow-hidden">
+            <div class="hz-leaves"><span style="left:10%;animation-duration:7s">🌻</span><span style="left:35%;animation-duration:9s;animation-delay:-3s">🪙</span><span style="left:60%;animation-duration:8s;animation-delay:-1s">🍃</span><span style="left:85%;animation-duration:10s;animation-delay:-6s">🪙</span></div>
+            <div class="hz-flies"><b style="left:20%;top:30%"></b><b style="left:80%;top:40%;animation-delay:-3s,-1s"></b></div>
 
-            <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="w-full bg-cg_gold hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(237,153,37,0.3)] active:scale-95 flex items-center justify-center gap-2">
-                <span>💾</span> Confirmar y Salir
-            </button>
+            <div class="w-full max-w-md lg:max-w-4xl lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center relative z-10">
+                <div>
+                    <div class="hz-trophy mb-5 lg:!w-[150px] lg:!h-[150px] lg:!text-[72px]">🏆</div>
+                    <h3 class="hz-title text-3xl lg:text-5xl mb-1">¡Fin de la Cosecha!</h3>
+                    <p class="hz-sub mb-6">Tu cosecha quedó registrada</p>
+                    <div class="hidden lg:flex items-center justify-center gap-3 hz-side !py-3 max-w-xs mx-auto">
+                        <img data-mirror="rul-plant-icon" src="assets/Fondos/logo.png" class="w-14 h-14 object-contain">
+                        <div class="text-left"><div class="hz-label">Jugaste con</div><div data-mirror="intro-plant-name" class="hz-title text-xl">—</div></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="hz-stat"><b id="res-rounds">0</b><span>Giros</span></div>
+                        <div class="hz-stat"><b id="res-hits">0</b><span>Cosechas</span></div>
+                        <div class="hz-stat"><b id="res-acc">0%</b><span>Suerte</span></div>
+                    </div>
+
+                    <div class="hz-card w-full mb-7 text-left !px-5">
+                        <div class="hz-row">
+                            <span class="text-[11px] font-black uppercase tracking-widest">Cosecha base</span>
+                            <span class="hz-num text-lg" id="res-base">0</span>
+                        </div>
+                        <div class="hz-row">
+                            <span class="text-[11px] font-black uppercase tracking-widest">Bono de tiempo</span>
+                            <span class="hz-tag bg-[#FDE062]" id="res-time">+0</span>
+                        </div>
+                        <div class="hz-row !pt-3">
+                            <span class="text-sm font-black uppercase tracking-widest">Total</span>
+                            <span class="hz-num text-4xl text-[#4CAF50] drop-shadow-[0_2px_0_#1C2634]" id="res-total">0</span>
+                        </div>
+                    </div>
+
+                    <button onclick="window.submitRouletteScore()" id="btn-submit-score" class="hz-btn" data-state="go">
+                        <span>🧺</span> Guardar Cosecha
+                    </button>
+                </div>
+            </div>
         </div>
 
     </div>
 </div>
 
 <script>
+// Pequeños efectos visuales compartidos (textos flotantes y explosión de hojas)
+window.hzFx = {
+    pop(layer, x, y, text, bad) {
+        if (!layer) return;
+        const el = document.createElement('div');
+        el.className = 'hz-pop' + (bad ? ' hz-pop--bad' : '');
+        el.style.left = x + 'px'; el.style.top = y + 'px';
+        el.textContent = text;
+        layer.appendChild(el);
+        setTimeout(() => el.remove(), 1400);
+    },
+    burst(layer, x, y, n, bits) {
+        if (!layer) return;
+        for (let i = 0; i < n; i++) {
+            const el = document.createElement('span');
+            el.className = 'hz-bit';
+            el.textContent = bits[i % bits.length];
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            layer.appendChild(el);
+            const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 110;
+            const dx = Math.cos(a) * d, dy = Math.sin(a) * d - 40;
+            el.animate([
+                { transform: 'translate(-50%,-50%) scale(.3) rotate(0deg)', opacity: 1 },
+                { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1) rotate(${Math.random() * 360}deg)`, opacity: 1, offset: .6 },
+                { transform: `translate(calc(-50% + ${dx * 1.1}px), calc(-50% + ${dy + 90}px)) scale(.8) rotate(${Math.random() * 540}deg)`, opacity: 0 }
+            ], { duration: 1000 + Math.random() * 500, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => el.remove();
+        }
+    },
+    retrigger(el, cls) {
+        if (!el) return;
+        el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+    }
+};
+
+// Paneles de escritorio: espejos de datos, meta, historial y atajo de teclado
+window.hzUi = {
+    bindMirrors() {
+        document.querySelectorAll('[data-mirror]').forEach(el => {
+            const src = document.getElementById(el.dataset.mirror);
+            if (!src) return;
+            const copy = () => {
+                if (el.tagName === 'IMG') { if (src.getAttribute('src')) el.src = src.src; }
+                else el.textContent = src.textContent;
+            };
+            copy();
+            new MutationObserver(copy).observe(src, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+        });
+    },
+    goal(score) {
+        const pct = Math.max(0, Math.min(100, score / 100));
+        document.querySelectorAll('[data-goal-fill]').forEach(el => el.style.width = pct + '%');
+        document.querySelectorAll('[data-goal-text]').forEach(el => el.textContent = Math.floor(pct) + '%');
+    },
+    set(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    },
+    log(listId, icon, text, value, kind) {
+        const ul = document.getElementById(listId);
+        if (!ul) return;
+        ul.querySelector('.hz-log__empty')?.remove();
+        const li = document.createElement('li');
+        li.className = kind;
+        li.innerHTML = `<span>${icon}</span><span class="truncate">${text}</span><em>${value}</em>`;
+        ul.prepend(li);
+        while (ul.children.length > 7) ul.lastElementChild.remove();
+    },
+    bindKey(screenId, btnId) {
+        if (window.hzKeyHandler) document.removeEventListener('keydown', window.hzKeyHandler);
+        window.hzKeyHandler = (e) => {
+            if (e.code !== 'Space' && e.code !== 'Enter') return;
+            const screen = document.getElementById(screenId), btn = document.getElementById(btnId);
+            if (!screen || !btn) { document.removeEventListener('keydown', window.hzKeyHandler); return; }
+            if (screen.classList.contains('hidden') || btn.classList.contains('hidden') || btn.disabled) return;
+            e.preventDefault();
+            if (document.activeElement && document.activeElement.tagName === 'BUTTON') document.activeElement.blur();
+            btn.click();
+        };
+        document.addEventListener('keydown', window.hzKeyHandler);
+    }
+};
+
 window.rouletteApp = {
     canvas: null,
     ctx: null,
-    size: 360, 
-    
+    size: 360,
+
     // Stats de la planta
     hp: 100, atk: 50, def: 20,
-    
+
     // Variables de juego
     score: 0,
     spinsTotal: 10,
@@ -212,18 +423,26 @@ window.rouletteApp = {
     timeLeft: 60.0,
     timerInterval: null,
     isPlaying: false,
-    
+
     // Físicas de la ruleta
     slices: [],
     numSlices: 8,
-    currentAngle: 0, 
+    currentAngle: 0,
     velocity: 0,
-    maxVelocity: 14, 
-    deceleration: 0.1, 
-    
+    maxVelocity: 14,
+    deceleration: 0.1,
+
     // Controles: READY -> SPINNING -> STOPPING
     inputState: 'READY',
     rafId: null,
+
+    // Efectos visuales
+    lastWin: null,       // { index, until, good }
+    lastTickIndex: -1,
+
+    // Estadísticas de la partida (solo visuales)
+    goodSpins: 0,
+    badSpins: 0,
 
     // Audio Managers
     sounds: {
@@ -244,7 +463,8 @@ window.rouletteApp = {
 
         this.ctx = this.canvas.getContext('2d');
         this.resize();
-        
+        window.hzUi.bindMirrors();
+
         let plantName = "Semilla Base";
         let plantImg = "assets/Fondos/logo.png";
 
@@ -258,7 +478,7 @@ window.rouletteApp = {
                 } else {
                     realPlant = window.farmApp.state.arsenal.find(p => p.id == pData.idTag);
                 }
-                
+
                 if (realPlant) {
                     this.hp = realPlant.hp || 100;
                     this.atk = realPlant.atk || 50;
@@ -273,7 +493,7 @@ window.rouletteApp = {
         setTimeout(() => {
             const bar = document.getElementById('rul-loading-bar');
             if(bar) bar.style.width = '100%';
-            
+
             // Animación de transición de Logos
             setTimeout(() => {
                 const logo1 = document.getElementById('splash-logo-1');
@@ -281,7 +501,7 @@ window.rouletteApp = {
                 if (logo1) logo1.classList.add('opacity-0', 'scale-110');
                 if (logo2) {
                     logo2.classList.remove('opacity-0', 'scale-50');
-                    logo2.classList.add('opacity-100', 'scale-100', 'drop-shadow-[0_0_40px_rgba(237,153,37,0.6)]');
+                    logo2.classList.add('opacity-100', 'scale-100', 'drop-shadow-[0_0_40px_rgba(253,224,98,0.6)]');
                 }
             }, 1000);
 
@@ -290,7 +510,7 @@ window.rouletteApp = {
         setTimeout(() => {
             const splash = document.getElementById('rul-splash-screen');
             if (splash) splash.classList.add('opacity-0');
-            
+
             setTimeout(() => {
                 if(splash) splash.classList.add('hidden');
                 this.showIntroScreen(plantName, plantImg);
@@ -302,7 +522,7 @@ window.rouletteApp = {
     showIntroScreen(plantName, plantImg) {
         const screen = document.getElementById('rul-intro-screen');
         if (!screen) return;
-        
+
         screen.classList.remove('hidden');
 
         document.getElementById('intro-plant-img').src = plantImg;
@@ -313,11 +533,11 @@ window.rouletteApp = {
         const mult = 1 + (this.atk / 100);
         const jackpotPoints = Math.floor(1000 * mult);
         this.deceleration = 0.05 + (this.def / 100) * 0.1;
-        
+
         // Calcular porcentaje visual
-        const hpPct = Math.min(100, (this.hp / 500) * 100); 
-        const atkPct = Math.min(100, (this.atk / 350) * 100); 
-        const defPct = Math.min(100, (this.def / 150) * 100); 
+        const hpPct = Math.min(100, (this.hp / 500) * 100);
+        const atkPct = Math.min(100, (this.atk / 350) * 100);
+        const defPct = Math.min(100, (this.def / 150) * 100);
 
         // Llenar UI del Análisis
         document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
@@ -331,7 +551,7 @@ window.rouletteApp = {
 
         document.getElementById('intro-val-def').innerText = `${this.def} DEF`;
         document.getElementById('intro-bar-def').style.width = `${defPct}%`;
-        document.getElementById('intro-control').innerText = `${this.deceleration.toFixed(2)} Fricción`;
+        document.getElementById('intro-control').innerText = `${this.deceleration.toFixed(2)}`;
 
         // Datos HUD in-game
         document.getElementById('rul-plant-icon').src = plantImg;
@@ -340,10 +560,13 @@ window.rouletteApp = {
         document.getElementById('rul-ammo').innerText = this.spinsLeft;
 
         this.buildWheel(mult);
-        this.draw(); 
+        this.renderPaytable();
+        this.draw();
+        // Redibujar cuando cargue la fuente de los números
+        if (document.fonts && document.fonts.load) document.fonts.load("20px 'Lilita One'").then(() => this.draw()).catch(() => {});
     },
 
-    // Invocado por el botón "Iniciar Simulación"
+    // Invocado por el botón "¡A Girar!"
     startGame() {
         const intro = document.getElementById('rul-intro-screen');
         const game = document.getElementById('rul-game-screen');
@@ -351,13 +574,14 @@ window.rouletteApp = {
 
         intro.classList.add('hidden');
         game.classList.remove('hidden');
-        
+
         const actionBtn = document.getElementById('rul-action-btn');
         actionBtn.onclick = () => this.handleInput();
+        window.hzUi.bindKey('rul-game-screen', 'rul-action-btn');
 
         this.isPlaying = true;
         this.startTimer();
-        
+
         if (this.rafId) cancelAnimationFrame(this.rafId);
         this.loop();
     },
@@ -368,27 +592,45 @@ window.rouletteApp = {
     },
 
     buildWheel(mult) {
-        // 8 Secciones (45 grados cada una)
+        // 8 secciones (45 grados cada una). Mismos puntos de siempre, ahora con look de huerto:
+        // gran cosecha = girasol dorado, cosecha = hojas verdes, plaga = morado.
+        const gold = ['#fff2a6', '#ED9925'];
+        const leafA = ['#9be86f', '#3f9a3c'];
+        const leafB = ['#7fd35c', '#2c7a33'];
+        const plague = ['#c45a92', '#5e1f45'];
         this.slices = [
-            { id: 0, type: 'jackpot', bg: 'rgba(234, 179, 8, 0.9)', border: '#fef08a', text: '#ffffff', label: `⭐ ${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
-            { id: 1, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
-            { id: 2, type: 'bad',     bg: 'rgba(239, 68, 68, 0.85)', border: '#fca5a5', text: '#ffffff', label: `💀 -500`, pts: -500 },
-            { id: 3, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
-            { id: 4, type: 'bad',     bg: 'rgba(239, 68, 68, 0.85)', border: '#fca5a5', text: '#ffffff', label: `💀 -300`, pts: -300 },
-            { id: 5, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
-            { id: 6, type: 'good',    bg: 'rgba(34, 197, 94, 0.85)', border: '#86efac', text: '#ffffff', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
-            { id: 7, type: 'bad',     bg: 'rgba(239, 68, 68, 0.85)', border: '#fca5a5', text: '#ffffff', label: `💀 -400`, pts: -400 }
+            { id: 0, type: 'jackpot', grad: gold,   text: '#1C2634', icon: '🌻', label: `${Math.floor(1000 * mult)}`, pts: Math.floor(1000 * mult) },
+            { id: 1, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌿', label: `+${Math.floor(200 * mult)}`, pts: Math.floor(200 * mult) },
+            { id: 2, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-500`, pts: -500 },
+            { id: 3, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍀', label: `+${Math.floor(400 * mult)}`, pts: Math.floor(400 * mult) },
+            { id: 4, type: 'bad',     grad: plague, text: '#ffffff', icon: '🥀', label: `-300`, pts: -300 },
+            { id: 5, type: 'good',    grad: leafA,  text: '#ffffff', icon: '🌱', label: `+${Math.floor(100 * mult)}`, pts: Math.floor(100 * mult) },
+            { id: 6, type: 'good',    grad: leafB,  text: '#ffffff', icon: '🍎', label: `+${Math.floor(500 * mult)}`, pts: Math.floor(500 * mult) },
+            { id: 7, type: 'bad',     grad: plague, text: '#ffffff', icon: '🐛', label: `-400`, pts: -400 }
         ];
+    },
+
+    // Lista de casillas para el panel de escritorio
+    renderPaytable() {
+        const box = document.getElementById('rul-paytable');
+        if (!box) return;
+        const order = [...this.slices].sort((a, b) => b.pts - a.pts);
+        box.innerHTML = order.map(s => {
+            const color = s.type === 'jackpot' ? '#FDE062' : (s.pts > 0 ? '#7ED957' : '#ff8a8d');
+            const name = s.type === 'jackpot' ? 'Gran Cosecha' : (s.pts > 0 ? 'Cosecha' : 'Plaga');
+            const extra = s.type === 'jackpot' ? ' !bg-[#FDE062]/15' : '';
+            return `<div class="hz-pay${extra}"><span class="hz-pay__l">${s.icon} ${name}</span><span class="hz-pay__r" style="color:${color}">${s.pts > 0 ? '+' : ''}${s.pts.toLocaleString()}</span></div>`;
+        }).join('');
     },
 
     startTimer() {
         this.timerInterval = setInterval(() => {
             if (!this.isPlaying) return;
             this.timeLeft -= 0.1;
-            
+
             const timerEl = document.getElementById('rul-timer');
             if (timerEl) timerEl.innerText = this.timeLeft.toFixed(1) + 's';
-            
+
             if (this.timeLeft <= 0 || this.score >= 10000) {
                 this.endGame();
             }
@@ -413,25 +655,21 @@ window.rouletteApp = {
 
         if (this.inputState === 'READY') {
             if (this.spinsLeft <= 0) return;
-            
+
             this.spinsLeft--;
             document.getElementById('rul-ammo').innerText = this.spinsLeft;
-            
+
             this.inputState = 'SPINNING';
             this.velocity = this.maxVelocity;
-            
-            btn.innerHTML = "<span>🛑</span> ¡FRENAR!";
-            btn.classList.replace('bg-cg_blue', 'bg-red-500');
-            btn.classList.replace('hover:bg-blue-500', 'hover:bg-red-600');
-            btn.classList.replace('shadow-[0_6px_0_#1e3a8a]', 'shadow-[0_0_20px_rgba(239,68,68,0.5)]');
-            btn.classList.replace('text-slate-900', 'text-white');
-            
+            this.lastWin = null;
+
+            btn.innerHTML = "<span>✋</span> ¡Frenar!";
+            btn.dataset.state = 'stop';
+
         } else if (this.inputState === 'SPINNING') {
             this.inputState = 'STOPPING';
             btn.innerHTML = "<span>⏳</span> Frenando...";
-            btn.classList.replace('bg-red-500', 'bg-slate-500');
-            btn.classList.replace('hover:bg-red-600', 'hover:bg-slate-600');
-            btn.classList.replace('shadow-[0_0_20px_rgba(239,68,68,0.5)]', 'shadow-[0_0_20px_rgba(100,116,139,0.5)]');
+            btn.dataset.state = 'wait';
             btn.disabled = true;
         }
     },
@@ -440,15 +678,21 @@ window.rouletteApp = {
         if (!this.isPlaying) return;
         this.update();
         this.draw();
-        
+
         if (this.rafId) cancelAnimationFrame(this.rafId);
         this.rafId = requestAnimationFrame(() => this.loop());
+    },
+
+    sliceUnderPointer() {
+        let effectiveAngle = (270 - this.currentAngle) % 360;
+        if (effectiveAngle < 0) effectiveAngle += 360;
+        return Math.floor(effectiveAngle / (360 / this.numSlices));
     },
 
     update() {
         if (this.inputState === 'SPINNING') {
             this.currentAngle = (this.currentAngle + this.velocity) % 360;
-        } 
+        }
         else if (this.inputState === 'STOPPING') {
             this.velocity -= this.deceleration;
             if (this.velocity <= 0) {
@@ -458,26 +702,58 @@ window.rouletteApp = {
                 this.currentAngle = (this.currentAngle + this.velocity) % 360;
             }
         }
+
+        // El puntero da un golpecito cada vez que pasa una casilla
+        if (this.inputState !== 'READY') {
+            const idx = this.sliceUnderPointer();
+            if (idx !== this.lastTickIndex) {
+                this.lastTickIndex = idx;
+                const p = document.getElementById('rul-pointer');
+                if (p) p.animate([{ transform: 'translate(-50%,-30%) rotate(0deg)' }, { transform: 'translate(-50%,-30%) rotate(-14deg)' }, { transform: 'translate(-50%,-30%) rotate(0deg)' }], { duration: 140 });
+            }
+        }
     },
 
     resolveSpin() {
         // La aguja estática está arriba, a los 270 grados en el canvas estándar.
-        let effectiveAngle = (270 - this.currentAngle) % 360;
-        if (effectiveAngle < 0) effectiveAngle += 360;
-        
-        let sliceAngle = 360 / this.numSlices;
-        let winningIndex = Math.floor(effectiveAngle / sliceAngle);
-        
+        let winningIndex = this.sliceUnderPointer();
+
         let wonSlice = this.slices[winningIndex];
-        
+
         this.score = Math.max(0, this.score + wonSlice.pts);
         document.getElementById('rul-score').innerText = this.score;
+
+        // Efectos según resultado
+        const fx = document.getElementById('rul-fx');
+        const wrap = document.getElementById('rul-wheel-wrap');
+        const wr = wrap.getBoundingClientRect(), fr = fx.getBoundingClientRect();
+        const cx = wr.left - fr.left + wr.width / 2, cy = wr.top - fr.top + wr.height / 2;
+        this.lastWin = { index: winningIndex, until: performance.now() + 1800, good: wonSlice.pts > 0 };
+        const sliceName = wonSlice.type === 'jackpot' ? 'Gran Cosecha' : (wonSlice.pts > 0 ? 'Cosecha' : 'Plaga');
+        if (wonSlice.pts > 0) this.goodSpins++; else this.badSpins++;
+        window.hzUi.log('rul-log', wonSlice.icon, `Giro ${this.spinsTotal - this.spinsLeft} · ${sliceName}`,
+            `${wonSlice.pts > 0 ? '+' : ''}${wonSlice.pts.toLocaleString()}`, wonSlice.type === 'jackpot' ? 'gold' : (wonSlice.pts > 0 ? 'good' : 'bad'));
+        window.hzUi.goal(this.score);
+        window.hzUi.set('rul-st-used', this.spinsTotal - this.spinsLeft);
+        window.hzUi.set('rul-st-good', this.goodSpins);
+        window.hzUi.set('rul-st-bad', this.badSpins);
 
         // Reproducir sonido según resultado
         if (wonSlice.pts > 0) {
             this.playBonusSound();
+            if (wonSlice.type === 'jackpot') {
+                window.hzFx.pop(fx, cx, cy - 50, '¡GRAN COSECHA!');
+                window.hzFx.pop(fx, cx, cy, `+${wonSlice.pts.toLocaleString()}`);
+                window.hzFx.burst(fx, cx, cy, 30, ['🌻', '🪙', '✨', '🍃']);
+            } else {
+                window.hzFx.pop(fx, cx, cy - 20, `+${wonSlice.pts.toLocaleString()}`);
+                window.hzFx.burst(fx, cx, cy, 14, [wonSlice.icon, '🍃', '✨']);
+            }
         } else {
             this.playErrorSound();
+            window.hzFx.pop(fx, cx, cy - 20, `${wonSlice.pts}`, true);
+            window.hzFx.burst(fx, cx, cy, 10, ['🐛', '🥀', '🍂']);
+            window.hzFx.retrigger(wrap, 'hz-shake');
         }
 
         if (this.score >= 10000 || this.spinsLeft <= 0) {
@@ -486,90 +762,167 @@ window.rouletteApp = {
             this.inputState = 'READY';
             const btn = document.getElementById('rul-action-btn');
             btn.disabled = false;
-            btn.innerHTML = "<span>🎡</span> Girar Ruleta";
-            btn.classList.replace('bg-slate-500', 'bg-cg_blue');
-            btn.classList.replace('hover:bg-slate-600', 'hover:bg-blue-500');
-            btn.classList.replace('shadow-[0_0_20px_rgba(100,116,139,0.5)]', 'shadow-[0_6px_0_#1e3a8a]');
-            btn.classList.replace('text-white', 'text-slate-900');
+            btn.innerHTML = "<span>🌻</span> Girar la Rueda";
+            btn.dataset.state = 'go';
         }
     },
 
     draw() {
-        if (!this.ctx) return;
-        this.ctx.clearRect(0, 0, this.size, this.size);
+        if (!this.ctx || !this.slices.length) return;
+        const ctx = this.ctx;
+        const now = performance.now();
+        ctx.clearRect(0, 0, this.size, this.size);
         const center = this.size / 2;
-        const radius = (this.size / 2) - 10;
-
-        this.ctx.save();
-        this.ctx.translate(center, center);
-        this.ctx.rotate((this.currentAngle * Math.PI) / 180);
-
+        const rimOuter = center - 6;
+        const rimInner = rimOuter - 22;
+        const radius = rimInner - 2;
         const sliceAngle = (2 * Math.PI) / this.numSlices;
+        const win = this.lastWin && now < this.lastWin.until ? this.lastWin : null;
 
-        // Dibujar Secciones Glassmorphism
+        // --- Aro de madera con focos (no gira) ---
+        ctx.save();
+        ctx.translate(center, center);
+        const wood = ctx.createRadialGradient(0, 0, rimInner, 0, 0, rimOuter);
+        wood.addColorStop(0, '#4A2A12');
+        wood.addColorStop(0.5, '#9c6434');
+        wood.addColorStop(1, '#5a3418');
+        ctx.beginPath();
+        ctx.arc(0, 0, rimOuter, 0, Math.PI * 2);
+        ctx.arc(0, 0, rimInner, 0, Math.PI * 2, true);
+        ctx.fillStyle = wood;
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#1C2634';
+        ctx.beginPath(); ctx.arc(0, 0, rimOuter, 0, Math.PI * 2); ctx.stroke();
+
+        const bulbs = 24;
+        const speed = this.inputState === 'READY' ? 260 : 70;
+        const step = Math.floor(now / speed);
+        for (let b = 0; b < bulbs; b++) {
+            const a = (b / bulbs) * Math.PI * 2;
+            const bx = Math.cos(a) * (rimInner + 11), by = Math.sin(a) * (rimInner + 11);
+            let lit = (b + step) % 3 === 0;
+            if (win) lit = Math.floor(now / 120) % 2 === 0;
+            ctx.beginPath();
+            ctx.arc(bx, by, 4.2, 0, Math.PI * 2);
+            ctx.fillStyle = lit ? (win && !win.good ? '#ff8a8d' : '#fffbe0') : '#8a6a2a';
+            if (lit) { ctx.shadowColor = win && !win.good ? '#E5484D' : '#FDE062'; ctx.shadowBlur = 12; }
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#1C2634';
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // --- Rueda (gira) ---
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate((this.currentAngle * Math.PI) / 180);
+
         for (let i = 0; i < this.numSlices; i++) {
-            let slice = this.slices[i];
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, 0);
-            this.ctx.arc(0, 0, radius, i * sliceAngle, (i + 1) * sliceAngle);
-            this.ctx.closePath();
-            
-            this.ctx.fillStyle = slice.bg;
-            this.ctx.fill();
-            
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = slice.border;
-            this.ctx.stroke();
+            const slice = this.slices[i];
+            const a0 = i * sliceAngle, a1 = (i + 1) * sliceAngle;
+            const g = ctx.createRadialGradient(0, 0, 20, 0, 0, radius);
+            g.addColorStop(0, slice.grad[0]);
+            g.addColorStop(1, slice.grad[1]);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, radius, a0, a1);
+            ctx.closePath();
+            ctx.fillStyle = g;
+            ctx.fill();
 
-            // Dibujar Textos
-            this.ctx.save();
-            this.ctx.rotate(i * sliceAngle + sliceAngle / 2);
-            this.ctx.textAlign = 'right';
-            this.ctx.fillStyle = slice.text;
-            this.ctx.shadowColor = 'rgba(0,0,0,0.6)';
-            this.ctx.shadowBlur = 4;
-            
-            let textParts = slice.label.split(' ');
-            if (textParts.length > 1) {
-                this.ctx.font = '24px sans-serif';
-                this.ctx.fillText(textParts[0], radius - 70, 8);
-                this.ctx.font = '900 16px sans-serif';
-                this.ctx.fillText(textParts[1], radius - 15, 6);
-            } else {
-                this.ctx.font = '900 16px sans-serif';
-                this.ctx.fillText(slice.label, radius - 15, 6);
+            // Casilla ganadora: destello que late
+            if (win && win.index === i) {
+                ctx.fillStyle = `rgba(255,255,255,${0.25 + 0.25 * Math.sin(now / 80)})`;
+                ctx.fill();
             }
-            this.ctx.shadowBlur = 0;
-            this.ctx.restore();
+
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#1C2634';
+            ctx.stroke();
+
+            // Ícono y puntos
+            ctx.save();
+            ctx.rotate(a0 + sliceAngle / 2);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.translate(radius - 30, 0);
+            ctx.rotate(Math.PI / 2);
+            ctx.font = '26px sans-serif';
+            ctx.fillText(slice.icon, 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.rotate(a0 + sliceAngle / 2);
+            ctx.translate(radius - 72, 0);
+            ctx.rotate(Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = "19px 'Lilita One', sans-serif";
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#1C2634';
+            ctx.lineJoin = 'round';
+            ctx.strokeText(slice.label, 0, 0);
+            ctx.fillStyle = slice.type === 'jackpot' ? '#FDE062' : '#ffffff';
+            ctx.fillText(slice.label, 0, 0);
+            ctx.restore();
         }
 
-        // Círculo Central Decorativo Cyberpunk
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, 35, 0, 2 * Math.PI);
-        this.ctx.fillStyle = '#0f172a'; 
-        this.ctx.fill();
-        this.ctx.lineWidth = 4;
-        this.ctx.strokeStyle = '#38bdf8'; 
-        this.ctx.stroke();
-        
-        // Punto central interno
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, 15, 0, 2 * Math.PI);
-        this.ctx.fillStyle = '#eab308'; 
-        this.ctx.fill();
-        this.ctx.shadowColor = '#facc15';
-        this.ctx.shadowBlur = 10;
-        this.ctx.stroke();
-        this.ctx.shadowBlur = 0;
+        // Centro: girasol
+        const petals = 14;
+        for (let p = 0; p < petals; p++) {
+            ctx.save();
+            ctx.rotate((p / petals) * Math.PI * 2);
+            ctx.beginPath();
+            ctx.ellipse(0, -30, 9, 18, 0, 0, Math.PI * 2);
+            ctx.fillStyle = p % 2 ? '#FDE062' : '#ED9925';
+            ctx.fill();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#1C2634';
+            ctx.stroke();
+            ctx.restore();
+        }
+        const seedG = ctx.createRadialGradient(-6, -6, 2, 0, 0, 24);
+        seedG.addColorStop(0, '#8a5630');
+        seedG.addColorStop(1, '#3a2210');
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.fillStyle = seedG;
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#1C2634';
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(253,224,98,0.55)';
+        for (let s = 0; s < 18; s++) {
+            const ang = s * 2.39996, rr = 3.6 * Math.sqrt(s + 1);
+            ctx.beginPath();
+            ctx.arc(Math.cos(ang) * rr, Math.sin(ang) * rr, 1.6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
 
-        this.ctx.restore();
-        
-        // Borde exterior maestro de la ruleta luminoso
-        this.ctx.beginPath();
-        this.ctx.arc(center, center, radius + 2, 0, 2 * Math.PI);
-        this.ctx.lineWidth = 8;
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-        this.ctx.stroke();
+        // Brillo de cristal encima (no gira)
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.clip();
+        const gloss = ctx.createLinearGradient(-radius, -radius, radius, radius);
+        gloss.addColorStop(0, 'rgba(255,255,255,0.28)');
+        gloss.addColorStop(0.45, 'rgba(255,255,255,0)');
+        gloss.addColorStop(1, 'rgba(0,0,0,0.18)');
+        ctx.fillStyle = gloss;
+        ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+        ctx.restore();
+
+        // Borde interior
+        ctx.beginPath();
+        ctx.arc(center, center, radius, 0, 2 * Math.PI);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#1C2634';
+        ctx.stroke();
     },
 
     endGame() {
@@ -589,6 +942,10 @@ window.rouletteApp = {
         document.getElementById('res-base').innerText = this.score.toLocaleString();
         document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
         document.getElementById('res-total').innerText = finalScore.toLocaleString();
+        const used = this.spinsTotal - this.spinsLeft;
+        window.hzUi.set('res-rounds', used);
+        window.hzUi.set('res-hits', this.goodSpins);
+        window.hzUi.set('res-acc', (used ? Math.round(this.goodSpins / used * 100) : 0) + '%');
 
         window.finalRouletteScore = finalScore;
 
@@ -600,6 +957,7 @@ window.rouletteApp = {
 window.submitRouletteScore = async function() {
     const btn = document.getElementById('btn-submit-score');
     btn.innerHTML = "<span>⏳</span> Registrando...";
+    btn.dataset.state = 'wait';
     btn.disabled = true;
 
     const username = sessionStorage.getItem('username');
@@ -616,20 +974,20 @@ window.submitRouletteScore = async function() {
                 body: JSON.stringify({
                     username: username,
                     match_id: pvpMatchId,
-                    update_data: { winner: username } 
+                    update_data: { winner: username }
                 })
             });
         } catch(e) { console.error(e); }
-        
+
         sessionStorage.removeItem('pvp_match_id');
         sessionStorage.removeItem('pvp_bet_amount');
-        
+
         if (window.farmApp) {
             window.farmApp.state.combatLock = false;
             window.farmApp.saveState();
         }
-        
-        loadView('farm', document.querySelectorAll('.nav-btn-desktop')[0]); 
+
+        loadView('farm', document.querySelectorAll('.nav-btn-desktop')[0]);
         return;
     }
 
@@ -669,17 +1027,15 @@ window.submitRouletteScore = async function() {
     sessionStorage.removeItem('pve_tournament_id');
     sessionStorage.removeItem('pve_tournament_fee');
     sessionStorage.removeItem('pve_tournament_instance');
-    
+
     if (window.farmApp) {
         window.farmApp.state.combatLock = false;
         window.farmApp.saveState();
     }
 
-    loadView('nutrients', document.querySelectorAll('.nav-btn-desktop')[2]); 
+    loadView('nutrients', document.querySelectorAll('.nav-btn-desktop')[2]);
 };
 
 // Iniciar app de inmediato configurando la UI
 window.rouletteApp.init();
-
 </script>
-</div>
