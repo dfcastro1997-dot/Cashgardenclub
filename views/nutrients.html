@@ -271,30 +271,39 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                 
                 <!-- Opcion Pachinko -->
-                <div onclick="openPlantSelectionModal('pachinko')" class="bg-white border-2 border-gray-200 hover:border-blue-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-blue-100 p-2 overflow-hidden">
+                <div id="mg-card-pachinko" onclick="openPlantSelectionModal('pachinko')" class="relative bg-white border-2 border-gray-200 hover:border-blue-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center overflow-hidden">
+                    <div id="mg-overlay-pachinko" class="absolute inset-0 bg-black/50 z-20 hidden items-center justify-center backdrop-blur-[1px]">
+                        <span class="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-lg transform -rotate-12 shadow-lg border-2 border-white drop-shadow-md">Jugado 2/2</span>
+                    </div>
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-blue-100 p-2 overflow-hidden relative z-10">
                         <img src="assets/Fondos/Juego_001.png" class="w-full h-full object-contain">
                     </div>
-                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Pachinko Botánico</h4>
-                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Suelta semillas calculando el ángulo y la fuerza correctos para encestarlas.</p>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2 relative z-10">Pachinko Botánico</h4>
+                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed relative z-10">Suelta semillas calculando el ángulo y la fuerza correctos para encestarlas.</p>
                 </div>
                 
                 <!-- Opcion Disco Táctico (Antes Ruleta) -->
-                <div onclick="openPlantSelectionModal('ruleta')" class="bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-yellow-100 p-2 overflow-hidden">
+                <div id="mg-card-ruleta" onclick="openPlantSelectionModal('ruleta')" class="relative bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center overflow-hidden">
+                    <div id="mg-overlay-ruleta" class="absolute inset-0 bg-black/50 z-20 hidden items-center justify-center backdrop-blur-[1px]">
+                        <span class="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-lg transform -rotate-12 shadow-lg border-2 border-white drop-shadow-md">Jugado 2/2</span>
+                    </div>
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-yellow-100 p-2 overflow-hidden relative z-10">
                         <img src="assets/Fondos/Juego_002.png" class="w-full h-full object-contain">
                     </div>
-                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Disco Táctico</h4>
-                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Frena la aguja en el momento exacto calculando la inercia del disco veloz.</p>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2 relative z-10">Disco Táctico</h4>
+                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed relative z-10">Frena la aguja en el momento exacto calculando la inercia del disco veloz.</p>
                 </div>
 
                 <!-- Opcion Cilindros (Antes Tragamonedas) -->
-                <div onclick="openPlantSelectionModal('tragamonedas')" class="bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-green-100 p-2 overflow-hidden">
+                <div id="mg-card-tragamonedas" onclick="openPlantSelectionModal('tragamonedas')" class="relative bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center overflow-hidden">
+                    <div id="mg-overlay-tragamonedas" class="absolute inset-0 bg-black/50 z-20 hidden items-center justify-center backdrop-blur-[1px]">
+                        <span class="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-lg transform -rotate-12 shadow-lg border-2 border-white drop-shadow-md">Jugado 2/2</span>
+                    </div>
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-green-100 p-2 overflow-hidden relative z-10">
                         <img src="assets/Fondos/Juego_003.png" class="w-full h-full object-contain">
                     </div>
-                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2">Cilindros Sincronizados</h4>
-                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed">Detén manualmente los 3 rodillos sincronizando tu vista y reflejos.</p>
+                    <h4 class="font-black text-base sm:text-lg text-cg_navy mb-2 relative z-10">Cilindros Sincronizados</h4>
+                    <p class="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed relative z-10">Detén manualmente los 3 rodillos sincronizando tu vista y reflejos.</p>
                 </div>
 
             </div>
@@ -527,11 +536,36 @@
         window.pendingTournament = null;
     };
 
+
     // 2. Abrir Modal de Selección de Minijuego (Paso 2)
     window.openMinigameSelectionModal = function() {
         document.getElementById('instructions-modal').classList.add('hidden');
         document.getElementById('instructions-modal').classList.remove('flex');
         
+        // --- ACTUALIZAR ESTADO VISUAL DE LÍMITES DE MINIJUEGOS ---
+        if (window.pendingTournament) {
+            const t_id = window.pendingTournament.id;
+            const limits = window.farmApp.state.tournamentLimits?.[t_id]?.minigames || {};
+            
+            ['pachinko', 'ruleta', 'tragamonedas'].forEach(game => {
+                const card = document.getElementById(`mg-card-${game}`);
+                const overlay = document.getElementById(`mg-overlay-${game}`);
+                const uses = limits[game] || 0;
+                
+                if (card && overlay) {
+                    if (uses >= 2) {
+                        card.classList.add('pointer-events-none', 'grayscale');
+                        overlay.classList.remove('hidden');
+                        overlay.classList.add('flex');
+                    } else {
+                        card.classList.remove('pointer-events-none', 'grayscale');
+                        overlay.classList.add('hidden');
+                        overlay.classList.remove('flex');
+                    }
+                }
+            });
+        }
+
         document.getElementById('minigame-selection-modal').classList.remove('hidden');
         document.getElementById('minigame-selection-modal').classList.add('flex');
     };
@@ -544,17 +578,11 @@
 
     window.openPlantSelectionModal = function(minigame) {
         if (!window.pendingTournament) return;
-        
         const t_id = window.pendingTournament.id;
-        
-        // --- VALIDAR LÍMITE DE MINIJUEGO (MAX 2) ---
-        if (!window.farmApp.state.tournamentLimits) window.farmApp.state.tournamentLimits = {};
-        if (!window.farmApp.state.tournamentLimits[t_id]) window.farmApp.state.tournamentLimits[t_id] = { minigames: {}, plants: {} };
-        
-        if ((window.farmApp.state.tournamentLimits[t_id].minigames[minigame] || 0) >= 2) {
-            alert('Has alcanzado el límite máximo de 2 usos para este minijuego en este torneo.');
-            return;
-        }
+
+        // Doble check silencioso por seguridad
+        let mgUses = window.farmApp.state.tournamentLimits?.[t_id]?.minigames?.[minigame] || 0;
+        if (mgUses >= 2) return;
 
         window.selectedMinigame = minigame; 
         
@@ -579,6 +607,8 @@
             return 'Vidas';
         };
 
+        const plantLimits = window.farmApp.state.tournamentLimits?.[t_id]?.plants || {};
+
         if (readyPlots.length === 0 && arsenal.length === 0) {
             html = '<p class="text-center text-gray-500 font-bold w-full col-span-full">No tienes plantas listas.</p>';
         } else {
@@ -586,12 +616,21 @@
                 let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
                 let attempts = getAttempts(p.plant.hp);
                 let actualHp = Math.floor(p.plant.hp || 100);
+                
+                let refId = 'plot_' + p.id;
+                let uses = plantLimits[refId] || 0;
+                let isMaxed = uses >= 2;
+                let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('plot', '${p.id}')"`;
+                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
+                let overlay = isMaxed ? `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>` : '';
+
                 html += `
-                    <div onclick="window.selectPlantForMinigame('plot', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
+                    <div ${clickAction} class="relative bg-white border-2 border-gray-200 rounded-2xl p-4 text-center transition-all shadow-sm ${visualClasses}">
+                        ${overlay}
                         <span class="block text-[10px] font-black text-green-600 mb-2 uppercase tracking-widest bg-green-50 rounded-md py-1">Terreno ${p.id}</span>
-                        <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
-                        <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.plant.name}</h4>
-                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
+                        <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md relative z-0">
+                        <h4 class="font-black text-xs text-cg_navy truncate mb-2 relative z-0">${p.plant.name}</h4>
+                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5 relative z-0">
                             <span title="Salud Actual (HP)">💖 ${actualHp}</span>
                             <span title="${getLabel()}">${getIcon()} ${attempts}</span>
                             <span title="Multiplicador (ATK)">⭐ ${p.plant.atk || 50}</span>
@@ -604,12 +643,21 @@
             arsenal.forEach(p => {
                 let attempts = getAttempts(p.hp);
                 let actualHp = Math.floor(p.hp || 100);
+                
+                let refId = 'arsenal_' + p.id;
+                let uses = plantLimits[refId] || 0;
+                let isMaxed = uses >= 2;
+                let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('arsenal', '${p.id}')"`;
+                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
+                let overlay = isMaxed ? `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>` : '';
+
                 html += `
-                    <div onclick="window.selectPlantForMinigame('arsenal', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
+                    <div ${clickAction} class="relative bg-white border-2 border-gray-200 rounded-2xl p-4 text-center transition-all shadow-sm ${visualClasses}">
+                        ${overlay}
                         <span class="block text-[10px] font-black text-red-600 mb-2 uppercase tracking-widest bg-red-50 rounded-md py-1">Arsenal</span>
-                        <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
-                        <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.name}</h4>
-                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
+                        <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md relative z-0">
+                        <h4 class="font-black text-xs text-cg_navy truncate mb-2 relative z-0">${p.name}</h4>
+                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5 relative z-0">
                             <span title="Salud Actual (HP)">💖 ${actualHp}</span>
                             <span title="${getLabel()}">${getIcon()} ${attempts}</span>
                             <span title="Multiplicador (ATK)">⭐ ${p.atk || 50}</span>
@@ -638,7 +686,6 @@
     };
 
     // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
-    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -648,16 +695,15 @@
         const fee = window.pendingTournament.fee;
         const seedCost = window.pendingTournament.seedCost || 0;
 
-        // --- VALIDAR LÍMITES DE LA PLANTA (MAX 2) ---
+        // --- VALIDAR LÍMITES DE LA PLANTA SILENCIOSAMENTE ---
         if (!window.farmApp.state.tournamentLimits) window.farmApp.state.tournamentLimits = {};
         if (!window.farmApp.state.tournamentLimits[t_id]) window.farmApp.state.tournamentLimits[t_id] = { minigames: {}, plants: {} };
         
         let limits = window.farmApp.state.tournamentLimits[t_id];
-        let plantRefId = type + '_' + idTag; // Identificador único de la planta
+        let plantRefId = type + '_' + idTag; 
         
         if ((limits.plants[plantRefId] || 0) >= 2) {
-            alert('Has alcanzado el límite máximo de 2 usos para esta planta en este torneo.');
-            return;
+            return; // Bloqueado visualmente, si lo clickea no hace nada
         }
 
         // --- DESGASTE DE LA PLANTA (PIERDE 50% DE HP) ---
