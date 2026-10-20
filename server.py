@@ -1260,7 +1260,16 @@ def join_tournament():
         
         # Validar JSON y evitar errores de NoneType
         state_str = user['game_state'] if user['game_state'] else '{}'
-        state = json.loads(state_str)
+        db_state = json.loads(state_str)
+        
+        if 'client_state' in data:
+            state = data['client_state']
+            # Seguridad: Conservar el balance de semillas y el inventario del servidor
+            state['seedsBalance'] = db_state.get('seedsBalance', 0)
+            if 'inventory' in db_state: state['inventory'] = db_state['inventory']
+        else:
+            state = db_state
+            
         current_seeds = int(state.get('seedsBalance') or 0)
         
         if current_seeds < seed_cost:

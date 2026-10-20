@@ -620,9 +620,17 @@
                 let refId = 'plot_' + p.id;
                 let uses = plantLimits[refId] || 0;
                 let isMaxed = uses >= 2;
-                let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('plot', '${p.id}')"`;
-                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
-                let overlay = isMaxed ? `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>` : '';
+                let isExhausted = actualHp <= 1; // VALIDACIÓN DE PLANTA AGOTADA
+                
+                let clickAction = (isMaxed || isExhausted) ? '' : `onclick="window.selectPlantForMinigame('plot', '${p.id}')"`;
+                let visualClasses = (isMaxed || isExhausted) ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
+                
+                let overlay = '';
+                if (isMaxed) {
+                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>`;
+                } else if (isExhausted) {
+                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-gray-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Planta Agotada</span></div>`;
+                }
 
                 html += `
                     <div ${clickAction} class="relative bg-white border-2 border-gray-200 rounded-2xl p-4 text-center transition-all shadow-sm ${visualClasses}">
@@ -647,9 +655,17 @@
                 let refId = 'arsenal_' + p.id;
                 let uses = plantLimits[refId] || 0;
                 let isMaxed = uses >= 2;
-                let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('arsenal', '${p.id}')"`;
-                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
-                let overlay = isMaxed ? `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>` : '';
+                let isExhausted = actualHp <= 1; // VALIDACIÓN DE PLANTA AGOTADA
+                
+                let clickAction = (isMaxed || isExhausted) ? '' : `onclick="window.selectPlantForMinigame('arsenal', '${p.id}')"`;
+                let visualClasses = (isMaxed || isExhausted) ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
+                
+                let overlay = '';
+                if (isMaxed) {
+                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>`;
+                } else if (isExhausted) {
+                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-gray-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Planta Agotada</span></div>`;
+                }
 
                 html += `
                     <div ${clickAction} class="relative bg-white border-2 border-gray-200 rounded-2xl p-4 text-center transition-all shadow-sm ${visualClasses}">
@@ -677,7 +693,6 @@
         document.getElementById('plant-selection-modal').classList.remove('hidden');
         document.getElementById('plant-selection-modal').classList.add('flex');
     };
-
     window.closePlantSelectionModal = function() {
         document.getElementById('plant-selection-modal').classList.add('hidden');
         document.getElementById('plant-selection-modal').classList.remove('flex');
@@ -685,7 +700,6 @@
         window.selectedMinigame = null;
     };
 
-    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -695,17 +709,12 @@
         const fee = window.pendingTournament.fee;
         const seedCost = window.pendingTournament.seedCost || 0;
 
-        // --- VALIDAR LÍMITES DE LA PLANTA SILENCIOSAMENTE ---
         if (!window.farmApp.state.tournamentLimits) window.farmApp.state.tournamentLimits = {};
         if (!window.farmApp.state.tournamentLimits[t_id]) window.farmApp.state.tournamentLimits[t_id] = { minigames: {}, plants: {} };
         
         let limits = window.farmApp.state.tournamentLimits[t_id];
         let plantRefId = type + '_' + idTag; 
         
-        if ((limits.plants[plantRefId] || 0) >= 2) {
-            return; // Bloqueado visualmente, si lo clickea no hace nada
-        }
-
         // --- DESGASTE DE LA PLANTA (PIERDE 50% DE HP) ---
         let selectedPlant;
         if (type === 'plot') {
@@ -715,13 +724,19 @@
         }
 
         if (selectedPlant) {
-            // Validar que la planta no esté al borde de la muerte (mínimo 2 HP para poder perder la mitad)
-            if (selectedPlant.hp <= 1) {
-                alert("Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.");
-                return;
-            }
             selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5)); // Resta el 50%
         }
+
+        // --- REGISTRAR EL USO Y DESGASTE ANTES DE ENVIAR A LA BASE DE DATOS ---
+        limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
+        limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
+
+        if (t_id === 1) {
+            window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
+        }
+
+        window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
+        window.farmApp.state.combatLock = true;
 
         try {
             const res = await fetch('/api/tournaments/join', {
@@ -731,31 +746,23 @@
                     username: username,
                     session_token: token,
                     fee: fee,
-                    tournament_id: t_id
+                    tournament_id: t_id,
+                    client_state: window.farmApp.state // SE ENVÍA EL ESTADO COMPLETO PARA GUARDAR
                 })
             });
             const data = await res.json();
             
             if (res.ok) {
-                // --- APLICAR COSTOS DE RECOMPRA Y CONTEO FREEROLL ---
-                if (t_id === 1) {
-                    window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
-                    if (seedCost > 0) {
-                        window.farmApp.state.seedsBalance -= seedCost;
-                    }
+                // Sincronizar las semillas con lo que descontó el servidor
+                if (t_id === 1 && seedCost > 0) {
+                    window.farmApp.state.seedsBalance -= seedCost;
                 }
-
-                // --- REGISTRAR EL USO DEL MINIJUEGO Y LA PLANTA ---
-                limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
-                limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
-
+                
+                window.farmApp.saveState(); // Guardado de respaldo
+                
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
                 sessionStorage.setItem('pve_tournament_instance', data.instance_id); 
-                
-                window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
-                window.farmApp.state.combatLock = true;
-                window.farmApp.saveState();
                 
                 document.getElementById('plant-selection-modal').classList.add('hidden');
                 document.getElementById('plant-selection-modal').classList.remove('flex');
