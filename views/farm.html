@@ -2861,17 +2861,9 @@ if (typeof window.farmApp === 'undefined') {
                         </div>
                     </div>
                     <div class="flex gap-2 w-full mt-1">
-                        <div class="flex-1 bg-yellow-50/50 rounded-xl p-2 border border-yellow-100 text-center shadow-sm">
-                            <span class="block text-[8px] font-black text-yellow-600 uppercase tracking-widest mb-0.5">Fichas</span>
-                            <span id="welcome-plant-hp" class="font-black text-yellow-700 text-sm sm:text-base">🪙 ${Math.max(1, Math.floor(pHp / 10))}</span>
-                        </div>
-                        <div class="flex-1 bg-orange-50/50 rounded-xl p-2 border border-orange-100 text-center shadow-sm">
-                            <span class="block text-[8px] font-black text-orange-500 uppercase tracking-widest mb-0.5">Multiplicador</span>
-                            <span id="welcome-plant-atk" class="font-black text-orange-600 text-sm sm:text-base">⭐ x${Math.max(1, Math.floor(pAtk / 10))}</span>
-                        </div>
-                        <div class="flex-1 bg-gray-50 rounded-xl p-2 border border-gray-200 text-center shadow-sm">
-                            <span class="block text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Control</span>
-                            <span id="welcome-plant-def" class="font-black text-gray-600 text-sm sm:text-base">⚙️ Nvl ${Math.max(1, Math.floor(pDef / 10))}</span>
+                        <div class="flex-1 bg-blue-50/50 rounded-xl p-2.5 border border-blue-100 text-center shadow-sm">
+                            <span class="block text-[8px] font-black text-blue-500 uppercase tracking-widest mb-0.5">Turnos Arena</span>
+                            <span id="welcome-plant-hp" class="font-black text-blue-800 text-sm sm:text-base">🎟️ ${Math.max(1, Math.floor(pHp / 10))} Intentos</span>
                         </div>
                     </div>
                 `;
@@ -3822,26 +3814,18 @@ if (typeof window.farmApp === 'undefined') {
                                         </button>
                                     </div>
 
-                                    <!-- Fila Inferior: Stats (Tiempo, Fichas, Mult, Control, Cosecha Estimada) -->
-                                    <div class="grid grid-cols-5 gap-1 sm:gap-1.5 w-full text-center pt-2 border-t border-gray-100">
-                                        <div class="bg-purple-50/80 rounded-lg p-1 border border-purple-100">
-                                            <span class="block text-[8px] font-bold text-purple-400 uppercase leading-none">Tiempo</span>
+                                    <!-- Fila Inferior: Stats (Tiempo, Turnos, Cosecha Estimada) -->
+                                    <div class="grid grid-cols-3 gap-2 w-full text-center pt-2 border-t border-gray-100">
+                                        <div class="bg-purple-50/80 rounded-lg p-1.5 border border-purple-100">
+                                            <span class="block text-[8px] font-bold text-purple-400 uppercase leading-none mb-1">Tiempo</span>
                                             <span class="font-black text-purple-600 text-[10px] sm:text-xs leading-tight">⏳ ${durationTxt}</span>
                                         </div>
-                                        <div class="bg-yellow-50/80 rounded-lg p-1 border border-yellow-100">
-                                            <span class="block text-[8px] font-bold text-yellow-600 uppercase leading-none">Fichas</span>
-                                            <span class="font-black text-yellow-700 text-[10px] sm:text-xs leading-tight">🪙 ${Math.max(1, Math.floor((dp.hp || 100) / 10))}</span>
+                                        <div class="bg-blue-50/80 rounded-lg p-1.5 border border-blue-100">
+                                            <span class="block text-[8px] font-bold text-blue-400 uppercase leading-none mb-1">Turnos</span>
+                                            <span class="font-black text-blue-700 text-[10px] sm:text-xs leading-tight">🎟️ ${Math.max(1, Math.floor((dp.hp || 100) / 10))}</span>
                                         </div>
-                                        <div class="bg-orange-50/80 rounded-lg p-1 border border-orange-100">
-                                            <span class="block text-[8px] font-bold text-orange-400 uppercase leading-none">Mult.</span>
-                                            <span class="font-black text-orange-600 text-[10px] sm:text-xs leading-tight">⭐ x${Math.max(1, Math.floor((dp.atk || 40) / 10))}</span>
-                                        </div>
-                                        <div class="bg-gray-100 rounded-lg p-1 border border-gray-200">
-                                            <span class="block text-[8px] font-bold text-gray-500 uppercase leading-none">Control</span>
-                                            <span class="font-black text-gray-600 text-[10px] sm:text-xs leading-tight">⚙️ Nvl ${Math.max(1, Math.floor((dp.def || 20) / 10))}</span>
-                                        </div>
-                                        <div class="bg-green-50/80 rounded-lg p-1 border border-green-200">
-                                            <span class="block text-[8px] font-bold text-green-700 uppercase leading-none">Cosecha</span>
+                                        <div class="bg-green-50/80 rounded-lg p-1.5 border border-green-200">
+                                            <span class="block text-[8px] font-bold text-green-700 uppercase leading-none mb-1">Cosecha</span>
                                             <span class="font-black text-green-600 text-[10px] sm:text-xs leading-tight">+${(dp.reward || 0).toLocaleString()}</span>
                                         </div>
                                     </div>
@@ -3886,11 +3870,9 @@ if (typeof window.farmApp === 'undefined') {
                     }
 
                     let statsHtml = `
-                        <div class="flex flex-wrap gap-1.5 mt-2">
-                            <span class="text-[9px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase font-black" title="Tiempo de crecimiento">⏳ ${pDuration}</span>
-                            <span class="text-[9px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 uppercase font-black" title="Fichas de Juego (Intentos)">🪙 ${Math.max(1, Math.floor(pHp / 10))}</span>
-                            <span class="text-[9px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 uppercase font-black" title="Multiplicador (Puntos)">⭐ x${Math.max(1, Math.floor(pAtk / 10))}</span>
-                            <span class="text-[9px] bg-gray-50 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase font-black" title="Control (Tolerancia Física)">⚙️ Nvl ${Math.max(1, Math.floor(pDef / 10))}</span>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-1 rounded-lg border border-purple-200 uppercase font-black" title="Tiempo de crecimiento">⏳ ${pDuration}</span>
+                            <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded-lg border border-blue-200 uppercase font-black" title="Turnos para la Arena">🎟️ ${Math.max(1, Math.floor(pHp / 10))} Turnos</span>
                         </div>
                     `;
 
