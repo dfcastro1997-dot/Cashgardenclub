@@ -320,7 +320,7 @@ def init_db():
     cur.execute("ALTER TABLE tree_state ADD COLUMN IF NOT EXISTS donation_count INTEGER DEFAULT 0;")
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS played_game VARCHAR(50);")
 
-    
+
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tree_config (
             id SERIAL PRIMARY KEY,
@@ -1069,25 +1069,6 @@ def buy_seeds():
         cur.close()
         conn.close()
 
-# ==========================================================
-# ENDPOINTS DE TORNEOS (SCHEDULED & SIT&GO HÍBRIDO)
-# ==========================================================
-
-def get_next_schedule_ms(t_id):
-    now = datetime.now(timezone.utc)
-    # Desfase para que no todos inicien a la vez: Bonsái(0h), Orquídea(1h), Rosa(2h), Loto(3h)
-    offset_hours = {1: 0, 3: 1, 4: 2, 5: 3}.get(t_id, 0)
-    
-    # Bloque base de 4 horas
-    base_hour = ((now.hour // 4) + 1) * 4
-    import datetime as dt
-    next_time = now.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(hours=base_hour + offset_hours)
-    
-    # Si la hora calculada ya quedó atrás en el tiempo actual, saltar al siguiente ciclo
-    if int(next_time.timestamp() * 1000) <= int(now.timestamp() * 1000):
-        next_time += dt.timedelta(hours=4)
-        
-    return int(next_time.timestamp() * 1000)
 
 def process_tournament_lifecycle(inst, conn, cur):
     now = int(time.time() * 1000)
@@ -1198,13 +1179,30 @@ def process_tournament_lifecycle(inst, conn, cur):
         
     return inst
 
+
+def get_next_schedule_ms(t_id):
+    from datetime import datetime, timezone, timedelta
+    now = datetime.now(timezone.utc)
+    # Desfase para que no todos inicien a la vez: Bonsái(0h), Orquídea(1h), Rosa(2h), Loto(3h)
+    offset_hours = {1: 0, 3: 1, 4: 2, 5: 3}.get(t_id, 0)
+    
+    # Bloque base de 4 horas
+    base_hour = ((now.hour // 4) + 1) * 4
+    next_time = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=base_hour + offset_hours)
+    
+    # Si la hora calculada ya quedó atrás en el tiempo actual, saltar al siguiente ciclo
+    if int(next_time.timestamp() * 1000) <= int(now.timestamp() * 1000):
+        next_time += timedelta(hours=4)
+        
+    return int(next_time.timestamp() * 1000)
+
 @app.route('/api/tournaments/join', methods=['POST'])
 def join_tournament():
     data = request.json
     username = data.get('username')
     token = data.get('session_token')
-    fee = float(data.get('fee', 0))
-    t_id = int(data.get('tournament_id', 1))
+    fee = float(data.get('fee') or 0)
+    t_id = int(data.get('tournament_id') or 1)
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -1218,13 +1216,15 @@ def join_tournament():
         if fee > 0 and current_balance < fee:
             return jsonify({"error": "Saldo COP Insuficiente"}), 400
 
+        # Bloquear configuración para evitar cruces
         cur.execute("SELECT id FROM tournament_config WHERE id = 1 FOR UPDATE")
         cur.execute("SELECT id, players_count, max_players, start_time FROM tournament_instances WHERE template_id = %s AND status = 'waiting' LIMIT 1", (t_id,))
         instance = cur.fetchone()
         
         if not instance:
             start_time = get_next_schedule_ms(t_id)
-            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_credits, max_players, start_time, prize_pool_credits) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, 10000 if t_id == 1 else 0))
+            prize_pool = 10000 if t_id == 1 else 0
+            cur.execute("INSERT INTO tournament_instances (template_id, entry_fee_credits, max_players, start_time, prize_pool_credits) VALUES (%s, %s, 1000, %s, %s) RETURNING id", (t_id, fee, start_time, prize_pool))
             instance_id = int(cur.fetchone()['id'])
             players_count = 0
             tourney_status = 'waiting'
@@ -1236,18 +1236,18 @@ def join_tournament():
             tourney_status = 'waiting'
             end_time = 0
 
-        # Costos en semillas mapeados correctamente
+        # Mapeo de costos en semillas
         seed_cost = {0: 0, 5000: 5000, 10000: 15000, 30000: 30000, 50000: 50000}.get(fee, 0)
         
-        # Validar y cargar JSON de forma segura
+        # Validar JSON y evitar errores de NoneType
         state_str = user['game_state'] if user['game_state'] else '{}'
         state = json.loads(state_str)
-        current_seeds = int(state.get('seedsBalance', 0))
+        current_seeds = int(state.get('seedsBalance') or 0)
         
         if current_seeds < seed_cost:
             return jsonify({"error": f"Requiere {seed_cost} 🌱 para participar"}), 400
 
-        # Anti-Duplicado: Borrar inscripciones previas en instancias en espera
+        # Borrar inscripciones previas en instancias en espera (Anti-Duplicado)
         cur.execute("DELETE FROM tournament_players WHERE user_id = %s AND instance_id IN (SELECT id FROM tournament_instances WHERE status = 'waiting')", (user['id'],))
 
         # Cobro
@@ -1258,15 +1258,15 @@ def join_tournament():
             cur.execute("UPDATE tournament_instances SET prize_pool_credits = prize_pool_credits + %s WHERE id = %s", (prize_addition, instance_id))
             cur.execute("INSERT INTO financial_ledger (user_id, transaction_type, amount_credits, external_reference, status) VALUES (%s, 'tournament_entry', %s, %s, 'completed')", (user['id'], fee, f"TOURNEY-{user['id']}-{int(time.time()*1000)}"))
 
-        # Inserción segura con tipos casteados explícitamente
+        # Inserción limpia: Eliminadas las referencias a alchemy_precision y alchemy_time
         cur.execute(
-            "INSERT INTO tournament_players (instance_id, user_id, username, alchemy_precision, alchemy_time, current_score) VALUES (%s, %s, %s, %s, %s, %s)",
-            (instance_id, int(user['id']), str(username), 0.000, 0.00, 0.00)
+            "INSERT INTO tournament_players (instance_id, user_id, username, current_score) VALUES (%s, %s, %s, %s)",
+            (instance_id, int(user['id']), str(username), 0.00)
         )
 
         cur.execute("UPDATE tournament_instances SET players_count = players_count + 1 WHERE id = %s", (instance_id,))
         
-        # Guardado de JSON asegurado
+        # Guardado del estado
         safe_state_json = json.dumps(state)
         cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (safe_state_json, user['id']))
         
@@ -1283,11 +1283,14 @@ def join_tournament():
         })
     except Exception as e:
         conn.rollback()
-        print(f"Error en join_tournament: {str(e)}") # Esto imprimirá el error real en tu consola de Railway
-        return jsonify({"error": "Error interno al registrar inscripción. Ver consola."}), 500
+        print(f"Error fatal en join_tournament: {str(e)}") 
+        return jsonify({"error": f"Error del sistema: {str(e)}"}), 500
     finally:
         cur.close()
         conn.close()
+
+
+
 
 @app.route('/api/tournaments/submit_score', methods=['POST'])
 def submit_tournament_score():
