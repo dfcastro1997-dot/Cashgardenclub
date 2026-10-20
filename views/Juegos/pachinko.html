@@ -16,7 +16,7 @@
         <!-- PANTALLA 1: SPLASH (CARGA)                 -->
         <!-- ========================================== -->
         <div id="pak-splash-screen" class="hz-felt absolute inset-0 z-40 flex flex-col items-center justify-center transition-opacity duration-700 overflow-hidden">
-            <div class="hz-leaves"><span style="left:8%;animation-duration:9s">🌰</span><span style="left:30%;animation-duration:12s;animation-delay:-4s">🍃</span><span style="left:62%;animation-duration:10s;animation-delay:-2s">🌱</span><span style="left:85%;animation-duration:13s;animation-delay:-7s">🍃</span></div>
+            <div class="hz-leaves"><span style="left:8%;animation-duration:9s">🌱</span><span style="left:30%;animation-duration:12s;animation-delay:-4s">🍃</span><span style="left:62%;animation-duration:10s;animation-delay:-2s">✨</span><span style="left:85%;animation-duration:13s;animation-delay:-7s">🍃</span></div>
 
             <div class="hz-flies"><b style="left:20%;top:30%"></b><b style="left:75%;top:25%;animation-delay:-3s,-1s"></b><b style="left:60%;top:70%;animation-delay:-5s,-2s"></b><b style="left:15%;top:75%;animation-delay:-2s,-.5s"></b></div>
 
@@ -72,30 +72,30 @@
                 <!-- Columna estadísticas -->
                 <div class="flex flex-col">
                     <div class="px-5 space-y-3 flex-1 lg:px-0">
-                <!-- SEMILLAS -->
+                <!-- TURNOS -->
                 <div class="hz-card">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="hz-card__icon bg-[#b6f59a]">🌰</div>
+                        <div class="hz-card__icon bg-[#b6f59a]">⏳</div>
                         <div class="flex-1">
                             <div class="flex justify-between items-baseline">
-                                <span class="text-[11px] font-black uppercase tracking-widest">Vida / Semillas</span>
+                                <span class="text-[11px] font-black uppercase tracking-widest">Vida / Turnos</span>
                                 <span id="intro-val-hp" class="hz-num text-lg">-- HP</span>
                             </div>
                             <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#4CAF50] w-[0%]"></div></div>
                         </div>
                     </div>
                     <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                        Esta planta te da <strong class="text-[#2e7d32]" id="intro-seeds">-- Semillas</strong> para lanzar.
+                        Esta planta te da <strong class="text-[#2e7d32]" id="intro-seeds">-- Turnos</strong> para lanzar.
                     </p>
                 </div>
 
                 <!-- PUNTOS -->
                 <div class="hz-card">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="hz-card__icon bg-[#FDE062]">🪴</div>
+                        <div class="hz-card__icon bg-[#FDE062]">⭐</div>
                         <div class="flex-1">
                             <div class="flex justify-between items-baseline">
-                                <span class="text-[11px] font-black uppercase tracking-widest">Ataque / Puntos</span>
+                                <span class="text-[11px] font-black uppercase tracking-widest">Ataque / Multiplicador</span>
                                 <span id="intro-val-atk" class="hz-num text-lg">-- ATK</span>
                             </div>
                             <div class="hz-meter mt-1"><div id="intro-bar-atk" class="bg-[#ED9925] w-[0%]"></div></div>
@@ -109,24 +109,24 @@
                 <!-- CONTROL -->
                 <div class="hz-card">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="hz-card__icon bg-[#9fe3ff]">🎯</div>
+                        <div class="hz-card__icon bg-[#9fe3ff]">⚙️</div>
                         <div class="flex-1">
                             <div class="flex justify-between items-baseline">
-                                <span class="text-[11px] font-black uppercase tracking-widest">Control / Puntería</span>
+                                <span class="text-[11px] font-black uppercase tracking-widest">Control / Velocidad</span>
                                 <span id="intro-val-def" class="hz-num text-lg">-- DEF</span>
                             </div>
                             <div class="hz-meter mt-1"><div id="intro-bar-def" class="bg-[#2996DA] w-[0%]"></div></div>
                         </div>
                     </div>
                     <p id="intro-desc-def" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                        Dificultad <strong class="text-[#2996DA]" id="intro-diff">--</strong>. Más defensa, macetas más anchas.
+                        Velocidad <strong class="text-[#2996DA]" id="intro-diff">--</strong>. Más defensa, macetas receptoras más anchas.
                     </p>
                 </div>
 
                         <!-- META (escritorio) -->
                         <div class="hidden lg:flex hz-card items-center gap-3">
                             <div class="hz-card__icon bg-[#b6f59a]">🏆</div>
-                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong>; si la alcanzas antes, el tiempo sobrante suma bono.</p>
+                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong>; si la alcanzas antes, los turnos y tiempo sobrantes suman bono.</p>
                         </div>
                     </div>
 
@@ -161,8 +161,8 @@
                         <span id="pak-timer" class="hz-num text-base lg:text-xl text-white leading-none">60.0s</span>
                     </div>
                     <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
-                        <span class="hz-label !text-[#FCE9BE]">Semillas</span>
-                        <span class="hz-num text-base lg:text-xl text-[#b6f59a] leading-none">🌰 <span id="pak-ammo">0</span></span>
+                        <span class="hz-label !text-[#FCE9BE]">Turnos</span>
+                        <span class="hz-num text-base lg:text-xl text-[#b6f59a] leading-none">⏳ <span id="pak-ammo">0</span></span>
                     </div>
                 </div>
                 <!-- Meta (móvil) -->
@@ -194,7 +194,7 @@
                     <div class="hz-side">
                         <div class="hz-side__title">🪴 Macetas</div>
                         <div id="pak-paytable"></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Dificultad <span data-mirror="intro-diff" class="text-[#9fe3ff]">--</span>: tu defensa hace las macetas más anchas. La cosecha nunca baja de 0.</p>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Velocidad <span data-mirror="intro-diff" class="text-[#9fe3ff]">--</span>: tu defensa hace las macetas más anchas. La cosecha nunca baja de 0.</p>
                     </div>
 
                     <div class="hz-side">
@@ -229,7 +229,7 @@
                         <div class="hz-side__title">📊 Esta partida</div>
                         <div class="grid grid-cols-2 gap-2">
                             <div class="hz-stat"><b id="pak-st-shots">0</b><span>Lanzamientos</span></div>
-                            <div class="hz-stat"><b class="!text-[#b6f59a]" data-mirror="pak-ammo">0</b><span>Semillas</span></div>
+                            <div class="hz-stat"><b class="!text-[#b6f59a]" data-mirror="pak-ammo">0</b><span>Turnos</span></div>
                             <div class="hz-stat"><b id="pak-st-good" class="!text-[#7ED957]">0</b><span>En maceta</span></div>
                             <div class="hz-stat"><b id="pak-st-bad" class="!text-[#ff8a8d]">0</b><span>Plagas</span></div>
                         </div>
@@ -273,7 +273,7 @@
         <!-- ========================================== -->
         <div id="pak-result-screen" class="hz-felt absolute inset-0 z-50 hidden flex-col items-center justify-center p-6 text-center overflow-hidden">
             <div class="hz-flies"><b style="left:20%;top:30%"></b><b style="left:80%;top:40%;animation-delay:-3s,-1s"></b></div>
-            <div class="hz-leaves"><span style="left:10%;animation-duration:7s">🌰</span><span style="left:35%;animation-duration:9s;animation-delay:-3s">🪙</span><span style="left:60%;animation-duration:8s;animation-delay:-1s">🍃</span><span style="left:85%;animation-duration:10s;animation-delay:-6s">🪙</span></div>
+            <div class="hz-leaves"><span style="left:10%;animation-duration:7s">🌱</span><span style="left:35%;animation-duration:9s;animation-delay:-3s">🪙</span><span style="left:60%;animation-duration:8s;animation-delay:-1s">🍃</span><span style="left:85%;animation-duration:10s;animation-delay:-6s">🪙</span></div>
 
             <div class="w-full max-w-md lg:max-w-4xl lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center relative z-10">
                 <div>
@@ -301,6 +301,10 @@
                 <div class="hz-row">
                     <span class="text-[11px] font-black uppercase tracking-widest">Bono de tiempo</span>
                     <span class="hz-tag bg-[#9fe3ff]" id="res-time">+0</span>
+                </div>
+                <div class="hz-row">
+                    <span class="text-[11px] font-black uppercase tracking-widest">Bono de turnos</span>
+                    <span class="hz-tag bg-[#b6f59a]" id="res-turns">+0</span>
                 </div>
                 <div class="hz-row !pt-3">
                     <span class="text-sm font-black uppercase tracking-widest">Total</span>
@@ -548,11 +552,12 @@ window.pachinkoApp = {
         document.getElementById('intro-plant-img').src = plantImg;
         document.getElementById('intro-plant-name').innerText = plantName;
 
-        // Cálculos para la Intro (EQUILIBRADOS PARA 10k MAX)
+        // Cálculos para la Intro (El HP define los Turnos = Vidas/Intentos extra)
         this.seedsTotal = Math.max(5, Math.floor(this.hp / 10));
         const mult = 1 + (this.atk / 100);
-        // Si tienes 10 semillas y caen en la buena, cada una debe dar ~1000 base para llegar a 10k
-        const basePtsPerHit = Math.floor(10000 / this.seedsTotal);
+        
+        // Puntos fijos base para castigar plantas débiles y recompensar plantas fuertes en tiempo
+        const basePtsPerHit = 2000; 
         const ptsPerHit = Math.floor(basePtsPerHit * mult);
 
         // Calcular porcentaje visual de las barras
@@ -563,7 +568,7 @@ window.pachinkoApp = {
         // Actualizar UI del Análisis
         document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
         document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
-        document.getElementById('intro-seeds').innerText = `${this.seedsTotal} Semillas`;
+        document.getElementById('intro-seeds').innerText = `${this.seedsTotal} Turnos`;
 
         document.getElementById('intro-val-atk').innerText = `${this.atk} ATK`;
         document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
@@ -585,10 +590,10 @@ window.pachinkoApp = {
         this.seedsLeft = this.seedsTotal;
         document.getElementById('pak-ammo').innerText = this.seedsLeft;
 
-        // Construir el nivel
-        const wBase = (this.w / 4);
-        const wBonus = wBase * (this.def / 100);
-        const basketW = Math.min(wBase + wBonus, this.w / 3);
+        // Construir el nivel - Escalamiento de Defensa DRÁSTICO
+        const wBase = 50; 
+        const wBonus = 150 * (this.def / 100); 
+        const basketW = Math.min(wBase + wBonus, this.w * 0.6); // Puede ocupar casi todo el tablero con alta DEF
 
         this.buildLevel(mult, basketW, basePtsPerHit);
         this.renderPaytable();
@@ -721,13 +726,16 @@ window.pachinkoApp = {
         this.sparks = this.sparks.filter(s => (s.life -= 1) > 0);
         this.sparks.forEach(s => { s.x += s.vx; s.y += s.vy; s.vy += 0.08; });
 
+        // Factor de velocidad de los medidores basado en Defensa
+        const speedFactor = Math.max(0.3, 1 - (this.def / 200));
+
         if (this.inputState === 'ANGLE') {
-            this.angleVal += 1.5 * this.angleDir;
+            this.angleVal += (1.5 * speedFactor) * this.angleDir;
             if (this.angleVal >= 45 || this.angleVal <= -45) this.angleDir *= -1;
             document.getElementById('angle-cursor').style.left = `${50 + (this.angleVal / 45 * 50)}%`;
         }
         else if (this.inputState === 'POWER') {
-            this.powerVal += 2 * this.powerDir;
+            this.powerVal += (2.0 * speedFactor) * this.powerDir;
             if (this.powerVal >= 100 || this.powerVal <= 20) this.powerDir *= -1;
             document.getElementById('power-fill').style.width = `${this.powerVal}%`;
         }
@@ -1023,7 +1031,7 @@ window.pachinkoApp = {
             ctx.font = '13px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('🌰', this.w / 2, 16);
+            ctx.fillText('🌱', this.w / 2, 16);
         }
     },
 
@@ -1032,18 +1040,26 @@ window.pachinkoApp = {
         clearInterval(this.timerInterval);
         cancelAnimationFrame(this.rafId);
 
-        let finalScore = this.score;
+        let baseScore = Math.min(this.score, 10000); // Límite de puntaje base
         let timeBonus = 0;
-        if (finalScore >= 10000 && this.timeLeft > 0) {
-            timeBonus = Math.floor(this.timeLeft) * 10;
+        let turnsBonus = 0;
+
+        if (baseScore >= 10000) {
+            if (this.timeLeft > 0) {
+                timeBonus = Math.floor(this.timeLeft) * 10;
+            }
+            if (this.seedsLeft > 0) {
+                turnsBonus = this.seedsLeft * 50;
+            }
         }
 
-        finalScore += timeBonus;
-        if (finalScore > 10000) finalScore = 10000;
+        let finalScore = baseScore + timeBonus + turnsBonus;
 
-        document.getElementById('res-base').innerText = this.score.toLocaleString();
+        document.getElementById('res-base').innerText = baseScore.toLocaleString();
         document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
+        document.getElementById('res-turns').innerText = '+' + turnsBonus.toLocaleString();
         document.getElementById('res-total').innerText = finalScore.toLocaleString();
+        
         const shots = this.seedsTotal - this.seedsLeft;
         window.hzUi.set('res-rounds', shots);
         window.hzUi.set('res-hits', this.goodPots);

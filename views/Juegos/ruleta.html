@@ -72,31 +72,31 @@
                 <!-- Columna estadísticas -->
                 <div class="flex flex-col">
                     <div class="px-5 space-y-3 flex-1 lg:px-0">
-                        <!-- GIROS -->
+                        <!-- TURNOS -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="hz-card__icon bg-[#b6f59a]">🌱</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Vida / Giros</span>
-                                        <span id="intro-val-hp" class="hz-num text-lg">-- HP</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Turnos</span>
+                                        <span id="intro-val-hp" class="hz-num text-lg">--</span>
                                     </div>
                                     <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#4CAF50] w-[0%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Esta planta te da <strong class="text-[#2e7d32]" id="intro-spins">-- Giros</strong> en la rueda.
+                                Esta planta te da <strong class="text-[#2e7d32]" id="intro-spins">-- Turnos</strong> en la rueda.
                             </p>
                         </div>
 
-                        <!-- PREMIO -->
+                        <!-- MULTIPLICADOR -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="hz-card__icon bg-[#FDE062]">🌻</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Ataque / Premio</span>
-                                        <span id="intro-val-atk" class="hz-num text-lg">-- ATK</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Multiplicador</span>
+                                        <span id="intro-val-atk" class="hz-num text-lg">--</span>
                                     </div>
                                     <div class="hz-meter mt-1"><div id="intro-bar-atk" class="bg-[#ED9925] w-[0%]"></div></div>
                                 </div>
@@ -106,27 +106,27 @@
                             </p>
                         </div>
 
-                        <!-- FRICCIÓN -->
+                        <!-- VELOCIDAD -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="hz-card__icon bg-[#9fe3ff]">🌀</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Control / Freno</span>
-                                        <span id="intro-val-def" class="hz-num text-lg">-- DEF</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Velocidad</span>
+                                        <span id="intro-val-def" class="hz-num text-lg">--</span>
                                     </div>
                                     <div class="hz-meter mt-1"><div id="intro-bar-def" class="bg-[#2996DA] w-[0%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-def" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Freno de <strong class="text-[#2996DA]" id="intro-control">--</strong>. Más defensa, la rueda se detiene antes.
+                                Freno de <strong class="text-[#2996DA]" id="intro-control">--</strong>. Mayor control, la rueda se detiene antes.
                             </p>
                         </div>
 
                         <!-- META (escritorio) -->
                         <div class="hidden lg:flex hz-card items-center gap-3">
                             <div class="hz-card__icon bg-[#b6f59a]">🏆</div>
-                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong>; si la alcanzas antes, el tiempo sobrante suma bono.</p>
+                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong>; si la alcanzas antes, el tiempo y turnos sobrantes suman bono.</p>
                         </div>
                     </div>
 
@@ -161,7 +161,7 @@
                         <span id="rul-timer" class="hz-num text-base lg:text-xl text-white leading-none">60.0s</span>
                     </div>
                     <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
-                        <span class="hz-label !text-[#FCE9BE]">Giros</span>
+                        <span class="hz-label !text-[#FCE9BE]">Turnos</span>
                         <span class="hz-num text-base lg:text-xl text-[#b6f59a] leading-none">🌱 <span id="rul-ammo">0</span></span>
                     </div>
                 </div>
@@ -185,16 +185,16 @@
                         </div>
                         <div data-mirror="intro-plant-name" class="hz-title text-xl mt-1 mb-3 truncate">—</div>
                         <div class="grid grid-cols-3 gap-2">
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Vida</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Ataque</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Defensa</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Turnos</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Mult.</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Veloc.</span></div>
                         </div>
                     </div>
 
                     <div class="hz-side">
                         <div class="hz-side__title">🧺 Casillas de la rueda</div>
                         <div id="rul-paytable"></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los premios verdes y dorados ya incluyen tu ataque (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>). La cosecha nunca baja de 0.</p>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los premios verdes y dorados ya incluyen tu multiplicador (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>). La cosecha nunca baja de 0.</p>
                     </div>
 
                     <div class="hz-side">
@@ -248,8 +248,8 @@
                     <div class="hz-side">
                         <div class="hz-side__title">📊 Esta partida</div>
                         <div class="grid grid-cols-2 gap-2">
-                            <div class="hz-stat"><b id="rul-st-used">0</b><span>Giros usados</span></div>
-                            <div class="hz-stat"><b class="!text-[#b6f59a]" data-mirror="rul-ammo">0</b><span>Giros restantes</span></div>
+                            <div class="hz-stat"><b id="rul-st-used">0</b><span>Turnos usados</span></div>
+                            <div class="hz-stat"><b class="!text-[#b6f59a]" data-mirror="rul-ammo">0</b><span>Turnos rest.</span></div>
                             <div class="hz-stat"><b id="rul-st-good" class="!text-[#7ED957]">0</b><span>Cosechas</span></div>
                             <div class="hz-stat"><b id="rul-st-bad" class="!text-[#ff8a8d]">0</b><span>Plagas</span></div>
                         </div>
@@ -308,6 +308,10 @@
                         <div class="hz-row">
                             <span class="text-[11px] font-black uppercase tracking-widest">Bono de tiempo</span>
                             <span class="hz-tag bg-[#FDE062]" id="res-time">+0</span>
+                        </div>
+                        <div class="hz-row">
+                            <span class="text-[11px] font-black uppercase tracking-widest">Bono de turnos</span>
+                            <span class="hz-tag bg-[#b6f59a]" id="res-turns">+0</span>
                         </div>
                         <div class="hz-row !pt-3">
                             <span class="text-sm font-black uppercase tracking-widest">Total</span>
@@ -558,28 +562,29 @@ window.rouletteApp = {
         this.spinsTotal = Math.max(5, Math.floor(this.hp / 10));
         const mult = 1 + (this.atk / 100);
         
-        // El Jackpot debe estar fraccionado por la cantidad de giros para que la suma perfecta de 10,000
-        const baseJackpot = Math.floor(10000 / this.spinsTotal);
+        // Jackpot Fijo base
+        const baseJackpot = 2000;
         const jackpotPoints = Math.floor(baseJackpot * mult);
         
-        this.deceleration = 0.05 + (this.def / 100) * 0.1;
+        // Escalamiento drástico del freno basado en Defensa
+        this.deceleration = 0.01 + (this.def / 100) * 0.4;
 
         // Calcular porcentaje visual
         const hpPct = Math.min(100, (this.hp / 500) * 100);
         const atkPct = Math.min(100, (this.atk / 350) * 100);
         const defPct = Math.min(100, (this.def / 150) * 100);
 
-        // Llenar UI del Análisis
-        document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
+        // Llenar UI del Análisis (Sin textos de HP, ATK, DEF)
+        document.getElementById('intro-val-hp').innerText = `${this.hp}`;
         document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
-        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Giros`;
+        document.getElementById('intro-spins').innerText = `${this.spinsTotal} Turnos`;
 
-        document.getElementById('intro-val-atk').innerText = `${this.atk} ATK`;
+        document.getElementById('intro-val-atk').innerText = `x${mult.toFixed(1)}`;
         document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
         document.getElementById('intro-mult').innerText = `x${mult.toFixed(1)}`;
         document.getElementById('intro-pts').innerText = `+${jackpotPoints} Pts`;
 
-        document.getElementById('intro-val-def').innerText = `${this.def} DEF`;
+        document.getElementById('intro-val-def').innerText = `${this.def}`;
         document.getElementById('intro-bar-def').style.width = `${defPct}%`;
         document.getElementById('intro-control').innerText = `${this.deceleration.toFixed(2)}`;
 
@@ -601,7 +606,7 @@ window.rouletteApp = {
         const leafB = ['#7fd35c', '#2c7a33'];
         const plague = ['#c45a92', '#5e1f45'];
         
-        // Proporciones balanceadas relativas al jackpot base para asegurar igualdad
+        // Proporciones balanceadas
         const p100 = Math.floor(baseJackpot * mult);
         const p40 = Math.floor((baseJackpot * 0.4) * mult);
         const p20 = Math.floor((baseJackpot * 0.2) * mult);
@@ -939,17 +944,24 @@ window.rouletteApp = {
         clearInterval(this.timerInterval);
         cancelAnimationFrame(this.rafId);
 
-        let finalScore = this.score;
+        let baseScore = Math.min(this.score, 10000);
         let timeBonus = 0;
-        if (finalScore >= 10000 && this.timeLeft > 0) {
-            timeBonus = Math.floor(this.timeLeft) * 10;
+        let turnsBonus = 0;
+
+        if (baseScore >= 10000) {
+            if (this.timeLeft > 0) {
+                timeBonus = Math.floor(this.timeLeft) * 10;
+            }
+            if (this.spinsLeft > 0) {
+                turnsBonus = this.spinsLeft * 50;
+            }
         }
 
-        finalScore += timeBonus;
-        if (finalScore > 10000) finalScore = 10000;
+        let finalScore = baseScore + timeBonus + turnsBonus;
 
-        document.getElementById('res-base').innerText = this.score.toLocaleString();
+        document.getElementById('res-base').innerText = baseScore.toLocaleString();
         document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
+        document.getElementById('res-turns').innerText = '+' + turnsBonus.toLocaleString();
         document.getElementById('res-total').innerText = finalScore.toLocaleString();
         const used = this.spinsTotal - this.spinsLeft;
         window.hzUi.set('res-rounds', used);

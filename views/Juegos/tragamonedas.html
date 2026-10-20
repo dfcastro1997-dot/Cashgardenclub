@@ -72,61 +72,61 @@
                 <!-- Columna estadísticas -->
                 <div class="flex flex-col">
                     <div class="px-5 space-y-3 flex-1 lg:px-0">
-                        <!-- VIDAS -->
+                        <!-- TURNOS -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#ffb3b5]">❤️</div>
+                                <div class="hz-card__icon bg-[#ffb3b5]">⏳</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Vidas</span>
-                                        <span id="intro-val-hp" class="hz-num text-lg">-- HP</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Turnos</span>
+                                        <span id="intro-val-hp" class="hz-num text-lg">--</span>
                                     </div>
                                     <div class="hz-meter mt-1"><div id="intro-bar-hp" class="bg-[#E5484D] w-[0%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-hp" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Tienes <strong class="text-[#E5484D]" id="intro-lives">-- Vidas</strong>. Si la semilla objetivo no aparece en la línea, pierdes una.
+                                Tienes <strong class="text-[#E5484D]" id="intro-lives">-- Turnos</strong>. Si la semilla objetivo no aparece en la línea, pierdes uno.
                             </p>
                         </div>
 
-                        <!-- RACHA -->
+                        <!-- MULTIPLICADOR -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#FDE062]">🔥</div>
+                                <div class="hz-card__icon bg-[#FDE062]">⭐</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Racha / Ataque</span>
-                                        <span id="intro-val-atk" class="hz-num text-lg">-- ATK</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Multiplicador</span>
+                                        <span id="intro-val-atk" class="hz-num text-lg">--</span>
                                     </div>
                                     <div class="hz-meter mt-1"><div id="intro-bar-atk" class="bg-[#ED9925] w-[0%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-atk" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Racha base <strong class="text-[#B8701A]" id="intro-mult">x--</strong>. Cada acierto seguido hace crecer tu cosecha.
+                                Multiplicador base <strong class="text-[#B8701A]" id="intro-mult">x--</strong>. Cada acierto seguido hace crecer tu cosecha.
                             </p>
                         </div>
 
-                        <!-- CONTROL -->
+                        <!-- VELOCIDAD -->
                         <div class="hz-card">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="hz-card__icon bg-[#9fe3ff]">🌀</div>
+                                <div class="hz-card__icon bg-[#9fe3ff]">⚙️</div>
                                 <div class="flex-1">
                                     <div class="flex justify-between items-baseline">
-                                        <span class="text-[11px] font-black uppercase tracking-widest">Control / Reflejos</span>
-                                        <span id="intro-val-def" class="hz-num text-lg">-- DEF</span>
+                                        <span class="text-[11px] font-black uppercase tracking-widest">Velocidad</span>
+                                        <span id="intro-val-def" class="hz-num text-lg">--</span>
                                     </div>
                                     <div class="hz-meter mt-1"><div id="intro-bar-def" class="bg-[#2996DA] w-[0%]"></div></div>
                                 </div>
                             </div>
                             <p id="intro-desc-def" class="text-[11px] lg:text-xs leading-snug font-bold text-[#1C2634]/70">
-                                Velocidad <strong class="text-[#2996DA]" id="intro-speed">--</strong>. Más defensa, rodillos más lentos.
+                                Velocidad <strong class="text-[#2996DA]" id="intro-speed">--</strong>. Mayor control, rodillos más lentos.
                             </p>
                         </div>
 
                         <!-- META (escritorio) -->
                         <div class="hidden lg:flex hz-card items-center gap-3">
                             <div class="hz-card__icon bg-[#b6f59a]">🏆</div>
-                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong> y lo que te sobre de tiempo suma bono.</p>
+                            <p class="text-xs font-bold text-[#1C2634]/75 leading-snug">Tienes <strong>60 segundos</strong>. La cosecha máxima es de <strong>10.000</strong> y lo que te sobre de tiempo y turnos suma bono.</p>
                         </div>
                     </div>
 
@@ -161,8 +161,8 @@
                         <span id="trg-timer" class="hz-num text-base lg:text-xl text-white leading-none">60.0s</span>
                     </div>
                     <div class="hz-plank flex flex-col items-center px-2.5 py-1.5 lg:px-5">
-                        <span class="hz-label !text-[#FCE9BE]">Vidas</span>
-                        <span class="hz-num text-base lg:text-xl text-[#ff8a8d] leading-none">❤ <span id="trg-ammo">0</span></span>
+                        <span class="hz-label !text-[#FCE9BE]">Turnos</span>
+                        <span class="hz-num text-base lg:text-xl text-[#ff8a8d] leading-none">⏳ <span id="trg-ammo">0</span></span>
                     </div>
                 </div>
                 <!-- Meta (móvil) -->
@@ -185,9 +185,9 @@
                         </div>
                         <div data-mirror="intro-plant-name" class="hz-title text-xl mt-1 mb-3 truncate">—</div>
                         <div class="grid grid-cols-3 gap-2">
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Vida</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Ataque</span></div>
-                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Defensa</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-hp">--</b><span>Turnos</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-atk">--</b><span>Mult.</span></div>
+                            <div class="hz-chip-stat"><b data-mirror="intro-val-def">--</b><span>Veloc.</span></div>
                         </div>
                     </div>
 
@@ -196,7 +196,7 @@
                         <div class="hz-pay"><span class="hz-pay__l">🌱 1 semilla en línea</span><span class="hz-pay__r text-[#b6f59a]">100</span></div>
                         <div class="hz-pay"><span class="hz-pay__l">🌿 2 semillas en línea</span><span class="hz-pay__r text-[#7ED957]">300</span></div>
                         <div class="hz-pay !bg-[#FDE062]/15"><span class="hz-pay__l">🌻 3 · Gran Cosecha</span><span class="hz-pay__r text-[#FDE062]">800</span></div>
-                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los puntos se multiplican por tu ataque (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>) y por tu racha actual.</p>
+                        <p class="text-[11px] font-bold text-[#FFF7E3]/55 mt-3 leading-snug">Los puntos se multiplican por tu multiplicador (<span data-mirror="intro-mult" class="text-[#FDE062]">x--</span>) y por tu racha actual.</p>
                     </div>
 
                     <div class="hz-side">
@@ -204,7 +204,7 @@
                         <ol class="hz-steps">
                             <li>Mira la semilla objetivo de la ronda.</li>
                             <li>Frena los rodillos uno por uno cuando pase por la línea dorada.</li>
-                            <li>Sin aciertos pierdes una vida y la racha vuelve a x1.</li>
+                            <li>Sin aciertos pierdes un turno y la racha vuelve a x1.</li>
                         </ol>
                     </div>
                 </aside>
@@ -261,7 +261,7 @@
                             <div class="hz-stat"><b id="trg-st-rounds">0</b><span>Rondas</span></div>
                             <div class="hz-stat"><b id="trg-st-hits">0</b><span>Con acierto</span></div>
                             <div class="hz-stat"><b id="trg-st-best">x1.0</b><span>Mejor racha</span></div>
-                            <div class="hz-stat"><b class="!text-[#ff8a8d]" data-mirror="trg-ammo">0</b><span>Vidas</span></div>
+                            <div class="hz-stat"><b class="!text-[#ff8a8d]" data-mirror="trg-ammo">0</b><span>Turnos rest.</span></div>
                         </div>
                     </div>
 
@@ -322,6 +322,10 @@
                         <div class="hz-row">
                             <span class="text-[11px] font-black uppercase tracking-widest">Bono de tiempo</span>
                             <span class="hz-tag bg-[#9fe3ff]" id="res-time">+0</span>
+                        </div>
+                        <div class="hz-row">
+                            <span class="text-[11px] font-black uppercase tracking-widest">Bono de turnos</span>
+                            <span class="hz-tag bg-[#b6f59a]" id="res-turns">+0</span>
                         </div>
                         <div class="hz-row !pt-3">
                             <span class="text-sm font-black uppercase tracking-widest">Total</span>
@@ -560,25 +564,30 @@ window.slotApp = {
         document.getElementById('intro-plant-name').innerText = plantName;
 
         // Cálculos Botánicos -> Dificultad del juego (Sin Azar)
+        // El HP define los Turnos (Vidas/Rondas permitidas)
         this.livesTotal = Math.max(3, Math.floor(this.hp / 20));
-        let speedMultiplier = Math.max(0.6, 1.0 - (this.def / 250));
-        this.baseSpeeds = [0.12 * speedMultiplier, 0.16 * speedMultiplier, 0.20 * speedMultiplier];
+        
+        // Escalamiento drástico de velocidad basado en Defensa
+        let speedMultiplier = Math.max(0.2, 1.0 - (this.def / 100)); // Plantas caras giran MUY lento
+        this.baseSpeeds = [0.15 * speedMultiplier, 0.20 * speedMultiplier, 0.25 * speedMultiplier];
+        
         const atkMultiplier = 1 + (this.atk / 100);
 
         // Actualizar barras Intro
-        const hpPct = Math.min(100, (this.hp / 300) * 100);
+        const hpPct = Math.min(100, (this.hp / 500) * 100);
         const atkPct = Math.min(100, (this.atk / 350) * 100);
         const defPct = Math.min(100, (this.def / 150) * 100);
 
-        document.getElementById('intro-val-hp').innerText = `${this.hp} HP`;
+        // Reemplazar textos de HP, ATK, DEF por Turnos, Multiplicador, Velocidad
+        document.getElementById('intro-val-hp').innerText = `${this.hp}`;
         document.getElementById('intro-bar-hp').style.width = `${hpPct}%`;
-        document.getElementById('intro-lives').innerText = `${this.livesTotal} Vidas`;
+        document.getElementById('intro-lives').innerText = `${this.livesTotal} Turnos`;
 
-        document.getElementById('intro-val-atk').innerText = `${this.atk} ATK`;
+        document.getElementById('intro-val-atk').innerText = `x${atkMultiplier.toFixed(1)}`;
         document.getElementById('intro-bar-atk').style.width = `${atkPct}%`;
         document.getElementById('intro-mult').innerText = `x${atkMultiplier.toFixed(1)}`;
 
-        document.getElementById('intro-val-def').innerText = `${this.def} DEF`;
+        document.getElementById('intro-val-def').innerText = `${this.def}`;
         document.getElementById('intro-bar-def').style.width = `${defPct}%`;
 
         let speedText = "Rápida";
@@ -753,16 +762,11 @@ window.slotApp = {
         if (matchesCount > 0) {
             this.playBonusSound();
 
-            // PUNTOS EQUILIBRADOS PARA ALCANZAR LOS 10k EN 60s
-            // Calculamos un estimado de rondas posibles basadas en las Vidas
-            const estimatedRounds = this.livesTotal * 4; 
-            const basePointsToHit10k = 10000 / estimatedRounds;
-
-            // Escala progresiva basada en aciertos y ATK
+            // PUNTOS FIJOS BASE (Ya no se dividen entre los turnos)
             let baseRoundPts = 0;
-            if (matchesCount === 1) baseRoundPts = basePointsToHit10k * 0.3;
-            else if (matchesCount === 2) baseRoundPts = basePointsToHit10k * 0.8;
-            else if (matchesCount === 3) baseRoundPts = basePointsToHit10k * 2.5;
+            if (matchesCount === 1) baseRoundPts = 500;
+            else if (matchesCount === 2) baseRoundPts = 1500;
+            else if (matchesCount === 3) baseRoundPts = 4000;
 
             let atkMultiplier = 1 + (this.atk / 100);
             let ptsEarned = Math.floor(baseRoundPts * atkMultiplier * this.currentCombo);
@@ -797,11 +801,11 @@ window.slotApp = {
 
             btn.dataset.state = 'lose';
             this.resultFx = { until: performance.now() + 1000, hits, win: false };
-            window.hzFx.pop(fx, cx, cy - 30, '-1 ❤', true);
+            window.hzFx.pop(fx, cx, cy - 30, '-1 ⏳', true);
             window.hzFx.burst(fx, cx, cy, 8, ['🥀', '🍂']);
             window.hzFx.retrigger(machine, 'hz-shake');
 
-            window.hzUi.log('trg-log', '🥀', `0/3 · ${targetName}`, '-1 ❤', 'bad');
+            window.hzUi.log('trg-log', '🥀', `0/3 · ${targetName}`, '-1 ⏳', 'bad');
         }
 
         window.hzUi.goal(this.score);
@@ -964,20 +968,26 @@ window.slotApp = {
         clearInterval(this.timerInterval);
         cancelAnimationFrame(this.rafId);
 
-        let finalScore = this.score;
+        let baseScore = Math.min(this.score, 10000); // Límite de puntaje base
         let timeBonus = 0;
+        let turnsBonus = 0;
 
-        if (this.livesLeft > 0 && this.timeLeft > 0) {
-            timeBonus = Math.floor(this.timeLeft) * 10;
+        if (baseScore >= 10000) {
+            if (this.timeLeft > 0) {
+                timeBonus = Math.floor(this.timeLeft) * 10;
+            }
+            if (this.livesLeft > 0) {
+                turnsBonus = this.livesLeft * 50;
+            }
         }
 
-        finalScore += timeBonus;
-        if (finalScore > 10000) finalScore = 10000;
+        let finalScore = baseScore + timeBonus + turnsBonus;
 
-        document.getElementById('result-title').innerText = this.livesLeft <= 0 ? "¡Sin Vidas!" : "¡Tiempo Agotado!";
-        document.getElementById('res-base').innerText = this.score.toLocaleString();
+        document.getElementById('result-title').innerText = this.livesLeft <= 0 ? "¡Sin Turnos!" : "¡Tiempo Agotado!";
+        document.getElementById('res-base').innerText = baseScore.toLocaleString();
         document.getElementById('res-combo').innerText = 'x' + this.maxComboReached.toFixed(1);
         document.getElementById('res-time').innerText = '+' + timeBonus.toLocaleString();
+        document.getElementById('res-turns').innerText = '+' + turnsBonus.toLocaleString();
         document.getElementById('res-total').innerText = finalScore.toLocaleString();
         window.hzUi.set('res-rounds', this.roundsPlayed);
         window.hzUi.set('res-hits', this.roundsWon);
