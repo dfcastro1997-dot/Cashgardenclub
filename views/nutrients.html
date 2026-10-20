@@ -657,16 +657,16 @@
                 let refId = 'plot_' + p.id;
                 let uses = plantLimits[refId] || 0;
                 let isMaxed = uses >= 2;
-                let isExhausted = actualHp <= 1; // VALIDACIÓN DE PLANTA AGOTADA
+                let isExhausted = actualHp <= 1;
                 
-                let clickAction = (isMaxed || isExhausted) ? '' : `onclick="window.selectPlantForMinigame('plot', '${p.id}')"`;
-                let visualClasses = (isMaxed || isExhausted) ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
+                let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('plot', '${p.id}')"`;
+                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : (isExhausted ? 'grayscale opacity-80 cursor-pointer hover:border-red-400' : 'hover:border-cg_gold cursor-pointer hover:shadow-md');
                 
                 let overlay = '';
                 if (isMaxed) {
                     overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>`;
                 } else if (isExhausted) {
-                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-gray-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Planta Agotada</span></div>`;
+                    overlay = `<div class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md whitespace-nowrap">¡Agotada!</span></div>`;
                 }
 
                 html += `
@@ -692,16 +692,16 @@
                 let refId = 'arsenal_' + p.id;
                 let uses = plantLimits[refId] || 0;
                 let isMaxed = uses >= 2;
-                let isExhausted = actualHp <= 1; // VALIDACIÓN DE PLANTA AGOTADA
+                let isExhausted = actualHp <= 1;
                 
-                let clickAction = (isMaxed || isExhausted) ? '' : `onclick="window.selectPlantForMinigame('arsenal', '${p.id}')"`;
-                let visualClasses = (isMaxed || isExhausted) ? 'grayscale opacity-60 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md';
+                let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('arsenal', '${p.id}')"`;
+                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : (isExhausted ? 'grayscale opacity-80 cursor-pointer hover:border-red-400' : 'hover:border-cg_gold cursor-pointer hover:shadow-md');
                 
                 let overlay = '';
                 if (isMaxed) {
                     overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>`;
                 } else if (isExhausted) {
-                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-gray-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Planta Agotada</span></div>`;
+                    overlay = `<div class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md whitespace-nowrap">¡Agotada!</span></div>`;
                 }
 
                 html += `
@@ -737,6 +737,7 @@
         window.selectedMinigame = null;
     };
 
+    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 

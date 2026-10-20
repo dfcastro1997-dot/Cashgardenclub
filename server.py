@@ -244,6 +244,8 @@ def init_db():
             CONSTRAINT unique_entry_per_tournament UNIQUE(tournament_id, user_id)
         );
     ''')
+
+    
     cur.execute('''
         CREATE TABLE IF NOT EXISTS financial_ledger (
             id SERIAL PRIMARY KEY,
@@ -255,6 +257,22 @@ def init_db():
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
     ''')
+    
+    # 🚨 AÑADE ESTE PARCHE AQUÍ:
+    try:
+        cur.execute("ALTER TABLE financial_ledger RENAME COLUMN amount_cop TO amount_credits;")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        
+    try:
+        cur.execute("ALTER TABLE financial_ledger ADD COLUMN IF NOT EXISTS amount_credits NUMERIC(12, 2) DEFAULT 0.00;")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
+
+
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tournament_instances (
             id SERIAL PRIMARY KEY,
