@@ -2548,6 +2548,12 @@ if (typeof window.farmApp === 'undefined') {
                                         <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="flex-1 text-[9px] sm:text-[10px] bg-[#2E7D32] hover:bg-green-700 text-white font-bold transition-colors uppercase tracking-widest py-2 rounded-lg shadow-sm animate-pulse">
                                             Cosechar
                                         </button>
+                                    `}
+                                ` : `
+                                        <button onclick="window.farmApp.removePlant(${plot.id}); event.stopPropagation();"
+                                        <button onclick="window.farmApp.harvestPlant(${plot.id}); event.stopPropagation();" class="flex-1 text-[9px] sm:text-[10px] bg-[#2E7D32] hover:bg-green-700 text-white font-bold transition-colors uppercase tracking-widest py-2 rounded-lg shadow-sm animate-pulse">
+                                            Cosechar
+                                        </button>
                                         <button onclick="window.farmApp.storePlantForCombat(${plot.id}); event.stopPropagation();" class="flex-1 text-[9px] sm:text-[10px] bg-gray-700 hover:bg-gray-800 text-white font-bold transition-colors uppercase tracking-widest py-2 rounded-lg shadow-sm">
                                             Almacenar
                                         </button>
