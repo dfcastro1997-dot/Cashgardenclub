@@ -200,56 +200,58 @@
 <!-- ========================================== -->
 <div id="instructions-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeInstructionsModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-2xl relative z-10 flex flex-col overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 sm:p-8 text-center border-b border-gray-100 relative shrink-0">
             <button onclick="closeInstructionsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
-            <span class="text-cg_gold text-[10px] md:text-xs font-black uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full border border-orange-200">Juegos de Habilidad</span>
-            <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mt-4">Arena de Minijuegos</h3>
-            <p class="text-gray-500 text-xs md:text-sm font-medium mt-2">La física es 100% predecible. Tu destreza y la planta que elijas definirán tu puntuación.</p>
+            <div class="flex justify-center mb-4">
+                <span class="text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-widest bg-white px-4 py-1.5 rounded-full border border-orange-200 shadow-sm">Juegos de Habilidad</span>
+            </div>
+            <h3 class="text-xl sm:text-3xl font-black text-cg_navy tracking-tight mb-2">Arena de Minijuegos</h3>
+            <p class="text-gray-500 text-xs md:text-sm font-medium">La física es 100% predecible. Tu destreza y la planta que elijas definirán tu puntuación.</p>
         </div>
 
         <div class="p-5 sm:p-8 bg-gray-50 flex-1 overflow-y-auto">
             <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Fórmula Estándar de Balance</h4>
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm text-center">
-                    <span class="block text-[9px] text-gray-400 font-bold uppercase">Puntaje Base Max</span>
-                    <span class="font-black text-cg_navy text-sm">10.000 Puntos</span>
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Puntaje Base Max</span>
+                    <span class="font-black text-cg_navy text-sm md:text-base">10.000 Puntos</span>
                 </div>
-                <div class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm text-center">
-                    <span class="block text-[9px] text-gray-400 font-bold uppercase">Tiempo Límite</span>
-                    <span class="font-black text-cg_navy text-sm">60 Segundos</span>
+                <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Tiempo Límite</span>
+                    <span class="font-black text-cg_navy text-sm md:text-base">60 Segundos</span>
                 </div>
-                <div class="bg-green-50 border border-green-200 p-3 rounded-xl shadow-sm text-center">
-                    <span class="block text-[9px] text-green-700 font-bold uppercase">Bono Velocidad</span>
-                    <span class="font-black text-green-600 text-sm">+10 Pts x Seg</span>
+                <div class="bg-green-50 border border-green-200 p-4 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">Bono Velocidad</span>
+                    <span class="font-black text-green-600 text-sm md:text-base">+10 Pts x Seg</span>
                 </div>
-                <div class="bg-red-50 border border-red-200 p-3 rounded-xl shadow-sm text-center">
-                    <span class="block text-[9px] text-red-700 font-bold uppercase">Penalización</span>
-                    <span class="font-black text-red-600 text-sm">Por fallos / fuego</span>
+                <div class="bg-red-50 border border-red-200 p-4 rounded-xl shadow-sm text-center">
+                    <span class="block text-[9px] text-red-700 font-bold uppercase tracking-widest mb-1">Penalización</span>
+                    <span class="font-black text-red-600 text-sm md:text-base">Por fallos / fuego</span>
                 </div>
             </div>
             
             <h4 class="text-[10px] font-black text-cg_navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-2">Ventajas de tu Planta (Stats Arcade)</h4>
             <div class="space-y-3">
-                <div class="bg-yellow-50 border border-yellow-100 p-3 rounded-xl flex items-center gap-3">
-                    <span class="text-2xl">🪙</span>
-                    <p class="text-[10px] sm:text-xs text-yellow-900 leading-snug"><strong class="font-black">Fichas (HP):</strong> Determina tus "Intentos". A mayor cantidad, más semillas puedes lanzar o más fallos soportas en 60s.</p>
+                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl flex items-start sm:items-center gap-3 shadow-sm">
+                    <span class="text-2xl drop-shadow-sm">🪙</span>
+                    <p class="text-[11px] sm:text-xs text-yellow-900 leading-relaxed"><strong class="font-black">Fichas (HP):</strong> Determina tus "Intentos". A mayor cantidad, más semillas puedes lanzar o más fallos soportas en 60s.</p>
                 </div>
-                <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-center gap-3">
-                    <span class="text-2xl">⭐</span>
-                    <p class="text-[10px] sm:text-xs text-orange-900 leading-snug"><strong class="font-black">Multiplicador (ATK):</strong> Define la "Rentabilidad". A mayor nivel, más puntos base otorga cada acierto en los minijuegos.</p>
+                <div class="bg-orange-50 border border-orange-200 p-4 rounded-xl flex items-start sm:items-center gap-3 shadow-sm">
+                    <span class="text-2xl drop-shadow-sm">⭐</span>
+                    <p class="text-[11px] sm:text-xs text-orange-900 leading-relaxed"><strong class="font-black">Multiplicador (ATK):</strong> Define la "Rentabilidad". A mayor nivel, más puntos base otorga cada acierto en los minijuegos.</p>
                 </div>
-                <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl flex items-center gap-3">
-                    <span class="text-2xl">⚙️</span>
-                    <p class="text-[10px] sm:text-xs text-gray-700 leading-snug"><strong class="font-black">Control (DEF):</strong> Otorga "Margen de Tolerancia Física". Agranda las canastas ganadoras, aumenta la fricción de frenado o ralentiza los obstáculos.</p>
+                <div class="bg-white border border-gray-200 p-4 rounded-xl flex items-start sm:items-center gap-3 shadow-sm">
+                    <span class="text-2xl drop-shadow-sm">⚙️</span>
+                    <p class="text-[11px] sm:text-xs text-gray-700 leading-relaxed"><strong class="font-black">Control (DEF):</strong> Otorga "Margen de Tolerancia Física". Agranda las canastas ganadoras, aumenta la fricción de frenado o ralentiza los obstáculos.</p>
                 </div>
             </div>
         </div>
 
-        <div class="p-4 md:p-5 border-t border-gray-200 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
-            <button onclick="closeInstructionsModal()" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold py-3 md:py-4 rounded-xl transition-colors shadow-sm text-sm md:text-base">Cancelar</button>
-            <button onclick="openMinigameSelectionModal()" class="flex-[2] bg-cg_blue hover:bg-blue-600 text-white font-black py-3 md:py-4 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2 text-sm md:text-base">Siguiente ➔</button>
+        <div class="p-4 md:p-5 border-t border-gray-200 bg-white flex flex-col sm:flex-row gap-3 shrink-0 justify-between items-center">
+            <button onclick="closeInstructionsModal()" class="w-full sm:w-auto bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold py-3.5 px-8 rounded-xl transition-colors shadow-sm text-sm">Cancelar</button>
+            <button onclick="openMinigameSelectionModal()" class="w-full sm:w-auto bg-cg_blue hover:bg-blue-600 text-white font-black py-3.5 px-12 rounded-xl transition-all shadow-md uppercase tracking-widest flex items-center justify-center gap-2 text-sm">Siguiente ➔</button>
         </div>
     </div>
 </div>
@@ -259,7 +261,7 @@
 <!-- ========================================== -->
 <div id="minigame-selection-modal" class="fixed inset-0 z-[220] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closeMinigameSelectionModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-4xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-4xl relative z-10 flex flex-col overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
             <button onclick="closeMinigameSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
@@ -272,8 +274,8 @@
                 
                 <!-- Opcion Pachinko -->
                 <div id="mg-card-pachinko" onclick="openPlantSelectionModal('pachinko')" class="relative bg-white border-2 border-gray-200 hover:border-blue-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center overflow-hidden">
-                    <div id="mg-overlay-pachinko" class="absolute inset-0 bg-black/50 z-20 hidden items-center justify-center backdrop-blur-[1px]">
-                        <span class="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-lg transform -rotate-12 shadow-lg border-2 border-white drop-shadow-md">Jugado 2/2</span>
+                    <div id="mg-overlay-pachinko" class="absolute inset-0 bg-gray-400/50 z-20 hidden items-center justify-center backdrop-blur-[0.5px]">
+                        <span class="bg-gray-500 text-white font-black px-4 py-1.5 rounded-lg text-lg transform -rotate-12 shadow-lg border-[3px] border-white drop-shadow-md tracking-widest uppercase">Usos 2/2</span>
                     </div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-blue-100 p-2 overflow-hidden relative z-10">
                         <img src="assets/Fondos/Juego_001.png" class="w-full h-full object-contain">
@@ -284,8 +286,8 @@
                 
                 <!-- Opcion Disco Táctico (Antes Ruleta) -->
                 <div id="mg-card-ruleta" onclick="openPlantSelectionModal('ruleta')" class="relative bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center overflow-hidden">
-                    <div id="mg-overlay-ruleta" class="absolute inset-0 bg-black/50 z-20 hidden items-center justify-center backdrop-blur-[1px]">
-                        <span class="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-lg transform -rotate-12 shadow-lg border-2 border-white drop-shadow-md">Jugado 2/2</span>
+                    <div id="mg-overlay-ruleta" class="absolute inset-0 bg-gray-400/50 z-20 hidden items-center justify-center backdrop-blur-[0.5px]">
+                        <span class="bg-gray-500 text-white font-black px-4 py-1.5 rounded-lg text-lg transform -rotate-12 shadow-lg border-[3px] border-white drop-shadow-md tracking-widest uppercase">Usos 2/2</span>
                     </div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-yellow-100 p-2 overflow-hidden relative z-10">
                         <img src="assets/Fondos/Juego_002.png" class="w-full h-full object-contain">
@@ -296,8 +298,8 @@
 
                 <!-- Opcion Cilindros (Antes Tragamonedas) -->
                 <div id="mg-card-tragamonedas" onclick="openPlantSelectionModal('tragamonedas')" class="relative bg-white border-2 border-gray-200 hover:border-green-400 rounded-2xl p-6 cursor-pointer text-center transition-all shadow-sm hover:shadow-lg group flex flex-col items-center overflow-hidden">
-                    <div id="mg-overlay-tragamonedas" class="absolute inset-0 bg-black/50 z-20 hidden items-center justify-center backdrop-blur-[1px]">
-                        <span class="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-lg transform -rotate-12 shadow-lg border-2 border-white drop-shadow-md">Jugado 2/2</span>
+                    <div id="mg-overlay-tragamonedas" class="absolute inset-0 bg-gray-400/50 z-20 hidden items-center justify-center backdrop-blur-[0.5px]">
+                        <span class="bg-gray-500 text-white font-black px-4 py-1.5 rounded-lg text-lg transform -rotate-12 shadow-lg border-[3px] border-white drop-shadow-md tracking-widest uppercase">Usos 2/2</span>
                     </div>
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner border border-green-100 p-2 overflow-hidden relative z-10">
                         <img src="assets/Fondos/Juego_003.png" class="w-full h-full object-contain">
@@ -316,7 +318,7 @@
 <!-- ========================================== -->
 <div id="plant-selection-modal" class="fixed inset-0 z-[250] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="closePlantSelectionModal()"></div>
-    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-3xl relative z-10 flex flex-col border border-cg_gold overflow-hidden animate-fade-in max-h-[90vh]">
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-4xl relative z-10 flex flex-col overflow-hidden animate-fade-in max-h-[90vh]">
         
         <div class="bg-white p-5 text-center border-b border-gray-100 relative shrink-0">
             <button onclick="closePlantSelectionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cg_navy font-bold text-xl w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">✕</button>
@@ -410,8 +412,7 @@
                     btnFreeroll.innerHTML = `REINTENTO: ${cost.toLocaleString()} 🌱`;
                     btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
                     btnFreeroll.disabled = false;
-                    // CORRECCIÓN: Se envía 0 de tarifa COP, el minijuego calculará el costo de semillas internamente.
-                    btnFreeroll.onclick = () => openInstructionsModal(1, 0);
+                    btnFreeroll.onclick = () => openInstructionsModal(1, cost);
                 } else {
                     btnFreeroll.innerHTML = "¡PARTICIPAR GRATIS!";
                     btnFreeroll.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600', 'active:scale-95');
@@ -488,7 +489,7 @@
         }
         alertModal.innerHTML = `
             <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="document.getElementById('nutrients-alert-modal').classList.add('hidden')"></div>
-            <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-cg_gold overflow-hidden text-center p-6">
+            <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6">
                 <div class="text-5xl mb-4 drop-shadow-md">${icon || '⚠️'}</div>
                 <h3 class="text-xl font-black text-cg_navy mb-2">${title}</h3>
                 <p class="text-sm text-gray-600 mb-6 font-medium leading-relaxed">${msg}</p>
@@ -539,13 +540,13 @@
 
             confirmModal.innerHTML = `
                 <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="document.getElementById('freeroll-confirm-modal').classList.add('hidden')"></div>
-                <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-green-200 overflow-hidden text-center p-6">
+                <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col overflow-hidden text-center p-6">
                     <div class="text-5xl mb-4 drop-shadow-md">🎟️</div>
                     <h3 class="text-xl font-black text-cg_navy mb-2">Entrada al Freeroll</h3>
                     <p class="text-sm text-gray-600 mb-6 font-medium leading-relaxed">${msg}</p>
                     
                     <div class="flex justify-center gap-3">
-                        <button onclick="document.getElementById('freeroll-confirm-modal').classList.add('hidden')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                        <button onclick="document.getElementById('freeroll-confirm-modal').classList.add('hidden')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-black py-3 rounded-xl transition-all text-xs uppercase tracking-widest border border-gray-200">Cancelar</button>
                         <button onclick="window.proceedToInstructions(${t_id}, ${fee_cop}, ${seedCost})" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Confirmar</button>
                     </div>
                 </div>
@@ -605,11 +606,11 @@
                 
                 if (card && overlay) {
                     if (uses >= 2) {
-                        card.classList.add('pointer-events-none', 'grayscale');
+                        card.classList.add('pointer-events-none', 'grayscale', 'opacity-60');
                         overlay.classList.remove('hidden');
                         overlay.classList.add('flex');
                     } else {
-                        card.classList.remove('pointer-events-none', 'grayscale');
+                        card.classList.remove('pointer-events-none', 'grayscale', 'opacity-60');
                         overlay.classList.add('hidden');
                         overlay.classList.remove('flex');
                     }
@@ -631,7 +632,6 @@
         if (!window.pendingTournament) return;
         const t_id = window.pendingTournament.id;
 
-        // Doble check silencioso por seguridad
         let mgUses = window.farmApp.state.tournamentLimits?.[t_id]?.minigames?.[minigame] || 0;
         if (mgUses >= 2) return;
 
@@ -640,22 +640,27 @@
         let readyPlots = window.farmApp.state.plots.filter(p => p.status === 'planted' && p.isReady && !p.isSpoiled);
         let arsenal = window.farmApp.state.arsenal || [];
         
-        let html = '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">';
+        let html = '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">';
         
-        const getAttempts = (hp) => {
+        // Funciones de traducción de stats a valores de juego real (Vidas, Multiplicador, Velocidad)
+        const getAttempts = (hp, mg) => {
             const h = hp || 100;
-            if (minigame === 'tragamonedas') return Math.max(3, Math.floor(h / 20));
+            if (mg === 'tragamonedas') return Math.max(3, Math.floor(h / 20));
             return Math.max(5, Math.floor(h / 10)); // Pachinko y Ruleta
         };
-        const getIcon = () => {
-            if (minigame === 'pachinko') return '🌰';
-            if (minigame === 'ruleta') return '🌱';
-            return '❤️'; // tragamonedas
+
+        const getMultiplier = (atk) => {
+            let a = atk || 50;
+            let val = 1 + Math.floor(a / 10) / 10;
+            return 'x' + val.toFixed(1);
         };
-        const getLabel = () => {
-            if (minigame === 'pachinko') return 'Semillas a lanzar';
-            if (minigame === 'ruleta') return 'Giros';
-            return 'Vidas';
+
+        const getControlLevel = (def) => {
+            let d = def || 20;
+            if (d >= 80) return 'Lenta';
+            if (d >= 50) return 'Normal';
+            if (d >= 30) return 'Rápida';
+            return 'Muy Rápida';
         };
 
         const plantLimits = window.farmApp.state.tournamentLimits?.[t_id]?.plants || {};
@@ -665,8 +670,11 @@
         } else {
             readyPlots.forEach(p => {
                 let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
-                let attempts = getAttempts(p.plant.hp);
                 let actualHp = Math.floor(p.plant.hp || 100);
+                
+                let attempts = getAttempts(p.plant.hp, minigame);
+                let multiplier = getMultiplier(p.plant.atk);
+                let control = getControlLevel(p.plant.def);
                 
                 let refId = 'plot_' + p.id;
                 let uses = plantLimits[refId] || 0;
@@ -674,34 +682,40 @@
                 let isExhausted = actualHp <= 1;
                 
                 let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('plot', '${p.id}')"`;
-                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : (isExhausted ? 'grayscale opacity-80 cursor-pointer hover:border-red-400' : 'hover:border-cg_gold cursor-pointer hover:shadow-md');
+                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : (isExhausted ? 'grayscale opacity-80 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md');
                 
                 let overlay = '';
                 if (isMaxed) {
-                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>`;
+                    overlay = `<div class="absolute inset-0 bg-gray-400/50 z-20 flex items-center justify-center rounded-2xl backdrop-blur-[0.5px]"><span class="bg-gray-500 text-white font-black px-4 py-1.5 rounded-lg text-lg transform -rotate-12 border-[3px] border-white shadow-lg tracking-widest uppercase">Usos 2/2</span></div>`;
                 } else if (isExhausted) {
-                    overlay = `<div class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md whitespace-nowrap">¡Agotada!</span></div>`;
+                    overlay = `<div class="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"><span class="bg-gray-500 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-md uppercase tracking-widest">¡Agotada!</span></div>`;
                 }
 
                 html += `
-                    <div ${clickAction} class="relative bg-white border-2 border-gray-200 rounded-2xl p-4 text-center transition-all shadow-sm ${visualClasses}">
+                    <div ${clickAction} class="relative bg-white border-2 border-gray-100 rounded-2xl p-4 transition-all shadow-sm ${visualClasses} flex flex-col items-center">
                         ${overlay}
-                        <span class="block text-[10px] font-black text-green-600 mb-2 uppercase tracking-widest bg-green-50 rounded-md py-1">Terreno ${p.id}</span>
-                        <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md relative z-0">
-                        <h4 class="font-black text-xs text-cg_navy truncate mb-2 relative z-0">${p.plant.name}</h4>
-                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5 relative z-0">
-                            <span title="Salud Actual (HP)">💖 ${actualHp}</span>
-                            <span title="${getLabel()}">${getIcon()} ${attempts}</span>
-                            <span title="Multiplicador (ATK)">⭐ ${p.plant.atk || 50}</span>
-                            <span title="Control (DEF)">⚙️ ${p.plant.def || 20}</span>
+                        <div class="w-full flex justify-center mb-3">
+                            <span class="text-[9px] font-black text-green-600 bg-green-50 border border-green-100 px-4 py-1 rounded-md w-full text-center uppercase tracking-widest">Terreno ${p.id}</span>
+                        </div>
+                        
+                        <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-2 drop-shadow-md relative z-10 shrink-0">
+                        <h4 class="font-black text-xs sm:text-sm text-cg_navy truncate mb-3 relative z-10 w-full text-center shrink-0">${p.plant.name}</h4>
+                        
+                        <div class="mt-auto flex justify-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-black text-gray-600 bg-gray-50 border border-gray-100 rounded-xl py-2 w-full relative z-10">
+                            <span class="flex items-center gap-1" title="Fichas/Turnos"><span class="text-sm">🪙</span> ${attempts}</span>
+                            <span class="flex items-center gap-1 text-yellow-600" title="Multiplicador"><span class="text-sm">⭐</span> ${multiplier}</span>
+                            <span class="flex items-center gap-1 text-purple-500" title="Control"><span class="text-sm">⚙️</span> ${control}</span>
                         </div>
                     </div>
                 `;
             });
             
             arsenal.forEach(p => {
-                let attempts = getAttempts(p.hp);
                 let actualHp = Math.floor(p.hp || 100);
+                
+                let attempts = getAttempts(p.hp, minigame);
+                let multiplier = getMultiplier(p.atk);
+                let control = getControlLevel(p.def);
                 
                 let refId = 'arsenal_' + p.id;
                 let uses = plantLimits[refId] || 0;
@@ -709,26 +723,29 @@
                 let isExhausted = actualHp <= 1;
                 
                 let clickAction = isMaxed ? '' : `onclick="window.selectPlantForMinigame('arsenal', '${p.id}')"`;
-                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : (isExhausted ? 'grayscale opacity-80 cursor-pointer hover:border-red-400' : 'hover:border-cg_gold cursor-pointer hover:shadow-md');
+                let visualClasses = isMaxed ? 'grayscale opacity-60 pointer-events-none' : (isExhausted ? 'grayscale opacity-80 pointer-events-none' : 'hover:border-cg_gold cursor-pointer hover:shadow-md');
                 
                 let overlay = '';
                 if (isMaxed) {
-                    overlay = `<div class="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-2xl backdrop-blur-[1px]"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md">Usos 2/2</span></div>`;
+                    overlay = `<div class="absolute inset-0 bg-gray-400/50 z-20 flex items-center justify-center rounded-2xl backdrop-blur-[0.5px]"><span class="bg-gray-500 text-white font-black px-4 py-1.5 rounded-lg text-lg transform -rotate-12 border-[3px] border-white shadow-lg tracking-widest uppercase">Usos 2/2</span></div>`;
                 } else if (isExhausted) {
-                    overlay = `<div class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"><span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-[10px] sm:text-xs transform -rotate-12 border-2 border-white shadow-lg drop-shadow-md whitespace-nowrap">¡Agotada!</span></div>`;
+                    overlay = `<div class="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"><span class="bg-gray-500 text-white font-black px-3 py-1 rounded-lg text-sm transform -rotate-12 border-2 border-white shadow-md uppercase tracking-widest">¡Agotada!</span></div>`;
                 }
 
                 html += `
-                    <div ${clickAction} class="relative bg-white border-2 border-gray-200 rounded-2xl p-4 text-center transition-all shadow-sm ${visualClasses}">
+                    <div ${clickAction} class="relative bg-white border-2 border-gray-100 rounded-2xl p-4 transition-all shadow-sm ${visualClasses} flex flex-col items-center">
                         ${overlay}
-                        <span class="block text-[10px] font-black text-red-600 mb-2 uppercase tracking-widest bg-red-50 rounded-md py-1">Arsenal</span>
-                        <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md relative z-0">
-                        <h4 class="font-black text-xs text-cg_navy truncate mb-2 relative z-0">${p.name}</h4>
-                        <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5 relative z-0">
-                            <span title="Salud Actual (HP)">💖 ${actualHp}</span>
-                            <span title="${getLabel()}">${getIcon()} ${attempts}</span>
-                            <span title="Multiplicador (ATK)">⭐ ${p.atk || 50}</span>
-                            <span title="Control (DEF)">⚙️ ${p.def || 20}</span>
+                        <div class="w-full flex justify-center mb-3">
+                            <span class="text-[9px] font-black text-red-500 bg-red-50 border border-red-100 px-4 py-1 rounded-md w-full text-center uppercase tracking-widest">Arsenal</span>
+                        </div>
+                        
+                        <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-2 drop-shadow-md relative z-10 shrink-0">
+                        <h4 class="font-black text-xs sm:text-sm text-cg_navy truncate mb-3 relative z-10 w-full text-center shrink-0">${p.name}</h4>
+                        
+                        <div class="mt-auto flex justify-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-black text-gray-600 bg-gray-50 border border-gray-100 rounded-xl py-2 w-full relative z-10">
+                            <span class="flex items-center gap-1" title="Fichas/Turnos"><span class="text-sm">🪙</span> ${attempts}</span>
+                            <span class="flex items-center gap-1 text-yellow-600" title="Multiplicador"><span class="text-sm">⭐</span> ${multiplier}</span>
+                            <span class="flex items-center gap-1 text-purple-500" title="Control"><span class="text-sm">⚙️</span> ${control}</span>
                         </div>
                     </div>
                 `;
@@ -752,7 +769,7 @@
         window.selectedMinigame = null;
     };
 
-    // 4. Seleccionar Planta y Ejecutar Juego
+    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA NUNCA DESCONTAR EN FALSO)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -775,34 +792,34 @@
             selectedPlant = window.farmApp.state.arsenal.find(p => p.id === idTag);
         }
 
-        if (selectedPlant) {
-            if (selectedPlant.hp <= 1) {
-                window.showNutrientsAlert('Planta Agotada', 'Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.', '🏥');
-                return;
-            }
-            selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5));
+        // --- VALIDACIONES DE SEGURIDAD PRE-VUELO ---
+        if (!selectedPlant || selectedPlant.hp <= 1) {
+            window.showNutrientsAlert('Planta Agotada', 'Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.', '🏥');
+            return;
         }
 
-        // GUARDAR ESTADO PREVIO PARA ROLLBACK EN CASO DE ERROR DE RED O DEL SERVIDOR
+        // GUARDAR ESTADO PREVIO PARA ROLLBACK INTACTO
+        let originalHp = selectedPlant.hp;
         let previousEntries = window.farmApp.state.freerollEntries || 0;
         let previousMgUses = limits.minigames[window.selectedMinigame] || 0;
         let previousPlantUses = limits.plants[plantRefId] || 0;
 
-        // Actualizamos de manera especulativa en el cliente
+        // APLICAR ESPECULATIVAMENTE EN EL CLIENTE
+        selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5));
         limits.minigames[window.selectedMinigame] = previousMgUses + 1;
         limits.plants[plantRefId] = previousPlantUses + 1;
 
         if (t_id === 1) {
             window.farmApp.state.freerollEntries = previousEntries + 1;
             window.farmApp.state.currentFreerollCycle = Math.floor((Date.now() - window.FREEROLL_ORIGIN) / window.FREEROLL_CYCLE_MS);
-            // CORRECCIÓN IMPORTANTE: No se descuenta localmente el "seedCost".
-            // El backend (/api/tournaments/join) se encargará de validarlo y descontarlo.
-            // Si lo hacemos aquí, se causa un doble cobro.
         }
 
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
         window.farmApp.state.combatLock = true;
         window.farmApp.state.lastTick = Date.now() + 2000;
+
+        // Mostrar Loading Visual en el botón o modal (Opcional, previene doble clicks)
+        document.getElementById('plant-selection-modal').classList.add('opacity-50', 'pointer-events-none');
 
         try {
             const res = await fetch('/api/tournaments/join', {
@@ -819,12 +836,16 @@
             });
             const data = await res.json();
             
+            // Revertir efecto visual de loading
+            document.getElementById('plant-selection-modal').classList.remove('opacity-50', 'pointer-events-none');
+
             if (res.ok) {
+                // INSCRIPCIÓN EXITOSA: Todo el backend procesó el pago de semillas/fiat
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
                 sessionStorage.setItem('pve_tournament_instance', data.instance_id); 
                 
-                // Actualizamos el estado con el balance oficial de semillas que devuelve el servidor
+                // Asegurar sincronía perfecta si el backend devolvió el estado final
                 if (data.new_game_state) {
                     window.farmApp.state = data.new_game_state;
                     if (window.farmApp.updateUI) window.farmApp.updateUI();
@@ -835,16 +856,20 @@
                 
                 loadView('Juegos/' + window.selectedMinigame);
             } else {
-                // FALLO EL SERVIDOR (ej. saldo insuficiente): REVERTIMOS EL INTENTO LOCALMENTE
+                // FALLO EL SERVIDOR (ej. saldo insuficiente): REVERTIMOS EL ESTADO AL 100%
+                selectedPlant.hp = originalHp;
                 limits.minigames[window.selectedMinigame] = previousMgUses;
                 limits.plants[plantRefId] = previousPlantUses;
                 if (t_id === 1) window.farmApp.state.freerollEntries = previousEntries;
                 window.farmApp.state.combatLock = false;
                 
-                window.showNutrientsAlert('Error de Inscripción', "Error al inscribirse en el torneo: " + (data.error || "Desconocido"), '⚠️');
+                window.showNutrientsAlert('Error de Inscripción', (data.error || "Fallo del servidor"), '⚠️');
             }
         } catch(e) {
-            // ERROR DE RED: REVERTIMOS EL INTENTO LOCALMENTE
+            // ERROR DE RED: REVERTIMOS EL ESTADO AL 100%
+            document.getElementById('plant-selection-modal').classList.remove('opacity-50', 'pointer-events-none');
+            
+            selectedPlant.hp = originalHp;
             limits.minigames[window.selectedMinigame] = previousMgUses;
             limits.plants[plantRefId] = previousPlantUses;
             if (t_id === 1) window.farmApp.state.freerollEntries = previousEntries;
