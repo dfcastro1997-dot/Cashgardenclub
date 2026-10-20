@@ -358,6 +358,19 @@
         window.realPlayersCounts = {1: 0, 3: 0, 4: 0, 5: 0};
     }
 
+    // GESTIÓN DE SINCRONIZACIÓN VISUAL PARA EVITAR PARPADEO
+    window.isFreerollValidated = false;
+    if (typeof window.syncUserData === 'function') {
+        window.syncUserData().finally(() => {
+            window.isFreerollValidated = true;
+            if (typeof window.updateFreerollTimer === 'function') {
+                window.updateFreerollTimer();
+            }
+        });
+    } else {
+        window.isFreerollValidated = true;
+    }
+
     window.FREEROLL_CYCLE_MS = 2 * 24 * 60 * 60 * 1000; 
     window.FREEROLL_ORIGIN = new Date("2024-01-01T00:00:00Z").getTime();
     
@@ -367,8 +380,8 @@
         const currentCycle = Math.floor(elapsed / window.FREEROLL_CYCLE_MS);
         const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
-        // Solo desbloquea el botón si la base de datos ya se sincronizó con el cliente
-        if (window.farmApp && window.farmApp.state && window.farmApp.state.isSynced) {
+        // Solo desbloquea el botón si la base de datos ya se sincronizó con el cliente y pasamos la validación inicial
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.isSynced && window.isFreerollValidated) {
             let storedCycle = window.farmApp.state.currentFreerollCycle;
             
             if (storedCycle !== undefined && storedCycle !== currentCycle) {
