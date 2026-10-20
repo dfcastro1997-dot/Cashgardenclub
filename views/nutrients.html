@@ -368,12 +368,18 @@
         const deadline = window.FREEROLL_ORIGIN + (currentCycle + 1) * window.FREEROLL_CYCLE_MS;
         
         // --- RESETEAR ENTRADAS SI CAMBIA EL CICLO Y ACTUALIZAR TEXTO DEL BOTÓN ---
-        if (window.farmApp && window.farmApp.state) {
-            if (window.farmApp.state.currentFreerollCycle !== currentCycle) {
+        // 🚨 CORRECCIÓN: Solo verificar ciclos si la granja ya terminó de sincronizar con la Base de Datos
+        if (window.farmApp && window.farmApp.state && window.farmApp.state.isSynced) {
+            let storedCycle = window.farmApp.state.currentFreerollCycle;
+            
+            if (storedCycle !== undefined && storedCycle !== currentCycle) {
                 window.farmApp.state.currentFreerollCycle = currentCycle;
                 window.farmApp.state.freerollEntries = 0; // Reinicia las entradas
                 window.farmApp.state.tournamentLimits = {}; // REINICIA LÍMITES DE MINIJUEGOS Y PLANTAS
                 window.farmApp.saveState();
+            } else if (storedCycle === undefined) {
+                // Si es un usuario antiguo que no tenía ciclo, se lo asignamos sin borrarle las entradas
+                window.farmApp.state.currentFreerollCycle = currentCycle;
             }
             
             const btnFreeroll = document.getElementById('btn-freeroll-entry');
@@ -760,12 +766,15 @@
         limits.minigames[window.selectedMinigame] = (limits.minigames[window.selectedMinigame] || 0) + 1;
         limits.plants[plantRefId] = (limits.plants[plantRefId] || 0) + 1;
 
-        // --- nutrients.html (Dentro de selectPlantForMinigame) ---
+        // 🚨 CORRECCIÓN CRÍTICA: Descontar semillas e incrementar historial ANTES del POST al servidor
         if (t_id === 1) {
             window.farmApp.state.freerollEntries = (window.farmApp.state.freerollEntries || 0) + 1;
+            if (seedCost > 0) {
+                window.farmApp.state.seedsBalance -= seedCost;
+            }
         }
 
-        // Guarda la memoria local inmediatamente
+        // Guarda la memoria local inmediatamente con los nuevos valores
         window.farmApp.saveState();
 
         window.farmApp.state.selectedCombatants = [{ type: type, idTag: idTag }];
@@ -780,18 +789,13 @@
                     session_token: token,
                     fee: fee,
                     tournament_id: t_id,
-                    client_state: window.farmApp.state // SE ENVÍA EL ESTADO COMPLETO PARA GUARDAR
+                    client_state: window.farmApp.state // SE ENVÍA EL ESTADO COMPLETO CON BALANCE YA DESCONTADO
                 })
             });
             const data = await res.json();
             
             if (res.ok) {
-                // Sincronizar las semillas con lo que descontó el servidor
-                if (t_id === 1 && seedCost > 0) {
-                    window.farmApp.state.seedsBalance -= seedCost;
-                }
-                
-                window.farmApp.saveState(); // Guardado de respaldo
+                // Ya no necesitamos descontar las semillas aquí, se descontaron antes de enviar el state
                 
                 sessionStorage.setItem('pve_tournament_id', t_id);
                 sessionStorage.setItem('pve_tournament_fee', fee);
