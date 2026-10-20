@@ -448,12 +448,35 @@
     setTimeout(window.initCardAnimations, 100);
 
     // ===============================================
+    // MODAL DE ALERTAS PERSONALIZADO
+    // ===============================================
+    window.showNutrientsAlert = function(title, msg, icon) {
+        let alertModal = document.getElementById('nutrients-alert-modal');
+        if (!alertModal) {
+            alertModal = document.createElement('div');
+            alertModal.id = 'nutrients-alert-modal';
+            alertModal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in';
+            document.body.appendChild(alertModal);
+        }
+        alertModal.innerHTML = `
+            <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="document.getElementById('nutrients-alert-modal').classList.add('hidden')"></div>
+            <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 flex flex-col border border-cg_gold overflow-hidden text-center p-6">
+                <div class="text-5xl mb-4 drop-shadow-md">${icon || '⚠️'}</div>
+                <h3 class="text-xl font-black text-cg_navy mb-2">${title}</h3>
+                <p class="text-sm text-gray-600 mb-6 font-medium leading-relaxed">${msg}</p>
+                <button onclick="document.getElementById('nutrients-alert-modal').classList.add('hidden')" class="w-full bg-cg_blue hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest active:scale-95">Aceptar</button>
+            </div>
+        `;
+        alertModal.classList.remove('hidden');
+    };
+
+    // ===============================================
     // FLUJO DE MODALES
     // ===============================================
 
     window.openInstructionsModal = async function(t_id, fee_cop) {
         if (!window.farmApp || !window.farmApp.state) {
-            alert('Aviso: Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón.');
+            window.showNutrientsAlert('Aviso', 'Debes abrir la pestaña de tu Granja primero para cargar tu escuadrón.', '🌱');
             return;
         }
         
@@ -464,7 +487,7 @@
             let entries = window.farmApp.state.freerollEntries || 0;
             
             if (entries >= 5) {
-                alert('Has alcanzado el límite máximo de 5 participaciones en este ciclo del Freeroll.');
+                window.showNutrientsAlert('Límite Alcanzado', 'Has alcanzado el límite máximo de 5 participaciones en este ciclo del Freeroll.', '🚫');
                 return;
             }
             
@@ -511,7 +534,7 @@
         if (confirmModal) confirmModal.classList.add('hidden');
 
         if (window.farmApp.state.seedsBalance < seedCost) {
-            alert(`Necesitas ${seedCost.toLocaleString()} 🌱 para participar.`);
+            window.showNutrientsAlert('Semillas Insuficientes', `Necesitas ${seedCost.toLocaleString()} 🌱 para participar.`, '🌱');
             return;
         }
 
@@ -519,7 +542,7 @@
         let arsenal = window.farmApp.state.arsenal || [];
 
         if (readyPlots.length === 0 && arsenal.length === 0) {
-            alert('Debes tener al menos 1 planta lista en la granja o en el Arsenal para competir.');
+            window.showNutrientsAlert('Sin Plantas', 'Debes tener al menos 1 planta lista en la granja o en el Arsenal para competir.', '🥀');
             return;
         }
 
@@ -700,6 +723,7 @@
         window.selectedMinigame = null;
     };
 
+    // 4. Seleccionar Planta y Ejecutar Juego (CORREGIDO PARA LLAMAR A LA API JOIN)
     window.selectPlantForMinigame = async function(type, idTag) {
         if (!window.pendingTournament || !window.selectedMinigame) return;
 
@@ -724,6 +748,11 @@
         }
 
         if (selectedPlant) {
+            // Validar que la planta no esté al borde de la muerte (mínimo 2 HP para poder perder la mitad)
+            if (selectedPlant.hp <= 1) {
+                window.showNutrientsAlert('Planta Agotada', 'Esta planta está agotada y no tiene suficiente vida para competir. Cúrala en el Arsenal primero.', '🏥');
+                return;
+            }
             selectedPlant.hp = Math.max(1, Math.floor(selectedPlant.hp * 0.5)); // Resta el 50%
         }
 
@@ -769,10 +798,10 @@
                 
                 loadView('Juegos/' + window.selectedMinigame);
             } else {
-                alert("Error al inscribirse en el torneo: " + (data.error || "Desconocido"));
+                window.showNutrientsAlert('Error de Inscripción', "Error al inscribirse en el torneo: " + (data.error || "Desconocido"), '⚠️');
             }
         } catch(e) {
-            alert("Error de conexión al intentar unirse al torneo.");
+            window.showNutrientsAlert('Error de Conexión', 'Ocurrió un error de red al intentar unirse al torneo.', '🔌');
         }
     };
 
