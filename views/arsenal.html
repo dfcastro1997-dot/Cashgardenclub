@@ -1,0 +1,397 @@
+<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8 animate-fade-in pb-20 relative px-4 md:px-0">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200/80 pb-6 pt-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                <span class="text-[10px] font-extrabold text-green-600 uppercase tracking-widest">Almacén Estratégico</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-cg_navy tracking-tight">Mi Arsenal de Combate</h2>
+            <p class="text-sm text-gray-500 font-medium mt-2 max-w-2xl">Aquí descansan tus plantas listas para los minijuegos. Revisa sus Fichas, Multiplicador y Control.</p>
+        </div>
+    </div>
+
+    <div id="arsenal-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- Rellenado por JS -->
+    </div>
+</div>
+
+
+
+
+
+<!-- MODAL CONFIRMAR CURAR -->
+<div id="confirm-heal-modal" class="fixed inset-0 z-[600] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="cancelHeal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-sm relative z-10 p-6 text-center border border-green-200 animate-fade-in">
+        <div class="w-16 h-16 mx-auto mb-4 bg-green-50 rounded-full border-4 border-green-100 flex items-center justify-center shadow-inner">
+            <img src="assets/Herramientas_y_Servicios/pocion.png" class="w-8 h-8 object-contain">
+        </div>
+        <h3 class="text-xl font-black text-cg_navy mb-2">¿Restaurar Salud?</h3>
+        <p class="text-sm text-gray-500 mb-6" id="confirm-heal-text">Costo: 0 🌱<br>Restaurará la salud de la planta al 100%.</p>
+        <div class="flex gap-3">
+            <button onclick="cancelHeal()" class="flex-1 bg-white border border-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm uppercase tracking-widest">Cancelar</button>
+            <button id="btn-confirm-heal" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-black py-3 rounded-xl shadow-soft transition-colors text-sm uppercase tracking-widest">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FONDOS INSUFICIENTES ARSENAL (AUTO-CIERRE) -->
+<div id="heal-insufficient-funds-modal" class="fixed inset-0 z-[650] hidden items-center justify-center p-4 pointer-events-none">
+    <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-xs p-5 text-center border-t-4 border-red-500 animate-fade-in pointer-events-auto">
+        <div class="text-4xl mb-2">⚠️</div>
+        <h3 class="text-lg font-black text-cg_navy mb-1">Fondos Insuficientes</h3>
+        <p class="text-xs text-gray-500 font-bold" id="heal-insufficient-funds-text">No tienes suficientes semillas.</p>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    function processArsenalRecovery() {
+        if (!window.farmApp || !window.farmApp.state.arsenal) return;
+        const now = Date.now();
+        let updated = false;
+        
+        const hasVipHeal = window.farmApp.state.vipHealEndTime && window.farmApp.state.vipHealEndTime > now;
+        const healMultiplier = hasVipHeal ? 3 : 1;
+        
+        window.farmApp.state.arsenal.forEach(plant => {
+            if (plant.hp < plant.maxHp && plant.lastRecover) {
+                const elapsedMs = now - plant.lastRecover;
+                const minutesPassed = Math.floor(elapsedMs / 60000);
+                const hpToRecover = minutesPassed * healMultiplier;
+                
+                if (hpToRecover > 0) {
+                    plant.hp = Math.min(plant.maxHp, plant.hp + hpToRecover);
+                    plant.lastRecover += (minutesPassed * 60000); 
+                    updated = true;
+                }
+            } else if (!plant.lastRecover) {
+                plant.lastRecover = now;
+            }
+        });
+        
+        if (updated) {
+            window.farmApp.saveState();
+        }
+    }
+
+    window.pendingSellPlantId = null;
+
+    function sellArsenalPlant(plantId) {
+        if (!window.farmApp || !window.farmApp.state.arsenal) return;
+        
+        const index = window.farmApp.state.arsenal.findIndex(p => p.id === plantId);
+        if (index === -1) return;
+        
+        const plant = window.farmApp.state.arsenal[index];
+        const sellPrice = calculateSellPrice(plant);
+        window.pendingSellPlantId = plantId;
+        
+        // Crear dinámicamente el modal de confirmación de venta al estilo CashGarden
+        let sellModal = document.getElementById('confirm-sell-modal');
+        if (!sellModal) {
+            sellModal = document.createElement('div');
+            sellModal.id = 'confirm-sell-modal';
+            sellModal.className = 'fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in';
+            document.body.appendChild(sellModal);
+        }
+
+        sellModal.innerHTML = `
+            <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="cancelSellPlant()"></div>
+            <div class="bg-white rounded-3xl shadow-2xl w-[95%] max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden">
+                <div class="bg-gray-50 border-b border-gray-200 p-4 flex justify-between items-center shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">💰</span>
+                        <span class="font-black text-cg_navy text-sm uppercase tracking-widest">cashgardenclub-production.up.railway.app dice</span>
+                    </div>
+                    <button onclick="cancelSellPlant()" class="text-gray-400 hover:text-red-500 font-bold w-8 h-8 rounded-full bg-white flex items-center justify-center transition-colors shadow-sm">✕</button>
+                </div>
+                
+                <div class="p-6 text-center">
+                    <p class="text-sm sm:text-base text-gray-700 font-medium leading-relaxed mb-6">
+                        ¿Estás seguro de vender a <strong class="text-cg_navy font-black">${plant.name}</strong> por <strong class="text-green-600 font-black">${sellPrice.toLocaleString()} 🌱</strong>?<br>
+                        Se retirará de tu Arsenal definitivamente.
+                    </p>
+                    
+                    <div class="flex justify-center gap-4">
+                        <button onclick="executeSellPlant()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-all">Aceptar</button>
+                        <button onclick="cancelSellPlant()" class="text-teal-700 hover:text-teal-900 font-bold py-2.5 px-6 transition-colors">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        sellModal.classList.remove('hidden');
+    }
+
+    function cancelSellPlant() {
+        window.pendingSellPlantId = null;
+        const sellModal = document.getElementById('confirm-sell-modal');
+        if (sellModal) {
+            sellModal.classList.add('hidden');
+        }
+    }
+
+    function executeSellPlant() {
+        if (!window.pendingSellPlantId || !window.farmApp || !window.farmApp.state.arsenal) return;
+        
+        const index = window.farmApp.state.arsenal.findIndex(p => p.id === window.pendingSellPlantId);
+        if (index === -1) return;
+        
+        const plant = window.farmApp.state.arsenal[index];
+        const sellPrice = calculateSellPrice(plant);
+        
+        // Ejecutar venta
+        window.farmApp.state.seedsBalance += sellPrice;
+        window.farmApp.state.arsenal.splice(index, 1);
+        window.farmApp.saveState();
+        
+        // Cerrar Modal
+        cancelSellPlant();
+        
+        // Efecto de cobro global
+        const balEl = document.getElementById('global-seeds-display');
+        if (balEl) {
+            balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+            balEl.classList.add('text-green-500', 'scale-110');
+            setTimeout(() => balEl.classList.remove('text-green-500', 'scale-110'), 300);
+        }
+        
+        renderArsenal();
+    }
+
+    function calculateSellPrice(plant) {
+        let shopPrice = 2000; // Precio por defecto si no se encuentra
+
+        // 1. Si es una planta dinámica creada desde el admin, tomamos su precio exacto de la base de datos
+        if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
+            shopPrice = window.farmApp.state.dynamicPlants[plant.plantId].price || shopPrice;
+        }
+        
+        // 2. El valor base de venta será el 50% de su valor original en la tienda
+        let baseVal = shopPrice * 0.5;
+
+        // 3. El precio final depende de la salud (HP) actual de la planta. 
+        let hpFactor = plant.hp / plant.maxHp;
+        
+        // 4. Bonus por victorias (tope de 1.2x)
+        let maxResaleBonus = 1.2; 
+        let winBonus = Math.min(maxResaleBonus, 1 + ((plant.wins || 0) * 0.05)); 
+        
+        return Math.floor(baseVal * hpFactor * winBonus);
+    }
+
+
+    function calculateHealCost(plant) {
+        let basePrice = calculateSellPrice({ ...plant, hp: plant.maxHp, wins: 0 }) * 2; 
+        let missingHpPct = 1 - (plant.hp / plant.maxHp);
+        let healCost = Math.floor(basePrice * 0.25 * missingHpPct);
+        return Math.max(50, healCost);
+    }
+
+    window.pendingHealPlantId = null;
+
+    function healArsenalPlant(plantId) {
+        if (!window.farmApp || !window.farmApp.state.arsenal) return;
+        
+        const plant = window.farmApp.state.arsenal.find(p => p.id === plantId);
+        if (!plant || plant.hp >= plant.maxHp) return;
+        
+        const cost = calculateHealCost(plant);
+        
+        if (window.farmApp.state.seedsBalance >= cost) {
+            window.pendingHealPlantId = plantId;
+            document.getElementById('confirm-heal-text').innerHTML = `¿Pagar <strong class="text-green-600">${cost.toLocaleString()} 🌱</strong> para restaurar la salud de ${plant.name} al 100%?`;
+            
+            const btn = document.getElementById('btn-confirm-heal');
+            btn.onclick = () => executeHeal(cost);
+            
+            const modal = document.getElementById('confirm-heal-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        } else {
+            document.getElementById('heal-insufficient-funds-text').innerHTML = `Necesitas <strong class="text-red-500">${cost.toLocaleString()} 🌱</strong> para curar esta planta.`;
+            const modal = document.getElementById('heal-insufficient-funds-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 3000);
+        }
+    }
+
+    function cancelHeal() {
+        window.pendingHealPlantId = null;
+        const modal = document.getElementById('confirm-heal-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function executeHeal(cost) {
+        if (!window.pendingHealPlantId) return;
+        const plant = window.farmApp.state.arsenal.find(p => p.id === window.pendingHealPlantId);
+        if (!plant) return;
+
+        window.farmApp.state.seedsBalance -= cost;
+        plant.hp = plant.maxHp;
+        plant.lastRecover = Date.now();
+        window.farmApp.saveState();
+        
+        const balEl = document.getElementById('global-seeds-display');
+        if (balEl) {
+            balEl.innerText = window.farmApp.state.seedsBalance.toLocaleString() + " 🌱";
+            balEl.classList.add('text-red-500', 'scale-110');
+            setTimeout(() => balEl.classList.remove('text-red-500', 'scale-110'), 300);
+        }
+        renderArsenal();
+        cancelHeal();
+    }
+
+
+    function renderArsenal() {
+        processArsenalRecovery();
+        
+        const grid = document.getElementById('arsenal-grid');
+        grid.innerHTML = '';
+        
+        const arsenal = (window.farmApp && window.farmApp.state.arsenal) ? window.farmApp.state.arsenal : [];
+        
+        if (arsenal.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <span class="text-5xl mb-4 block">🌱</span>
+                    <h3 class="text-xl font-black text-cg_navy mb-2">Arsenal Vacío</h3>
+                    <p class="text-sm text-gray-500">Aún no has almacenado ninguna planta para el combate. Ve a tu Invernadero y al cosechar elige "Almacenar".</p>
+                </div>
+            `;
+            return;
+        }
+        
+        arsenal.forEach(plant => {
+            const hpPct = Math.max(0, Math.min(100, (plant.hp / plant.maxHp) * 100));
+            const hpColor = hpPct > 50 ? 'bg-green-500' : (hpPct > 20 ? 'bg-yellow-400' : 'bg-red-500');
+            const isInjured = plant.hp < plant.maxHp;
+            const winsBadge = (plant.wins && plant.wins > 0) ? `<div class="absolute top-3 left-3 bg-cg_gold text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm border border-yellow-300 uppercase tracking-widest z-20">🏆 ${plant.wins} Victorias</div>` : '';
+            const sellPrice = calculateSellPrice(plant);
+
+            // --- NUEVO: OBTENER EL PRECIO ORIGINAL DE MERCADO ---
+            let shopPrice = 2000;
+
+            if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
+                shopPrice = window.farmApp.state.dynamicPlants[plant.plantId].price || shopPrice;
+            }
+            // -----------------------------------------------------------
+            
+            // --- DETECCIÓN DEL TERRENO SEGÚN LA PLANTA ---
+            let currentTerrain = 'assets/Fondos/terreno_vacio.png';
+            if (window.farmApp && window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[plant.plantId]) {
+                let cat = window.farmApp.state.dynamicPlants[plant.plantId].category;
+                if (cat && cat.startsWith('Plantas ')) {
+                    let typeName = cat.replace('Plantas ', '').trim();
+                    if (typeName === 'Ígneas') typeName = 'Igneo'; 
+                    currentTerrain = `assets/Fondos/terreno_${typeName}.png`;
+                }
+            }
+            // -----------------------------------------------------------
+            
+            grid.innerHTML += `
+                <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full opacity-50 z-0"></div>
+                    ${winsBadge}
+                    
+                    <!-- CONTENEDOR VISUAL -->
+                    <div class="flex items-center justify-center w-full h-28 sm:h-32 mb-3 relative z-10 group">
+                        <img src="${currentTerrain}" class="absolute h-20 sm:h-24 w-auto object-contain drop-shadow-sm mt-6">
+                        <img src="${plant.icon}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md group-hover:scale-110 transition-transform ${isInjured ? 'opacity-80' : ''} relative z-10 mb-2">
+                    </div>
+                    
+                    <h4 class="font-black text-cg_navy text-base sm:text-lg text-center mb-1 relative z-10">${plant.name}</h4>
+                    
+                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-1 relative z-10 shadow-inner">
+                        <div class="${hpColor} h-full transition-all" style="width: ${hpPct}%"></div>
+                    </div>
+                    <div class="flex justify-between text-[9px] sm:text-[10px] font-bold text-gray-500 mb-3 relative z-10">
+                        <span>🪙 Fichas: ${Math.max(1, Math.floor(plant.hp / 10))}</span>
+                        ${isInjured ? '<span class="text-blue-500 animate-pulse">Curando...</span>' : '<span class="text-green-500">Sana</span>'}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-center relative z-10 mb-2">
+                        <div class="bg-orange-50 rounded-lg p-1.5 sm:p-2 border border-orange-100">
+                            <span class="block text-[8px] font-bold text-orange-400 uppercase">Multiplicador</span>
+                            <span class="font-black text-orange-600 text-sm">⭐ x${Math.max(1, Math.floor(plant.atk / 10))}</span>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-1.5 sm:p-2 border border-gray-200">
+                            <span class="block text-[8px] font-bold text-gray-500 uppercase">Control</span>
+                            <span class="font-black text-gray-600 text-sm">⚙️ Nvl ${Math.max(1, Math.floor(plant.def / 10))}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- NUEVA CAJA: VALOR EN MERCADO -->
+                    <div class="bg-gray-50 rounded-lg p-1.5 sm:p-2 border border-gray-200 text-center relative z-10 mb-4">
+                        <span class="block text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Valor en Mercado</span>
+                        <span class="font-black text-cg_navy text-sm">${shopPrice.toLocaleString()} 🌱</span>
+                    </div>
+                    
+                    <!-- NUEVO BOTÓN CURAR (Aparece solo si le falta vida) -->
+                    ${isInjured ? `
+                    <button onclick="healArsenalPlant('${plant.id}')" class="mb-2 w-full bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 border border-green-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10 flex items-center justify-center gap-1.5">
+                        <img src="assets/Herramientas_y_Servicios/pocion.png" class="w-4 h-4 object-contain">
+                        Curar: ${calculateHealCost(plant).toLocaleString()} 🌱
+                    </button>
+                    ` : ''}
+                    
+                    <button onclick="sellArsenalPlant('${plant.id}')" class="mt-auto w-full bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 border border-gray-200 hover:border-red-200 font-black py-2.5 rounded-xl transition-colors shadow-sm text-[10px] sm:text-xs uppercase tracking-widest relative z-10">
+                        Vender: ${sellPrice.toLocaleString()} 🌱
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    // Intervalo para regenerar vida visualmente si el usuario se queda viendo el arsenal
+    if(window.arsenalInterval) clearInterval(window.arsenalInterval);
+    window.arsenalInterval = setInterval(() => {
+        if(document.getElementById('arsenal-grid')) {
+            renderArsenal();
+        }
+    }, 60000); // Se actualiza la curación visual cada 1 minuto
+
+    renderArsenal();
+
+    // --- NUEVO: Saludos y consejos del guía en el Arsenal ---
+    setTimeout(() => {
+        if(window.guideApp) {
+            const lastArsenalGreeting = sessionStorage.getItem('last_arsenal_greeting') || 0;
+            const now = Date.now();
+            
+            if (now - lastArsenalGreeting > 180000) { 
+                const arsenalQuotes = [
+                    "Este es tu Arsenal Estratégico. Mantén a tus mejores guerreras descansando aquí.",
+                    "Una planta a mitad de vida en la Arena es abono seguro. ¡Recuerda usar la curación si tienes semillas!",
+                    "Si ya no te sirve alguna especie o necesitas capital urgente, puedes venderla desde aquí para recuperar semillas.",
+                    "¡Vaya plantas tienes! Mientras estén aquí, irán recuperando vida lentamente de forma natural."
+                ];
+                const quote = arsenalQuotes[Math.floor(Math.random() * arsenalQuotes.length)];
+                
+                window.guideApp.show(quote, "explicando");
+                sessionStorage.setItem('last_arsenal_greeting', now.toString());
+            }
+        }
+    }, 1000);
+</script>

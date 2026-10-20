@@ -318,7 +318,9 @@ def init_db():
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_precision NUMERIC(6,3) DEFAULT 0.000;")
     cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS alchemy_time NUMERIC(5,2) DEFAULT 0.00;")
     cur.execute("ALTER TABLE tree_state ADD COLUMN IF NOT EXISTS donation_count INTEGER DEFAULT 0;")
+    cur.execute("ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS played_game VARCHAR(50);")
 
+    
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tree_config (
             id SERIAL PRIMARY KEY,
@@ -1294,6 +1296,7 @@ def submit_tournament_score():
     token = data.get('session_token')
     instance_id = data.get('instance_id')
     final_score = float(data.get('score', 0))
+    played_game = data.get('played_game', 'Desconocido')
     
     # Bloqueo de seguridad: Evita que el servidor colapse (Error 500) si instance_id es inválido
     if not instance_id or str(instance_id).lower() in ['undefined', 'null']:
@@ -1310,17 +1313,13 @@ def submit_tournament_score():
             cur.close(); conn.close()
             return jsonify({"error": "No autorizado"}), 401
             
-        # Guardar el puntaje final en el ranking convirtiendo el ID explícitamente a entero
-        cur.execute("UPDATE tournament_players SET current_score = %s WHERE instance_id = %s AND user_id = %s", (final_score, int(instance_id), user['id']))
+        # Actualizar el puntaje (solo si es mayor) y el juego jugado
+        cur.execute("""
+            UPDATE tournament_players 
+            SET current_score = GREATEST(current_score, %s), played_game = %s 
+            WHERE instance_id = %s AND user_id = %s
+        """, (final_score, played_game, int(instance_id), user['id']))
         conn.commit()
-        return jsonify({"message": "Puntaje actualizado correctamente"})
-        
-    except Exception as e:
-        conn.rollback()
-        print("Error en submit_score:", e)
-        return jsonify({"error": "Fallo interno de servidor"}), 500
-    finally:
-        cur.close(); conn.close()
 
 @app.route('/api/tournaments/global_leaderboard/<int:t_id>', methods=['GET'])
 def global_leaderboard(t_id):
@@ -1337,8 +1336,26 @@ def global_leaderboard(t_id):
         cur.execute("SELECT * FROM tournament_instances WHERE template_id = %s AND status = 'completed' ORDER BY id DESC LIMIT 1", (t_id,))
         last_inst = cur.fetchone()
         if last_inst:
-            cur.execute('''SELECT username, current_score, alchemy_precision, alchemy_time FROM tournament_players WHERE instance_id = %s ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10''', (last_inst['id'],))
-            players = cur.fetchall()
+            cur.execute('''
+                SELECT tp.username, tp.current_score, tp.played_game, u.game_state 
+                FROM tournament_players tp 
+                JOIN users u ON tp.user_id = u.id 
+                WHERE tp.instance_id = %s 
+                ORDER BY tp.current_score DESC LIMIT 10
+            ''', (last_inst['id'],))
+            db_players = cur.fetchall()
+            players = []
+            for p in db_players:
+                pic = 'assets/Perfil/defecto.png'
+                try:
+                    if p['game_state']:
+                        st = json.loads(p['game_state'])
+                        pic = st.get('profilePic', pic)
+                except: pass
+                players.append({
+                    "username": p['username'], "current_score": p['current_score'], 
+                    "played_game": p['played_game'], "profile_pic": pic
+                })
             cur.close(); conn.close()
             return jsonify({
                 "status": "completed",
@@ -1352,12 +1369,25 @@ def global_leaderboard(t_id):
         return jsonify({"status": "no_instance", "prize_pool": 10000 if t_id == 1 else 0, "players_count": 0})
         
     cur.execute('''
-        SELECT username, current_score, alchemy_precision, alchemy_time 
-        FROM tournament_players 
-        WHERE instance_id = %s 
-        ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
+        SELECT tp.username, tp.current_score, tp.played_game, u.game_state 
+        FROM tournament_players tp 
+        JOIN users u ON tp.user_id = u.id 
+        WHERE tp.instance_id = %s 
+        ORDER BY tp.current_score DESC LIMIT 10
     ''', (inst['id'],))
-    players = cur.fetchall()
+    db_players = cur.fetchall()
+    players = []
+    for p in db_players:
+        pic = 'assets/Perfil/defecto.png'
+        try:
+            if p['game_state']:
+                st = json.loads(p['game_state'])
+                pic = st.get('profilePic', pic)
+        except: pass
+        players.append({
+            "username": p['username'], "current_score": p['current_score'], 
+            "played_game": p['played_game'], "profile_pic": pic
+        })
     cur.close(); conn.close()
     
     return jsonify({
@@ -1397,12 +1427,25 @@ def get_leaderboard(instance_id):
     instance = cur.fetchone()
     
     cur.execute('''
-        SELECT username, current_score, alchemy_precision, alchemy_time 
-        FROM tournament_players 
-        WHERE instance_id = %s 
-        ORDER BY current_score DESC, alchemy_precision DESC, alchemy_time ASC LIMIT 10
-    ''', (instance_id,))  # <-- CORRECCIÓN: Debe ser instance_id
-    players = cur.fetchall()
+        SELECT tp.username, tp.current_score, tp.played_game, u.game_state 
+        FROM tournament_players tp 
+        JOIN users u ON tp.user_id = u.id 
+        WHERE tp.instance_id = %s 
+        ORDER BY tp.current_score DESC LIMIT 10
+    ''', (instance_id,))
+    db_players = cur.fetchall()
+    players = []
+    for p in db_players:
+        pic = 'assets/Perfil/defecto.png'
+        try:
+            if p['game_state']:
+                st = json.loads(p['game_state'])
+                pic = st.get('profilePic', pic)
+        except: pass
+        players.append({
+            "username": p['username'], "current_score": p['current_score'], 
+            "played_game": p['played_game'], "profile_pic": pic
+        })
     cur.close(); conn.close()
     
     return jsonify({

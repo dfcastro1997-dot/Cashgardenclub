@@ -185,7 +185,7 @@
                     <tr>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-center w-24">Rank</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest">Jugador</th>
-                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center">Bono Minijuego</th>
+                        <th class="p-4 md:p-5 text-xs font-black text-purple-500 uppercase tracking-widest text-center">Juego Jugado</th>
                         <th class="p-4 md:p-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Puntaje Final</th>
                     </tr>
                 </thead>
@@ -467,7 +467,7 @@
 
     // 3. Abrir Modal de Selección de Planta (Paso 3)
     window.openPlantSelectionModal = function(minigame) {
-        window.selectedMinigame = minigame; // 'pachinko' o 'ruleta'
+        window.selectedMinigame = minigame; 
         
         if (!window.pendingTournament) return;
         
@@ -476,18 +476,35 @@
         
         let html = '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">';
         
+        const getAttempts = (hp) => {
+            const h = hp || 100;
+            if (minigame === 'tragamonedas') return Math.max(3, Math.floor(h / 20));
+            return Math.max(5, Math.floor(h / 10)); // Pachinko y Ruleta
+        };
+        const getIcon = () => {
+            if (minigame === 'pachinko') return '🌰';
+            if (minigame === 'ruleta') return '🌱';
+            return '❤️'; // tragamonedas
+        };
+        const getLabel = () => {
+            if (minigame === 'pachinko') return 'Semillas a lanzar';
+            if (minigame === 'ruleta') return 'Giros';
+            return 'Vidas';
+        };
+
         if (readyPlots.length === 0 && arsenal.length === 0) {
             html = '<p class="text-center text-gray-500 font-bold w-full col-span-full">No tienes plantas listas.</p>';
         } else {
             readyPlots.forEach(p => {
                 let img = p.plant.icon || (window.farmApp.state.inventory[p.plant.id] && window.farmApp.state.inventory[p.plant.id].image) || 'assets/Fondos/logo.png';
+                let attempts = getAttempts(p.plant.hp);
                 html += `
                     <div onclick="window.selectPlantForMinigame('plot', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
                         <span class="block text-[10px] font-black text-green-600 mb-2 uppercase tracking-widest bg-green-50 rounded-md py-1">Terreno ${p.id}</span>
                         <img src="${img}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.plant.name}</h4>
                         <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
-                            <span title="Fichas (HP)">🪙 ${p.plant.hp || 100}</span>
+                            <span title="${getLabel()}">${getIcon()} ${attempts}</span>
                             <span title="Multiplicador (ATK)">⭐ ${p.plant.atk || 50}</span>
                             <span title="Control (DEF)">⚙️ ${p.plant.def || 20}</span>
                         </div>
@@ -496,13 +513,14 @@
             });
             
             arsenal.forEach(p => {
+                let attempts = getAttempts(p.hp);
                 html += `
                     <div onclick="window.selectPlantForMinigame('arsenal', '${p.id}')" class="bg-white border-2 border-gray-200 hover:border-cg_gold rounded-2xl p-4 cursor-pointer text-center transition-all shadow-sm hover:shadow-md">
                         <span class="block text-[10px] font-black text-red-600 mb-2 uppercase tracking-widest bg-red-50 rounded-md py-1">Arsenal</span>
                         <img src="${p.icon || 'assets/Fondos/logo.png'}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto mb-3 drop-shadow-md">
                         <h4 class="font-black text-xs text-cg_navy truncate mb-2">${p.name}</h4>
                         <div class="flex justify-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 rounded-lg py-1.5">
-                            <span title="Fichas (HP)">🪙 ${p.hp || 100}</span>
+                            <span title="${getLabel()}">${getIcon()} ${attempts}</span>
                             <span title="Multiplicador (ATK)">⭐ ${p.atk || 50}</span>
                             <span title="Control (DEF)">⚙️ ${p.def || 20}</span>
                         </div>
@@ -609,17 +627,27 @@
                 else { iconBadge = `<span class="text-gray-400 font-bold ml-1">${index + 1}</span>`; }
                 
                 const isMe = player.username === sessionStorage.getItem('username');
-                let timeBonus = player.alchemy_time ? parseFloat(player.alchemy_time) : 0;
+                
+                let playedGame = player.played_game || 'Desconocido';
+                let gameIcon = '🎮';
+                if(playedGame === 'pachinko') { playedGame = 'Pachinko'; gameIcon = '🌰'; }
+                else if(playedGame === 'ruleta') { playedGame = 'Ruleta'; gameIcon = '🌻'; }
+                else if(playedGame === 'tragamonedas') { playedGame = 'Tragamonedas'; gameIcon = '🎰'; }
+                
+                const profilePic = player.profile_pic || 'assets/Perfil/defecto.png';
                                 
                 tbody.innerHTML += `
                     <tr class="${rowClass} ${isMe ? 'bg-blue-50/30' : ''}">
                         <td class="p-4 md:p-5 text-xl w-16 text-center">${iconBadge}</td>
                         <td class="p-4 md:p-5 font-black ${isMe ? 'text-cg_blue' : 'text-cg_navy'}">
                             <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200 shrink-0 shadow-sm bg-white">
+                                    <img src="${profilePic}" class="w-full h-full object-cover" onerror="this.src='assets/Perfil/defecto.png'">
+                                </div>
                                 <span>${player.username} ${isMe ? '<span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full ml-2 uppercase">Tú</span>' : ''}</span>
                             </div>
                         </td>
-                        <td class="p-4 md:p-5 text-center font-black text-purple-600 tracking-wider">+${timeBonus} Pts</td>
+                        <td class="p-4 md:p-5 text-center font-black text-purple-600 tracking-wider flex items-center justify-center gap-2"><span>${gameIcon}</span> <span>${playedGame}</span></td>
                         <td class="p-4 md:p-5 text-right"><span class="font-black text-lg ${index === 0 ? 'text-cg_gold' : 'text-gray-600'}">${parseFloat(player.current_score).toLocaleString()}</span></td>
                     </tr>
                 `;

@@ -1097,7 +1097,8 @@ window.submitPachinkoScore = async function() {
                     username: username,
                     session_token: token,
                     instance_id: instanceId,
-                    score: window.finalPachinkoScore
+                    score: window.finalPachinkoScore,
+                    played_game: 'pachinko'
                 })
             });
         } catch(e) { console.error(e); }

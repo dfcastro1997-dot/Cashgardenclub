@@ -1001,7 +1001,8 @@ window.submitRouletteScore = async function() {
                     username: username,
                     session_token: token,
                     instance_id: instanceId,
-                    score: window.finalRouletteScore
+                    score: window.finalRouletteScore,
+                    played_game: 'ruleta'
                 })
             });
         } catch(e) { console.error(e); }
