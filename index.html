@@ -796,12 +796,6 @@
                     <button onclick="loadView('shop', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-cg_gold transition-all">
                         <span>Mercado</span>
                     </button>
-                    <button onclick="loadView('referrals', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-orange-500 transition-all">
-                        <span>Referidos</span>
-                    </button>
-                    <button onclick="loadView('instructions', this)" class="nav-btn-desktop h-full px-4 xl:px-5 flex items-center gap-2 text-sm font-bold text-gray-500 border-b-[3px] border-transparent hover:text-cg_gold transition-all">
-                        <span>Instrucciones</span>
-                    </button>
                 </nav>
 
                 <!-- RECURSOS Y USUARIO (Responsive) -->
@@ -888,13 +882,8 @@
         <!-- MAIN APP CONTENT -->
         <main id="app-content" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 pb-24 lg:pb-10 relative"></main>
 
-        <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-around items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
-            <button onclick="loadView('referrals', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-orange-500 transition-all duration-300">
-                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🤝</span>
-                <span class="text-[10px] font-bold tracking-wide">Referidos</span>
-            </button>
-            
-            <div onclick="loadView('farm', this)" class="nav-btn-mobile group flex flex-col items-center justify-end w-full h-full text-cg_navy transition-colors pb-1.5 relative cursor-pointer">
+        <nav class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-center gap-12 items-center h-[70px] z-[100] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
+            <div onclick="loadView('farm', this)" class="nav-btn-mobile group flex flex-col items-center justify-end w-24 h-full text-cg_navy transition-colors pb-1.5 relative cursor-pointer">
                 <div class="absolute -top-7 flex justify-center w-full">
                     <div class="w-16 h-16 bg-white hover:bg-gray-50 rounded-2xl flex items-center justify-center border-[3px] border-gray-200 shadow-[0_8px_20px_rgba(0,0,0,0.12)] transform group-hover:scale-105 group-hover:border-cg_blue/40 transition-all duration-300 z-50">
                         <img src="assets/Fondos/pala.png" alt="Granja" class="w-10 h-10 object-contain drop-shadow-sm">
@@ -903,14 +892,9 @@
                 <span class="text-[10px] font-black tracking-widest mt-8">GRANJA</span>
             </div>
 
-            <button onclick="loadView('shop', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
+            <button onclick="loadView('shop', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-24 h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
                 <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">🛒</span>
                 <span class="text-[10px] font-bold tracking-wide">Mercado</span>
-            </button>
-
-            <button onclick="loadView('instructions', this)" class="nav-btn-mobile group flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-cg_blue transition-all duration-300">
-                <span class="text-2xl mb-1 transform group-hover:-translate-y-1 transition-transform duration-300">📖</span>
-                <span class="text-[10px] font-bold tracking-wide">Guía</span>
             </button>
         </nav>
     </div>
