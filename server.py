@@ -1044,12 +1044,12 @@ def process_tournament_lifecycle(inst, conn, cur):
                                 
                                 if pots_amt > 0:
                                     if 'tool_pot_small' not in st['inventory']:
-                                        st['inventory']['tool_pot_small'] = {'qty': 0, 'type': 'pot', 'reqSize': 'small', 'name': 'Maceta Pequeña', 'image': 'assets/Herramientas_y_Servicios/maceta_pequena.png'}
+                                        st['inventory']['tool_pot_small'] = {'qty': 0, 'type': 'pot', 'reqSize': 'small', 'name': 'Maceta Pequeña', 'image': 'assets/Herramientas_y_Servicios/maceta_pequena.avif'}
                                     st['inventory']['tool_pot_small']['qty'] = int(st['inventory']['tool_pot_small'].get('qty', 0)) + pots_amt
                                     
                                 if water_amt > 0:
                                     if 'tool_water' not in st['inventory']:
-                                        st['inventory']['tool_water'] = {'qty': 0, 'type': 'water', 'name': 'Regadera', 'image': 'assets/Herramientas_y_Servicios/regadera.png'}
+                                        st['inventory']['tool_water'] = {'qty': 0, 'type': 'water', 'name': 'Regadera', 'image': 'assets/Herramientas_y_Servicios/Regadera.avif'}
                                     st['inventory']['tool_water']['qty'] = int(st['inventory']['tool_water'].get('qty', 0)) + water_amt
 
                             cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), uid))
@@ -1253,7 +1253,7 @@ def global_leaderboard(t_id):
             db_players = cur.fetchall()
             players = []
             for p in db_players:
-                pic = 'assets/Perfil/defecto.png'
+                pic = 'assets/Perfil/defecto.avif'
                 try:
                     if p['game_state']:
                         st = json.loads(p['game_state'])
@@ -1285,7 +1285,7 @@ def global_leaderboard(t_id):
     db_players = cur.fetchall()
     players = []
     for p in db_players:
-        pic = 'assets/Perfil/defecto.png'
+        pic = 'assets/Perfil/defecto.avif'
         try:
             if p['game_state']:
                 st = json.loads(p['game_state'])
@@ -1343,7 +1343,7 @@ def get_leaderboard(instance_id):
     db_players = cur.fetchall()
     players = []
     for p in db_players:
-        pic = 'assets/Perfil/defecto.png'
+        pic = 'assets/Perfil/defecto.avif'
         try:
             if p['game_state']:
                 st = json.loads(p['game_state'])
@@ -1670,8 +1670,8 @@ def admin_add_items():
     }
     
     img_icons = {
-        'tool_pot_small': 'assets/Herramientas_y_Servicios/maceta_pequena.png', 
-        'tool_water': 'assets/Herramientas_y_Servicios/regadera.png'
+        'tool_pot_small': 'assets/Herramientas_y_Servicios/maceta_pequena.avif', 
+        'tool_water': 'assets/Herramientas_y_Servicios/Regadera.avif'
     }
 
     # --- AÑADIDO: Cargar atributos de plantas dinámicas ---
@@ -1711,7 +1711,7 @@ def admin_add_items():
                             'qty': 0, 
                             'type': 'seed' if ('dyn_' in item_id) else 'pot' if 'pot' in item_id else 'water' if 'water' in item_id else 'defense' if 'scarecrow' in item_id else 'item',
                             'name': names.get(item_id, item_id.replace('_', ' ').title()), 
-                            'image': img_icons.get(item_id, 'assets/Fondos/logo.png')
+                            'image': img_icons.get(item_id, 'assets/Fondos/logo.avif')
                         }
                 state['inventory'][item_id]['qty'] = state['inventory'][item_id].get('qty', 0) + qty
                 gift_items.append({"icon": icons.get(item_id, '📦'), "text": lbl})
@@ -1732,7 +1732,7 @@ def admin_add_items():
                         'id': 'ars_' + str(int(time.time())) + '_' + str(uuid.uuid4())[:4],
                         'plantId': pid, 
                         'name': names.get(pid, pid.replace('_', ' ').title()), 
-                        'icon': img_icons.get(pid, 'assets/Fondos/logo.png'),
+                        'icon': img_icons.get(pid, 'assets/Fondos/logo.avif'),
                         'hp': php, 'maxHp': php, 'atk': patk, 'def': pdef, 'wins': 0, 'lastRecover': int(time.time() * 1000)
                     })
                 gift_items.append({"icon": icons.get(pid, '⚔️'), "text": lbl})
@@ -1829,7 +1829,7 @@ def get_user_profile(username):
             return jsonify({"error": "Jugador no encontrado"}), 404
             
         state = json.loads(u['game_state'] or '{}')
-        pic = state.get('profilePic', 'assets/Perfil/defecto.png')
+        pic = state.get('profilePic', 'assets/Perfil/defecto.avif')
         arsenal_count = len(state.get('arsenal', []))
         
         # Calcular total de batallas y victorias
@@ -2250,9 +2250,9 @@ def donate_tree():
             milestones = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
 
             items_ref = {
-                'tool_pot_small': ('Maceta Pequeña', 'assets/Herramientas_y_Servicios/maceta_pequena.png'),
-                'tool_water': ('Regadera', 'assets/Herramientas_y_Servicios/regadera.png'),
-                'tool_scarecrow': ('Espantapájaros', 'assets/Herramientas_y_Servicios/espantapajaros.png')
+                'tool_pot_small': ('Maceta Pequeña', 'assets/Herramientas_y_Servicios/maceta_pequena.avif'),
+                'tool_water': ('Regadera', 'assets/Herramientas_y_Servicios/Regadera.avif'),
+                'tool_scarecrow': ('Espantapájaros', 'assets/Herramientas_y_Servicios/espantapajaros.avif')
             }
             cur.execute("SELECT id, name, image_url FROM dynamic_plants")
             for dp in cur.fetchall():
@@ -2298,7 +2298,7 @@ def donate_tree():
                         for item in prize['items']:
                             p_id = item['id']
                             p_qty = item['qty']
-                            p_name, p_img = items_ref.get(p_id, ('Premio', 'assets/Fondos/logo.png'))
+                            p_name, p_img = items_ref.get(p_id, ('Premio', 'assets/Fondos/logo.avif'))
                             
                             emoji = emoji_ref.get(p_id, '✨')
                             extra_items.append({"icon": emoji, "text": f"{p_qty}x {p_name}"})
@@ -2315,7 +2315,7 @@ def donate_tree():
                         rid = m['id']
                         if 'inventory' not in target_state: target_state['inventory'] = {}
                         if rid not in target_state['inventory']:
-                            r_name, r_img = items_ref.get(rid, ('Premio', 'assets/Fondos/logo.png'))
+                            r_name, r_img = items_ref.get(rid, ('Premio', 'assets/Fondos/logo.avif'))
                             typ = 'seed' if ('flower' in rid or 'dyn_' in rid) else 'pot' if 'pot' in rid else 'defense' if 'scarecrow' in rid else 'water'
                             req = 'small' if ('small' in rid or 'wheat' in rid) else 'big'
                             target_state['inventory'][rid] = {'qty': 0, 'type': typ, 'reqSize': req, 'name': r_name, 'image': r_img}
