@@ -147,7 +147,7 @@
         .cg-hand {
             position: absolute; left: calc(var(--k) * 900); top: calc(var(--k) * 560);
             width: calc(var(--k) * 330); height: calc(var(--k) * 360);
-            background: url('assets/Granjero/Explicando.png') no-repeat;
+            background: url('assets/Granjero/Explicando.avif') no-repeat;
             background-size: calc(var(--k) * 1264) auto;
             background-position: calc(var(--k) * -900) calc(var(--k) * -560);
             -webkit-mask-image: radial-gradient(ellipse 47% 47% at 52% 47%, #000 78%, transparent 100%);
@@ -636,7 +636,7 @@
                         <div id="login-loading-view" class="cg-loading hidden">
                             <div class="cg-loading__avatar">
                                 <span class="cg-loading__ring"></span>
-                                <img id="loading-avatar-img" src="assets/Perfil/defecto.png" alt="">
+                                <img id="loading-avatar-img" src="assets/Perfil/defecto.avif" alt="">
                                 <span id="loading-avatar-check" class="cg-loading__check">✓</span>
                             </div>
                             <h4 id="loading-farmer-title" class="cg-title">Accediendo...</h4>
@@ -679,7 +679,7 @@
         <div id="guide-container" class="relative flex items-end transform -translate-x-full transition-transform duration-500 ease-out">
             
             <!-- Personaje pegado a la izquierda y abajo (Z-index 40 para quedar AL FRENTE de la burbuja) -->
-            <img id="guide-character" src="assets/Granjero/Explicando.png" class="w-40 sm:w-64 md:w-[320px] lg:w-[380px] h-auto object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] relative z-40 pointer-events-auto">
+            <img id="guide-character" src="assets/Granjero/Explicando.avif" class="w-40 sm:w-64 md:w-[320px] lg:w-[380px] h-auto object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] relative z-40 pointer-events-auto">
             
             <!-- Burbuja de Diálogo (Movida más a la derecha y con Z-index 30 para quedar DETRÁS de la planta) -->
             <div id="guide-bubble" class="absolute bottom-[40%] sm:bottom-[50%] left-[80%] sm:left-[95%] lg:left-[100%] bg-white text-cg_navy border-4 border-cg_navy rounded-2xl sm:rounded-3xl p-4 sm:p-5 sm:pl-8 shadow-2xl pointer-events-auto w-[220px] sm:w-[320px] md:w-[400px] transform scale-0 transition-transform duration-300 origin-bottom-left z-30 flex flex-col mb-2 sm:mb-0">
@@ -1064,7 +1064,7 @@
             const loadingAvatarImg = document.getElementById('loading-avatar-img');
             
             if(avatarImg) {
-                let profilePic = 'assets/Perfil/defecto.png';
+                let profilePic = 'assets/Perfil/defecto.avif';
                 if (userData.game_state) {
                     try {
                         const st = JSON.parse(userData.game_state);

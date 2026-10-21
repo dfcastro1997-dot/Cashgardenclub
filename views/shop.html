@@ -104,8 +104,8 @@ window.shopApp = {
     
     catalog: {
         tools: [
-            { id: 'tool_pot_small', name: 'Maceta', image: 'assets/Herramientas_y_Servicios/maceta_pequena.png', duration: 'N/A', desc: 'Soporta cualquier tipo de flor o semilla de tamaño pequeño.', price: 5000 },
-            { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/regadera.png', duration: 'N/A', desc: 'Rellena el agua de tus plantas de forma manual.', price: 500 },
+            { id: 'tool_pot_small', name: 'Maceta', image: 'assets/Herramientas_y_Servicios/maceta_pequena.avif', duration: 'N/A', desc: 'Soporta cualquier tipo de flor o semilla de tamaño pequeño.', price: 5000 },
+            { id: 'tool_water', name: 'Regadera', image: 'assets/Herramientas_y_Servicios/Regadera.avif', duration: 'N/A', desc: 'Rellena el agua de tus plantas de forma manual.', price: 500 },
             { id: 'tool_capsule', name: 'Bóveda Hidropónica', image: 'assets/Herramientas_y_Servicios/Capsula.gif', duration: '10 Horas', desc: 'Sella la planta con humedad perfecta y protección anti-cuervos.', price: 1000 }
         ],
         flowers: []
@@ -309,7 +309,7 @@ window.shopApp = {
                     
                     <div class="relative w-full h-full flex items-center justify-center">
                         <div class="absolute inset-0 bg-blue-100 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-                        <img src="${item.image}" onerror="this.src='assets/Fondos/logo.png'" class="h-28 md:h-32 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
+                        <img src="${item.image}" onerror="this.src='assets/Fondos/logo.avif'" class="h-28 md:h-32 w-auto object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
                     </div>
                 </div>
 
@@ -443,12 +443,12 @@ window.shopApp = {
             targetInventory[itemId].qty += qty;
             
             if (!targetInventory['tool_pot_small']) {
-                targetInventory['tool_pot_small'] = { name: 'Maceta', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' };
+                targetInventory['tool_pot_small'] = { name: 'Maceta', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.avif' };
             }
             targetInventory['tool_pot_small'].qty += 1;
             
             if (!targetInventory['tool_water']) {
-                targetInventory['tool_water'] = { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' };
+                targetInventory['tool_water'] = { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/Regadera.avif' };
             }
             targetInventory['tool_water'].qty += 10;
 
