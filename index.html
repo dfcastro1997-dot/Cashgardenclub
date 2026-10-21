@@ -879,17 +879,10 @@
 
  
 
-        <!-- TICKER EN VIVO (MARQUESINA ESTRATÉGICA Y PSICOLÓGICA) -->
-        <div id="live-ticker-bar" class="w-full bg-white/95 backdrop-blur-md border-b border-gray-200 h-9 sm:h-11 relative overflow-hidden z-[140] flex items-center shadow-sm hidden">
-            <!-- Efecto difuminado en los bordes para lectura fluida -->
-            <div class="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-            <div class="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-            
-            <!-- Contenedor totalmente limpio (Solo mostrará retiros reales emitidos por el servidor) -->
-            <div id="live-ticker-track" class="ticker-track gap-4 sm:gap-8 px-4 items-center h-full pr-10" style="animation-duration: 120s;">
-            </div>
+        <!-- TICKER EN VIVO ELIMINADO (Contenedores ocultos para evitar errores en JS) -->
+        <div id="live-ticker-bar" style="display: none !important;">
+            <div id="live-ticker-track"></div>
         </div>
-
 
 
         <!-- MAIN APP CONTENT -->
