@@ -27,109 +27,102 @@
         <!-- BACKDROP MÓVIL PARA HERRAMIENTAS -->
         <div class="fixed inset-0 bg-cg_navy/60 backdrop-blur-sm z-[90] hidden lg:hidden transition-opacity" id="tools-backdrop" onclick="window.farmApp.toggleToolsMobile(false)"></div>
 
-        <!-- PANEL DE HERRAMIENTAS (FRANJA HORIZONTAL EN DESKTOP / SIDEBAR EN MÓVIL) -->
-        <div class="fixed inset-x-0 bottom-0 z-[100] transform translate-y-full lg:translate-y-0 transition-transform duration-300 ease-in-out lg:relative lg:w-full lg:z-auto flex-shrink-0 h-[75vh] lg:h-auto" id="tools-sidebar">
-            <div class="bg-white rounded-t-3xl lg:rounded-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] lg:shadow-sm border-t lg:border border-gray-200 h-full lg:h-auto flex flex-col lg:flex-row overflow-hidden relative z-10 items-start lg:items-center p-0 lg:py-4 lg:px-6">
+        <!-- PANEL DE HERRAMIENTAS (SIDEBAR MÓVIL SOLAMENTE) -->
+        <div class="fixed inset-x-0 bottom-0 z-[100] transform translate-y-full transition-transform duration-300 ease-in-out flex-shrink-0 h-[75vh] lg:hidden" id="tools-sidebar">
+            <div class="bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] border-t border-gray-200 h-full flex flex-col overflow-hidden relative z-10 p-0">
                 
-                <!-- Handle Móvil -->
-                <div class="w-full flex justify-center pt-3 pb-1 lg:hidden cursor-pointer" onclick="window.farmApp.toggleToolsMobile(false)">
+                <div class="w-full flex justify-center pt-3 pb-1 cursor-pointer" onclick="window.farmApp.toggleToolsMobile(false)">
                     <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
                 </div>
                 
-                <!-- Título Móvil -->
-                <div class="px-5 pb-4 pt-1 lg:hidden border-b border-gray-100 flex items-center justify-between shrink-0 w-full">
+                <div class="px-5 pb-4 pt-1 border-b border-gray-100 flex items-center justify-between shrink-0 w-full">
                     <h3 class="font-black text-cg_navy text-lg">Panel de Herramientas</h3>
-                    <button class="lg:hidden text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors" onclick="window.farmApp.toggleToolsMobile(false)">✕</button>
+                    <button class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors" onclick="window.farmApp.toggleToolsMobile(false)">✕</button>
                 </div>
                 
-                <!-- Contenedor Principal Herramientas -->
-                <div class="p-4 sm:p-5 lg:p-0 flex-1 overflow-y-auto lg:overflow-visible w-full flex flex-col lg:flex-row lg:items-center justify-between gap-5 lg:gap-6 bg-white pb-10 lg:pb-0">
-                    
+                <div class="p-4 sm:p-5 flex-1 overflow-y-auto w-full flex flex-col gap-5 bg-white pb-10">
                     <!-- BANNERS DE AUTOMATIZACIÓN -->
-                    <div id="automation-banners" class="flex flex-col lg:flex-row gap-3">
-                        <div id="active-sprinkler-banner" class="hidden bg-blue-50 border border-blue-200 p-3 lg:p-2 lg:pr-4 rounded-xl flex items-center justify-between lg:justify-start gap-3 shadow-inner shrink-0">
-                            <div class="flex items-center gap-3 lg:gap-2">
-                                <div class="w-8 h-8 lg:w-8 lg:h-8 bg-white rounded-lg flex items-center justify-center shadow-sm shrink-0">
-                                    <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 lg:w-5 lg:h-5 object-contain">
+                    <div id="automation-banners" class="flex flex-col gap-3">
+                        <div id="active-sprinkler-banner" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-center justify-between gap-3 shadow-inner shrink-0">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm shrink-0">
+                                    <img src="assets/Herramientas_y_Servicios/auto_riego.png" class="w-6 h-6 object-contain">
                                 </div>
                                 <div>
-                                    <p class="text-[10px] lg:text-[9px] font-black text-cg_blue uppercase tracking-widest leading-tight">Auto-Riego</p>
-                                    <p class="text-xs lg:text-[10px] text-blue-800 font-bold" id="sprinkler-time-left">Activo</p>
+                                    <p class="text-[10px] font-black text-cg_blue uppercase tracking-widest leading-tight">Auto-Riego</p>
+                                    <p class="text-xs text-blue-800 font-bold" id="sprinkler-time-left">Activo</p>
                                 </div>
                             </div>
-                            <span class="relative flex h-3 w-3 lg:h-2 lg:w-2 shrink-0 lg:ml-2">
+                            <span class="relative flex h-3 w-3 shrink-0">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 lg:h-2 lg:w-2 bg-blue-500"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                             </span>
                         </div>
 
-                        <div id="active-harvester-banner" class="hidden bg-green-50 border border-green-200 p-3 lg:p-2 lg:pr-4 rounded-xl flex items-center justify-between lg:justify-start gap-3 shadow-inner shrink-0">
-                            <div class="flex items-center gap-3 lg:gap-2">
-                                <div class="w-8 h-8 lg:w-8 lg:h-8 bg-white rounded-lg flex items-center justify-center shadow-sm shrink-0">
-                                    <img src="assets/Herramientas_y_Servicios/recolector.png" class="w-6 h-6 lg:w-5 lg:h-5 object-contain">
+                        <div id="active-harvester-banner" class="hidden bg-green-50 border border-green-200 p-3 rounded-xl flex items-center justify-between gap-3 shadow-inner shrink-0">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm shrink-0">
+                                    <img src="assets/Herramientas_y_Servicios/recolector.png" class="w-6 h-6 object-contain">
                                 </div>
                                 <div>
-                                    <p class="text-[10px] lg:text-[9px] font-black text-green-600 uppercase tracking-widest leading-tight">Recolector</p>
-                                    <p class="text-xs lg:text-[10px] text-green-800 font-bold" id="harvester-time-left">Activo</p>
+                                    <p class="text-[10px] font-black text-green-600 uppercase tracking-widest leading-tight">Recolector</p>
+                                    <p class="text-xs text-green-800 font-bold" id="harvester-time-left">Activo</p>
                                 </div>
                             </div>
-                            <span class="relative flex h-3 w-3 lg:h-2 lg:w-2 shrink-0 lg:ml-2">
+                            <span class="relative flex h-3 w-3 shrink-0">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 lg:h-2 lg:w-2 bg-green-500"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                             </span>
                         </div>
                     </div>
 
-                    <!-- Estado de Parcela Seleccionada (Oculto en desktop para ahorrar espacio) -->
-                    <div id="selected-plot-container" class="lg:hidden">
+                    <div id="selected-plot-container">
                         <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2.5">Terreno Seleccionado</p>
                         <div id="selected-plot-info" class="bg-white border border-gray-100 rounded-xl p-4 text-center text-sm font-medium text-gray-500 border-dashed min-h-[100px] flex flex-col items-center justify-center transition-all">
                             Selecciona una parcela para interactuar.
                         </div>
                     </div>
 
-                    <!-- Inventario -->
-                    <div class="flex-1 w-full lg:w-auto">
-                        <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2.5 lg:hidden">Tu Inventario</p>
-                        <div class="flex flex-col lg:flex-row gap-2.5 sm:gap-4 lg:justify-end" id="tools-inventory">
-                            
-                            <div class="flex items-center justify-between lg:justify-start gap-3 p-2.5 lg:p-2 lg:pr-3 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all min-w-[160px]" id="inv-item-capsule">
-                                <div class="flex items-center gap-3 lg:gap-2 min-w-0">
-                                    <div class="w-10 h-10 lg:w-9 lg:h-9 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
+                    <div class="flex-1 w-full">
+                        <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2.5">Tu Inventario</p>
+                        <div class="flex flex-col gap-2.5 sm:gap-4" id="tools-inventory">
+                            <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all min-w-[160px]" id="inv-item-capsule">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
                                         <img src="assets/Herramientas_y_Servicios/Capsula.gif" class="w-full h-full object-contain">
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-sm lg:text-[11px] font-bold text-cg_navy leading-tight truncate">Bóveda</p>
-                                        <p class="text-[10px] lg:text-[9px] font-bold text-cg_gold"><span id="inv-capsule">0</span> en stock</p>
+                                        <p class="text-sm font-bold text-cg_navy leading-tight truncate">Bóveda</p>
+                                        <p class="text-[10px] font-bold text-cg_gold"><span id="inv-capsule">0</span> en stock</p>
                                     </div>
                                 </div>
-                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 lg:px-3 py-1.5 lg:py-1.5 rounded-lg text-xs lg:text-[10px] font-bold cursor-not-allowed transition-colors lg:ml-auto" disabled onclick="window.farmApp.useTool('capsule')">Usar</button>
+                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors" disabled onclick="window.farmApp.useTool('capsule')">Usar</button>
                             </div>
 
-                            <div class="flex items-center justify-between lg:justify-start gap-3 p-2.5 lg:p-2 lg:pr-3 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all min-w-[160px]" id="inv-item-pot_small">
-                                <div class="flex items-center gap-3 lg:gap-2 min-w-0">
-                                    <div class="w-10 h-10 lg:w-9 lg:h-9 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
+                            <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all min-w-[160px]" id="inv-item-pot_small">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
                                         <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="w-full h-full object-contain">
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-sm lg:text-[11px] font-bold text-cg_navy leading-tight truncate">Maceta</p>
-                                        <p class="text-[10px] lg:text-[9px] font-bold text-cg_gold"><span id="inv-pot-small">0</span> en stock</p>
+                                        <p class="text-sm font-bold text-cg_navy leading-tight truncate">Maceta</p>
+                                        <p class="text-[10px] font-bold text-cg_gold"><span id="inv-pot-small">0</span> en stock</p>
                                     </div>
                                 </div>
-                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 lg:px-3 py-1.5 lg:py-1.5 rounded-lg text-xs lg:text-[10px] font-bold cursor-not-allowed transition-colors lg:ml-auto" disabled onclick="window.farmApp.useTool('pot_small')">Usar</button>
+                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors" disabled onclick="window.farmApp.useTool('pot_small')">Usar</button>
                             </div>
 
-                            <div class="flex items-center justify-between lg:justify-start gap-3 p-2.5 lg:p-2 lg:pr-3 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all min-w-[160px]" id="inv-item-water">
-                                <div class="flex items-center gap-3 lg:gap-2 min-w-0">
-                                    <div class="w-10 h-10 lg:w-9 lg:h-9 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
+                            <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all min-w-[160px]" id="inv-item-water">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 p-1 shrink-0">
                                         <img src="assets/Herramientas_y_Servicios/regadera.png" class="w-full h-full object-contain">
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-sm lg:text-[11px] font-bold text-cg_navy leading-tight truncate">Regadera</p>
-                                        <p class="text-[10px] lg:text-[9px] font-bold text-cg_blue"><span id="inv-water">0</span> usos</p>
+                                        <p class="text-sm font-bold text-cg_navy leading-tight truncate">Regadera</p>
+                                        <p class="text-[10px] font-bold text-cg_blue"><span id="inv-water">0</span> usos</p>
                                     </div>
                                 </div>
-                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 lg:px-3 py-1.5 lg:py-1.5 rounded-lg text-xs lg:text-[10px] font-bold cursor-not-allowed transition-colors lg:ml-auto" disabled onclick="window.farmApp.useTool('water')">Usar</button>
+                                <button class="tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors" disabled onclick="window.farmApp.useTool('water')">Usar</button>
                             </div>
                         </div>
                     </div>
@@ -148,7 +141,7 @@
 
 
 
-    
+
 </div>
 
 <!-- ========================================== -->
@@ -221,6 +214,74 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+<!-- MODAL DE HERRAMIENTAS (DESKTOP) -->
+<div id="desktop-tools-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-cg_navy/80 backdrop-blur-sm" onclick="window.farmApp.closeDesktopToolsModal()"></div>
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 flex flex-col border border-gray-100 overflow-hidden animate-fade-in">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+            <div>
+                <h3 class="text-xl font-black text-cg_navy tracking-tight">Caja de Herramientas</h3>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Terreno Seleccionado</p>
+            </div>
+            <button onclick="window.farmApp.closeDesktopToolsModal()" class="text-gray-400 hover:text-cg_navy font-bold w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center transition-colors">✕</button>
+        </div>
+        
+        <div class="p-6 bg-white space-y-4">
+            <!-- Bóveda -->
+            <div class="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all hover:border-cg_blue" id="desk-inv-item-capsule">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 p-2 shrink-0">
+                        <img src="assets/Herramientas_y_Servicios/Capsula.gif" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <p class="text-base font-black text-cg_navy leading-tight">Bóveda Hidro.</p>
+                        <p class="text-[11px] font-bold text-cg_gold mt-1"><span id="desk-inv-capsule">0</span> en stock</p>
+                    </div>
+                </div>
+                <button class="desk-tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-6 py-2.5 rounded-xl text-sm font-black cursor-not-allowed transition-all" disabled onclick="window.farmApp.useTool('capsule'); window.farmApp.closeDesktopToolsModal();">Usar</button>
+            </div>
+
+            <!-- Maceta -->
+            <div class="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all hover:border-cg_blue" id="desk-inv-item-pot_small">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 p-2 shrink-0">
+                        <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <p class="text-base font-black text-cg_navy leading-tight">Maceta Pequeña</p>
+                        <p class="text-[11px] font-bold text-cg_gold mt-1"><span id="desk-inv-pot-small">0</span> en stock</p>
+                    </div>
+                </div>
+                <button class="desk-tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-6 py-2.5 rounded-xl text-sm font-black cursor-not-allowed transition-all" disabled onclick="window.farmApp.useTool('pot_small'); window.farmApp.closeDesktopToolsModal();">Usar</button>
+            </div>
+
+            <!-- Regadera -->
+            <div class="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white shadow-sm opacity-50 transition-all hover:border-cg_blue" id="desk-inv-item-water">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 p-2 shrink-0">
+                        <img src="assets/Herramientas_y_Servicios/regadera.png" class="w-full h-full object-contain">
+                    </div>
+                    <div>
+                        <p class="text-base font-black text-cg_navy leading-tight">Regadera</p>
+                        <p class="text-[11px] font-bold text-cg_blue mt-1"><span id="desk-inv-water">0</span> usos</p>
+                    </div>
+                </div>
+                <button class="desk-tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-6 py-2.5 rounded-xl text-sm font-black cursor-not-allowed transition-all" disabled onclick="window.farmApp.useTool('water'); window.farmApp.closeDesktopToolsModal();">Usar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
 
 <!-- MODAL CALIBRADOR DE RIEGO (MINIJUEGO) -->
 <div id="water-calib-modal" class="fixed inset-0 z-[170] hidden items-center justify-center p-4">
@@ -1722,17 +1783,6 @@
                 this.renderPlots();
             },
 
-            updateInventoryUI() {
-                const inv = this.state.inventory;
-                const eWater = document.getElementById('inv-water');
-                const ePotSmall = document.getElementById('inv-pot-small');
-                const eCapsule = document.getElementById('inv-capsule');
-                
-                if (eWater) eWater.innerText = inv.tool_water?.qty || 0;
-                if (ePotSmall) ePotSmall.innerText = inv.tool_pot_small?.qty || 0;
-                if (eCapsule) eCapsule.innerText = inv.tool_capsule?.qty || 0;
-            },
-
             buyPlotPrompt(id) {
                 this.state.pendingPlotId = id;
                 document.getElementById('plot-modal-title').innerText = `Desbloquear Terreno ${id + 1}`;
@@ -1763,56 +1813,6 @@
                         this.renderPlots();
                     }
                 }, 2600);
-            },
-
-            selectPlot(id, userClicked = false) {
-                this.state.selectedPlotId = id;
-                this.renderPlots(); 
-
-                const plot = this.state.plots[id];
-                const inv = this.state.inventory;
-                const isAutoWatering = this.state.autoWaterEndTime > Date.now();
-
-                ['pot_small', 'water', 'capsule'].forEach(toolType => {
-                    const el = document.getElementById(`inv-item-${toolType}`);
-                    if (el) {
-                        el.classList.add('opacity-50');
-                        const btn = el.querySelector('.tool-use-btn');
-                        if (btn) {
-                            btn.disabled = true;
-                            btn.className = 'tool-use-btn bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors';
-                        }
-                    }
-                });
-
-                if (plot.status === 'empty') {
-                    if(inv.tool_pot_small && inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
-                } else if (plot.status === 'pot') {
-                    
-                } else if (plot.status === 'planted') {
-                    if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow && !(plot.capsuleEndTime > Date.now())) {
-                        this.enableToolBtn('water');
-                    }
-                    if(!plot.isReady && inv.tool_capsule && inv.tool_capsule.qty > 0 && !(plot.capsuleEndTime > Date.now())) {
-                        this.enableToolBtn('capsule');
-                    }
-                }
-                
-                if (userClicked && window.innerWidth < 1024) {
-                    this.toggleToolsMobile(true);
-                }
-            },
-
-            enableToolBtn(toolType) {
-                const el = document.getElementById(`inv-item-${toolType}`);
-                if(el) {
-                    el.classList.remove('opacity-50');
-                    const btn = el.querySelector('.tool-use-btn');
-                    if(btn) {
-                        btn.disabled = false;
-                        btn.className = 'tool-use-btn shrink-0 bg-cg_blue hover:bg-cg_navy text-white shadow-sm px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors';
-                    }
-                }
             },
 
             useTool(type) {
@@ -1859,6 +1859,11 @@
                     this.toggleToolsMobile(false);
                 }
             },
+
+
+
+
+
 
             removePlant(plotId) {
                 const plot = this.state.plots[plotId];
@@ -2504,8 +2509,113 @@
                 }
             },
 
+
+
+            updateInventoryUI() {
+                const inv = this.state.inventory;
+                ['water', 'pot_small', 'capsule'].forEach(k => {
+                    const eMobile = document.getElementById(`inv-${k.replace('_', '-')}`);
+                    const eDesk = document.getElementById(`desk-inv-${k.replace('_', '-')}`);
+                    const qty = inv[`tool_${k}`]?.qty || 0;
+                    if (eMobile) eMobile.innerText = qty;
+                    if (eDesk) eDesk.innerText = qty;
+                });
+            },
+
+            selectPlot(id, userClicked = false) {
+                this.state.selectedPlotId = id;
+                this.renderPlots(); 
+
+                const plot = this.state.plots[id];
+                const inv = this.state.inventory;
+                const isAutoWatering = this.state.autoWaterEndTime > Date.now();
+
+                ['pot_small', 'water', 'capsule'].forEach(toolType => {
+                    // Mobile sidebar
+                    const el = document.getElementById(`inv-item-${toolType}`);
+                    if (el) {
+                        el.classList.add('opacity-50');
+                        const btn = el.querySelector('.tool-use-btn');
+                        if (btn) {
+                            btn.disabled = true;
+                            btn.className = 'tool-use-btn bg-gray-100 text-gray-400 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed transition-colors';
+                        }
+                    }
+                    // Desktop modal
+                    const elDesk = document.getElementById(`desk-inv-item-${toolType}`);
+                    if (elDesk) {
+                        elDesk.classList.add('opacity-50');
+                        const btnDesk = elDesk.querySelector('.desk-tool-use-btn');
+                        if (btnDesk) {
+                            btnDesk.disabled = true;
+                            btnDesk.className = 'desk-tool-use-btn shrink-0 bg-gray-100 text-gray-400 px-6 py-2.5 rounded-xl text-sm font-black cursor-not-allowed transition-all';
+                        }
+                    }
+                });
+
+                if (plot.status === 'empty') {
+                    if(inv.tool_pot_small && inv.tool_pot_small.qty > 0) this.enableToolBtn('pot_small');
+                } else if (plot.status === 'pot') {
+                    
+                } else if (plot.status === 'planted') {
+                    if(!isAutoWatering && plot.water < 100 && inv.tool_water && inv.tool_water.qty > 0 && !plot.isReady && !plot.hasCrow && !(plot.capsuleEndTime > Date.now())) {
+                        this.enableToolBtn('water');
+                    }
+                    if(!plot.isReady && inv.tool_capsule && inv.tool_capsule.qty > 0 && !(plot.capsuleEndTime > Date.now())) {
+                        this.enableToolBtn('capsule');
+                    }
+                }
+                
+                if (userClicked) {
+                    if (window.innerWidth < 1024) {
+                        this.toggleToolsMobile(true);
+                    } else {
+                        this.openDesktopToolsModal();
+                    }
+                }
+            },
+
+            enableToolBtn(toolType) {
+                // Mobile
+                const el = document.getElementById(`inv-item-${toolType}`);
+                if(el) {
+                    el.classList.remove('opacity-50');
+                    const btn = el.querySelector('.tool-use-btn');
+                    if(btn) {
+                        btn.disabled = false;
+                        btn.className = 'tool-use-btn shrink-0 bg-cg_blue hover:bg-cg_navy text-white shadow-sm px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors';
+                    }
+                }
+                // Desktop
+                const elDesk = document.getElementById(`desk-inv-item-${toolType}`);
+                if(elDesk) {
+                    elDesk.classList.remove('opacity-50');
+                    const btnDesk = elDesk.querySelector('.desk-tool-use-btn');
+                    if(btnDesk) {
+                        btnDesk.disabled = false;
+                        btnDesk.className = 'desk-tool-use-btn shrink-0 bg-cg_blue hover:bg-blue-600 text-white shadow-md px-6 py-2.5 rounded-xl text-sm font-black cursor-pointer transition-all active:scale-95';
+                    }
+                }
+            },
+
+            openDesktopToolsModal() {
+                const modal = document.getElementById('desktop-tools-modal');
+                if(modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            },
+
+            closeDesktopToolsModal() {
+                const modal = document.getElementById('desktop-tools-modal');
+                if(modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            },
+
             closeModals() {
-                ['plot-modal', 'plant-modal', 'instructions-modal'].forEach(id => {
+                ['plot-modal', 'plant-modal', 'instructions-modal', 'desktop-tools-modal'].forEach(id => {
                     const el = document.getElementById(id);
                     if(el) {
                         el.classList.add('hidden');
@@ -2514,6 +2624,8 @@
                 });
                 this.closeCrowModal();
             },
+
+
 
             deductBalance(amount) {
                 this.state.seedsBalance -= amount;
