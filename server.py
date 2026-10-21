@@ -360,17 +360,10 @@ def process_server_tick(game_state_str, chat_id=None):
             
             auto_harvest_end = state.get('autoHarvestEndTime', 0)
             is_auto_harvesting = auto_harvest_end > now
-            
-            any_plant_infected = any(
-                p.get('status') == 'planted' and p.get('hasCrow') 
-                for p in state.get('plots', [])
-            )
-
-            contagion_triggered = False
 
             for plot in state.get('plots', []):
                 if 'notifyFlags' not in plot: 
-                    plot['notifyFlags'] = {'crow': False, 'ready': False, 'water': False, 'spoiled': False}
+                    plot['notifyFlags'] = {'ready': False, 'water': False, 'spoiled': False}
                 flags = plot['notifyFlags']
 
                 if plot.get('embargoEndTime', 0) > 0 and now >= plot.get('embargoEndTime', 0):
@@ -378,16 +371,8 @@ def process_server_tick(game_state_str, chat_id=None):
                     if plot.get('status') == 'embargoed':
                         plot['status'] = 'empty'
 
-                if plot.get('status') in ['tournament_waiting']:
+                if plot.get('status') in ['tournament_waiting', 'tournament']:
                     continue
-
-                if plot.get('status') == 'tournament':
-                    if any_plant_infected and not plot.get('hasCrow') and plot.get('crowLeavingAt', 0) <= now:
-                        plot['hasCrow'] = True
-                    
-                    if plot.get('hasCrow') and plot.get('crowLeavingAt', 0) > 0 and now >= plot.get('crowLeavingAt'):
-                        plot['hasCrow'] = False
-                        plot['crowLeavingAt'] = 0
 
                 elif plot.get('status') in ['empty', 'pot']:
                     if plot.get('water', 0) > 0:
@@ -403,7 +388,10 @@ def process_server_tick(game_state_str, chat_id=None):
                     if is_auto_watering or plot.get('capsuleEndTime', 0) > now:
                         safe_mid = min_safe + ((max_safe - min_safe) / 2.0)
                         plot['water'] = safe_mid
-                        plot['hasCrow'] = False
+
+                    # Limpieza de estados residuales de versiones anteriores
+                    plot['hasCrow'] = False
+                    plot['stressMarks'] = 0
 
                     if not plot.get('isReady'):
                         if not is_auto_watering and plot.get('capsuleEndTime', 0) <= now:
@@ -411,24 +399,9 @@ def process_server_tick(game_state_str, chat_id=None):
                             
                             if plot.get('water', 0) > 0:
                                 plot['water'] = max(0, plot['water'] - (evap_rate * delta_hours))
-                            
-                        just_planted = (now - plot.get('plantedAt', now)) < 60000
-                        just_shooed = (now - plot.get('lastShooAt', 0)) < 60000
-                        in_grace_period = just_planted or just_shooed
-
-                        if plot.get('scarecrowEndTime', 0) > now or plot.get('capsuleEndTime', 0) > now:
-                            plot['hasCrow'] = False
-                        elif not plot.get('hasCrow') and not is_auto_watering:
-                            if plot.get('water', 0) < min_safe and not in_grace_period:
-                                plot['hasCrow'] = True
-                                plot['stressMarks'] = plot.get('stressMarks', 0) + 1
-                            elif plot.get('water', 0) > max_safe and not in_grace_period:
-                                plot['hasCrow'] = True
-                                plot['stressMarks'] = plot.get('stressMarks', 0) + 1
-                            
-                        if plot.get('hasCrow'):
-                            plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
-                        elif plot.get('water', 0) <= 0:
+                        
+                        # Pausar crecimiento si el agua llega a 0%
+                        if plot.get('water', 0) <= 0:
                             plot['harvestAt'] = plot.get('harvestAt', now) + delta_ms
                         elif plot.get('capsuleEndTime', 0) > now:
                             plot['harvestAt'] = plot.get('harvestAt', now) + (delta_ms * 0.30)
@@ -438,10 +411,7 @@ def process_server_tick(game_state_str, chat_id=None):
                         
                         if is_auto_harvesting and not plot.get('isSpoiled'):
                             base_reward = plot.get('plant', {}).get('reward', 1500)
-                            
-                            stress = plot.get('stressMarks', 0)
-                            penalty_multiplier = max(0.1, 1.0 - (stress * 0.15))
-                            final_reward = int(base_reward * penalty_multiplier)
+                            final_reward = int(base_reward) # Sin penalidad
                             
                             state['seedsBalance'] = state.get('seedsBalance', 0) + final_reward
                             plot['potUses'] = plot.get('potUses', 0) + 1
@@ -455,14 +425,12 @@ def process_server_tick(game_state_str, chat_id=None):
                                 plot['status'] = 'pot'
                                 
                             plot['plant'] = None
-                            plot['hasCrow'] = False
                             plot['scarecrowEndTime'] = 0
                             plot['capsuleEndTime'] = 0 
                             plot['plantedAt'] = 0
                             plot['harvestAt'] = 0
                             plot['isReady'] = False
                             plot['isSpoiled'] = False
-                            plot['stressMarks'] = 0
                             plot['lastShooAt'] = 0
                         else:
                             if not is_auto_watering:
@@ -472,43 +440,12 @@ def process_server_tick(game_state_str, chat_id=None):
                                 
                                 if time_overdue > 0:
                                     plot['isSpoiled'] = True
-                                    plot['hasCrow'] = True
-                                    
-                                    if time_overdue > 2700000:
-                                        plot['crowsCount'] = 3
-                                        plot['rewardMultiplier'] = 0.0 
-                                        if not plot.get('contagionTriggered'):
-                                            plot['contagionTriggered'] = True
-                                            contagion_triggered = True
-                                            
-                                    elif time_overdue > 1800000: 
-                                        plot['crowsCount'] = 3
-                                        mins_w_three = (time_overdue - 1800000) / 60000.0
-                                        penalty = 0.30 + 0.45 + (mins_w_three * 0.05)
-                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
-                                        
-                                    elif time_overdue > 900000: 
-                                        plot['crowsCount'] = 2
-                                        mins_w_two = (time_overdue - 900000) / 60000.0
-                                        penalty = 0.30 + (mins_w_two * 0.03)
-                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
-                                        
-                                    else: 
-                                        plot['crowsCount'] = 1
-                                        mins_w_one = time_overdue / 60000.0
-                                        penalty = mins_w_one * 0.01
-                                        plot['rewardMultiplier'] = max(0.0, 1.0 - penalty)
+                                    plot['rewardMultiplier'] = 0.0 
                     
                     if chat_id and plot.get('status') == 'planted':
                         plant_name = plot.get('plant', {}).get('name', 'tu plantita')
                         plant_img = plot.get('plant', {}).get('icon', None)
                         p_id = plot['id'] + 1
-                        
-                        crow_msgs = [
-                            f"🦅 ¡Cua, cua! (Bueno, los cuervos no hacen así, pero entiendes la idea). ¡Un pajarraco me está picoteando en el Terreno {p_id}! 😭 ¡Ven a asustarlo antes de que me quede sin hojitas, por favor! 🥺",
-                            f"🦅 ¡Auxilio, granjero/a! 🚨 Un cuervo gruñón aterrizó en la parcela {p_id} y me está mirando con cara de ensalada. ¡Sálvame, soy tu {plant_name} favorita! 🛡️🌱",
-                            f"🦅 ¡Uy, qué miedo! 🫣 Hay un intruso con plumas en el Terreno {p_id} molestándome. Necesito a mi héroe (sí, ¡tú!) para que lo espante. 🥺"
-                        ]
                         
                         ready_msgs = [
                             f"✨ ¡Tachán! 🎉 He crecido grande, fuerte y sanita en el Terreno {p_id}. Ya estoy lista para que me coseches y ganes tus semillitas. ¡Ven a verme, me veo genial! 🥰🌻",
@@ -517,38 +454,26 @@ def process_server_tick(game_state_str, chat_id=None):
                         ]
                         
                         water_msgs = [
-                            f"💧 ¡Alerta Crítica! Tu {plant_name} en el Terreno {p_id} está sedienta. Ha alcanzado su límite seguro del 20% de agua. ¡Riégala ahora antes de que atraiga cuervos!"
+                            f"💧 ¡Alerta! Tu {plant_name} en el Terreno {p_id} se quedó sin agua (0%). Su crecimiento se ha pausado por completo. ¡Riégala ahora para que siga creciendo!"
                         ]
                         
                         spoiled_msgs = [
-                            f"🥀 ¡Oh no! Tu {plant_name} en la parcela {p_id} se ha marchitado y podrido. Necesitas limpiarla pronto. 😭",
-                            f"🦠 Qué tragedia... tu {plant_name} en el Terreno {p_id} se pudrió. ¡Limpia el terreno antes de que contagie al resto!"
+                            f"🥀 ¡Oh no! Tu {plant_name} en la parcela {p_id} se ha marchitado y podrido. Necesitas limpiarla pronto. 😭"
                         ]
                         
-                        if plot.get('hasCrow') and not flags.get('crow'):
-                            send_telegram_msg(chat_id, random.choice(crow_msgs), plant_img)
-                            flags['crow'] = True
-                        elif plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
+                        if plot.get('isReady') and not flags.get('ready') and not is_auto_harvesting:
                             send_telegram_msg(chat_id, random.choice(ready_msgs), plant_img)
                             flags['ready'] = True
-                        elif plot.get('water', 100) <= min_safe and not plot.get('isReady') and not plot.get('hasCrow') and not flags.get('water'):
+                        elif plot.get('water', 100) <= 0 and not plot.get('isReady') and not flags.get('water'):
                             send_telegram_msg(chat_id, random.choice(water_msgs), plant_img)
                             flags['water'] = True
                         elif plot.get('isSpoiled') and not flags.get('spoiled'):
                             send_telegram_msg(chat_id, random.choice(spoiled_msgs), plant_img)
                             flags['spoiled'] = True
 
-                        if not plot.get('hasCrow'): flags['crow'] = False
                         if not plot.get('isReady'): flags['ready'] = False
-                        if plot.get('water', 100) > min_safe: flags['water'] = False
+                        if plot.get('water', 100) > 0: flags['water'] = False
                         if not plot.get('isSpoiled'): flags['spoiled'] = False
-
-            if contagion_triggered:
-                for p in state.get('plots', []):
-                    if p.get('status') == 'planted' and not p.get('hasCrow') and not p.get('isSpoiled'):
-                        p['hasCrow'] = True
-                        p['crowArrivedAt'] = now
-                        break 
 
             vito_contract = state.get('vitoContract')
             if vito_contract and vito_contract.get('active'):

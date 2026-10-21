@@ -253,7 +253,7 @@
                         <img src="assets/Herramientas_y_Servicios/maceta_pequena.png" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <p class="text-base font-black text-cg_navy leading-tight">Maceta Pequeña</p>
+                        <p class="text-base font-black text-cg_navy leading-tight">Maceta</p>
                         <p class="text-[11px] font-bold text-cg_gold mt-1"><span id="desk-inv-pot-small">0</span> en stock</p>
                     </div>
                 </div>
@@ -731,7 +731,7 @@
                     { id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
                 ],
                 inventory: {
-                    'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
+                    'tool_pot_small': { name: 'Maceta', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
                     'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' },
                     'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' },
                     'tool_capsule': { name: 'Bóveda Hidropónica', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/Capsula.gif' }
@@ -780,7 +780,7 @@
                         { id: 8, status: 'locked', pot: null, potUses: 0, plant: null, water: 0, hasCrow: false, crowLeavingAt: 0, scarecrowEndTime: 0, plantedAt: 0, harvestAt: 0, isReady: false, toast: { active: false, icon: '', msg: '' } }
                     ];
                     window.farmApp.state.inventory = {
-                        'tool_pot_small': { name: 'Maceta Pequeña', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
+                        'tool_pot_small': { name: 'Maceta', type: 'pot', reqSize: 'small', qty: 0, image: 'assets/Herramientas_y_Servicios/maceta_pequena.png' },
                         'tool_water': { name: 'Regadera', type: 'water', qty: 0, image: 'assets/Herramientas_y_Servicios/regadera.png' },
                         'tool_scarecrow': { name: 'Espantapájaros', type: 'defense', qty: 0, image: 'assets/Herramientas_y_Servicios/espantapajaros.png' }
                     };
@@ -1169,7 +1169,7 @@
                         const currentTerrain = displayWater > 0 ? this.state.images.terrain_empty : this.state.images.terrain_dry;
                         el.className = `bg-white rounded-2xl border-2 border-gray-200 h-72 sm:h-[21rem] relative cursor-pointer hover:border-cg_blue transition-all overflow-hidden ${isSelected ? 'border-cg_blue shadow-md' : 'shadow-sm hover:shadow-md'}`;
                         const potImg = this.state.inventory.tool_pot_small ? this.state.inventory.tool_pot_small.image : 'assets/Herramientas_y_Servicios/maceta_pequena.png';
-                        const potName = 'MACETA PEQ.';
+                        const potName = 'MACETA';
                         
                         let protectionHtml = '';
                         if (isAutoWatering) {
