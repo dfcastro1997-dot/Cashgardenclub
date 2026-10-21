@@ -363,32 +363,7 @@ window.shopApp = {
         const targetInventory = farmState.inventory;
 
         if (farmState.seedsBalance >= total) {
-                    
-                    if (!targetInventory[itemId]) {
-                        let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-                        targetInventory[itemId] = { 
-                            name: catItem.name, 
-                            type: this.catalog.flowers.some(f => f.id === itemId) ? 'seed' : (itemId.includes('pot') ? 'pot' : (itemId.includes('water') ? 'water' : 'defense')), 
-                            qty: 0, 
-                            image: catItem.image 
-                        };
-                    }
-
-                    let addedQty = qty;
-                    if (itemId === 'tool_water') addedQty = 10 * qty;
-                    targetInventory[itemId].qty += addedQty;
-
-                    farmState.seedsBalance -= total;
-                    this.state.seedsBalance = window.farmApp.state.seedsBalance; 
-                    window.farmApp.saveState(); 
-                    
-                    let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
-                    this.showModalAlert(catItem.image, catItem.name, qty, `-${total.toLocaleString()} 🌱`, 'Inversión:', 'success');
-                    this.updateBalancesUI();
-                    return;
-                }
-            }
-
+            
             if (!targetInventory[itemId]) {
                 let catItem = [...this.catalog.tools, ...this.catalog.flowers].find(i => i.id === itemId);
                 targetInventory[itemId] = { 
