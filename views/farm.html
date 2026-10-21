@@ -484,13 +484,13 @@
         const timeEl = document.getElementById('vito-status-time');
 
         let plantName = "Planta Desconocida";
-        let plantImg = "assets/Fondos/logo.png";
+        let plantImg = "assets/Fondos/logo.avif";
         
         if (window.farmApp.state.dynamicPlants && window.farmApp.state.dynamicPlants[contract.targetSeed]) {
             plantName = window.farmApp.state.dynamicPlants[contract.targetSeed].name;
             plantImg = window.farmApp.state.dynamicPlants[contract.targetSeed].image_url;
             
-            if (plantImg.includes('assets/Plantas/') && plantImg.endsWith('.avif')) {
+            if (plantImg.includes('assets/Plantas/') && plantImg.endsWith('.gif')) {
                 plantImg = plantImg.replace('.avif', '.gif');
             }
         }
@@ -967,7 +967,7 @@
             updateUI() {
                 if (this.state.plots) {
                     this.state.plots.forEach(p => {
-                        if (p.plant && p.plant.icon && p.plant.icon.includes('assets/Plantas/') && p.plant.icon.endsWith('.avif')) {
+                        if (p.plant && p.plant.icon && p.plant.icon.includes('assets/Plantas/') && p.plant.icon.endsWith('.gif')) {
                             p.plant.icon = p.plant.icon.replace('.avif', '.gif');
                         }
                     });
@@ -1216,7 +1216,7 @@
 
                         if (progress < 80) {
                             currentPlantImg = `assets/Semillas/${plantCategoryName}.png`;
-                            imgOnError = `onerror="this.onerror=null; this.src='assets/Fondos/logo.png';"`; 
+                            imgOnError = `onerror="this.onerror=null; this.src='assets/Fondos/logo.avif';"`; 
                             plantImgClass = "absolute h-10 sm:h-12 w-auto object-contain z-10 drop-shadow-md"; 
                             plantImgStyle = "transform: translate(-12%, -35%);"; 
                         }
