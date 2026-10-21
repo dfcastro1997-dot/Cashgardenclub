@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- Íconos para la pestaña del navegador y guardar en la pantalla del celular -->
-    <link rel="icon" type="image/png" href="assets/Fondos/logo.png">
-    <link rel="apple-touch-icon" href="assets/Fondos/logo.png">
+    <link rel="icon" type="image/png" href="assets/Fondos/logo.avif">
+    <link rel="apple-touch-icon" href="assets/Fondos/logo.avif">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
@@ -447,7 +447,7 @@
 
                 <!-- Columna héroe (solo escritorio) -->
                 <aside class="cg-hero">
-                    <img src="assets/Fondos/logo.png" alt="CashGarden Club" class="cg-hero__logo">
+                    <img src="assets/Fondos/logo.avif" alt="CashGarden Club" class="cg-hero__logo">
                     <span class="cg-season" data-cg-season>🍂 Temporada de Otoño</span>
                     <p class="cg-hero__tagline">Siembra, cultiva y cosecha.<br>La granja más productiva te espera.</p>
                     <ul class="cg-hero__chips">
@@ -460,7 +460,7 @@
 
                 <!-- Escenario: mascota + tarjeta -->
                 <main class="cg-stage">
-                    <img src="assets/Fondos/logo.png" alt="CashGarden Club" class="cg-mobile-logo">
+                    <img src="assets/Fondos/logo.avif" alt="CashGarden Club" class="cg-mobile-logo">
 
                     <div class="cg-mascot-wrap">
                         <div class="cg-bubble" id="cg-bubble" aria-live="polite">¡Bienvenido a la granja, granjero!</div>
@@ -713,7 +713,7 @@
             <div class="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between relative">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 shrink-0">
-                    <img src="assets/Fondos/logo.png" alt="CashGarden Logo" class="h-8 sm:h-11 w-auto hover:scale-105 transition-transform duration-300">
+                    <img src="assets/Fondos/logo.avif" alt="CashGarden Logo" class="h-8 sm:h-11 w-auto hover:scale-105 transition-transform duration-300">
                 </div>
                 
                 <!-- Menú Central -->
@@ -748,7 +748,7 @@
                     <div class="relative">
                         <button onclick="toggleUserMenu(event)" class="flex items-center gap-3 focus:outline-none hover:bg-gray-50 p-1.5 rounded-full transition-all border border-transparent hover:border-gray-200">
                             <div id="profile-avatar" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden shrink-0 transition-transform hover:scale-105">
-                                <img src="assets/Fondos/logo.png" alt="Perfil" class="w-full h-full object-cover">
+                                <img src="assets/Fondos/logo.avif" alt="Perfil" class="w-full h-full object-cover">
                             </div>
                             <div class="hidden md:flex items-center gap-2 pr-1">
                                 <p class="text-sm font-black text-cg_navy leading-none" id="profile-name">Usuario</p>
@@ -1581,22 +1581,17 @@
 
         // ================= GALERÍA DE AVATARES =================
         const AVAILABLE_AVATARS = [
-            { src: 'assets/Perfil/defecto.png', name: 'Defecto' },
-            { src: 'assets/Perfil/Astronauta.jpg', name: 'Astronauta' },
-            { src: 'assets/Perfil/Cazador.jpg', name: 'Cazador' },
-            { src: 'assets/Perfil/Granjero.jpg', name: 'Granjero' },
-            { src: 'assets/Perfil/Formal.jpg', name: 'Formal' },
-            { src: 'assets/Perfil/Hockie.jpg', name: 'Hockie' },
-            { src: 'assets/Perfil/Ingeniero.jpg', name: 'Ingeniero' },
-            { src: 'assets/Perfil/Militar.jpg', name: 'Militar' },
-            { src: 'assets/Perfil/Millonario.jpg', name: 'Millonario' },
-            { src: 'assets/Perfil/Payaso.jpg', name: 'Payaso' },
-            { src: 'assets/Perfil/Fiestero.jpg', name: 'Fiestero' },
-            // Nuevos Avatares de Referidos (Bloqueados por defecto)
-            { src: 'assets/Perfil/Cuervo Mercenario.gif', name: 'Mercenario', isReferral: true },
-            { src: 'assets/Perfil/Granjero Cazacuervos.gif', name: 'Cazacuervos', isReferral: true },
-            { src: 'assets/Perfil/Rey Cuervo Eclipse.gif', name: 'Rey Eclipse', isReferral: true },
-            { src: 'assets/Perfil/Simbiosis Carnívora.gif', name: 'Simbiosis', isReferral: true }
+            { src: 'assets/Perfil/defecto.avif', name: 'Defecto' },
+            { src: 'assets/Perfil/Astronauta.avif', name: 'Astronauta' },
+            { src: 'assets/Perfil/Cazador.avif', name: 'Cazador' },
+            { src: 'assets/Perfil/Granjero.avif', name: 'Granjero' },
+            { src: 'assets/Perfil/Formal.avif', name: 'Formal' },
+            { src: 'assets/Perfil/Hockie.avif', name: 'Hockie' },
+            { src: 'assets/Perfil/Ingeniero.avif', name: 'Ingeniero' },
+            { src: 'assets/Perfil/Militar.avif', name: 'Militar' },
+            { src: 'assets/Perfil/Millonario.avif', name: 'Millonario' },
+            { src: 'assets/Perfil/Payaso.avif', name: 'Payaso' },
+            { src: 'assets/Perfil/Fiestero.avif', name: 'Fiestero' }
         ];
 
         window.openAvatarModal = function() {
@@ -1763,7 +1758,7 @@
             if (Notification.permission === "granted" && document.hidden) {
                 new Notification(title, {
                     body: body,
-                    icon: "assets/Fondos/logo.png",
+                    icon: "assets/Fondos/logo.avif",
                     vibrate: [200, 100, 200]
                 });
             }
