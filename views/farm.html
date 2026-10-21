@@ -1474,11 +1474,14 @@
                 const plot = this.state.plots[plotId];
                 if (!plot) return;
 
-                let name, img, scoreText, penaltyText, rulesTitle;
+                let name = "Planta";
+                let img = this.state.images.plant_small;
+                let scoreText = "";
+                let penaltyText = "";
+                let rulesTitle = "ESTADO DE LA PLANTA";
                 let pAtk = 0, pDef = 0, pHp = 0;
                 let pPrice = 0, pReward = 0; 
                 let isCombatPlant = false;
-                let minSafe = 20, maxSafe = 80;
 
                 if (plot.status === 'planted' && plot.plant) {
                     const pid = plot.plant.id;
@@ -1496,8 +1499,6 @@
                         <span class="text-gray-500">${exhaustionText}</span>
                     `;
 
-                    rulesTitle = "ESTADO DE LA PLANTA";
-                    
                     document.getElementById('welcome-plant-penalty').classList.add('hidden');
                     
                     isCombatPlant = true;
@@ -1510,14 +1511,13 @@
                         pPrice = this.state.dynamicPlants[pid].price || 0;
                         pReward = this.state.dynamicPlants[pid].reward || 0;
                     }
-                } else { return; }
+                } else { 
+                    return; 
+                }
                 
                 document.getElementById('welcome-plant-img').src = img;
                 document.getElementById('welcome-plant-name').innerText = name;
                 document.getElementById('welcome-plant-desc').innerHTML = scoreText;
-                
-                document.getElementById('welcome-min-water').innerText = `${minSafe}%`;
-                document.getElementById('welcome-max-water').innerText = `${maxSafe}%`;
                 
                 document.getElementById('welcome-plant-rules-title').innerText = rulesTitle;
                 
