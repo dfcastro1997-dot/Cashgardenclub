@@ -720,57 +720,6 @@ def save_state():
             incoming_state = json.loads(incoming_state_str)
             db_state_raw = user['game_state']
             db_state = json.loads(db_state_raw) if db_state_raw else {}
-            
-            # 🚨 INICIO PARCHE DE SEGURIDAD: DIFF CHECKER 🚨
-            # 1. Validar que el cliente no se inyecte ítems de la nada
-            if 'inventory' in db_state and 'inventory' in incoming_state:
-                for item_id, incoming_item in incoming_state['inventory'].items():
-                    db_item_qty = db_state['inventory'].get(item_id, {}).get('qty', 0)
-                    in_qty = incoming_item.get('qty', 0)
-                    
-                    if in_qty > db_item_qty:
-                        # Si el cliente manda más cantidad de la que tenía, revertimos.
-                        incoming_item['qty'] = db_item_qty
-
-            # 2. Validar Arsenal
-            if 'arsenal' in db_state and 'arsenal' in incoming_state:
-                db_arsenal_ids = {p['id'] for p in db_state['arsenal']}
-                sanitized_arsenal = []
-                
-                for plant in incoming_state['arsenal']:
-                    if plant['id'] in db_arsenal_ids:
-                        # Planta que ya existía: evitamos que se curen de más por inyección
-                        if plant.get('hp', 0) > plant.get('maxHp', 100):
-                            plant['hp'] = plant.get('maxHp', 100)
-                        sanitized_arsenal.append(plant)
-                    else:
-                        # Planta nueva (recién cosechada). La dejamos pasar pero limitamos stats absurdos
-                        # por si un hacker intenta inyectar una planta trampa
-                        if plant.get('hp', 0) > plant.get('maxHp', 100):
-                            plant['hp'] = plant.get('maxHp', 100)
-                        
-                        # Topes máximos de seguridad (Ajusta según tu planta más fuerte)
-                        if plant.get('atk', 0) > 1500: plant['atk'] = 50
-                        if plant.get('maxHp', 0) > 2000: plant['maxHp'] = 100
-                        
-                        sanitized_arsenal.append(plant)
-                        
-                incoming_state['arsenal'] = sanitized_arsenal
-            # 🚨 FIN PARCHE DE SEGURIDAD 🚨
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             # Asegurar que el cliente no borre propiedades de los torneos si no las mapeó en su inicio
             if 'freerollEntries' in db_state and 'freerollEntries' not in incoming_state:
