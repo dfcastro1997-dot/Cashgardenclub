@@ -151,40 +151,42 @@
 <!-- MODAL INFO PLANTA REDISEÑADO -->
 <div id="tournament-welcome-modal" class="fixed inset-0 z-[160] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-cg_navy/90 backdrop-blur-sm" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden'); clearInterval(window.plantInfoTimer);"></div>
-    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm relative z-10 overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]">
         
-        <div class="p-5 text-center border-b border-gray-100 relative shrink-0">
+        <div class="p-4 sm:p-5 text-center border-b border-gray-100 relative shrink-0">
             <span class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 text-xl cursor-pointer font-bold transition-colors" onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden'); clearInterval(window.plantInfoTimer);">✕</span>
-            <h3 class="text-xl font-black text-cg_navy tracking-tight">Información de la planta</h3>
-            <p id="welcome-plant-rules-title" class="text-orange-500 text-[9px] font-black uppercase tracking-widest mt-1">ESTADO DE LA PLANTA</p>
+            <h3 class="text-lg sm:text-xl font-black text-cg_navy tracking-tight">Información de la planta</h3>
         </div>
         
-        <div class="p-5 sm:p-6 overflow-y-auto bg-gray-50 flex-1 space-y-4">
+        <div class="p-4 sm:p-5 overflow-y-auto bg-gray-50 flex-1 flex flex-col gap-4">
             
-            <div class="bg-white p-5 sm:p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                <h4 id="welcome-plant-name" class="font-black text-cg_navy text-xl sm:text-2xl leading-tight mb-4">Nombre Planta</h4>
-                <div class="w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center mb-5 relative">
-                    <div class="absolute inset-0 bg-blue-50 rounded-full blur-2xl opacity-60"></div>
-                    <img id="welcome-plant-img" src="" class="max-w-full max-h-full object-contain drop-shadow-xl relative z-10" alt="Planta">
+            <!-- Contenedor Izquierda/Derecha (Planta y Datos) -->
+            <div class="flex items-center gap-4 bg-white p-4 rounded-[1.5rem] border border-gray-100 shadow-sm">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 relative flex items-center justify-center">
+                    <div class="absolute inset-0 bg-blue-50 rounded-full blur-xl opacity-60"></div>
+                    <img id="welcome-plant-img" src="" class="max-w-full max-h-full object-contain drop-shadow-md relative z-10" alt="Planta">
                 </div>
-                <div id="welcome-plant-desc" class="text-xs text-gray-500 font-medium w-full hidden"></div>
                 
-                <div id="plant-stats-container" class="hidden w-full mt-2">
-                    <!-- Inyectado por JS -->
+                <div class="flex-1 flex flex-col justify-center min-w-0">
+                    <h4 id="welcome-plant-name" class="font-black text-cg_navy text-base sm:text-lg leading-tight mb-2 truncate">Nombre Planta</h4>
+                    <p id="welcome-plant-rules-title" class="hidden"></p>
+                    <div id="welcome-plant-desc" class="hidden"></div>
+                    
+                    <div id="plant-stats-container" class="hidden w-full">
+                        <!-- Inyectado por JS -->
+                    </div>
                 </div>
             </div>
             
-            <div id="welcome-survival-container" class="bg-white border border-blue-100 p-5 rounded-3xl shadow-sm relative overflow-hidden flex flex-col items-center text-center">
-                <div class="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent pointer-events-none"></div>
-                <div class="flex items-center gap-2 mb-3 relative z-10">
-                    <span class="text-blue-500 text-xl drop-shadow-sm">💧</span>
-                    <span class="font-black text-cg_navy text-sm uppercase tracking-widest">Condiciones de Riego</span>
-                </div>
-                <div class="w-full bg-blue-50 rounded-2xl p-4 border border-blue-100 relative z-10">
-                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest block mb-1">Duración del Agua</span>
-                    <span id="welcome-max-water" class="text-3xl sm:text-4xl font-black text-blue-600 font-mono tracking-tight drop-shadow-sm">00:00:00</span>
-                    <p class="text-[9px] text-gray-500 font-bold leading-tight mt-2 opacity-80">Mientras tenga agua (mayor a 0%), la planta crecerá sin problemas.</p>
-                    <div class="w-full bg-blue-200 h-1.5 rounded-full mt-3 overflow-hidden">
+            <!-- Condiciones de Riego (Compacto) -->
+            <div id="welcome-survival-container" class="bg-white border border-blue-100 p-3.5 rounded-2xl shadow-sm relative overflow-hidden flex items-center gap-3">
+                <span class="text-blue-500 text-2xl drop-shadow-sm shrink-0">💧</span>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Agua Restante</span>
+                        <span id="welcome-max-water" class="text-sm font-black text-blue-600 font-mono tracking-tight drop-shadow-sm">00:00:00</span>
+                    </div>
+                    <div class="w-full bg-blue-100 h-1.5 rounded-full overflow-hidden">
                         <div id="welcome-water-bar" class="bg-blue-500 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
                     </div>
                 </div>
@@ -192,8 +194,8 @@
             </div>
         </div>
         
-        <div class="p-4 sm:p-5 bg-white shrink-0 border-t border-gray-100">
-            <button onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden'); clearInterval(window.plantInfoTimer);" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3.5 rounded-xl transition-all shadow-[0_4px_0_#c2410c] active:translate-y-[4px] active:shadow-none uppercase tracking-widest text-sm">
+        <div class="p-3 sm:p-4 bg-white shrink-0 border-t border-gray-100">
+            <button onclick="document.getElementById('tournament-welcome-modal').classList.replace('flex','hidden'); clearInterval(window.plantInfoTimer);" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3 rounded-xl transition-all shadow-[0_4px_0_#c2410c] active:translate-y-[4px] active:shadow-none uppercase tracking-widest text-xs sm:text-sm">
                 ENTENDIDO
             </button>
         </div>
@@ -1510,22 +1512,16 @@
                     if (plot.isSpoiled) {
                         finalReward = Math.floor(finalReward / 2);
                         harvestBreakdown = `
-                            <div class="text-[9px] flex flex-col items-center mt-auto border-t border-red-200/50 pt-1.5 w-full">
+                            <div class="text-[9px] flex justify-between items-center mt-1 border-t border-red-200/50 pt-1 w-full">
                                 <span class="text-gray-400 line-through font-bold">Base: ${pReward.toLocaleString()}</span>
-                                <span class="text-red-500 font-black bg-red-100 px-2 py-0.5 rounded uppercase tracking-wider mt-1">Pudrición: -50%</span>
+                                <span class="text-red-500 font-black">-${50}%</span>
                             </div>
                         `;
                     } else if (stress > 0) {
                         harvestBreakdown = `
-                            <div class="text-[9px] flex flex-col items-center mt-auto border-t border-orange-200/50 pt-1.5 w-full">
+                            <div class="text-[9px] flex justify-between items-center mt-1 border-t border-orange-200/50 pt-1 w-full">
                                 <span class="text-gray-400 line-through font-bold">Base: ${pReward.toLocaleString()}</span>
-                                <span class="text-orange-600 font-black bg-orange-100 px-2 py-0.5 rounded uppercase tracking-wider mt-1">Estrés (${stress}): -${penaltyPct}%</span>
-                            </div>
-                        `;
-                    } else {
-                        harvestBreakdown = `
-                            <div class="text-[9px] flex flex-col items-center mt-auto border-t border-green-200/50 pt-1.5 w-full">
-                                <span class="text-emerald-600 font-black uppercase tracking-wider bg-green-100 px-2 py-0.5 rounded">Cosecha Perfecta</span>
+                                <span class="text-orange-600 font-black">-${penaltyPct}%</span>
                             </div>
                         `;
                     }
@@ -1533,14 +1529,16 @@
                     statsContainer.classList.remove('hidden');
                     statsContainer.classList.add('flex');
                     statsContainer.innerHTML = `
-                        <div class="flex flex-row gap-3 w-full items-stretch">
-                            <div class="flex-1 bg-gray-50 rounded-2xl p-3 sm:p-4 border border-gray-100 text-center shadow-sm flex flex-col justify-center">
-                                <span class="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 mt-1">Costo Tienda</span>
-                                <span class="font-black text-cg_navy text-lg sm:text-xl mb-auto"> ${pPrice.toLocaleString()} 🌱</span>
+                        <div class="flex flex-col gap-2 w-full">
+                            <div class="flex items-center justify-between bg-gray-50 rounded-lg p-2 border border-gray-100 shadow-sm">
+                                <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Costo Tienda</span>
+                                <span class="font-black text-cg_navy text-xs sm:text-sm"> ${pPrice.toLocaleString()} 🌱</span>
                             </div>
-                            <div class="flex-1 ${stress > 0 || plot.isSpoiled ? 'bg-orange-50/50 border-orange-200' : 'bg-green-50/50 border-green-200'} rounded-2xl p-3 sm:p-4 border text-center shadow-sm flex flex-col justify-center items-center">
-                                <span class="block text-[9px] font-black ${stress > 0 || plot.isSpoiled ? 'text-orange-700' : 'text-green-700'} uppercase tracking-widest mb-1 mt-1">Cosecha Neta</span>
-                                <span class="font-black ${stress > 0 || plot.isSpoiled ? 'text-orange-600' : 'text-green-600'} text-lg sm:text-xl drop-shadow-sm mb-2">+${finalReward.toLocaleString()} 🌱</span>
+                            <div class="${stress > 0 || plot.isSpoiled ? 'bg-orange-50/50 border-orange-200' : 'bg-green-50/50 border-green-200'} rounded-lg p-2 border shadow-sm flex flex-col w-full">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[8px] font-black ${stress > 0 || plot.isSpoiled ? 'text-orange-700' : 'text-green-700'} uppercase tracking-widest">Cosecha Neta</span>
+                                    <span class="font-black ${stress > 0 || plot.isSpoiled ? 'text-orange-600' : 'text-green-600'} text-xs sm:text-sm drop-shadow-sm">+${finalReward.toLocaleString()} 🌱</span>
+                                </div>
                                 ${harvestBreakdown}
                             </div>
                         </div>
@@ -1563,12 +1561,11 @@
                     const isAutoWatering = this.state.autoWaterEndTime > Date.now();
                     const actualWater = isAutoWatering ? 100 : Math.max(0, currentPlot.water || 0);
                     
-                    // Tiempo total en segundos = (water / 100) * 24 horas * 3600
                     let totalSeconds = (actualWater / 100) * 24 * 3600;
                     
                     if (totalSeconds <= 0) {
                         document.getElementById('welcome-max-water').innerText = "00:00:00";
-                        document.getElementById('welcome-max-water').className = "text-3xl sm:text-4xl font-black text-red-600 font-mono tracking-tight drop-shadow-sm animate-pulse";
+                        document.getElementById('welcome-max-water').className = "text-sm font-black text-red-600 font-mono tracking-tight drop-shadow-sm animate-pulse";
                         document.getElementById('welcome-water-bar').style.width = "0%";
                         document.getElementById('welcome-water-bar').className = "bg-red-500 h-full rounded-full transition-all duration-500";
                     } else {
@@ -1578,7 +1575,7 @@
                         
                         document.getElementById('welcome-max-water').innerText = 
                             `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                        document.getElementById('welcome-max-water').className = "text-3xl sm:text-4xl font-black text-blue-600 font-mono tracking-tight drop-shadow-sm";
+                        document.getElementById('welcome-max-water').className = "text-sm font-black text-blue-600 font-mono tracking-tight drop-shadow-sm";
                         
                         document.getElementById('welcome-water-bar').style.width = `${actualWater}%`;
                         document.getElementById('welcome-water-bar').className = "bg-blue-500 h-full rounded-full transition-all duration-500";
