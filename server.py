@@ -854,7 +854,6 @@ def buy_seeds():
     standard_costs = {
         "tool_pot_small": 5000,
         "tool_water": 500,
-        "tool_scarecrow": 6000,
         "tool_capsule": 1000
     }
 
@@ -1631,7 +1630,6 @@ def admin_add_items():
                     for p in st.get('plots', []):
                         if p.get('plantedAt'): p['plantedAt'] -= skip_ms
                         if p.get('harvestAt'): p['harvestAt'] -= skip_ms
-                        if p.get('scarecrowEndTime'): p['scarecrowEndTime'] = max(0, p['scarecrowEndTime'] - skip_ms)
                         if p.get('crowLeavingAt'): p['crowLeavingAt'] = max(0, p['crowLeavingAt'] - skip_ms)
                         if p.get('tournamentEndTime'): p['tournamentEndTime'] = max(0, p['tournamentEndTime'] - skip_ms)
                     cur.execute("UPDATE users SET game_state = %s WHERE id = %s", (json.dumps(st), u['id']))
@@ -1664,17 +1662,16 @@ def admin_add_items():
     now = int(time.time() * 1000)
 
     icons = {
-        'tool_pot_small': '🪴', 'tool_water': '🚿', 'tool_scarecrow': '🦉'
+        'tool_pot_small': '🪴', 'tool_water': '🚿'
     }
     
     names = {
-        'tool_pot_small': 'Maceta Pequeña', 'tool_water': 'Regadera', 'tool_scarecrow': 'Espantapájaros'
+        'tool_pot_small': 'Maceta Pequeña', 'tool_water': 'Regadera'
     }
     
     img_icons = {
         'tool_pot_small': 'assets/Herramientas_y_Servicios/maceta_pequena.png', 
-        'tool_water': 'assets/Herramientas_y_Servicios/regadera.png', 
-        'tool_scarecrow': 'assets/Herramientas_y_Servicios/espantapajaros.png'
+        'tool_water': 'assets/Herramientas_y_Servicios/regadera.png'
     }
 
     # --- AÑADIDO: Cargar atributos de plantas dinámicas ---
@@ -2129,8 +2126,7 @@ def get_tree_state():
     milestones = json.loads(conf['milestones_json']) if conf and conf['milestones_json'] else []
     
     items_ref = {
-        'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿'),
-        'tool_scarecrow': ('Espantapájaros', '🦉')
+        'tool_pot_small': ('Maceta Peq.', '🪴'), 'tool_water': ('Agua', '🚿')
     }
 
     cur.execute("SELECT id, name FROM dynamic_plants")
@@ -2266,7 +2262,7 @@ def donate_tree():
             for m in milestones:
                 name, icon = items_ref.get(m['id'], ('Premio', '🎁'))
                 emoji_ref = {
-                    'tool_pot_small': '🪴', 'tool_water': '🚿', 'tool_scarecrow': '🦉'
+                    'tool_pot_small': '🪴', 'tool_water': '🚿'
                 }
                 emoji = emoji_ref.get(m['id'], '✨')
                 base_gift_items.append({"icon": emoji, "text": f"{m['qty']}x {name}"})
